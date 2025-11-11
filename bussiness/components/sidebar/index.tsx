@@ -1,8 +1,8 @@
 'use client';
-import React, { ReactNode } from 'react';
+import React from 'react';
 import {
     Home, MessageSquare, Send, Share2, BarChart3, Puzzle, Settings,
-    ChevronDown, Info, Mail, User
+    ChevronDown
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -57,8 +57,8 @@ export default function Sidebar() {
                                 <Link
                                     href={item.href}
                                     className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition w-full ${isActive
-                                            ? 'bg-[#2f6176] text-white'
-                                            : 'hover:bg-white/5 text-white/90 hover:text-white'
+                                        ? 'bg-[#2f6176] text-white'
+                                        : 'hover:bg-white/5 text-white/90 hover:text-white'
                                         }`}
                                 >
                                     <Icon className="w-5 h-5" />

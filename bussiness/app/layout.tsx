@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+// @ts-ignore: side-effect import of CSS without type declarations
 import "./globals.css";
 import Header from "@/components/header";
 import Sidebar from "@/components/sidebar";
