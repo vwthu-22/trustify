@@ -6,30 +6,30 @@ import Link from 'next/link';
 export default function BusinessIntro() {
   return (
     <div className="min-h-screen bg-gray-50 mt-20">
-      {/* Hero Section - Why consumers rely on Trustpilot */}
+      {/* Hero Section - Why consumers rely on Trustify */}
       <section className="bg-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Why consumers rely on Trustpilot
+            Why consumers rely on Trustify
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             <div className="text-center">
               <div className="text-4xl font-bold text-gray-900 mb-2">+300m</div>
               <p className="text-sm text-gray-600">
-                reviews have been left on Trustpilot across +1M million domains
+                reviews have been left on Trustify across +1M million domains
               </p>
             </div>
             <div className="text-center">
               <div className="text-4xl font-bold text-gray-900 mb-2">71%</div>
               <p className="text-sm text-gray-600">
-                of US consumers are more inclined to trust Trustpilot reviews over those found other to buy from a brand
+                of US consumers are more inclined to trust Trustify reviews over those found other to buy from a brand
               </p>
             </div>
             <div className="text-center">
               <div className="text-4xl font-bold text-gray-900 mb-2">+6.5m</div>
               <p className="text-sm text-gray-600">
-                new reviews are written on Trustpilot in 2024*
+                new reviews are written on Trustify in 2024*
               </p>
             </div>
           </div>
@@ -127,7 +127,7 @@ export default function BusinessIntro() {
 
             <div>
               <h2 className="text-3xl font-bold text-gray-900 mb-6">
-                Go further with Trustpilot solutions
+                Go further with Trustify solutions
               </h2>
               <ul className="space-y-4 mb-8">
                 <li className="flex items-start gap-3">
@@ -135,7 +135,7 @@ export default function BusinessIntro() {
                     <span className="text-white text-xs">•</span>
                   </div>
                   <p className="text-gray-700">
-                    Build a more complete representation of your business by <span className="font-semibold">verifying all your information</span> with Trustpilot for better your trustmark.
+                    Build a more complete representation of your business by <span className="font-semibold">verifying all your information</span> with Trustify for better your trustmark.
                   </p>
                 </li>
                 <li className="flex items-start gap-3">
@@ -168,13 +168,13 @@ export default function BusinessIntro() {
         </div>
       </section>
 
-      {/* Trustpilot Data Solutions */}
+      {/* Trustify Data Solutions */}
       <section className="bg-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                Trustpilot Data Solutions, powered by TrustLayer™
+                Trustify Data Solutions, powered by TrustLayer™
               </h2>
               <p className="text-gray-700 leading-relaxed mb-6">
                 Embolden B2C, consumer sentiment and target signals into more strategic business insights, with more solutions built on TrustLayer™ as a foundational layer of unfiltered, transparent, crowd-sourced that provide a holistic view of target-based user-centric metrics.
@@ -213,7 +213,7 @@ export default function BusinessIntro() {
             <div className="bg-white rounded-2xl p-8 shadow-sm">
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Salesforce Integration</h3>
               <p className="text-gray-700 mb-6">
-                Seamlessly connect Trustpilot with Salesforce to unify your customer data and leverage insights across your CRM and customer success platforms.
+                Seamlessly connect Trustify with Salesforce to unify your customer data and leverage insights across your CRM and customer success platforms.
               </p>
               <button className="bg-gray-900 hover:bg-gray-800 text-white px-6 py-3 rounded-full font-semibold transition">
                 See integration
@@ -222,10 +222,10 @@ export default function BusinessIntro() {
 
             <div className="bg-white rounded-2xl p-8 shadow-sm">
               <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                Trustpilot is a founding member of the Coalition for Trusted reviews
+                Trustify is a founding member of the Coalition for Trusted reviews
               </h3>
               <p className="text-gray-700 mb-6">
-                Trustpilot, Amazon, Google, Meta, TripAdvisor, Trustly, Yelp, Zalando, and others have come together to fight fake reviews and protect the integrity of online customer review worldwide.
+                Trustify, Amazon, Google, Meta, TripAdvisor, Trustly, Yelp, Zalando, and others have come together to fight fake reviews and protect the integrity of online customer review worldwide.
               </p>
               <button className="bg-gray-900 hover:bg-gray-800 text-white px-6 py-3 rounded-full font-semibold transition">
                 Read more about it
@@ -257,7 +257,7 @@ export default function BusinessIntro() {
 
             <div className="bg-gradient-to-br from-blue-400 to-blue-500 rounded-2xl p-8 text-white">
               <h2 className="text-3xl font-bold mb-6">
-                Trustpilot's Marketing widgets
+                Trustify's Marketing widgets
               </h2>
               <p className="mb-8 text-blue-50">
                 Showcase your reviews anywhere with customizable widgets that build trust and drive conversions.

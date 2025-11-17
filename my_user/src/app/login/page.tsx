@@ -81,7 +81,7 @@ export default function LoginSignupPage() {
                         Are you a business?
                     </h2>
                     <p className="text-md text-gray-600 mb-5">
-                        Set up your business account on Trustpilot for free
+                        Set up your business account on Trustify for free
                     </p>
                     <div className="flex items-center justify-center gap-4">
                         <button className="px-4 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition">

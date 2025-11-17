@@ -7,7 +7,7 @@ export default function Footer() {
     const sections = [
         {
             title: 'Về',
-            links: ['Về chúng tôi', 'Jobs', 'Sự tiếp xúc', 'Bài viết', 'Cách hoạt động của Trustpilot', 'Báo cáo tin cậy', 'Báo chí', 'Quan hệ nhà đầu tư']
+            links: ['Về chúng tôi', 'Jobs', 'Sự tiếp xúc', 'Bài viết', 'Cách hoạt động của Trustify', 'Báo cáo tin cậy', 'Báo chí', 'Quan hệ nhà đầu tư']
         },
         {
             title: 'Cộng đồng',
@@ -15,7 +15,7 @@ export default function Footer() {
         },
         {
             title: 'Doanh nghiệp',
-            links: ['Kinh doanh Trustpilot', 'Sản phẩm', 'Kế hoạch & Giá cả', 'Đăng nhập doanh nghiệp', 'Blog dành cho doanh nghiệp']
+            links: ['Kinh doanh Trustify', 'Sản phẩm', 'Kế hoạch & Giá cả', 'Đăng nhập doanh nghiệp', 'Blog dành cho doanh nghiệp']
         }
     ];
 

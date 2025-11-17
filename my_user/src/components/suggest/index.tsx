@@ -1,6 +1,6 @@
 'use client'
 import React from 'react';
-import { ChevronLeft, ChevronRight, Landmark, Plane, Car, Sofa, Gem, Shirt, Laptop, Dumbbell } from 'lucide-react';
+import { ChevronLeft, ChevronRight} from 'lucide-react';
 import Link from 'next/link';
 
 export default function Suggest() {
@@ -98,7 +98,7 @@ export default function Suggest() {
                         Looking to grow your business?
                     </h3>
                     <p className="text-md text-gray-700">
-                        Strengthen your reputation with reviews on Trustpilot.
+                        Strengthen your reputation with reviews on Trustify.
                     </p>
                 </div>
                 <button className="bg-gray-900 hover:bg-gray-800 text-white px-6 py-2 rounded-full text-lg transition whitespace-nowrap ml-4">

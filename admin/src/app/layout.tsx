@@ -1,9 +1,12 @@
+// @ts-ignore: side-effect import of CSS without type declarations
 import "@/css/satoshi.css";
+// @ts-ignore: side-effect import of CSS without type declarations
 import "@/css/style.css";
 
 import { Sidebar } from "@/components/Layouts/sidebar";
-
+// @ts-ignore: side-effect import of CSS without type declarations
 import "flatpickr/dist/flatpickr.min.css";
+// @ts-ignore: side-effect import of CSS without type declarations
 import "jsvectormap/dist/jsvectormap.css";
 
 import { Header } from "@/components/Layouts/header";

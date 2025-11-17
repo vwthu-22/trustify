@@ -1,11 +1,12 @@
 'use client'
 import React, { useState } from 'react';
-import { CheckCircle, ExternalLink, Star, MessageCircle, Info, MapPin, Phone, Mail, Globe, ChevronLeft, ChevronRight, ThumbsUp, Share2, Flag, Filter, ChevronDown, Search } from 'lucide-react';
+import { CheckCircle, ExternalLink, Star, MessageCircle, Info, MapPin, Phone, Mail, Globe, ChevronLeft, ChevronRight, ThumbsUp, Share2, Flag, Filter, ChevronDown, Search, Pencil, Trash2 } from 'lucide-react';
 import Link from 'next/link';
-
+import WriteReviewModal from '../cmt/page';
+import ThankYouModal from '../thankyou/page';
 export default function CompanyReviewPage() {
   const renderStars = (rating: number, size: string = 'w-5 h-5') => {
-    // Xác định màu dựa trên rating
+
     let starColor = 'text-gray-300';
     if (rating >= 1 && rating <= 2) {
       starColor = 'text-red-500'; // Đỏ cho 1-2 sao
@@ -58,6 +59,14 @@ export default function CompanyReviewPage() {
     }
   ];
 
+  const [isWriteModalOpen, setIsWriteModalOpen] = useState(false);
+  const [isThankYouModalOpen, setIsThankYouModalOpen] = useState(false);
+  const [reviewData, setReviewData] = useState(null);
+
+  const handleSubmitSuccess = (data: React.SetStateAction<null>) => {
+    setReviewData(data);
+    setIsThankYouModalOpen(true);
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -93,12 +102,26 @@ export default function CompanyReviewPage() {
               </div>
 
               <div className="flex gap-3">
-                <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-semibold transition flex items-center gap-2">
+                <button onClick={() => setIsWriteModalOpen(true)} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-semibold transition flex items-center gap-2">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                   </svg>
                   Write a review
                 </button>
+                <WriteReviewModal
+                  isOpen={isWriteModalOpen}
+                  onClose={() => setIsWriteModalOpen(false)}
+                  onSubmitSuccess={handleSubmitSuccess}
+                  companyName="Your Company"
+                />
+                {reviewData && (
+                  <ThankYouModal
+                    isOpen={isThankYouModalOpen}
+                    onClose={() => setIsThankYouModalOpen(false)}
+                    reviewData={reviewData}
+                  />
+                )}
+
                 <button className="border border-gray-300 hover:bg-gray-50 px-6 py-3 rounded-full font-semibold transition flex items-center gap-2">
                   Visit website
                   <ExternalLink className="w-4 h-4" />
@@ -127,71 +150,6 @@ export default function CompanyReviewPage() {
               </p>
             </div>
 
-            {/* Based on these reviews */}
-            <div className="mb-8">
-              <div className="flex items-center gap-2 mb-6">
-                <h3 className="text-xl font-bold text-gray-900">Based on these reviews</h3>
-                <Info className="w-4 h-4 text-gray-400" />
-              </div>
-
-              {/* Review Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 ">
-                {[
-                  { name: 'tyron hill', initial: 'TH', days: '7 days ago', rating: 4, text: 'The unit is housed in a fairly new apartment complex and the unit was clean. The host responded in a timely manner to our questions which made check in stress free. The only reason for the 4/5 star...', replied: true },
-                  { name: 'Dennis Ruiz', initial: 'D', days: 'Oct 6, 2025', rating: 4, text: "Location for me was great… I wasn't far from both work and the downtown area. Everywhere I wanted to be at was within reasonable distance. The place was well kept and very clean. The instructions gi...", replied: true },
-                  { name: 'Lilian', initial: 'LI', days: '4 days ago', rating: 4, text: 'Very comfortable, clean, and perfect for business trips. Location is close to campus, and near university neighborhood which is a bit of comfort even though it wasn\'t ready...', replied: false }
-                ].map((review, idx) => (
-                  <div key={idx} className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:-translate-y-2 transition-all duration-300">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold ${idx === 0 ? 'bg-yellow-400 text-gray-900' : idx === 1 ? 'bg-blue-500' : 'bg-yellow-300 text-gray-900'}`}>
-                        {review.initial}
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900">{review.name}</h4>
-                        <p className="text-xs text-gray-500">{review.days}</p>
-                      </div>
-                    </div>
-                    <div className="flex mb-3">{renderStars(review.rating, 'w-4 h-4')}</div>
-                    <p className="text-sm text-gray-700 mb-3">
-                      {review.text}
-                      <button className="text-blue-600 hover:underline ml-1">See more</button>
-                    </p>
-                    {review.replied && (
-                      <p className="text-xs text-gray-500 flex items-center gap-1 mb-3">
-                        <MessageCircle className="w-3 h-3" />
-                        Company replied
-                      </p>
-                    )}
-                    <div className="flex items-center gap-4 text-sm text-gray-600">
-                      <button className="flex items-center gap-1 hover:text-gray-900">
-                        <ThumbsUp className="w-4 h-4" />
-                        Useful
-                      </button>
-                      <button className="flex items-center gap-1 hover:text-gray-900">
-                        <Share2 className="w-4 h-4" />
-                        Share
-                      </button>
-                      <button className="hover:text-gray-900">
-                        <Flag className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <button className="w-full py-3 border border-gray-300 rounded-full hover:bg-gray-50 transition font-medium text-blue-600 flex items-center justify-center gap-2">
-                See all 2,856 reviews
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-
-              <p className="text-sm text-gray-500 mt-4 flex items-center gap-1">
-                We perform checks on reviews
-                <Info className="w-4 h-4" />
-              </p>
-            </div>
-
             {/* Company Details */}
             <div className="mb-8 pb-8 border-b border-gray-200">
               <div className="flex items-center gap-2 mb-4">
@@ -201,17 +159,6 @@ export default function CompanyReviewPage() {
                   Active Trustify subscription
                 </span>
               </div>
-
-              <div className="flex gap-2 mb-6">
-                <span className="px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm border border-blue-200">Furnished Apartment Building</span>
-                <span className="px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm border border-blue-200">Apartment Building</span>
-              </div>
-
-              <div className="flex items-center gap-2 mb-6">
-                <span className="px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm border border-blue-200">Pet-Friendly Accommodation</span>
-                <Info className="w-4 h-4 text-gray-400" />
-              </div>
-
               <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
                 <h4 className="font-bold text-lg mb-2">About Landing</h4>
                 <p className="text-sm text-gray-500 mb-4">Written by the company</p>
@@ -437,7 +384,7 @@ export default function CompanyReviewPage() {
             </div>
 
             <Link href="#" className="flex items-center gap-2 text-sm text-gray-900 hover:underline">
-              How Trustpilot labels reviews
+              How Trustify labels reviews
               <ExternalLink className="w-4 h-4" />
             </Link>
           </div>
@@ -505,6 +452,16 @@ export default function CompanyReviewPage() {
                   {/* Review Content */}
                   <h5 className="font-semibold text-gray-900 text-lg mb-3">{review.title}</h5>
                   <p className="text-gray-700 leading-relaxed whitespace-pre-line">{review.content}</p>
+                  <div className="flex gap-4 pt-4 border-t border-gray-200">
+                    <button className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition">
+                      <Pencil className="w-4 h-4" />
+                      <span className="text-sm font-medium">Edit</span>
+                    </button>
+                    <button className="flex items-center gap-2 text-gray-700 hover:text-red-600 transition">
+                      <Trash2 className="w-4 h-4" />
+                      <span className="text-sm font-medium">Delete</span>
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
