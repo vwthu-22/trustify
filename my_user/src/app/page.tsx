@@ -1,26 +1,53 @@
-import React from 'react';
-import { Search, Bell, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
-import Link from 'next/link';
-import Image from 'next/image';
+'use client'
+import React, { useEffect } from 'react';
 import Suggest from '@/components/suggest';
 import Bank from '@/components/bestbank';
 import Travel from '@/components/besttravel';
-import RecentReview from '@/components/rv_recent'
+import RecentReview from '@/components/rv_recent';
 import SearchHD from '@/components/search';
-export default function Home({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+import useAuthStore from '@/stores/userAuthStore/user';
+
+export default function Home() {
+  const { fetchUserInfo, isAuthenticated, user, isLoading } = useAuthStore();
+
+  useEffect(() => {
+    // Luôn gọi fetchUserInfo khi vào trang home để kiểm tra authentication
+    const loadUserInfo = async () => {
+      try {
+        console.log('Home page: Checking authentication status...');
+        await fetchUserInfo();
+        console.log('Home page: User info loaded successfully');
+      } catch (error) {
+        console.log('Home page: User not authenticated or error:', error);
+        // Không cần redirect, cho phép user vẫn xem trang home
+      }
+    };
+
+    loadUserInfo();
+  }, [fetchUserInfo]);
+
   return (
-      <div className='mx-0 px-0' /*style={{ backgroundImage: 'url(/img/bg.png)' }}*/>
-        <SearchHD></SearchHD>
-        <div className='mx-32'>
-          <Suggest />
-          <Bank />
-          <Travel />
-          <RecentReview />
+    <div className='mx-0 px-0'>
+      <SearchHD />
+      
+      {/* Hiển thị welcome message nếu user đã login */}
+      {isAuthenticated && user && !isLoading && (
+        <div className="bg-green-50 border-b border-green-100 py-3">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <p className="text-center text-green-800">
+              <span className="font-semibold">Welcome back, {user.name}!</span> 
+              <span className="ml-2 text-green-600">Ready to share your experience?</span>
+            </p>
+          </div>
         </div>
+      )}
+
+      <div className='mx-32'>
+        <Suggest />
+        <Bank />
+        <Travel />
+        <RecentReview />
       </div>
+    </div>
   );
 }

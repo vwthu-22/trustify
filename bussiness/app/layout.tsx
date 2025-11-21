@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Company Dashboard",
-  description: "Generated",
+  description: "Trustify Company Dashboard",
 };
 
 export default function RootLayout({
@@ -29,11 +29,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Sidebar />
-        <main className="flex-1 ml-64">
-          <Header />
-          <div className="p-8">{children}</div>
-        </main>
+        <div className="flex h-screen overflow-hidden">
+          <Sidebar />
+          <div className="flex-1 ml-64 flex flex-col overflow-hidden">
+            <Header />
+            <main className="flex-1 overflow-y-auto bg-gray-50">
+              <div className="p-8">{children}</div>
+            </main>
+          </div>
+        </div>
       </body>
     </html>
   );

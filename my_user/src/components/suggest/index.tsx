@@ -101,9 +101,9 @@ export default function Suggest() {
                         Strengthen your reputation with reviews on Trustify.
                     </p>
                 </div>
-                <button className="bg-gray-900 hover:bg-gray-800 text-white px-6 py-2 rounded-full text-lg transition whitespace-nowrap ml-4">
+                <Link href={"/intro_bus"} className="bg-gray-900 hover:bg-gray-800 text-white px-6 py-2 rounded-full text-lg transition whitespace-nowrap ml-4">
                     Get started
-                </button>
+                </Link>
             </div>
         </div>
     );

@@ -29,7 +29,7 @@ export default function BusinessRegister() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50 flex mt-16">
       <aside className="hidden lg:block w-1/3 bg-white p-12 relative overflow-hidden">
         <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-blue-100 rounded-full opacity-50"></div>
         <div className="absolute -top-32 -right-32 w-64 h-64 bg-blue-500 rounded-full opacity-20"></div>

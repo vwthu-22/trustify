@@ -1,27 +1,34 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import { Search, Bell, ArrowRight } from 'lucide-react';
+import { Search, Bell, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import useAuthStore from '@/stores/userAuthStore/user';
 
 export default function Header() {
     const [showSearchBar, setShowSearchBar] = useState(false);
+    const [showUserMenu, setShowUserMenu] = useState(false);
     const pathname = usePathname();
     const router = useRouter();
 
+    const { user, isAuthenticated, logout } = useAuthStore();
+
+    const isHomePage = pathname === '/';
+
     useEffect(() => {
         const handleScroll = () => {
-            // Khi scroll xuống hơn 300px thì hiện search bar trên header
-            if (window.scrollY > 300) {
-                setShowSearchBar(true);
-            } else {
-                setShowSearchBar(false);
+            if (isHomePage) {
+                if (window.scrollY > 300) {
+                    setShowSearchBar(true);
+                } else {
+                    setShowSearchBar(false);
+                }
             }
         };
 
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+    }, [isHomePage]);
 
     const isBusinessIntro = pathname === '/intro_bus';
     const isBusinessSignup = pathname === '/intro_bus/register_bussiness';
@@ -43,6 +50,13 @@ export default function Header() {
     };
 
     const buttonConfig = getButtonConfig();
+    const shouldShowSearchBar = isHomePage ? showSearchBar : true;
+
+    const handleLogout = () => {
+        logout();
+        setShowUserMenu(false);
+        router.push('/');
+    };
 
     return (
         <header className="bg-[#191919] text-white top-0 fixed w-full z-50">
@@ -58,10 +72,9 @@ export default function Header() {
                         <span className="text-xl font-bold">Trustify</span>
                     </Link>
 
-                    {/* Search Bar - Hiện khi scroll */}
-                    <div className={`hidden md:flex flex-1 max-w-md mx-4 transition-opacity duration-300 ${
-                        showSearchBar ? 'opacity-100' : 'opacity-0 pointer-events-none'
-                    }`}>
+                    {/* Search Bar */}
+                    <div className={`hidden md:flex flex-1 max-w-md mx-4 transition-opacity duration-300 ${shouldShowSearchBar ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                        }`}>
                         <div className="relative w-full">
                             <input
                                 type="text"
@@ -82,7 +95,58 @@ export default function Header() {
                         <button className="p-2 hover:bg-gray-700 rounded transition">
                             <Bell className="w-5 h-5" />
                         </button>
-                        <Link href={"/login"} className="text-sm hover:text-gray-300 transition">Log in</Link>
+
+                        {/* User Menu hoặc Login */}
+                        {isAuthenticated && user ? (
+                            <div className="relative">
+                                <button
+                                    onClick={() => setShowUserMenu(!showUserMenu)}
+                                    onBlur={() => setTimeout(() => setShowUserMenu(false), 200)}
+                                    className="flex items-center gap-2 hover:text-gray-300 transition"
+                                >
+                                    <div className="w-8 h-8 bg-[#6b5b4f] rounded-full flex items-center justify-center text-sm font-semibold">
+                                        {/* {user.avatar ? (
+                                            <img src={user.avatar} alt={user.name} className="w-8 h-8 rounded-full" />
+                                        ) : (
+                                            user.name.charAt(0).toUpperCase()
+                                        )} */}
+                                    </div>
+                                    <span className="text-sm">{user.name}</span>
+                                    <ChevronDown className="w-4 h-4" />
+                                </button>
+
+                                {/* Dropdown Menu */}
+                                {showUserMenu && (
+                                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 text-gray-900">
+                                        <Link
+                                            href="/my_review"
+                                            className="block px-4 py-2 text-sm hover:bg-gray-100 transition"
+                                            onClick={() => setShowUserMenu(false)}
+                                        >
+                                            My Reviews
+                                        </Link>
+                                        <Link
+                                            href="/profile"
+                                            className="block px-4 py-2 text-sm hover:bg-gray-100 transition"
+                                            onClick={() => setShowUserMenu(false)}
+                                        >
+                                            Profile
+                                        </Link>
+                                        <button
+                                            onClick={handleLogout}
+                                            className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition text-red-600"
+                                        >
+                                            Logout
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <Link href={"/login"} className="text-sm hover:text-gray-300 transition">
+                                Log in
+                            </Link>
+                        )}
+
                         {buttonConfig && (
                             <button
                                 onClick={() => router.push(buttonConfig.href)}
@@ -97,4 +161,3 @@ export default function Header() {
         </header>
     );
 }
-
