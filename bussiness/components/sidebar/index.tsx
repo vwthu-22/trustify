@@ -228,12 +228,6 @@ export default function Sidebar() {
                         Your plan: <span className="font-semibold text-white capitalize">{currentPlan}</span>
                     </p>
                 </div>
-                <Link
-                    href="/subscription"
-                    className="block w-full py-2.5 bg-blue-500 hover:bg-blue-700 text-white rounded-lg font-semibold transition text-sm shadow-md text-center"
-                >
-                    {currentPlan === 'FREE' ? 'Upgrade now' : 'Manage Plan'}
-                </Link>
             </div>
         </aside>
     );

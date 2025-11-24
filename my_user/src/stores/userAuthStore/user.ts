@@ -1,8 +1,8 @@
 // stores/userAuthStore/user.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-
-const API_BASE_URL = 'https://ed74c01b59d3.ngrok-free.app';
+import { devtools } from 'zustand/middleware';
+const API_BASE_URL = 'https://db1b7343b5f6.ngrok-free.app';
 
 interface User {
   id: string;
@@ -25,7 +25,7 @@ interface AuthState {
 }
 
 const useAuthStore = create<AuthState>()(
-  persist(
+  devtools(persist(
     (set, get) => ({
       user: null,
       isAuthenticated: false,
@@ -46,8 +46,7 @@ const useAuthStore = create<AuthState>()(
         set({ isLoading: true, error: null });
 
         try {
-          // ✅ QUAN TRỌNG: Backend expect field name là "state" không phải "state"
-          const requestBody = { state: state };  // ← Đổi key thành "state"
+          const requestBody = { state: state };
           console.log('Request Body:', JSON.stringify(requestBody));
 
           const response = await fetch(`${API_BASE_URL}/api/auth/exchange-token`, {
@@ -135,8 +134,6 @@ const useAuthStore = create<AuthState>()(
           });
         } catch (error: any) {
           console.error('=== Fetch User Info Error ===');
-
-          // Log thêm thông tin về network error
           if (error instanceof TypeError && error.message.includes('fetch')) {
           }
 
@@ -183,7 +180,7 @@ const useAuthStore = create<AuthState>()(
         isAuthenticated: state.isAuthenticated
       }),
     }
-  )
+  ), { name: 'user-auth-store' })
 );
 
 export default useAuthStore;

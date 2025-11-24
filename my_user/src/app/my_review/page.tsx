@@ -1,188 +1,187 @@
-'use client'
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import useAuthStore from '@/stores/userAuthStore/user';
-import { Star, Eye, ThumbsUp, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { Star, Eye, ThumbsUp, Trash2, Flag } from 'lucide-react';
 
-interface Review {
-  id: string;
-  companyName: string;
-  companyUrl: string;
-  rating: number;
-  date: string;
-  content: string;
-  status: 'active' | 'removed';
-  isPrompted: boolean;
-}
+export default function UserProfilePage() {
+  const [user] = useState({
+    name: 'Thu Văn',
+    country: 'Vietnam',
+    avatar: null,
+    reviewCount: 1,
+    readCount: 10,
+    usefulCount: 0
+  });
 
-export default function MyReviewsPage() {
-  const router = useRouter();
-  const { user, isAuthenticated, isLoading } = useAuthStore();
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [loadingReviews, setLoadingReviews] = useState(true);
-
-  useEffect(() => {
-  
-  
-    
-    // Nếu chưa login, redirect về trang login
-    if (!isLoading && !isAuthenticated) {
-      router.push('/login');
+  const [reviews] = useState([
+    {
+      id: 1,
+      companyName: 'Credit Union of New Jersey',
+      companyUrl: '#',
+      rating: 5,
+      date: 'October 1, 2025',
+      removedDate: 'Nov 17, 2025',
+      content: 'tôi cần 500ảdá',
+      isRemoved: true,
+      isUnprompted: true
+    },
+    {
+      id: 2,
+      companyName: 'DuGood Credit Union',
+      companyUrl: '#',
+      rating: 4,
+      date: 'September 15, 2025',
+      removedDate: 'Nov 17, 2025',
+      content: 'Dịch vụ tốt, nhân viên nhiệt tình. Sẽ quay lại.',
+      isRemoved: true,
+      isUnprompted: false
     }
-  }, [user, isAuthenticated, isLoading, router]);
-
-  useEffect(() => {
-    // Fetch reviews của user
-    const fetchReviews = async () => {
-      if (!user) return;
-      
-      try {
-        const response = await fetch('https://5b976f85f49c.ngrok-free.app/api/user/reviews', {
-          credentials: 'include',
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          setReviews(data);
-        }
-      } catch (error) {
-        console.error('Error fetching reviews:', error);
-      } finally {
-        setLoadingReviews(false);
-      }
-    };
-
-    if (user) {
-      fetchReviews();
-    }
-  }, [user]);
+  ]);
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }).map((_, i) => (
       <Star
         key={i}
         size={20}
-        className={i < rating ? 'fill-green-500 text-green-500' : 'text-gray-300'}
+        className={i < rating ? 'fill-green-500 text-green-500' : 'fill-gray-300 text-gray-300'}
       />
     ));
   };
 
-  if (isLoading || !user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
+  const getInitials = (name: string) => {
+    return name.split(' ').map((word: string) => word[0]).join('').toUpperCase().slice(0, 2);
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* User Profile Header */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex items-center gap-6">
-            {user.avatar ? (
-              <img 
-                src={user.avatar} 
-                alt={user.name}
-                className="w-20 h-20 rounded-full"
-              />
-            ) : (
-              <div className="w-20 h-20 bg-gray-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
-                {user.name.charAt(0).toUpperCase()}
-              </div>
-            )}
-            
+    <div className="min-h-screen bg-gray-50">
+      {/* User Header */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-6">
+              {/* Avatar */}
+              {user.avatar ? (
+                <img 
+                  src={user.avatar} 
+                  alt={user.name}
+                  className="w-24 h-24 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-24 h-24 bg-gradient-to-br from-amber-700 to-amber-900 rounded-full flex items-center justify-center text-white text-3xl font-bold">
+                  {getInitials(user.name)}
+                </div>
+              )}
 
-            <div className="flex gap-8">
+              {/* User Info */}
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 mb-1">{user.name}</h1>
+                <p className="text-gray-600">{user.country}</p>
+              </div>
+            </div>
+
+            {/* Stats */}
+            <div className="flex gap-12">
               <div className="text-center">
-                <div className="flex items-center gap-1 text-blue-600">
-                  <Star size={20} />
-                  <span className="text-2xl font-bold">3</span>
+                <div className="flex items-center justify-center gap-2 text-blue-600 mb-1">
+                  <Star size={24} />
+                  <span className="text-4xl font-bold">{user.reviewCount}</span>
                 </div>
-                <p className="text-sm text-gray-600">Review</p>
+                <a href="#" className="text-sm text-blue-600 hover:underline">Review</a>
               </div>
               <div className="text-center">
-                <div className="flex items-center gap-1 text-blue-600">
-                  <Eye size={20} />
-                  <span className="text-2xl font-bold">2</span>
+                <div className="flex items-center justify-center gap-2 text-blue-600 mb-1">
+                  <Eye size={24} />
+                  <span className="text-4xl font-bold">{user.readCount}</span>
                 </div>
-                <p className="text-sm text-gray-600">Read</p>
+                <a href="#" className="text-sm text-blue-600 hover:underline">Read</a>
               </div>
               <div className="text-center">
-                <div className="flex items-center gap-1 text-blue-600">
-                  <ThumbsUp size={20} />
-                  <span className="text-2xl font-bold">1</span>
+                <div className="flex items-center justify-center gap-2 text-blue-600 mb-1">
+                  <ThumbsUp size={24} />
+                  <span className="text-4xl font-bold">{user.usefulCount}</span>
                 </div>
-                <p className="text-sm text-gray-600">Useful</p>
+                <a href="#" className="text-sm text-blue-600 hover:underline">Useful</a>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Reviews Section */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Reviews</h2>
-          
-          {loadingReviews ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-            </div>
-          ) : reviews.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <p>You haven't written any reviews yet.</p>
-              <button className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition">
-                Write your first review
-              </button>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {reviews.map((review) => (
-                <div key={review.id} className="border-b border-gray-200 pb-6 last:border-0">
-                  {review.status === 'removed' && (
-                    <div className="bg-gray-100 border border-gray-300 rounded-lg p-3 mb-4 flex items-start gap-2">
-                      <span className="text-gray-600 text-sm">
-                        ⚠️ This review has been removed. <a href="#" className="text-blue-600 hover:underline">Read more</a>
-                      </span>
-                    </div>
-                  )}
-                  
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h3 className="font-semibold text-gray-900 mb-1">
-                        Review of <a href={review.companyUrl} className="text-blue-600 hover:underline">{review.companyName}</a>
-                      </h3>
-                      <div className="flex items-center gap-2">
-                        <div className="flex">{renderStars(review.rating)}</div>
-                        <span className="text-sm text-gray-500">{review.date}</span>
-                        {review.status === 'removed' && (
-                          <span className="text-sm text-red-600 font-medium">Review removed</span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
+      {/* Reviews Section */}
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Reviews</h2>
 
-                  <p className="text-gray-700 mb-3">{review.content}</p>
+        {/* Review Cards */}
+        <div className="space-y-6">
+          {reviews.map((review) => (
+            <div key={review.id} className="space-y-4">
+              {/* Review Header */}
+              <div>
+                <p className="text-gray-700">
+                  Review of <a href={review.companyUrl} className="text-blue-600 hover:underline">{review.companyName}</a>
+                </p>
+              </div>
 
-                  <div className="flex items-center gap-4 text-sm">
-                    <span className="text-gray-600">{review.date}</span>
-                    {!review.isPrompted && (
-                      <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">
-                        Unprompted review
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="mt-4">
-                    <button className="text-red-600 hover:text-red-700 text-sm flex items-center gap-1">
-                      <Trash2 size={16} />
-                      Delete
-                    </button>
+              {/* Removed Notice */}
+              {review.isRemoved && (
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 flex items-start gap-3">
+                  <Flag size={20} className="text-gray-600 flex-shrink-0 mt-1" />
+                  <div className="flex-1">
+                    <span className="text-gray-700">This review has been removed.</span>
+                    <a href="#" className="text-blue-600 hover:underline ml-1">Read more</a>
                   </div>
                 </div>
-              ))}
+              )}
+
+              {/* Review Card */}
+              <div className="bg-white border border-gray-200 rounded-lg p-6">
+                {/* User Info in Review */}
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-amber-700 to-amber-900 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                    {getInitials(user.name)}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900">{user.name}</p>
+                    <p className="text-sm text-gray-600">{user.reviewCount} review</p>
+                  </div>
+                </div>
+
+                {/* Rating and Date */}
+                <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
+                  <div className="flex items-center gap-2">
+                    {renderStars(review.rating)}
+                  </div>
+                  <div className="text-right">
+                    <p className="text-gray-600 text-sm">{review.removedDate}</p>
+                    {review.isRemoved && (
+                      <p className="text-red-600 text-sm font-medium">Review removed</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Review Content */}
+                <p className="text-gray-900 text-lg mb-4">{review.content}</p>
+
+                {/* Review Meta */}
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded text-sm">
+                    {review.date}
+                  </span>
+                  {review.isUnprompted && (
+                    <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded text-sm">
+                      Unprompted review
+                    </span>
+                  )}
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center gap-4 pt-4 border-t border-gray-200">
+                  <button className="flex items-center gap-2 text-red-600 hover:text-red-700 text-sm font-medium transition">
+                    <Trash2 size={16} />
+                    Delete
+                  </button>
+                </div>
+              </div>
             </div>
-          )}
+          ))}
         </div>
       </div>
     </div>

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import useAuthStore from '@/stores/userAuthStore/user';
 
-const API_BASE_URL = 'https://ed74c01b59d3.ngrok-free.app';
+const API_BASE_URL = 'https://db1b7343b5f6.ngrok-free.app';
 
 export default function LoginSignupPage() {
     const [showEmailForm, setShowEmailForm] = useState(false);
