@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
-const API_BASE_URL = 'https://technical-transition-cindy-under.trycloudflare.com';
+const API_BASE_URL = 'https://demographic-mileage-any-frames.trycloudflare.com';
 
 interface ReviewData {
     title: string;

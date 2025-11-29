@@ -1,11 +1,11 @@
 'use client'
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import useAuthStore from '@/stores/userAuthStore/user';
 
-const API_BASE_URL = 'https://technical-transition-cindy-under.trycloudflare.com';
+const API_BASE_URL = 'https://demographic-mileage-any-frames.trycloudflare.com';
 
-export default function LoginSignupPage() {
+function LoginSignupContent() {
     const [showEmailForm, setShowEmailForm] = useState(false);
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -162,5 +162,17 @@ export default function LoginSignupPage() {
                 }
             `}</style>
         </div>
+    );
+}
+
+export default function LoginSignupPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-blue-600"></div>
+            </div>
+        }>
+            <LoginSignupContent />
+        </Suspense>
     );
 };
