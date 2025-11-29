@@ -13,7 +13,7 @@ export default function AuthCallbackPage() {
     const handleAuthCallback = async () => {
       // Lấy state từ query param "state"
       const state = searchParams.get('state');
-      
+
       console.log('Auth Callback: Received state:', state);
 
       if (!state) {
@@ -24,10 +24,10 @@ export default function AuthCallbackPage() {
 
       try {
         console.log('Auth Callback: Exchanging token...');
-        
+
         // Gọi exchange-token để backend set cookie
         const success = await exchangeToken(state);
-        
+
         if (success) {
           console.log('Auth Callback: Token exchange successful');
           // Redirect về trang chủ
@@ -62,7 +62,7 @@ export default function AuthCallbackPage() {
 
         {/* Loading Spinner */}
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-blue-600 mx-auto mb-6"></div>
-        
+
         {/* Text */}
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
           Completing sign in...
@@ -70,7 +70,7 @@ export default function AuthCallbackPage() {
         <p className="text-gray-600 mb-4">
           Please wait while we verify your account
         </p>
-        
+
         {/* Progress dots */}
         <div className="flex justify-center gap-2">
           <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>

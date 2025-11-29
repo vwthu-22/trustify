@@ -1,97 +1,142 @@
 'use client'
-import React from 'react';
-import { ChevronLeft, ChevronRight} from 'lucide-react';
+import React, { useEffect, useMemo } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import useCompanyStore from '@/stores/companyStore/company';
+
+const categories = [
+    { slug: 'bank', name: 'Bank', icon: '🏛️' },
+    { slug: 'travel', name: 'Travel', icon: '✈️' },
+    { slug: 'car-dealer', name: 'Car Dealer', icon: '🚗' },
+    { slug: 'furniture-store', name: 'Furniture', icon: '🛋️' },
+    { slug: 'jewelry-store', name: 'Jewelry', icon: '💎' },
+    { slug: 'clothing-store', name: 'Clothing', icon: '👕' },
+    { slug: 'electronics', name: 'Electronics', icon: '💻' },
+    { slug: 'fitness', name: 'Fitness and Nutrition', icon: '🏋️' }
+];
 
 export default function Suggest() {
+    const pathname = usePathname();
+    const { companies, isLoading, fetchCompanies } = useCompanyStore();
+
+    useEffect(() => {
+        // Fetch all companies, will sort and filter client-side
+        fetchCompanies({ limit: 50 });
+    }, [fetchCompanies]);
+
+    // Sort by rating and take random 3 from top 10
+    const topCompanies = useMemo(() => {
+        if (!companies || companies.length === 0) return [];
+
+        // Sort by rating descending
+        const sorted = [...companies].sort((a, b) => (b.rating || 0) - (a.rating || 0));
+
+        // Take top 10
+        const top10 = sorted.slice(0, 10);
+
+        // Shuffle and take 3
+        const shuffled = [...top10].sort(() => Math.random() - 0.5);
+        return shuffled.slice(0, 3);
+    }, [companies]);
+
+    const renderStars = (rating: number) => {
+        return [...Array(5)].map((_, i) => (
+            <svg
+                key={i}
+                className={`w-5 h-5 ${i < Math.floor(rating) ? 'text-[#5aa5df]' : 'text-gray-300'}`}
+                fill="currentColor"
+                viewBox="0 0 24 24"
+            >
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+            </svg>
+        ));
+    };
+
     return (
-        <div className=" rounded-md mt-10">
+        <div className="rounded-md mt-10">
+            {/* Pick up where you left off */}
             <div className="px-4 sm:px-6 lg:px-6 rounded-lg py-6">
-                <h2 className="text-2xl  text-gray-900 mb-4">Pick up where you left off</h2>
-                <Link href={'/bussiness'} className="grid grid-cols-1 md:grid-cols-3 gap-4" style={{ width: "max-content" }}>
-                    <div className="bg-white rounded-2xl border border-gray-300 p-4 hover:shadow-md hover:-translate-y-2 transition-all duration-300 pe-32 cursor-pointer">
-                        <div className="w-20 h-20 bg-white border border-gray-200 rounded-lg flex items-center justify-center mb-2">
-                            <span className="text-lg font-bold text-gray-800">LANDING</span>
-                        </div>
-                        <h3 className="text-lg text-gray-900 mb-1">Landing</h3>
-                        <p className="text-gray-500 text-sm mb-2">hellolanding.com</p>
-                        <div className="flex items-center gap-2">
-                            <div className="flex">
-                                {[...Array(5)].map((_, i) => (
-                                    <svg key={i} className={`w-5 h-5 ${i < Math.floor(4.7) ? 'text-[#00b67a]' : 'text-gray-300'}`} fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                                    </svg>
-                                ))}
+                <h2 className="text-2xl text-gray-900 mb-4">Pick up where you left off</h2>
+
+                {isLoading ? (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {[1, 2, 3].map((i) => (
+                            <div key={i} className="bg-white rounded-2xl border border-gray-300 p-4 animate-pulse">
+                                <div className="w-20 h-20 bg-gray-200 rounded-lg mb-2"></div>
+                                <div className="h-6 bg-gray-200 rounded mb-2"></div>
+                                <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                                <div className="h-4 bg-gray-200 rounded w-2/3"></div>
                             </div>
-                            <span className="font-semibold text-gray-900">4.7</span>
-                            <span className="text-gray-500 text-sm">2464</span>
-                        </div>
+                        ))}
                     </div>
-                    <div className="bg-white rounded-2xl border border-gray-300 p-4 hover:shadow-md hover:-translate-y-2 transition-all duration-300 pe-32 cursor-pointer">
-                        <div className="w-20 h-20 bg-white border border-gray-200 rounded-lg flex items-center justify-center mb-2">
-                            <span className="text-lg font-bold text-gray-800">LANDING</span>
-                        </div>
-                        <h3 className="text-lg text-gray-900 mb-1">Landing</h3>
-                        <p className="text-gray-500 text-sm mb-2">hellolanding.com</p>
-                        <div className="flex items-center gap-2">
-                            <div className="flex">
-                                {[...Array(5)].map((_, i) => (
-                                    <svg key={i} className={`w-5 h-5 ${i < Math.floor(4.7) ? 'text-[#00b67a]' : 'text-gray-300'}`} fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                                    </svg>
-                                ))}
-                            </div>
-                            <span className="font-semibold text-gray-900">4.7</span>
-                            <span className="text-gray-500 text-sm">2464</span>
-                        </div>
+                ) : topCompanies.length === 0 ? (
+                    <div className="bg-white rounded-2xl border border-gray-300 p-8 text-center">
+                        <p className="text-gray-600">No top rated companies found.</p>
                     </div>
-                    <div className="bg-white rounded-2xl border border-gray-300 p-4 hover:shadow-md hover:-translate-y-2 transition-all duration-300 pe-32 cursor-pointer">
-                        <div className="w-20 h-20 bg-white border border-gray-200 rounded-lg flex items-center justify-center mb-2">
-                            <span className="text-lg font-bold text-gray-800">LANDING</span>
-                        </div>
-                        <h3 className="text-lg text-gray-900 mb-1">Landing</h3>
-                        <p className="text-gray-500 text-sm mb-2">hellolanding.com</p>
-                        <div className="flex items-center gap-2">
-                            <div className="flex">
-                                {[...Array(5)].map((_, i) => (
-                                    <svg key={i} className={`w-5 h-5 ${i < Math.floor(4.7) ? 'text-[#00b67a]' : 'text-gray-300'}`} fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                                    </svg>
-                                ))}
-                            </div>
-                            <span className="font-semibold text-gray-900">4.7</span>
-                            <span className="text-gray-500 text-sm">2464</span>
-                        </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {topCompanies.map((company) => (
+                            <Link
+                                key={company.id}
+                                href={`/bussiness/${company.id}`}
+                                className="bg-white rounded-2xl border border-gray-300 p-4 hover:shadow-md hover:-translate-y-2 transition-all duration-300 cursor-pointer"
+                            >
+                                <div className="w-20 h-20 bg-white border border-gray-200 rounded-lg flex items-center justify-center mb-2 overflow-hidden">
+                                    {company.logo ? (
+                                        <img src={company.logo} alt={company.name} className="w-full h-full object-contain" />
+                                    ) : (
+                                        <span className="text-lg font-bold text-gray-800">
+                                            {company.name.substring(0, 7).toUpperCase()}
+                                        </span>
+                                    )}
+                                </div>
+                                <h3 className="text-lg text-gray-900 mb-1 truncate">{company.name}</h3>
+                                <p className="text-gray-500 text-sm mb-2 truncate">{company.website}</p>
+                                <div className="flex items-center gap-2">
+                                    <div className="flex">
+                                        {renderStars(company.rating || 0)}
+                                    </div>
+                                    <span className="font-semibold text-gray-900">{(company.rating || 0).toFixed(1)}</span>
+                                    <span className="text-gray-500 text-sm">{(company.reviewCount || 0).toLocaleString()}</span>
+                                </div>
+                            </Link>
+                        ))}
                     </div>
-                </Link>
+                )}
             </div>
 
+            {/* What are you looking for? */}
             <div className="bg-white py-12">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center justify-between mb-6">
                         <h2 className="text-2xl text-gray-900">What are you looking for?</h2>
                         <div className="flex items-center gap-2">
-                            <button className="p-3 rounded-full border border-gray-300 hover:bg-gray-100 transition">
-                                <ChevronLeft className="w-5 h-5" />
-                            </button>
-                            <button className="p-3 rounded-full border border-gray-300 hover:bg-gray-100 transition">
-                                <ChevronRight className="w-5 h-5" />
-                            </button>
-                            <button className="ml-2 px-5 py-2 border border-gray-300 rounded-full hover:bg-gray-100 transition text-sm font-medium text-[#5e5eff]">
-                                See more
-                            </button>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-                        <Link href="#" className="flex flex-col items-center justify-center gap-1.5 hover:bg-gray-50 p-3 rounded-lg transition">
-                            <svg className='w-8 h-8 text-gray-700' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M2 20H22V22H2V20ZM4 12H6V19H4V12ZM9 12H11V19H9V12ZM13 12H15V19H13V12ZM18 12H20V19H18V12ZM2 7L12 2L22 7V11H2V7ZM4 8.23607V9H20V8.23607L12 4.23607L4 8.23607ZM12 8C11.4477 8 11 7.55228 11 7C11 6.44772 11.4477 6 12 6C12.5523 6 13 6.44772 13 7C13 7.55228 12.5523 8 12 8Z"></path></svg>
-                            <p className='text-center text-xs font-medium text-gray-700'>Bank</p>
-                        </Link>
+                        {categories.map((category) => {
+                            const isActive = pathname?.includes(category.slug);
+                            return (
+                                <Link
+                                    key={category.slug}
+                                    href={`/category/${category.slug}`}
+                                    className={`flex flex-col items-center justify-center gap-2 p-3 rounded-lg transition ${isActive
+                                        ? 'bg-blue-50 text-blue-600'
+                                        : 'hover:bg-gray-50 text-gray-700'
+                                        }`}
+                                >
+                                    <span className="text-3xl">{category.icon}</span>
+                                    <p className="text-center text-xs font-medium">{category.name}</p>
+                                </Link>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
 
+            {/* CTA Banner */}
             <div className="bg-gradient-to-r from-pink-200 via-pink-100 to-purple-100 rounded-3xl py-4 md:py-6 px-6 md:px-8 flex items-center justify-between">
                 <div>
                     <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-1">
@@ -107,4 +152,4 @@ export default function Suggest() {
             </div>
         </div>
     );
-};
+}

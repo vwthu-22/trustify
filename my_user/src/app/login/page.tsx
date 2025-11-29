@@ -3,20 +3,20 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import useAuthStore from '@/stores/userAuthStore/user';
 
-const API_BASE_URL = 'https://db1b7343b5f6.ngrok-free.app';
+const API_BASE_URL = 'https://technical-transition-cindy-under.trycloudflare.com';
 
 export default function LoginSignupPage() {
     const [showEmailForm, setShowEmailForm] = useState(false);
     const router = useRouter();
     const searchParams = useSearchParams();
     const { isAuthenticated } = useAuthStore();
-    
+
     // Hiển thị lỗi nếu có
     useEffect(() => {
         const error = searchParams.get('error');
         if (error) {
             let errorMessage = '';
-            switch(error) {
+            switch (error) {
                 case 'no_state':
                     errorMessage = 'Authentication failed: No state code received';
                     break;
@@ -82,7 +82,7 @@ export default function LoginSignupPage() {
                         </button>
 
                         {/* Facebook Login Button */}
-                        <button 
+                        <button
                             onClick={handleFBlogin}
                             className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-semibold transition-all shadow-sm"
                         >
@@ -102,7 +102,7 @@ export default function LoginSignupPage() {
                                 Continue with email
                             </button>
                         </div>
-                        
+
                         {/* Email Form */}
                         {showEmailForm && (
                             <div className="mt-4 space-y-3 animate-fadeIn">
@@ -136,7 +136,10 @@ export default function LoginSignupPage() {
                         <button className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition shadow-sm">
                             Log in
                         </button>
-                        <button className="px-6 py-2 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 rounded-full transition">
+                        <button
+                            onClick={() => router.push('/intro_bus/register_bussiness')}
+                            className="px-6 py-2 border-1 border-blue-500 text-blue-600 hover:bg-blue-50 rounded-full transition"
+                        >
                             Sign up
                         </button>
                     </div>

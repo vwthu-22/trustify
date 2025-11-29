@@ -13,7 +13,7 @@ export default function CompanyReviewPage() {
     } else if (rating > 2 && rating <= 3.5) {
       starColor = 'text-yellow-500'; // Vàng cho >2 đến 3.5 sao
     } else if (rating > 3.5) {
-      starColor = 'text-[#00b67a]'; // Xanh cho >3.5 sao
+      starColor = 'text-[#5aa5df]'; // Xanh cho >3.5 sao
     }
 
     return [...Array(5)].map((_, i) => (
@@ -265,7 +265,7 @@ export default function CompanyReviewPage() {
                       <span className="text-sm w-12">{item.stars}-star</span>
                       <div className="flex-1 bg-gray-200 rounded-full h-2">
                         <div
-                          className={`h-2 rounded-full ${item.stars === 5 ? 'bg-[#00b67a]' : item.stars === 4 ? 'bg-green-400' : item.stars === 3 ? 'bg-yellow-400' : item.stars === 2 ? 'bg-orange-400' : 'bg-red-500'}`}
+                          className={`h-2 rounded-full ${item.stars === 5 ? 'bg-[#5aa5df]' : item.stars === 4 ? 'bg-blue-400' : item.stars === 3 ? 'bg-yellow-400' : item.stars === 2 ? 'bg-orange-400' : 'bg-red-500'}`}
                           style={{ width: `${item.percentage}%` }}
                         ></div>
                       </div>
@@ -304,7 +304,7 @@ export default function CompanyReviewPage() {
           <div className="lg:col-span-1 ">
             {/* Rating Header */}
             <div className="flex items-center gap-3 mb-6 ">
-              <svg className="w-8 h-8 text-[#00b67a]" fill="currentColor" viewBox="0 0 24 24">
+              <svg className="w-8 h-8 text-[#5aa5df]" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
               </svg>
               <span className="text-4xl font-bold">4.4</span>
@@ -340,8 +340,8 @@ export default function CompanyReviewPage() {
                     <span className="text-sm font-medium w-12">{filter.stars}-star</span>
                     <div className="flex-1 bg-gray-200 rounded-full h-2">
                       <div
-                        className={`h-2 rounded-full ${filter.stars === 5 ? 'bg-[#00b67a]' :
-                          filter.stars === 4 ? 'bg-green-400' :
+                        className={`h-2 rounded-full ${filter.stars === 5 ? 'bg-[#5aa5df]' :
+                          filter.stars === 4 ? 'bg-blue-400' :
                             filter.stars === 3 ? 'bg-yellow-400' :
                               filter.stars === 2 ? 'bg-orange-400' :
                                 'bg-red-500'

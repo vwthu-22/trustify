@@ -12,9 +12,9 @@ export function middleware(request: NextRequest) {
     );
 
     // If not authenticated and trying to access protected route
-    // if (!isAuthenticated && !isPublicRoute) {
-    //     return NextResponse.redirect(new URL('/login', request.url));
-    // }
+    if (!isAuthenticated && !isPublicRoute) {
+        return NextResponse.redirect(new URL('/login', request.url));
+    }
 
     // If authenticated and trying to access login page, redirect to dashboard
     if (isAuthenticated && isPublicRoute) {

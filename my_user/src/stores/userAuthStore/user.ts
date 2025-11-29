@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { devtools } from 'zustand/middleware';
-const API_BASE_URL = 'https://db1b7343b5f6.ngrok-free.app';
+const API_BASE_URL = 'https://technical-transition-cindy-under.trycloudflare.com';
 
 interface User {
   id: string;
@@ -100,6 +100,7 @@ const useAuthStore = create<AuthState>()(
           });
 
           console.log('User Info Response Status:', response.status);
+          console.log('User Info Response Headers:', Object.fromEntries(response.headers.entries()));
 
           if (!response.ok) {
             if (response.status === 401 || response.status === 403) {
@@ -115,7 +116,10 @@ const useAuthStore = create<AuthState>()(
             throw new Error('Failed to fetch user info');
           }
 
-          const userData = await response.json();
+          const responseText = await response.text();
+          console.log('User Info Response Body (raw):', responseText);
+
+          const userData = JSON.parse(responseText);
           console.log('User Data:', userData);
 
           const user: User = {
