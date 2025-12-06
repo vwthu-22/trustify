@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
-const API_BASE_URL = 'https://demographic-mileage-any-frames.trycloudflare.com';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 interface ReviewData {
     title: string;

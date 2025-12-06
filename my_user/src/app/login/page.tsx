@@ -3,7 +3,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import useAuthStore from '@/stores/userAuthStore/user';
 
-const API_BASE_URL = 'https://demographic-mileage-any-frames.trycloudflare.com';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://demographic-mileage-any-frames.trycloudflare.com';
 
 function LoginSignupContent() {
     const [showEmailForm, setShowEmailForm] = useState(false);
