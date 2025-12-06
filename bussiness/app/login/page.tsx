@@ -1,20 +1,100 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowLeft, Check } from 'lucide-react';
+import { ArrowLeft, Check, X, Mail, Lock } from 'lucide-react';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [verificationCode, setVerificationCode] = useState('');
+    const [showVerificationModal, setShowVerificationModal] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleSendCode = async (e: React.FormEvent) => {
         e.preventDefault();
+        setIsLoading(true);
+        setError('');
 
-        // Set auth cookie
-        document.cookie = 'auth-token=logged-in; path=/; max-age=86400'; // 1 day
+        try {
+            // TODO: Replace with your actual API endpoint
+            const response = await fetch('/api/auth/send-verification-code', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+            });
 
-        // Redirect to dashboard
-        window.location.href = '/';
+            if (!response.ok) {
+                throw new Error('Failed to send verification code');
+            }
+
+            // Show verification modal
+            setShowVerificationModal(true);
+        } catch (err) {
+            setError('Failed to send verification code. Please try again.');
+            console.error('Error sending verification code:', err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleVerifyCode = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError('');
+
+        try {
+            // TODO: Replace with your actual API endpoint
+            const response = await fetch('/api/auth/verify-code', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, code: verificationCode }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Invalid verification code');
+            }
+
+            // Set auth cookie
+            document.cookie = 'auth-token=logged-in; path=/; max-age=86400'; // 1 day
+
+            // Redirect to dashboard
+            window.location.href = '/';
+        } catch (err) {
+            setError('Invalid verification code. Please try again.');
+            console.error('Error verifying code:', err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleResendCode = async () => {
+        setIsLoading(true);
+        setError('');
+
+        try {
+            const response = await fetch('/api/auth/send-verification-code', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to resend verification code');
+            }
+
+            alert('Verification code resent successfully!');
+        } catch (err) {
+            setError('Failed to resend code. Please try again.');
+            console.error('Error resending code:', err);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -24,7 +104,7 @@ export default function LoginPage() {
                 <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-blue-100 rounded-full opacity-50"></div>
                 <div className="absolute -top-32 -right-32 w-64 h-64 bg-blue-500 rounded-full opacity-20"></div>
 
-                <div className="relative z-10">
+                <div className="relative ">
 
                     <div className="flex items-center gap-2 mb-12">
                         <svg className="w-8 h-8 text-[#0095b6]" fill="currentColor" viewBox="0 0 24 24">
@@ -96,56 +176,45 @@ export default function LoginPage() {
                     </div>
 
                     <div className="bg-white rounded-2xl shadow-sm p-8 lg:p-12">
-                        <form onSubmit={handleLogin} className="space-y-4">
+                        <form onSubmit={handleSendCode} className="space-y-6">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                     Work Email
                                 </label>
-                                <input
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="you@company.com"
-                                    required
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Password
-                                </label>
-                                <input
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    placeholder="••••••••"
-                                    required
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                                />
-                            </div>
-
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
+                                <div className="relative">
+                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                     <input
-                                        type="checkbox"
-                                        id="remember"
-                                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        placeholder="you@company.com"
+                                        required
+                                        className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
                                     />
-                                    <label htmlFor="remember" className="text-sm text-gray-700">
-                                        Remember me
-                                    </label>
                                 </div>
-                                <a href="#" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
-                                    Forgot password?
-                                </a>
                             </div>
+
+                            {error && (
+                                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                                    {error}
+                                </div>
+                            )}
 
                             <button
                                 type="submit"
-                                className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition text-lg mt-6"
+                                disabled={isLoading}
+                                className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition text-lg flex items-center justify-center gap-2"
                             >
-                                Sign in
+                                {isLoading ? (
+                                    <>
+                                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                        Sending code...
+                                    </>
+                                ) : (
+                                    <>
+                                        Send verification code
+                                    </>
+                                )}
                             </button>
                         </form>
 
@@ -158,6 +227,116 @@ export default function LoginPage() {
                     </div>
                 </div>
             </main>
+
+            {/* Verification Code Modal */}
+            {showVerificationModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 animate-fadeIn">
+                    <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative animate-slideUp">
+                        {/* Close Button */}
+                        <button
+                            onClick={() => setShowVerificationModal(false)}
+                            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition"
+                        >
+                            <X className="w-6 h-6" />
+                        </button>
+
+                        {/* Icon */}
+                        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <Mail className="w-8 h-8 text-blue-600" />
+                        </div>
+
+                        {/* Title */}
+                        <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">
+                            Check your email
+                        </h2>
+                        <p className="text-gray-600 text-center mb-6">
+                            We've sent a verification code to<br />
+                            <span className="font-semibold text-gray-900">{email}</span>
+                        </p>
+
+                        {/* Verification Form */}
+                        <form onSubmit={handleVerifyCode} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Verification Code
+                                </label>
+                                <input
+                                    type="text"
+                                    value={verificationCode}
+                                    onChange={(e) => setVerificationCode(e.target.value)}
+                                    placeholder="Enter 6-digit code"
+                                    maxLength={6}
+                                    required
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition text-center text-2xl tracking-widest font-semibold"
+                                />
+                            </div>
+
+                            {error && (
+                                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                                    {error}
+                                </div>
+                            )}
+
+                            <button
+                                type="submit"
+                                disabled={isLoading}
+                                className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg font-semibold transition"
+                            >
+                                {isLoading ? (
+                                    <div className="flex items-center justify-center gap-2">
+                                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                        Verifying...
+                                    </div>
+                                ) : (
+                                    'Verify and Sign In'
+                                )}
+                            </button>
+                        </form>
+
+                        {/* Resend Code */}
+                        <div className="mt-6 text-center">
+                            <p className="text-sm text-gray-600 mb-2">
+                                Didn't receive the code?
+                            </p>
+                            <button
+                                onClick={handleResendCode}
+                                disabled={isLoading}
+                                className="text-blue-600 hover:text-blue-700 font-semibold text-sm disabled:text-blue-400"
+                            >
+                                Resend code
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Animations */}
+            <style jsx>{`
+                @keyframes fadeIn {
+                    from {
+                        opacity: 0;
+                    }
+                    to {
+                        opacity: 1;
+                    }
+                }
+                @keyframes slideUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+                .animate-fadeIn {
+                    animation: fadeIn 0.2s ease-out;
+                }
+                .animate-slideUp {
+                    animation: slideUp 0.3s ease-out;
+                }
+            `}</style>
         </div>
     );
 }
