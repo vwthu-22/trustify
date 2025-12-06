@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { devtools } from 'zustand/middleware';
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://trustify.io.vn';
+const API_BASE_URL = 'https://trustify.io.vn';
 
 interface User {
   id: string;
