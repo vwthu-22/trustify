@@ -1,48 +1,46 @@
 "use client"
-import { useState } from 'react';
-import { Star, Eye, ThumbsUp, Trash2, Flag } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Star, Eye, ThumbsUp, Trash2, Flag, ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import useAuthStore from '@/stores/userAuthStore/user';
+import useReviewStore from '@/stores/reviewStore/review';
+import { getStarFillColor, STAR_FILL_COLORS } from '@/utils/ratingColors';
 
-export default function UserProfilePage() {
-  const [user] = useState({
-    name: 'Thu Văn',
-    country: 'Vietnam',
-    avatar: null,
-    reviewCount: 1,
-    readCount: 10,
-    usefulCount: 0
-  });
+export default function MyReviewPage() {
+  const router = useRouter();
+  const { user, isAuthenticated } = useAuthStore();
+  const { myReviews, isLoading, error, currentPage, totalPages, totalItems, fetchReviewsByEmail } = useReviewStore();
 
-  const [reviews] = useState([
-    {
-      id: 1,
-      companyName: 'Credit Union of New Jersey',
-      companyUrl: '#',
-      rating: 5,
-      date: 'October 1, 2025',
-      removedDate: 'Nov 17, 2025',
-      content: 'tôi cần 500ảdá',
-      isRemoved: true,
-      isUnprompted: true
-    },
-    {
-      id: 2,
-      companyName: 'DuGood Credit Union',
-      companyUrl: '#',
-      rating: 4,
-      date: 'September 15, 2025',
-      removedDate: 'Nov 17, 2025',
-      content: 'Dịch vụ tốt, nhân viên nhiệt tình. Sẽ quay lại.',
-      isRemoved: true,
-      isUnprompted: false
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push('/login');
     }
-  ]);
+  }, [isAuthenticated, router]);
 
+  // Fetch reviews when user is available
+  useEffect(() => {
+    if (user?.email) {
+      fetchReviewsByEmail(user.email, 0, 10);
+    }
+  }, [user?.email, fetchReviewsByEmail]);
+
+  const handlePageChange = (newPage: number) => {
+    if (user?.email && newPage >= 0 && newPage < totalPages) {
+      fetchReviewsByEmail(user.email, newPage, 10);
+    }
+  };
+
+  // Match star colors with other pages
   const renderStars = (rating: number) => {
+    const starColor = getStarFillColor(rating);
+
     return Array.from({ length: 5 }).map((_, i) => (
       <Star
         key={i}
-        size={20}
-        className={i < rating ? 'fill-green-500 text-green-500' : 'fill-gray-300 text-gray-300'}
+        size={16}
+        className={`sm:w-5 sm:h-5 ${i < Math.floor(rating) ? starColor : STAR_FILL_COLORS.empty}`}
       />
     ));
   };
@@ -51,55 +49,67 @@ export default function UserProfilePage() {
     return name.split(' ').map((word: string) => word[0]).join('').toUpperCase().slice(0, 2);
   };
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 mt-20">
+    <div className="min-h-screen bg-gray-50">
       {/* User Header */}
       <div className="bg-white border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-4 py-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-6">
+        <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
+          {/* Back Button */}
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back to Home</span>
+          </Link>
+
+          <div className="flex flex-col sm:flex-row items-center sm:items-start sm:justify-between gap-6">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 text-center sm:text-left">
               {/* Avatar */}
               {user.avatar ? (
-                <img 
-                  src={user.avatar} 
+                <img
+                  src={user.avatar}
                   alt={user.name}
-                  className="w-24 h-24 rounded-full object-cover"
+                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover"
                 />
               ) : (
-                <div className="w-24 h-24 bg-gradient-to-br from-amber-700 to-amber-900 rounded-full flex items-center justify-center text-white text-3xl font-bold">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-amber-700 to-amber-900 rounded-full flex items-center justify-center text-white text-2xl sm:text-3xl font-bold">
                   {getInitials(user.name)}
                 </div>
               )}
 
               {/* User Info */}
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-1">{user.name}</h1>
-                <p className="text-gray-600">{user.country}</p>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">{user.name}</h1>
+                <p className="text-gray-600 text-sm sm:text-base">{user.country || 'No country set'}</p>
               </div>
             </div>
 
             {/* Stats */}
-            <div className="flex gap-12">
+            <div className="flex gap-6 sm:gap-12">
               <div className="text-center">
-                <div className="flex items-center justify-center gap-2 text-blue-600 mb-1">
-                  <Star size={24} />
-                  <span className="text-4xl font-bold">{user.reviewCount}</span>
+                <div className="flex items-center justify-center gap-1 sm:gap-2 text-blue-600 mb-1">
+                  <Star size={20} className="sm:w-6 sm:h-6" />
+                  <span className="text-2xl sm:text-4xl font-bold">{totalItems}</span>
                 </div>
-                <a href="#" className="text-sm text-blue-600 hover:underline">Review</a>
-              </div>
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-2 text-blue-600 mb-1">
-                  <Eye size={24} />
-                  <span className="text-4xl font-bold">{user.readCount}</span>
-                </div>
-                <a href="#" className="text-sm text-blue-600 hover:underline">Read</a>
-              </div>
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-2 text-blue-600 mb-1">
-                  <ThumbsUp size={24} />
-                  <span className="text-4xl font-bold">{user.usefulCount}</span>
-                </div>
-                <a href="#" className="text-sm text-blue-600 hover:underline">Useful</a>
+                <span className="text-xs sm:text-sm text-gray-600">Reviews</span>
               </div>
             </div>
           </div>
@@ -107,83 +117,136 @@ export default function UserProfilePage() {
       </div>
 
       {/* Reviews Section */}
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Reviews</h2>
+      <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">My Reviews</h2>
 
-        {/* Review Cards */}
-        <div className="space-y-6">
-          {reviews.map((review) => (
-            <div key={review.id} className="space-y-4">
-              {/* Review Header */}
-              <div>
-                <p className="text-gray-700">
-                  Review of <a href={review.companyUrl} className="text-blue-600 hover:underline">{review.companyName}</a>
-                </p>
-              </div>
-
-              {/* Removed Notice */}
-              {review.isRemoved && (
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 flex items-start gap-3">
-                  <Flag size={20} className="text-gray-600 flex-shrink-0 mt-1" />
+        {/* Loading State */}
+        {isLoading ? (
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-white border border-gray-200 rounded-lg p-6 animate-pulse">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
                   <div className="flex-1">
-                    <span className="text-gray-700">This review has been removed.</span>
-                    <a href="#" className="text-blue-600 hover:underline ml-1">Read more</a>
+                    <div className="h-4 bg-gray-200 rounded w-1/3 mb-2"></div>
+                    <div className="h-3 bg-gray-200 rounded w-1/4"></div>
                   </div>
                 </div>
-              )}
-
-              {/* Review Card */}
-              <div className="bg-white border border-gray-200 rounded-lg p-6">
-                {/* User Info in Review */}
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-amber-700 to-amber-900 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                    {getInitials(user.name)}
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">{user.name}</p>
-                    <p className="text-sm text-gray-600">{user.reviewCount} review</p>
-                  </div>
-                </div>
-
-                {/* Rating and Date */}
-                <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
-                  <div className="flex items-center gap-2">
-                    {renderStars(review.rating)}
-                  </div>
-                  <div className="text-right">
-                    <p className="text-gray-600 text-sm">{review.removedDate}</p>
-                    {review.isRemoved && (
-                      <p className="text-red-600 text-sm font-medium">Review removed</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Review Content */}
-                <p className="text-gray-900 text-lg mb-4">{review.content}</p>
-
-                {/* Review Meta */}
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded text-sm">
-                    {review.date}
-                  </span>
-                  {review.isUnprompted && (
-                    <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded text-sm">
-                      Unprompted review
-                    </span>
-                  )}
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center gap-4 pt-4 border-t border-gray-200">
-                  <button className="flex items-center gap-2 text-red-600 hover:text-red-700 text-sm font-medium transition">
-                    <Trash2 size={16} />
-                    Delete
-                  </button>
-                </div>
+                <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-2/3"></div>
               </div>
+            ))}
+          </div>
+        ) : error ? (
+          <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg">
+            {error}
+          </div>
+        ) : myReviews.length === 0 ? (
+          <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+            <Star className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">No reviews yet</h3>
+            <p className="text-gray-600 mb-4">You haven't written any reviews yet.</p>
+            <Link
+              href="/write-review"
+              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
+            >
+              <Star className="w-4 h-4" />
+              Write your first review
+            </Link>
+          </div>
+        ) : (
+          <>
+            {/* Review Cards */}
+            <div className="space-y-4 sm:space-y-6">
+              {myReviews.map((review: any) => (
+                <div key={review.id} className="space-y-3 sm:space-y-4">
+                  {/* Review Header */}
+                  <div>
+                    <p className="text-gray-700 text-sm sm:text-base">
+                      Review of{' '}
+                      <Link
+                        href={review.companyId ? `/bussiness/${review.companyId}` : '#'}
+                        className="text-blue-600 hover:underline"
+                      >
+                        {review.companyName || 'Unknown Company'}
+                      </Link>
+                    </p>
+                  </div>
+
+                  {/* Review Card */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6">
+                    {/* User Info in Review */}
+                    <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-amber-700 to-amber-900 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-bold">
+                        {getInitials(user.name)}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-900 text-sm sm:text-base">{user.name}</p>
+                        <p className="text-xs sm:text-sm text-gray-600">{totalItems} reviews</p>
+                      </div>
+                    </div>
+
+                    {/* Rating and Date */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-4 pb-3 sm:pb-4 border-b border-gray-200 gap-2">
+                      <div className="flex items-center gap-1 sm:gap-2">
+                        {renderStars(review.rating)}
+                        <span className="ml-2 font-semibold text-gray-900">{review.rating.toFixed(1)}</span>
+                      </div>
+                      <div className="text-left sm:text-right">
+                        <p className="text-gray-600 text-xs sm:text-sm">
+                          {review.createdAt ? formatDate(review.createdAt) : formatDate(review.expDate)}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Review Title */}
+                    {review.title && (
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">{review.title}</h3>
+                    )}
+
+                    {/* Review Content */}
+                    <p className="text-gray-700 text-sm sm:text-base mb-4 leading-relaxed">
+                      {review.description}
+                    </p>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-4 pt-3 sm:pt-4 border-t border-gray-200">
+                      <Link
+                        href={review.companyId ? `/bussiness/${review.companyId}` : '#'}
+                        className="text-blue-600 hover:text-blue-700 text-xs sm:text-sm font-medium transition"
+                      >
+                        View Company
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 mt-8">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 0}
+                  className="p-2 rounded-lg border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <span className="px-4 py-2 text-sm text-gray-700">
+                  Page {currentPage + 1} of {totalPages}
+                </span>
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage >= totalPages - 1}
+                  className="p-2 rounded-lg border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );

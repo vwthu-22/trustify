@@ -29,27 +29,28 @@ export default function Footer() {
 
     return (
         <footer className="bg-[#1a1a1a] text-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
-                    {/* Logo */}
-                    <div className="md:col-span-1">
-                        <div className="flex items-center gap-2 mb-8">
-                            <div className="w-8 h-8 bg-[#5aa5df] flex items-center justify-center rounded">
-                                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 sm:gap-8">
+                    {/* Logo - Full width on mobile */}
+                    <div className="col-span-2 sm:col-span-2 md:col-span-3 lg:col-span-1">
+                        <div className="flex items-center gap-2 mb-6 sm:mb-8">
+                            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-[#5aa5df] flex items-center justify-center rounded">
+                                <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                                 </svg>
                             </div>
-                            <span className="text-xl font-bold">Trustify</span>
+                            <span className="text-lg sm:text-xl font-bold">Trustify</span>
                         </div>
                     </div>
 
+                    {/* Navigation Sections */}
                     {sections.map((section, idx) => (
-                        <div key={idx}>
-                            <h3 className="font-semibold mb-4">{section.title}</h3>
-                            <ul className="space-y-3">
+                        <div key={idx} className="col-span-1">
+                            <h3 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base">{section.title}</h3>
+                            <ul className="space-y-2 sm:space-y-3">
                                 {section.links.map((link, i) => (
                                     <li key={i}>
-                                        <Link href="#" className="text-gray-300 hover:text-white text-sm transition">
+                                        <Link href="#" className="text-gray-300 hover:text-white text-xs sm:text-sm transition">
                                             {link}
                                         </Link>
                                     </li>
@@ -58,24 +59,36 @@ export default function Footer() {
                         </div>
                     ))}
 
-                    <div>
-                        <h3 className="font-semibold mb-4">Theo dõi chúng tôi trên</h3>
-                        <div className="flex gap-3 mb-8">
+                    {/* Social & Country - Takes full width on small screens */}
+                    <div className="col-span-2 sm:col-span-2 md:col-span-3 lg:col-span-1">
+                        <h3 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base">Theo dõi chúng tôi trên</h3>
+                        <div className="flex gap-2 sm:gap-3 mb-6 sm:mb-8">
                             {socials.map(({ Icon, href }, i) => (
-                                <Link key={i} href={href} className="w-10 h-10 bg-gray-700 hover:bg-gray-600 rounded flex items-center justify-center transition">
-                                    <Icon className="w-5 h-5" />
+                                <Link
+                                    key={i}
+                                    href={href}
+                                    className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-700 hover:bg-gray-600 rounded flex items-center justify-center transition"
+                                >
+                                    <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
                                 </Link>
                             ))}
                         </div>
 
-                        <h3 className="font-semibold mb-4">Chọn quốc gia</h3>
-                        <select className="w-full bg-white text-gray-900 px-4 py-2 rounded border-0 focus:ring-2 focus:ring-blue-500">
-                            <option>[🇺🇸] Hoa Kỳ</option>
-                            <option>[🇻🇳] Việt Nam</option>
+                        <h3 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base">Chọn quốc gia</h3>
+                        <select className="w-full sm:w-auto min-w-[150px] bg-white text-gray-900 px-3 sm:px-4 py-2 rounded border-0 focus:ring-2 focus:ring-blue-500 text-sm sm:text-base">
+                            <option>🇺🇸 Hoa Kỳ</option>
+                            <option>🇻🇳 Việt Nam</option>
                         </select>
                     </div>
+                </div>
+
+                {/* Copyright */}
+                <div className="border-t border-gray-700 mt-8 sm:mt-12 pt-6 sm:pt-8">
+                    <p className="text-gray-400 text-xs sm:text-sm text-center">
+                        © {new Date().getFullYear()} Trustify. All rights reserved.
+                    </p>
                 </div>
             </div>
         </footer>
     );
-};
+}

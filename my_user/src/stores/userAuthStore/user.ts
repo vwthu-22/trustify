@@ -9,6 +9,7 @@ interface User {
   name: string;
   email: string;
   avatar?: string;
+  country?: string;
 }
 
 interface AuthState {
@@ -16,12 +17,15 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+  successMessage: string | null;
 
   setUser: (user: User) => void;
   exchangeToken: (state: string) => Promise<boolean>;
   fetchUserInfo: () => Promise<void>;
+  updateProfile: (name: string, country: string) => Promise<boolean>;
   logout: () => Promise<void>;
   clearError: () => void;
+  clearSuccess: () => void;
 }
 
 const useAuthStore = create<AuthState>()(
@@ -31,6 +35,7 @@ const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isLoading: false,
       error: null,
+      successMessage: null,
 
       setUser: (user) => set({
         user,
@@ -126,6 +131,7 @@ const useAuthStore = create<AuthState>()(
             id: userData.id || userData.userId,
             name: userData.name || userData.displayName || userData.username,
             email: userData.email,
+            country: userData.country || '',
           };
 
           console.log('Processed User:', user);
@@ -177,6 +183,59 @@ const useAuthStore = create<AuthState>()(
       },
 
       clearError: () => set({ error: null }),
+      clearSuccess: () => set({ successMessage: null }),
+
+      // Update user profile
+      updateProfile: async (name: string, country: string) => {
+        const { user } = get();
+        if (!user) return false;
+
+        set({ isLoading: true, error: null, successMessage: null });
+
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/user/me`, {
+            method: 'PUT',
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json',
+              'ngrok-skip-browser-warning': 'true',
+            },
+            body: JSON.stringify({
+              email: user.email,
+              name,
+              country,
+            }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            set({
+              user: {
+                ...user,
+                name: data.name || name,
+                country: data.country || country,
+              },
+              isLoading: false,
+              successMessage: 'Profile updated successfully!',
+            });
+            return true;
+          } else {
+            const errorData = await response.json();
+            set({
+              error: errorData.message || 'Failed to update profile',
+              isLoading: false,
+            });
+            return false;
+          }
+        } catch (error) {
+          console.error('Update profile error:', error);
+          set({
+            error: 'An error occurred while updating your profile',
+            isLoading: false,
+          });
+          return false;
+        }
+      },
     }),
     {
       name: 'auth-storage',

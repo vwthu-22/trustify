@@ -7,13 +7,22 @@ import WriteReviewModal from '../../cmt/page';
 import ThankYouModal from '../../thankyou/page';
 import useCompanyStore from '@/stores/companyStore/company';
 import useReviewStore from '@/stores/reviewStore/review';
+import { getStarColor, getBarColor, getRatingLabel, STAR_COLORS } from '@/utils/ratingColors';
 
 export default function CompanyReviewPage() {
     const params = useParams();
     const businessId = params.bussinessid as string;
 
     const { currentCompany, isLoading, error, fetchCompanyById } = useCompanyStore();
-    const { reviews, isLoading: reviewsLoading, fetchReviewsByCompany, currentPage, totalPages } = useReviewStore();
+    const {
+        reviews,
+        allReviews,
+        isLoading: reviewsLoading,
+        fetchReviewsByCompany,
+        fetchAllReviewsByCompany,
+        currentPage,
+        totalPages
+    } = useReviewStore();
 
     // Helper function to convert industry name to category slug
     const getIndustrySlug = (industry: string) => {
@@ -36,7 +45,6 @@ export default function CompanyReviewPage() {
     const [isWriteModalOpen, setIsWriteModalOpen] = useState(false);
     const [isThankYouModalOpen, setIsThankYouModalOpen] = useState(false);
     const [reviewData, setReviewData] = useState(null);
-    const [allReviews, setAllReviews] = useState<typeof reviews>([]);
 
     useEffect(() => {
         if (businessId) {
@@ -45,36 +53,12 @@ export default function CompanyReviewPage() {
         }
     }, [businessId, currentReviewPage, fetchCompanyById, fetchReviewsByCompany]);
 
-    // Fetch all reviews for rating breakdown calculation
+    // Fetch all reviews for rating breakdown calculation using store
     useEffect(() => {
-        const fetchAllReviews = async () => {
-            if (!businessId) return;
-
-            try {
-                const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://trustify.io.vn';
-                const response = await fetch(
-                    `${API_BASE_URL}/api/review/company/${businessId}?page=0&size=1000`,
-                    {
-                        method: 'GET',
-                        credentials: 'include',
-                        headers: {
-                            'ngrok-skip-browser-warning': 'true',
-                            'bypass-tunnel-reminder': 'true',
-                        },
-                    }
-                );
-
-                if (response.ok) {
-                    const data = await response.json();
-                    setAllReviews(data.reviews || []);
-                }
-            } catch (error) {
-                console.error('Failed to fetch all reviews for breakdown:', error);
-            }
-        };
-
-        fetchAllReviews();
-    }, [businessId]);
+        if (businessId) {
+            fetchAllReviewsByCompany(businessId);
+        }
+    }, [businessId, fetchAllReviewsByCompany]);
 
     // Filter reviews by selected stars
     const filteredReviews = selectedFilters.length > 0
@@ -102,19 +86,12 @@ export default function CompanyReviewPage() {
     };
 
     const renderStars = (rating: number, size: string = 'w-5 h-5') => {
-        let starColor = 'text-gray-300';
-        if (rating >= 1 && rating <= 2) {
-            starColor = 'text-red-500';
-        } else if (rating > 2 && rating <= 3.5) {
-            starColor = 'text-yellow-500';
-        } else if (rating > 3.5) {
-            starColor = 'text-[#5aa5df]';
-        }
+        const starColor = getStarColor(rating);
 
         return [...Array(5)].map((_, i) => (
             <svg
                 key={i}
-                className={`${size} ${i < Math.floor(rating) ? starColor : 'text-gray-300'}`}
+                className={`${size} ${i < Math.floor(rating) ? starColor : STAR_COLORS.empty}`}
                 fill="currentColor"
                 viewBox="0 0 24 24"
             >
@@ -215,130 +192,133 @@ export default function CompanyReviewPage() {
 
     return (
         <div className="min-h-screen bg-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-20">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+                {/* First Grid - Company Info and Rating Sidebar */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mt-16 sm:mt-20">
                     {/* Left Column */}
                     <div className="lg:col-span-2">
                         {/* Company Header */}
-                        <div className="mb-8">
-                            <div className="flex items-start gap-6 mb-6">
-                                <div className="w-20 h-20 bg-white border border-gray-200 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                        <div className="mb-6 sm:mb-8">
+                            <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6 mb-4 sm:mb-6">
+                                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white border border-gray-200 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
                                     {currentCompany.logo ? (
                                         <img src={currentCompany.logo} alt={currentCompany.name} className="w-full h-full object-contain" />
                                     ) : (
-                                        <span className="text-lg font-bold text-gray-800">{currentCompany.name?.substring(0, 7).toUpperCase() || 'COMPANY'}</span>
+                                        <span className="text-sm sm:text-lg font-bold text-gray-800">{currentCompany.name?.substring(0, 7).toUpperCase() || 'COMPANY'}</span>
                                     )}
                                 </div>
                                 <div className="flex-1">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <h1 className="text-3xl font-bold text-gray-900">{currentCompany.name}</h1>
+                                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                                        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">{currentCompany.name}</h1>
                                         {currentCompany.claimed && (
-                                            <span className="flex items-center gap-1 px-3 py-1 border border-gray-300 rounded-full text-sm">
-                                                <CheckCircle className="w-4 h-4" />
-                                                Claimed profile
+                                            <span className="flex items-center gap-1 px-2 sm:px-3 py-0.5 sm:py-1 border border-gray-300 rounded-full text-xs sm:text-sm">
+                                                <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+                                                Claimed
                                             </span>
                                         )}
                                     </div>
                                     <Link
                                         href={`/category/${getIndustrySlug(currentCompany.industry || '')}`}
-                                        className="text-blue-600 hover:underline"
+                                        className="text-blue-600 hover:underline text-sm sm:text-base"
                                     >
                                         {currentCompany.industry || 'Company'}
                                     </Link>
                                 </div>
                             </div>
 
-                            <div className="flex gap-3">
+                            <div className="flex flex-wrap gap-2 sm:gap-3">
                                 <button
                                     onClick={() => setIsWriteModalOpen(true)}
-                                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-full transition flex items-center gap-2"
+                                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4 py-2 rounded-full transition flex items-center gap-2 text-sm sm:text-base"
                                 >
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                     </svg>
-                                    Write a review
+                                    <span className="hidden sm:inline">Write a review</span>
+                                    <span className="sm:hidden">Review</span>
                                 </button>
 
                                 <a
                                     href={`https://${currentCompany.website}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="border border-gray-300 hover:bg-gray-50 px-3 py-2 rounded-full transition flex items-center gap-2"
+                                    className="border border-gray-300 hover:bg-gray-50 px-3 sm:px-4 py-2 rounded-full transition flex items-center gap-2 text-sm sm:text-base"
                                 >
-                                    Visit website
+                                    <span className="hidden sm:inline">Visit website</span>
+                                    <span className="sm:hidden">Website</span>
                                     <ExternalLink className="w-4 h-4" />
                                 </a>
                             </div>
                         </div>
 
                         {/* Info Banner */}
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 flex items-start gap-3">
-                            <Star className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                            <p className="text-sm text-gray-700">Companies on Trustify aren't allowed to offer incentives or pay to hide reviews.</p>
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 flex items-start gap-2 sm:gap-3">
+                            <Star className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                            <p className="text-xs sm:text-sm text-gray-700">Companies on Trustify aren't allowed to offer incentives or pay to hide reviews.</p>
                         </div>
 
                         {/* Company Details */}
-                        <div className="mb-8 pb-8 border-b border-gray-200">
-                            <div className="flex items-center gap-2 mb-4">
-                                <h3 className="text-2xl font-bold text-gray-900">Company details</h3>
-                                <span className="flex items-center gap-1 text-sm text-gray-600">
-                                    <CheckCircle className="w-4 h-4 text-green-600" />
-                                    Active Trustify subscription
+                        <div className="mb-6 sm:mb-8 pb-6 sm:pb-8 border-b border-gray-200">
+                            <div className="flex flex-wrap items-center gap-2 mb-3 sm:mb-4">
+                                <h3 className="text-xl sm:text-2xl font-bold text-gray-900">Company details</h3>
+                                <span className="flex items-center gap-1 text-xs sm:text-sm text-gray-600">
+                                    <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+                                    Active subscription
                                 </span>
                             </div>
-                            <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
-                                <h4 className="font-bold text-lg mb-2">About {currentCompany.name}</h4>
-                                <p className="text-sm text-gray-500 mb-4">Written by the company</p>
-                                <p className="text-gray-700 leading-relaxed mb-4">
+                            <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6">
+                                <h4 className="font-bold text-base sm:text-lg mb-2">About {currentCompany.name}</h4>
+                                <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">Written by the company</p>
+                                <p className="text-sm sm:text-base text-gray-700 leading-relaxed mb-4">
                                     {currentCompany.description || 'No description available.'}
                                 </p>
                             </div>
                         </div>
 
                         {/* Contact Info */}
-                        <div className="mb-8">
-                            <h3 className="text-2xl font-bold text-gray-900 mb-4">Contact info</h3>
-                            <div className="space-y-3">
+                        <div className="mb-6 sm:mb-8">
+                            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">Contact info</h3>
+                            <div className="space-y-2 sm:space-y-3">
                                 {currentCompany.address && (
-                                    <div className="flex items-center gap-3 text-gray-700">
-                                        <MapPin className="w-5 h-5" />
-                                        <span>{currentCompany.address}</span>
+                                    <div className="flex items-start gap-2 sm:gap-3 text-gray-700">
+                                        <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 mt-0.5" />
+                                        <span className="text-sm sm:text-base">{currentCompany.address}</span>
                                     </div>
                                 )}
                                 {currentCompany.website && (
-                                    <div className="flex items-center gap-3">
-                                        <Globe className="w-5 h-5 text-gray-700" />
-                                        <Link href={`https://${currentCompany.website}`} target="_blank" rel="noopener noreferrer" className="text-gray-900 underline hover:text-blue-600">{currentCompany.website}</Link>
+                                    <div className="flex items-center gap-2 sm:gap-3">
+                                        <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
+                                        <Link href={`https://${currentCompany.website}`} target="_blank" rel="noopener noreferrer" className="text-gray-900 underline hover:text-blue-600 text-sm sm:text-base break-all">{currentCompany.website}</Link>
                                     </div>
                                 )}
                             </div>
                         </div>
                     </div>
 
-                    {/* Right Sidebar */}
-                    <div className="lg:col-span-1">
-                        <div className="sticky top-28 space-y-6">
+                    {/* Right Sidebar - Hidden on mobile, shown at bottom for mobile */}
+                    <div className="lg:col-span-1 order-first lg:order-last">
+                        <div className="lg:sticky lg:top-20 space-y-4 sm:space-y-6">
                             {/* Rating Card */}
-                            <div className="bg-white border border-gray-200 shadow-md rounded-lg p-6">
+                            <div className="bg-white border border-gray-200 shadow-md rounded-lg p-4 sm:p-6">
                                 <div className="flex items-baseline gap-2 mb-2">
-                                    <span className="text-5xl font-bold">{actualRating.toFixed(1)}</span>
+                                    <span className="text-4xl sm:text-5xl font-bold">{actualRating.toFixed(1)}</span>
                                 </div>
-                                <div className="flex items-center gap-2 mb-4">
-                                    <span className="font-semibold">
-                                        {actualRating >= 4.5 ? 'Excellent' : actualRating >= 3.5 ? 'Great' : actualRating >= 2.5 ? 'Average' : 'Poor'}
+                                <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                                    <span className="font-semibold text-sm sm:text-base">
+                                        {getRatingLabel(actualRating)}
                                     </span>
                                 </div>
-                                <div className="flex mb-4">{renderStars(actualRating, 'w-5 h-5')}</div>
-                                <p className="text-sm text-gray-600 mb-6">{actualReviewCount.toLocaleString()} reviews</p>
+                                <div className="flex mb-3 sm:mb-4">{renderStars(actualRating, 'w-4 h-4 sm:w-5 sm:h-5')}</div>
+                                <p className="text-xs sm:text-sm text-gray-600 mb-4 sm:mb-6">{actualReviewCount.toLocaleString()} reviews</p>
 
                                 {/* Rating Breakdown */}
-                                <div className="space-y-2 mb-6">
+                                <div className="space-y-2 mb-4 sm:mb-6">
                                     {ratingFilters.map((item) => (
-                                        <div key={item.stars} className="flex items-center gap-3">
-                                            <span className="text-sm w-12">{item.stars}-star</span>
-                                            <div className="flex-1 bg-gray-200 rounded-full h-2">
+                                        <div key={item.stars} className="flex items-center gap-2 sm:gap-3">
+                                            <span className="text-xs sm:text-sm w-10 sm:w-12">{item.stars}-star</span>
+                                            <div className="flex-1 bg-gray-200 rounded-full h-1.5 sm:h-2">
                                                 <div
-                                                    className={`h-2 rounded-full ${item.stars === 5 ? 'bg-[#5aa5df]' : item.stars === 4 ? 'bg-blue-400' : item.stars === 3 ? 'bg-yellow-400' : item.stars === 2 ? 'bg-orange-400' : 'bg-red-500'}`}
+                                                    className={`h-1.5 sm:h-2 rounded-full ${getBarColor(item.stars)}`}
                                                     style={{ width: `${item.percentage}%` }}
                                                 ></div>
                                             </div>
@@ -346,44 +326,45 @@ export default function CompanyReviewPage() {
                                     ))}
                                 </div>
 
-                                <Link href="#" className="text-sm text-gray-600 hover:underline">How is the TrustScore calculated?</Link>
+                                <Link href="#" className="text-xs sm:text-sm text-gray-600 hover:underline">How is the TrustScore calculated?</Link>
                             </div>
 
                             {/* Reply Stats */}
-                            <div className="bg-white border border-gray-200 shadow-md rounded-lg p-6">
-                                <div className="flex items-start gap-3">
-                                    <MessageCircle className="w-5 h-5 text-gray-600 flex-shrink-0 mt-1" />
+                            <div className="bg-white border border-gray-200 shadow-md rounded-lg p-4 sm:p-6 hidden lg:block">
+                                <div className="flex items-start gap-2 sm:gap-3">
+                                    <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0 mt-1" />
                                     <div>
-                                        <p className="font-semibold mb-1">Replied to 82% of negative reviews</p>
-                                        <p className="text-sm text-gray-600">Typically replies within 1 week</p>
+                                        <p className="font-semibold text-sm sm:text-base mb-1">Replied to 82% of negative reviews</p>
+                                        <p className="text-xs sm:text-sm text-gray-600">Typically replies within 1 week</p>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* How Company Uses */}
-                            <Link href="#" className="block text-sm text-gray-900 hover:underline flex items-center gap-1">
+                            {/* How Company Uses - Hidden on mobile */}
+                            <Link href="#" className="hidden lg:flex items-center gap-1 text-xs sm:text-sm text-gray-900 hover:underline">
                                 How this company uses Trustify
-                                <ExternalLink className="w-4 h-4" />
+                                <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4" />
                             </Link>
                         </div>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-20">
+                {/* Second Grid - Reviews Section */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mt-10 sm:mt-20">
                     {/* Left Sidebar - Filters */}
                     <div className="lg:col-span-1">
                         {/* Rating Header */}
-                        <div className="flex items-center gap-3 mb-6">
-                            <svg className="w-8 h-8 text-[#5aa5df]" fill="currentColor" viewBox="0 0 24 24">
+                        <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                            <svg className="w-6 h-6 sm:w-8 sm:h-8 text-[#5aa5df]" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                             </svg>
-                            <span className="text-4xl font-bold">{actualRating.toFixed(1)}</span>
+                            <span className="text-3xl sm:text-4xl font-bold">{actualRating.toFixed(1)}</span>
                         </div>
 
                         {/* All Reviews */}
-                        <div className="mb-6">
-                            <h2 className="text-3xl font-bold text-gray-900 mb-2">All reviews</h2>
-                            <div className="flex items-center gap-2 text-gray-600">
+                        <div className="mb-4 sm:mb-6">
+                            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">All reviews</h2>
+                            <div className="flex items-center gap-2 text-gray-600 text-sm sm:text-base">
                                 <span>{actualReviewCount.toLocaleString()} total</span>
                                 <span>•</span>
                                 <button onClick={() => setIsWriteModalOpen(true)} className="text-blue-600 hover:underline">Write a review</button>
@@ -391,13 +372,13 @@ export default function CompanyReviewPage() {
                         </div>
 
                         {/* Star Filters */}
-                        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
-                            <div className="space-y-3">
+                        <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6">
+                            <div className="space-y-2 sm:space-y-3">
                                 {ratingFilters.map((filter) => (
-                                    <label key={filter.stars} className="flex items-center gap-3 cursor-pointer">
+                                    <label key={filter.stars} className="flex items-center gap-2 sm:gap-3 cursor-pointer">
                                         <input
                                             type="checkbox"
-                                            className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                            className="w-4 h-4 sm:w-5 sm:h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                             checked={selectedFilters.includes(filter.stars)}
                                             onChange={() => {
                                                 setSelectedFilters(prev =>
@@ -407,41 +388,36 @@ export default function CompanyReviewPage() {
                                                 );
                                             }}
                                         />
-                                        <span className="text-sm font-medium w-12">{filter.stars}-star</span>
-                                        <div className="flex-1 bg-gray-200 rounded-full h-2">
+                                        <span className="text-xs sm:text-sm font-medium w-10 sm:w-12">{filter.stars}-star</span>
+                                        <div className="flex-1 bg-gray-200 rounded-full h-1.5 sm:h-2">
                                             <div
-                                                className={`h-2 rounded-full ${filter.stars === 5 ? 'bg-[#5aa5df]' :
-                                                    filter.stars === 4 ? 'bg-blue-400' :
-                                                        filter.stars === 3 ? 'bg-yellow-400' :
-                                                            filter.stars === 2 ? 'bg-orange-400' :
-                                                                'bg-red-500'
-                                                    }`}
+                                                className={`h-1.5 sm:h-2 rounded-full ${getBarColor(filter.stars)}`}
                                                 style={{ width: `${filter.percentage}%` }}
                                             ></div>
                                         </div>
-                                        <span className="text-sm text-gray-600 w-12 text-right">{filter.percentage}%</span>
+                                        <span className="text-xs sm:text-sm text-gray-600 w-10 sm:w-12 text-right">{filter.percentage}%</span>
                                     </label>
                                 ))}
                             </div>
                         </div>
 
-                        <Link href="#" className="flex items-center gap-2 text-sm text-gray-900 hover:underline">
+                        <Link href="#" className="hidden sm:flex items-center gap-2 text-xs sm:text-sm text-gray-900 hover:underline">
                             How Trustify labels reviews
-                            <ExternalLink className="w-4 h-4" />
+                            <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4" />
                         </Link>
                     </div>
 
                     {/* Right Content - Reviews */}
                     <div className="lg:col-span-2">
                         {/* Search Bar */}
-                        <div className="relative mb-6">
-                            <Search className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 transform -translate-y-1/2" />
+                        <div className="relative mb-4 sm:mb-6">
+                            <Search className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2" />
                             <input
                                 type="text"
                                 placeholder="Search by keyword..."
                                 value={searchKeyword}
                                 onChange={(e) => setSearchKeyword(e.target.value)}
-                                className="w-full pl-10 pr-2 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-md"
+                                className="w-full pl-9 sm:pl-12 pr-3 sm:pr-4 py-2 sm:py-3 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
                             />
                         </div>
 
@@ -473,15 +449,15 @@ export default function CompanyReviewPage() {
                         </div> */}
 
                         {/* Reviews List */}
-                        <div className="space-y-6">
+                        <div className="space-y-4 sm:space-y-6">
                             {reviewsLoading ? (
-                                <div className="text-center py-8">
-                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                                    <p className="text-gray-600">Loading reviews...</p>
+                                <div className="text-center py-6 sm:py-8">
+                                    <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                                    <p className="text-gray-600 text-sm sm:text-base">Loading reviews...</p>
                                 </div>
                             ) : searchedReviews.length === 0 ? (
-                                <div className="text-center py-8">
-                                    <p className="text-gray-600">
+                                <div className="text-center py-6 sm:py-8">
+                                    <p className="text-gray-600 text-sm sm:text-base">
                                         {reviews.length === 0 ? 'No reviews yet. Be the first to review!' : 'No reviews match your search.'}
                                     </p>
                                 </div>
@@ -492,27 +468,27 @@ export default function CompanyReviewPage() {
                                     const reviewDate = review.expDate ? new Date(review.expDate).toLocaleDateString() : 'Recently';
 
                                     return (
-                                        <div key={review.id} className="border p-3 border-gray-200 rounded-md">
+                                        <div key={review.id} className="border p-3 sm:p-4 border-gray-200 rounded-lg sm:rounded-md">
                                             {/* Review Header */}
-                                            <div className="flex items-start justify-between mb-4">
-                                                <div className="flex items-start gap-4">
-                                                    <div className="w-14 h-14 bg-pink-500 text-white rounded-full flex items-center justify-center font-bold text-xl">
+                                            <div className="flex items-start justify-between mb-3 sm:mb-4">
+                                                <div className="flex items-start gap-2 sm:gap-4">
+                                                    <div className="w-10 h-10 sm:w-14 sm:h-14 bg-pink-500 text-white rounded-full flex items-center justify-center font-bold text-base sm:text-xl flex-shrink-0">
                                                         {userInitial}
                                                     </div>
-                                                    <div>
-                                                        <h4 className="font-semibold text-gray-900 text-lg">{userName}</h4>
-                                                        <p className="text-sm text-gray-500">{review.userEmail || 'User'}</p>
+                                                    <div className="min-w-0">
+                                                        <h4 className="font-semibold text-gray-900 text-sm sm:text-lg truncate">{userName}</h4>
+                                                        <p className="text-xs sm:text-sm text-gray-500 truncate">{review.userEmail || 'User'}</p>
                                                     </div>
                                                 </div>
-                                                <span className="text-sm text-gray-500">{reviewDate}</span>
+                                                <span className="text-xs sm:text-sm text-gray-500 flex-shrink-0 ml-2">{reviewDate}</span>
                                             </div>
 
                                             {/* Rating */}
-                                            <div className="flex mb-4">{renderStars(review.rating)}</div>
+                                            <div className="flex mb-3 sm:mb-4">{renderStars(review.rating, 'w-4 h-4 sm:w-5 sm:h-5')}</div>
 
                                             {/* Review Content */}
-                                            <h5 className="font-semibold text-gray-900 text-lg mb-3">{review.title}</h5>
-                                            <p className="text-gray-700 leading-relaxed whitespace-pre-line">{review.description}</p>
+                                            <h5 className="font-semibold text-gray-900 text-base sm:text-lg mb-2 sm:mb-3">{review.title}</h5>
+                                            <p className="text-gray-700 text-sm sm:text-base leading-relaxed whitespace-pre-line">{review.description}</p>
                                         </div>
                                     );
                                 })
@@ -521,22 +497,22 @@ export default function CompanyReviewPage() {
 
                         {/* Pagination Controls */}
                         {!reviewsLoading && searchedReviews.length > 0 && (
-                            <div className="mt-8 flex items-center justify-between">
+                            <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-between gap-3">
                                 <button
                                     onClick={loadPreviousReviews}
                                     disabled={currentReviewPage === 0}
-                                    className="flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-full hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 border border-gray-300 rounded-full hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base w-full sm:w-auto justify-center"
                                 >
                                     <ChevronLeft className="w-4 h-4" />
                                     Previous
                                 </button>
-                                <div className="text-sm text-gray-600">
+                                <div className="text-xs sm:text-sm text-gray-600 order-first sm:order-none">
                                     Page {currentReviewPage + 1} of {totalPages}
                                 </div>
                                 <button
                                     onClick={loadMoreReviews}
                                     disabled={currentReviewPage >= totalPages - 1}
-                                    className="flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-full hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 border border-gray-300 rounded-full hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base w-full sm:w-auto justify-center"
                                 >
                                     Next
                                     <ChevronRight className="w-4 h-4" />
