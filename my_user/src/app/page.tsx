@@ -35,7 +35,7 @@ export default function Home() {
         <div className="bg-green-50 border-b border-green-100 py-3">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <p className="text-center text-green-800">
-              <span className="font-semibold">Welcome back, {user.name}!</span> 
+              <span className="font-semibold">Welcome, {user.name}!</span> 
               <span className="ml-2 text-green-600">Ready to share your experience?</span>
             </p>
           </div>

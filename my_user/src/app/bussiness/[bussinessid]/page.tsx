@@ -15,12 +15,28 @@ export default function CompanyReviewPage() {
     const { currentCompany, isLoading, error, fetchCompanyById } = useCompanyStore();
     const { reviews, isLoading: reviewsLoading, fetchReviewsByCompany, currentPage, totalPages } = useReviewStore();
 
+    // Helper function to convert industry name to category slug
+    const getIndustrySlug = (industry: string) => {
+        const industryMap: { [key: string]: string } = {
+            'Bank': 'bank',
+            'Travel': 'travel',
+            'Car Dealer': 'car-dealer',
+            'Furniture Store': 'furniture-store',
+            'Jewelry Store': 'jewelry-store',
+            'Clothing Store': 'clothing-store',
+            'Electronics & Technology': 'electronics',
+            'Fitness and Nutrition Service': 'fitness'
+        };
+        return industryMap[industry] || 'bank'; // default to 'bank' if not found
+    };
+
     const [selectedFilters, setSelectedFilters] = useState<number[]>([]);
     const [currentReviewPage, setCurrentReviewPage] = useState(0);
     const [searchKeyword, setSearchKeyword] = useState('');
     const [isWriteModalOpen, setIsWriteModalOpen] = useState(false);
     const [isThankYouModalOpen, setIsThankYouModalOpen] = useState(false);
     const [reviewData, setReviewData] = useState(null);
+    const [allReviews, setAllReviews] = useState<typeof reviews>([]);
 
     useEffect(() => {
         if (businessId) {
@@ -28,6 +44,37 @@ export default function CompanyReviewPage() {
             fetchReviewsByCompany(businessId, currentReviewPage, 10);
         }
     }, [businessId, currentReviewPage, fetchCompanyById, fetchReviewsByCompany]);
+
+    // Fetch all reviews for rating breakdown calculation
+    useEffect(() => {
+        const fetchAllReviews = async () => {
+            if (!businessId) return;
+
+            try {
+                const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://trustify.io.vn';
+                const response = await fetch(
+                    `${API_BASE_URL}/api/review/company/${businessId}?page=0&size=1000`,
+                    {
+                        method: 'GET',
+                        credentials: 'include',
+                        headers: {
+                            'ngrok-skip-browser-warning': 'true',
+                            'bypass-tunnel-reminder': 'true',
+                        },
+                    }
+                );
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setAllReviews(data.reviews || []);
+                }
+            } catch (error) {
+                console.error('Failed to fetch all reviews for breakdown:', error);
+            }
+        };
+
+        fetchAllReviews();
+    }, [businessId]);
 
     // Filter reviews by selected stars
     const filteredReviews = selectedFilters.length > 0
@@ -85,13 +132,45 @@ export default function CompanyReviewPage() {
         }
     };
 
-    const ratingFilters = [
-        { stars: 5, percentage: 76 },
-        { stars: 4, percentage: 5 },
-        { stars: 3, percentage: 1 },
-        { stars: 2, percentage: 2 },
-        { stars: 1, percentage: 16 }
-    ];
+    // Calculate actual rating and review count from allReviews
+    const actualReviewCount = allReviews.length;
+    const actualRating = actualReviewCount > 0
+        ? allReviews.reduce((sum, review) => sum + review.rating, 0) / actualReviewCount
+        : 0;
+
+    // Calculate rating breakdown from actual reviews
+    const calculateRatingBreakdown = () => {
+        if (allReviews.length === 0) {
+            return [
+                { stars: 5, count: 0, percentage: 0 },
+                { stars: 4, count: 0, percentage: 0 },
+                { stars: 3, count: 0, percentage: 0 },
+                { stars: 2, count: 0, percentage: 0 },
+                { stars: 1, count: 0, percentage: 0 }
+            ];
+        }
+
+        // Count reviews for each star rating from all reviews
+        const counts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+        allReviews.forEach(review => {
+            const rating = Math.floor(review.rating);
+            if (rating >= 1 && rating <= 5) {
+                counts[rating as keyof typeof counts]++;
+            }
+        });
+
+        // Calculate percentages based on all reviews fetched
+        const totalFetched = allReviews.length;
+        return [5, 4, 3, 2, 1].map(stars => ({
+            stars,
+            count: counts[stars as keyof typeof counts],
+            percentage: totalFetched > 0
+                ? Math.round((counts[stars as keyof typeof counts] / totalFetched) * 100)
+                : 0
+        }));
+    };
+
+    const ratingFilters = calculateRatingBreakdown();
 
     const topMentions = [
         'Location', 'Staff', 'Customer service', 'Service',
@@ -160,23 +239,19 @@ export default function CompanyReviewPage() {
                                             </span>
                                         )}
                                     </div>
-                                    <div className="flex items-center gap-3 mb-3">
-                                        <Link href="#reviews" className="text-gray-900 hover:underline font-medium">
-                                            Reviews {(currentCompany.reviewCount || 0).toLocaleString()}
-                                        </Link>
-                                        <div className="flex items-center gap-2">
-                                            <div className="flex">{renderStars(currentCompany.rating || 0, 'w-5 h-5')}</div>
-                                            <span className="font-bold text-lg">{(currentCompany.rating || 0).toFixed(1)}</span>
-                                        </div>
-                                    </div>
-                                    <Link href="#" className="text-blue-600 hover:underline">{currentCompany.industry || 'Company'}</Link>
+                                    <Link
+                                        href={`/category/${getIndustrySlug(currentCompany.industry || '')}`}
+                                        className="text-blue-600 hover:underline"
+                                    >
+                                        {currentCompany.industry || 'Company'}
+                                    </Link>
                                 </div>
                             </div>
 
                             <div className="flex gap-3">
                                 <button
                                     onClick={() => setIsWriteModalOpen(true)}
-                                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-semibold transition flex items-center gap-2"
+                                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-full transition flex items-center gap-2"
                                 >
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -188,7 +263,7 @@ export default function CompanyReviewPage() {
                                     href={`https://${currentCompany.website}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="border border-gray-300 hover:bg-gray-50 px-6 py-3 rounded-full font-semibold transition flex items-center gap-2"
+                                    className="border border-gray-300 hover:bg-gray-50 px-3 py-2 rounded-full transition flex items-center gap-2"
                                 >
                                     Visit website
                                     <ExternalLink className="w-4 h-4" />
@@ -246,15 +321,15 @@ export default function CompanyReviewPage() {
                             {/* Rating Card */}
                             <div className="bg-white border border-gray-200 shadow-md rounded-lg p-6">
                                 <div className="flex items-baseline gap-2 mb-2">
-                                    <span className="text-5xl font-bold">{(currentCompany.rating || 0).toFixed(1)}</span>
+                                    <span className="text-5xl font-bold">{actualRating.toFixed(1)}</span>
                                 </div>
                                 <div className="flex items-center gap-2 mb-4">
                                     <span className="font-semibold">
-                                        {currentCompany.rating >= 4.5 ? 'Excellent' : currentCompany.rating >= 3.5 ? 'Great' : currentCompany.rating >= 2.5 ? 'Average' : 'Poor'}
+                                        {actualRating >= 4.5 ? 'Excellent' : actualRating >= 3.5 ? 'Great' : actualRating >= 2.5 ? 'Average' : 'Poor'}
                                     </span>
                                 </div>
-                                <div className="flex mb-4">{renderStars(currentCompany.rating || 0, 'w-5 h-5')}</div>
-                                <p className="text-sm text-gray-600 mb-6">{(currentCompany.reviewCount || 0).toLocaleString()} reviews</p>
+                                <div className="flex mb-4">{renderStars(actualRating, 'w-5 h-5')}</div>
+                                <p className="text-sm text-gray-600 mb-6">{actualReviewCount.toLocaleString()} reviews</p>
 
                                 {/* Rating Breakdown */}
                                 <div className="space-y-2 mb-6">
@@ -302,14 +377,14 @@ export default function CompanyReviewPage() {
                             <svg className="w-8 h-8 text-[#5aa5df]" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                             </svg>
-                            <span className="text-4xl font-bold">{(currentCompany.rating || 0).toFixed(1)}</span>
+                            <span className="text-4xl font-bold">{actualRating.toFixed(1)}</span>
                         </div>
 
                         {/* All Reviews */}
                         <div className="mb-6">
                             <h2 className="text-3xl font-bold text-gray-900 mb-2">All reviews</h2>
                             <div className="flex items-center gap-2 text-gray-600">
-                                <span>{(currentCompany.reviewCount || 0).toLocaleString()} total</span>
+                                <span>{actualReviewCount.toLocaleString()} total</span>
                                 <span>•</span>
                                 <button onClick={() => setIsWriteModalOpen(true)} className="text-blue-600 hover:underline">Write a review</button>
                             </div>
@@ -366,12 +441,12 @@ export default function CompanyReviewPage() {
                                 placeholder="Search by keyword..."
                                 value={searchKeyword}
                                 onChange={(e) => setSearchKeyword(e.target.value)}
-                                className="w-full pl-12 pr-4 py-4 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
+                                className="w-full pl-10 pr-2 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-md"
                             />
                         </div>
 
                         {/* Filter Buttons */}
-                        <div className="flex gap-3 mb-6">
+                        {/* <div className="flex gap-3 mb-6">
                             <button className="flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-full hover:bg-gray-50 transition">
                                 <Filter className="w-4 h-4" />
                                 <span className="font-medium">More filters</span>
@@ -380,10 +455,10 @@ export default function CompanyReviewPage() {
                                 <span className="font-medium">Most recent</span>
                                 <ChevronDown className="w-4 h-4" />
                             </button>
-                        </div>
+                        </div> */}
 
                         {/* Top Mentions */}
-                        <div className="mb-8">
+                        {/* <div className="mb-8">
                             <h3 className="text-lg font-semibold text-gray-900 mb-4">Top mentions</h3>
                             <div className="flex flex-wrap gap-2">
                                 {topMentions.map((mention) => (
@@ -395,7 +470,7 @@ export default function CompanyReviewPage() {
                                     </button>
                                 ))}
                             </div>
-                        </div>
+                        </div> */}
 
                         {/* Reviews List */}
                         <div className="space-y-6">

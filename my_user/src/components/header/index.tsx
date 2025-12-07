@@ -11,7 +11,12 @@ export default function Header() {
     const pathname = usePathname();
     const router = useRouter();
 
-    const { user, isAuthenticated, logout } = useAuthStore();
+    const { user, isAuthenticated, logout, fetchUserInfo } = useAuthStore();
+
+    // Verify session with backend on mount
+    useEffect(() => {
+        fetchUserInfo();
+    }, [fetchUserInfo]);
 
     const isHomePage = pathname === '/';
 

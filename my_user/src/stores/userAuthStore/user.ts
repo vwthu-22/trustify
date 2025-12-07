@@ -180,6 +180,9 @@ const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth-storage',
+      // Chỉ lưu isAuthenticated như một "hint" cho UI
+      // User data KHÔNG được lưu vì lý do bảo mật
+      // Session thực sự được xác thực qua httpOnly cookie từ backend
       partialize: (state) => ({
         isAuthenticated: state.isAuthenticated
       }),
