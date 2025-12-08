@@ -287,12 +287,12 @@ const useReviewStore = create<ReviewState>()(
             },
 
             // Fetch reviews by user email (for my_review page)
-            // API: GET /api/review/user/{email}
+            // API: GET /api/review/user-review?email=...
             fetchReviewsByEmail: async (email: string, page = 0, size = 10) => {
                 set({ isLoading: true, error: null });
 
                 try {
-                    const url = `${API_BASE_URL}/api/review/user/${email}?page=${page}&size=${size}`;
+                    const url = `${API_BASE_URL}/api/review/user-review?email=${encodeURIComponent(email)}&page=${page}&size=${size}`;
                     console.log('Fetching reviews from:', url);
 
                     const response = await fetch(url, {
@@ -304,7 +304,6 @@ const useReviewStore = create<ReviewState>()(
                     });
 
                     if (!response.ok) {
-                        // Backend API not ready yet - show empty state gracefully
                         console.log('Review API returned error, showing empty state');
                         set({
                             myReviews: [],
@@ -341,73 +340,39 @@ const useReviewStore = create<ReviewState>()(
                 }
             },
 
-            // Fetch high-rated reviews (5-star) for recent reviews section
-            // Since /api/review/all doesn't exist, we fetch from companies
+            // Fetch recent reviews (using new backend endpoint)
+            // API: GET /api/review/recent-review?page=0&size=10
             fetchHighRatedReviews: async () => {
                 try {
-                    // First, get some companies
-                    const companiesResponse = await fetch(
-                        `${API_BASE_URL}/api/company?page=0&size=10`,
-                        {
-                            method: 'GET',
-                            credentials: 'include',
-                            headers: {
-                                'ngrok-skip-browser-warning': 'true',
-                                'bypass-tunnel-reminder': 'true',
-                            },
-                        }
-                    );
+                    const url = `${API_BASE_URL}/api/review/recent-review?page=0&size=10`;
+                    console.log('Fetching recent reviews from:', url);
 
-                    if (!companiesResponse.ok) {
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'ngrok-skip-browser-warning': 'true',
+                        },
+                    });
+
+                    if (!response.ok) {
+                        console.log('Recent reviews API returned error');
                         set({ highRatedReviews: [] });
                         return;
                     }
 
-                    const companiesData = await companiesResponse.json();
-                    const companies = companiesData.companies || companiesData || [];
+                    const data = await response.json();
+                    console.log('Recent Reviews Response:', data);
 
-                    // Fetch reviews for each company
-                    const allFiveStarReviews: Review[] = [];
+                    // Map the reviews to include necessary fields
+                    const reviews = (data.reviews || []).map((review: Review) => ({
+                        ...review,
+                        companyId: review.companyId || '',
+                        companyName: review.companyName || '',
+                    }));
 
-                    for (const company of companies.slice(0, 5)) {
-                        try {
-                            const reviewResponse = await fetch(
-                                `${API_BASE_URL}/api/review/company/${company.id}?page=0&size=20`,
-                                {
-                                    method: 'GET',
-                                    credentials: 'include',
-                                    headers: {
-                                        'ngrok-skip-browser-warning': 'true',
-                                        'bypass-tunnel-reminder': 'true',
-                                    },
-                                }
-                            );
-
-                            if (reviewResponse.ok) {
-                                const reviewData = await reviewResponse.json();
-                                const reviews = reviewData.reviews || [];
-
-                                // Filter for 5-star reviews and add company info
-                                const fiveStarReviews = reviews
-                                    .filter((r: Review) => r.rating >= 5)
-                                    .map((r: Review) => ({
-                                        ...r,
-                                        companyId: company.id,
-                                        companyName: r.companyName || company.name,
-                                    }));
-
-                                allFiveStarReviews.push(...fiveStarReviews);
-                            }
-                        } catch (error) {
-                            console.error(`Failed to fetch reviews for company ${company.id}:`, error);
-                        }
-                    }
-
-                    // Shuffle and take first 8
-                    const shuffled = allFiveStarReviews.sort(() => Math.random() - 0.5);
-                    set({ highRatedReviews: shuffled.slice(0, 8) });
+                    set({ highRatedReviews: reviews });
                 } catch (error) {
-                    console.error('Failed to fetch high-rated reviews:', error);
+                    console.error('Failed to fetch recent reviews:', error);
                     set({ highRatedReviews: [] });
                 }
             },
