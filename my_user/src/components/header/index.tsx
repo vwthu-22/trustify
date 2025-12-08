@@ -23,13 +23,14 @@ export default function Header() {
     }, [fetchUserInfo]);
 
     // Fetch notifications when user is authenticated
-    useEffect(() => {
-        if (isAuthenticated) {
-            fetchNotifications();
-            const interval = setInterval(fetchNotifications, 30000);
-            return () => clearInterval(interval);
-        }
-    }, [isAuthenticated, fetchNotifications]);
+    // DISABLED: Backend doesn't have /api/notification/my-notifications endpoint yet
+    // useEffect(() => {
+    //     if (isAuthenticated) {
+    //         fetchNotifications();
+    //         const interval = setInterval(fetchNotifications, 30000);
+    //         return () => clearInterval(interval);
+    //     }
+    // }, [isAuthenticated, fetchNotifications]);
 
     const isHomePage = pathname === '/';
 

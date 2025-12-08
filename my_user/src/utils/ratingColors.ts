@@ -57,3 +57,5 @@ export const getRatingLabel = (rating: number): string => {
     if (rating >= 2.5) return 'Average';
     return 'Poor';
 };
+
+
