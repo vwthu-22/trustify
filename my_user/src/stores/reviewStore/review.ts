@@ -356,18 +356,16 @@ const useReviewStore = create<ReviewState>()(
                 }
             },
 
-            // Fetch recent reviews (using new backend endpoint)
-            // API: GET /api/review/recent-review?page=0&size=10
+            // Fetch recent reviews (using local proxy to bypass CORS)
+            // API: GET /api/recent-reviews?page=0&size=10
             fetchHighRatedReviews: async () => {
                 try {
-                    const url = `${API_BASE_URL}/api/review/recent-review?page=0&size=10`;
+                    // Use local API proxy to avoid CORS issues
+                    const url = `/api/recent-reviews?page=0&size=10`;
                     console.log('Fetching recent reviews from:', url);
 
                     const response = await fetch(url, {
                         method: 'GET',
-                        headers: {
-                            'ngrok-skip-browser-warning': 'true',
-                        },
                     });
 
                     if (!response.ok) {
