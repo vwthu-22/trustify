@@ -13,7 +13,6 @@ export default function BusinessRegister() {
   const [formData, setFormData] = useState({
     website: '',
     companyName: '',
-    name: '',
     jobTitle: '',
     workEmail: '',
     country: '',
@@ -190,15 +189,6 @@ export default function BusinessRegister() {
                   required
                   value={formData.companyName}
                   onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-                />
-
-                <input
-                  type="text"
-                  placeholder="Name"
-                  required
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
                 />
 

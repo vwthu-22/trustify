@@ -106,6 +106,8 @@ export default function CompanyReviewPage() {
         // Refresh reviews after successful submission
         if (businessId) {
             fetchReviewsByCompany(businessId, 0, 10);
+            // Also refresh all reviews to update rating statistics
+            fetchAllReviewsByCompany(businessId);
         }
     };
 
@@ -340,11 +342,11 @@ export default function CompanyReviewPage() {
                                 </div>
                             </div>
 
-                            {/* How Company Uses - Hidden on mobile */}
+                            {/* How Company Uses - Hidden on mobile
                             <Link href="#" className="hidden lg:flex items-center gap-1 text-xs sm:text-sm text-gray-900 hover:underline">
                                 How this company uses Trustify
                                 <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4" />
-                            </Link>
+                            </Link> */}
                         </div>
                     </div>
                 </div>

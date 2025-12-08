@@ -1,6 +1,6 @@
 'use client'
-import React, { useState } from 'react';
-import { X, Info, Edit } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Info, Sparkles } from 'lucide-react';
 import useRatingStore from '@/stores/ratingStore/rating';
 import useReviewStore from '@/stores/reviewStore/review';
 import useUserAuthStore from '@/stores/userAuthStore/user';
@@ -30,6 +30,7 @@ export default function WriteReviewModal({
     const [hoverRating, setHoverRating] = useState(0);
     const [reviewText, setReviewText] = useState('');
     const [reviewTitle, setReviewTitle] = useState('');
+    const [isTitleManuallyEdited, setIsTitleManuallyEdited] = useState(false);
     const [experienceDate, setExperienceDate] = useState('');
 
     const { submitRating, isLoading: ratingLoading, error: ratingError, clearError: clearRatingError } = useRatingStore();
@@ -41,6 +42,47 @@ export default function WriteReviewModal({
     const clearError = () => {
         clearRatingError();
         clearReviewError();
+    };
+
+    // Generate suggested title from review text (max 30 characters)
+    const generateSuggestedTitle = (text: string): string => {
+        if (!text.trim()) return '';
+
+        // Get first sentence
+        const firstSentence = text.split(/[.!?]/)[0].trim();
+
+        // Limit to 30 characters
+        if (firstSentence.length <= 30) {
+            return firstSentence;
+        }
+
+        // If too long, truncate at word boundary within 30 chars
+        const truncated = firstSentence.substring(0, 27);
+        const lastSpace = truncated.lastIndexOf(' ');
+        return lastSpace > 10 ? truncated.substring(0, lastSpace) + '...' : truncated + '...';
+    };
+
+    // Auto-suggest title when review text changes (if title hasn't been manually edited)
+    useEffect(() => {
+        if (!isTitleManuallyEdited && reviewText.trim()) {
+            const suggested = generateSuggestedTitle(reviewText);
+            setReviewTitle(suggested);
+        }
+    }, [reviewText, isTitleManuallyEdited]);
+
+    // Handle title change
+    const handleTitleChange = (value: string) => {
+        setReviewTitle(value);
+        setIsTitleManuallyEdited(true);
+    };
+
+    // Suggest title button handler
+    const handleSuggestTitle = () => {
+        if (reviewText.trim()) {
+            const suggested = generateSuggestedTitle(reviewText);
+            setReviewTitle(suggested);
+            setIsTitleManuallyEdited(false);
+        }
     };
 
     if (!isOpen) return null;
@@ -100,6 +142,7 @@ export default function WriteReviewModal({
         setRating(0);
         setReviewText('');
         setReviewTitle('');
+        setIsTitleManuallyEdited(false);
         setExperienceDate('');
     };
 
@@ -192,27 +235,43 @@ export default function WriteReviewModal({
                         </div>
 
                         <div className="mb-5">
-                            <label className="block text-base font-semibold text-gray-900 mb-2">
-                                Give your review a title
-                            </label>
+                            <div className="flex items-center justify-between mb-2">
+                                <label className="block text-base font-semibold text-gray-900">
+                                    Give your review a title
+                                </label>
+                                {reviewText.trim() && (
+                                    <button
+                                        type="button"
+                                        onClick={handleSuggestTitle}
+                                        disabled={isLoading || !reviewText.trim()}
+                                        className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 disabled:text-gray-400 transition"
+                                    >
+                                        <Sparkles className="w-3 h-3" />
+                                        Suggest title
+                                    </button>
+                                )}
+                            </div>
                             <div className="relative">
                                 <input
                                     type="text"
                                     value={reviewTitle}
-                                    onChange={(e) => setReviewTitle(e.target.value)}
+                                    onChange={(e) => handleTitleChange(e.target.value)}
                                     placeholder="What is important for people to know"
                                     required
                                     disabled={isLoading}
                                     className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm disabled:bg-gray-100"
                                 />
-                                <button
-                                    type="button"
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 hover:bg-gray-100 rounded transition"
-                                    disabled={isLoading}
-                                >
-                                    <Edit className="w-4 h-4 text-gray-600" />
-                                </button>
+                                {!isTitleManuallyEdited && reviewTitle && (
+                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
+                                        Auto
+                                    </span>
+                                )}
                             </div>
+                            {!reviewText.trim() && (
+                                <p className="text-xs text-gray-500 mt-1">
+                                    Write your experience first, and we'll suggest a title for you
+                                </p>
+                            )}
                         </div>
 
                         <div className="mb-5">

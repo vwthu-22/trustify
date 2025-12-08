@@ -7,7 +7,6 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://trustify.io.vn'
 interface BusinessFormData {
     website: string;
     companyName: string;
-    name: string;
     jobTitle: string;
     workEmail: string;
     country: string;
@@ -46,6 +45,21 @@ const useBusinessAuthStore = create<BusinessAuthState>()(
                 set({ isLoading: true, error: null, successMessage: null });
 
                 try {
+                    // Map frontend fields to backend fields
+                    const requestBody = {
+                        name: formData.companyName,
+                        websiteUrl: formData.website,
+                        jobTitle: formData.jobTitle,
+                        contactPhone: formData.phoneNumber,
+                        industry: formData.industry,
+                        workEmail: formData.workEmail,
+                        companySize: formData.numberOfEmployees,
+                        country: formData.country,
+                        annualRevenue: formData.annualRevenue,
+                    };
+
+                    console.log('Request Body (mapped):', requestBody);
+
                     const response = await fetch(`${API_BASE_URL}/api/companies/register`, {
                         method: 'POST',
                         credentials: 'include',
@@ -54,7 +68,7 @@ const useBusinessAuthStore = create<BusinessAuthState>()(
                             'ngrok-skip-browser-warning': 'true',
                             'bypass-tunnel-reminder': 'true',
                         },
-                        body: JSON.stringify(formData),
+                        body: JSON.stringify(requestBody),
                     });
 
                     console.log('Response Status:', response.status);
