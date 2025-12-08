@@ -100,7 +100,7 @@ export default function AboutReviews() {
                 <div>
                     <div className="flex items-center justify-between mb-6 sm:mb-8">
                         <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
-                            Recent 5-Star Reviews
+                            Recent Reviews
                         </h2>
                         <div className="flex gap-2">
                             <button
@@ -142,7 +142,7 @@ export default function AboutReviews() {
                         </div>
                     ) : highRatedReviews.length === 0 ? (
                         <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
-                            <p className="text-gray-600">No 5-star reviews found yet.</p>
+                            <p className="text-gray-600">No reviews found yet.</p>
                         </div>
                     ) : (
                         /* Reviews Grid - Scrollable on mobile */

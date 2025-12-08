@@ -118,6 +118,10 @@ export default function WriteReviewModal({
         }
 
         // Then submit review - using companyName (backend expects this)
+        console.log('=== User Info ===');
+        console.log('User object:', user);
+        console.log('User email:', user.email);
+
         const reviewData = {
             title: reviewTitle,
             description: reviewText,
@@ -128,6 +132,7 @@ export default function WriteReviewModal({
         };
 
         console.log('Submitting review with data:', reviewData);
+        console.log('Email being sent:', reviewData.email);
         const reviewSuccess = await createReview(reviewData);
 
         if (!reviewSuccess) {

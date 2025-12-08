@@ -196,8 +196,16 @@ const useReviewStore = create<ReviewState>()(
                     const data = await response.json();
                     console.log('Reviews Response:', data);
 
+                    // Map backend field names to frontend field names
+                    const mappedReviews = (data.reviews || []).map((review: any) => ({
+                        ...review,
+                        userName: review.userName || review.nameUser || review.user?.name,
+                        userEmail: review.userEmail || review.user?.email,
+                        companyName: review.companyName || review.nameCompany || review.company?.name,
+                    }));
+
                     set({
-                        reviews: data.reviews || [],
+                        reviews: mappedReviews,
                         currentPage: data.currentPage || 0,
                         totalPages: data.totalPages || 0,
                         totalItems: data.totalItems || 0,
@@ -319,8 +327,16 @@ const useReviewStore = create<ReviewState>()(
                     const data = await response.json();
                     console.log('My Reviews Response:', data);
 
+                    // Map backend field names to frontend field names
+                    const mappedReviews = (data.reviews || []).map((review: any) => ({
+                        ...review,
+                        userName: review.userName || review.nameUser || review.user?.name,
+                        userEmail: review.userEmail || review.user?.email,
+                        companyName: review.companyName || review.nameCompany || review.company?.name,
+                    }));
+
                     set({
-                        myReviews: data.reviews || [],
+                        myReviews: mappedReviews,
                         currentPage: data.currentPage || 0,
                         totalPages: data.totalPages || 0,
                         totalItems: data.totalItems || 0,
@@ -363,11 +379,13 @@ const useReviewStore = create<ReviewState>()(
                     const data = await response.json();
                     console.log('Recent Reviews Response:', data);
 
-                    // Map the reviews to include necessary fields
-                    const reviews = (data.reviews || []).map((review: Review) => ({
+                    // Map backend field names to frontend field names
+                    const reviews = (data.reviews || []).map((review: any) => ({
                         ...review,
-                        companyId: review.companyId || '',
-                        companyName: review.companyName || '',
+                        userName: review.userName || review.nameUser || review.user?.name,
+                        userEmail: review.userEmail || review.user?.email,
+                        companyId: review.companyId || review.company?.id || '',
+                        companyName: review.companyName || review.nameCompany || review.company?.name || '',
                     }));
 
                     set({ highRatedReviews: reviews });

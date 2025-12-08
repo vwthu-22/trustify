@@ -1,6 +1,8 @@
 'use client'
 import React from 'react';
 import { X, Info, Pencil, Trash2 } from 'lucide-react';
+import useAuthStore from '@/stores/userAuthStore/user';
+import useReviewStore from '@/stores/reviewStore/review';
 
 interface ReviewData {
   rating: number;
@@ -18,12 +20,19 @@ interface ThankYouModalProps {
   reviewData: ReviewData;
 }
 
-export default function ThankYouModal({ 
-  isOpen, 
-  onClose, 
-  reviewData 
+export default function ThankYouModal({
+  isOpen,
+  onClose,
+  reviewData
 }: ThankYouModalProps) {
+  const { user } = useAuthStore();
+  const { myReviews } = useReviewStore();
+
   if (!isOpen) return null;
+
+  // Get user country and review count from stores
+  const userCountry = user?.country || 'VN';
+  const reviewCount = myReviews?.length || 0;
 
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
@@ -32,10 +41,10 @@ export default function ThankYouModal({
         <div className="absolute top-0 left-0 w-full h-32 overflow-hidden pointer-events-none">
           <div className="flex gap-2">
             {[...Array(15)].map((_, i) => (
-              <svg 
-                key={i} 
+              <svg
+                key={i}
                 className="w-12 h-12 text-[#5adfd6] fill-current"
-                style={{ 
+                style={{
                   opacity: Math.random() * 0.5 + 0.5,
                   transform: `rotate(${Math.random() * 60 - 30}deg) scale(${Math.random() * 0.5 + 0.7})`,
                   marginTop: `${Math.random() * 20}px`
@@ -89,19 +98,19 @@ export default function ThankYouModal({
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center">
                 <span className="text-white font-semibold text-lg">
-                  {reviewData.userName ? reviewData.userName.charAt(0).toUpperCase() : 'T'}
+                  {reviewData.userName ? reviewData.userName.charAt(0).toUpperCase() : user?.name?.charAt(0).toUpperCase() || 'U'}
                 </span>
               </div>
               <div>
-                <h4 className="font-semibold text-gray-900">{reviewData.userName || 'Thu Vân'}</h4>
-                <p className="text-sm text-gray-600">0 reviews • VN</p>
+                <h4 className="font-semibold text-gray-900">{reviewData.userName || user?.name || 'User'}</h4>
+                <p className="text-sm text-gray-600">{reviewCount} reviews • {userCountry}</p>
               </div>
             </div>
 
             {/* Rating Stars */}
             <div className="flex gap-1 mb-3">
               {[...Array(5)].map((_, i) => (
-                <svg 
+                <svg
                   key={i}
                   className={`w-6 h-6 ${i < reviewData.rating ? 'text-[#5aa5df]' : 'text-gray-300'} fill-current`}
                   viewBox="0 0 24 24"
