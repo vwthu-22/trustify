@@ -9,6 +9,7 @@ export default function BusinessRegister() {
   const { registerBusiness, verifyOtp, resendOtp, isLoading, error, successMessage, clearError, clearSuccess } = useBusinessAuthStore();
 
   const [showOtpModal, setShowOtpModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [otpCode, setOtpCode] = useState(['', '', '', '', '', '']);
   const [formData, setFormData] = useState({
     website: '',
@@ -92,8 +93,17 @@ export default function BusinessRegister() {
     const success = await verifyOtp(formData.workEmail, code);
 
     if (success) {
-      router.push('/dashboard');
+      setShowOtpModal(false);
+      setShowSuccessModal(true);
     }
+  };
+
+  const handleGoToCompanyDashboard = () => {
+    window.location.href = 'https://trustify-company.vercel.app/';
+  };
+
+  const handleGoHome = () => {
+    router.push('/');
   };
 
   const handleResendOtp = async () => {
@@ -364,6 +374,66 @@ export default function BusinessRegister() {
           </div>
         </div>
       )}
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-8 relative animate-fadeIn">
+            {/* Success Icon */}
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+
+            {/* Success Message */}
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                Account Created Successfully!
+              </h2>
+              <p className="text-gray-600">
+                Your company account <span className="font-semibold text-gray-900">{formData.companyName}</span> has been created.
+              </p>
+              <p className="text-gray-600 mt-2">
+                Would you like to go to your Company Dashboard now?
+              </p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={handleGoHome}
+                className="flex-1 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition"
+              >
+                No
+              </button>
+              <button
+                onClick={handleGoToCompanyDashboard}
+                className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition"
+              >
+                Yes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Animation styles */}
+      <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out;
+        }
+      `}</style>
     </div>
   );
 }

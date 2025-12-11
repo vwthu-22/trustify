@@ -1,10 +1,11 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Info, Mail, User, Star, Settings, ShieldCheck, Crown, X
 } from 'lucide-react';
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useCompanyStore } from '@/store/useCompanyStore';
 
 // Đồng bộ menuItems với sidebar
 const getPageTitle = (pathname: string): string => {
@@ -36,12 +37,27 @@ const getPageTitle = (pathname: string): string => {
 
 export default function Header() {
     const pathname = usePathname();
+    const router = useRouter();
     const pageTitle = getPageTitle(pathname);
+
+    const { company, fetchCompanyProfile, logout } = useCompanyStore();
 
     const [showHelpDropdown, setShowHelpDropdown] = useState(false);
     const [showSupportModal, setShowSupportModal] = useState(false);
-    const [showUserDropdown, setShowUserDropdown] = useState(false);
+    const [showCompanyDropdown, setShowCompanyDropdown] = useState(false);
     const [unreadMessages] = useState(3);
+
+    // Fetch company profile on mount if not already loaded
+    useEffect(() => {
+        if (!company) {
+            fetchCompanyProfile();
+        }
+    }, [company, fetchCompanyProfile]);
+
+    const handleLogout = async () => {
+        await logout();
+        router.push('/login');
+    };
 
     return (
         <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
@@ -221,31 +237,40 @@ export default function Header() {
                     </div>
                 )}
 
-                {/* User Profile Button */}
+                {/* Company Profile Button */}
                 <button
-                    onClick={() => setShowUserDropdown(!showUserDropdown)}
+                    onClick={() => setShowCompanyDropdown(!showCompanyDropdown)}
                     className="relative p-2 bg-blue-100 hover:bg-blue-200 rounded-full transition"
-                    title="Account"
+                    title="Company Account"
                 >
                     <User className="w-5 h-5 text-blue-600" />
                 </button>
 
-                {/* User Dropdown */}
-                {showUserDropdown && (
+                {/* Company Dropdown */}
+                {showCompanyDropdown && (
                     <div className="absolute right-6 top-16 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
                         <div className="p-4 border-b border-gray-200">
-                            <p className="font-bold text-gray-900">Nguyễn Văn A</p>
-                            <p className="text-sm text-gray-600">admin@company.com</p>
-                            <div className="mt-2">
-                                <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
-                                    Free Plan
+                            <p className="font-bold text-gray-900">{company?.name || 'Loading...'}</p>
+                            <p className="text-sm text-gray-600">{company?.email || ''}</p>
+                            <div className="mt-2 flex items-center gap-2">
+                                <span className={`px-3 py-1 text-xs font-semibold rounded-full ${company?.plan === 'Premium' ? 'bg-purple-100 text-purple-700' :
+                                        company?.plan === 'Pro' ? 'bg-blue-100 text-blue-700' :
+                                            'bg-green-100 text-green-700'
+                                    }`}>
+                                    {company?.plan || 'Free'} Plan
                                 </span>
+                                {company?.verified && (
+                                    <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full flex items-center gap-1">
+                                        <ShieldCheck className="w-3 h-3" />
+                                        Verified
+                                    </span>
+                                )}
                             </div>
                         </div>
                         <div className="p-2">
                             <a href="/settings" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-lg">
                                 <Settings className="w-4 h-4 text-gray-600" />
-                                <span className="text-sm text-gray-700">Account Settings</span>
+                                <span className="text-sm text-gray-700">Company Settings</span>
                             </a>
                             <a href="/subscription" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-lg">
                                 <Crown className="w-4 h-4 text-gray-600" />
@@ -256,7 +281,10 @@ export default function Header() {
                                 <span className="text-sm text-gray-700">Verification Status</span>
                             </a>
                             <hr className="my-2" />
-                            <button className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 rounded-lg text-red-600">
+                            <button
+                                onClick={handleLogout}
+                                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 rounded-lg text-red-600"
+                            >
                                 <span className="text-sm font-medium">Sign Out</span>
                             </button>
                         </div>

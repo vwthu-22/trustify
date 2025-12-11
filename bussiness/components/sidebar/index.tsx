@@ -89,12 +89,6 @@ export default function Sidebar() {
             badge: 'Verify'
         },
         {
-            href: '/branches',
-            label: 'Branches',
-            icon: Building2,
-            title: 'Manage Branches'
-        },
-        {
             href: '/subscription',
             label: 'Subscription',
             icon: Crown,

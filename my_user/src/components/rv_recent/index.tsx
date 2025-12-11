@@ -10,7 +10,7 @@ export default function AboutReviews() {
     const [isLoading, setIsLoading] = useState(true);
     const [scrollIndex, setScrollIndex] = useState(0);
 
-    // Fetch 5-star reviews using store
+    // Fetch reviews using store
     useEffect(() => {
         const loadReviews = async () => {
             setIsLoading(true);

@@ -1,104 +1,90 @@
 'use client';
 
-import React, { useState } from 'react';
-import { ArrowLeft, Check, X, Mail, Lock } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Check, X, Mail } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useCompanyStore } from '@/store/useCompanyStore';
 
 export default function LoginPage() {
+    const router = useRouter();
+    const { sendVerificationCode, verifyCode, isLoading, error: storeError } = useCompanyStore();
+
     const [email, setEmail] = useState('');
-    const [verificationCode, setVerificationCode] = useState('');
+    const [otpDigits, setOtpDigits] = useState<string[]>(['', '', '', '', '', '']);
     const [showVerificationModal, setShowVerificationModal] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState('');
+    const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
     const handleSendCode = async (e: React.FormEvent) => {
         e.preventDefault();
-        setIsLoading(true);
-        setError('');
 
-        try {
-            // TODO: Replace with your actual API endpoint
-            const response = await fetch('/api/auth/send-verification-code', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email }),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to send verification code');
-            }
-
-            // Show verification modal
+        const success = await sendVerificationCode(email);
+        if (success) {
             setShowVerificationModal(true);
-        } catch (err) {
-            setError('Failed to send verification code. Please try again.');
-            console.error('Error sending verification code:', err);
-        } finally {
-            setIsLoading(false);
+            setOtpDigits(['', '', '', '', '', '']);
+            // Focus first input after modal opens
+            setTimeout(() => inputRefs.current[0]?.focus(), 100);
+        }
+    };
+
+    const handleOtpChange = (index: number, value: string) => {
+        // Only allow digits
+        if (value && !/^\d$/.test(value)) return;
+
+        const newDigits = [...otpDigits];
+        newDigits[index] = value;
+        setOtpDigits(newDigits);
+
+        // Auto-focus next input
+        if (value && index < 5) {
+            inputRefs.current[index + 1]?.focus();
+        }
+    };
+
+    const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+        // Handle backspace
+        if (e.key === 'Backspace' && !otpDigits[index] && index > 0) {
+            inputRefs.current[index - 1]?.focus();
+        }
+    };
+
+    const handleOtpPaste = (e: React.ClipboardEvent) => {
+        e.preventDefault();
+        const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+        if (pastedData) {
+            const newDigits = [...otpDigits];
+            for (let i = 0; i < pastedData.length && i < 6; i++) {
+                newDigits[i] = pastedData[i];
+            }
+            setOtpDigits(newDigits);
+            // Focus the next empty input or the last one
+            const nextEmptyIndex = newDigits.findIndex(d => !d);
+            if (nextEmptyIndex !== -1) {
+                inputRefs.current[nextEmptyIndex]?.focus();
+            } else {
+                inputRefs.current[5]?.focus();
+            }
         }
     };
 
     const handleVerifyCode = async (e: React.FormEvent) => {
         e.preventDefault();
-        setIsLoading(true);
-        setError('');
+        const code = otpDigits.join('');
+        if (code.length !== 6) return;
 
-        try {
-            // TODO: Replace with your actual API endpoint
-            const response = await fetch('/api/auth/verify-code', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, code: verificationCode }),
-            });
-
-            if (!response.ok) {
-                throw new Error('Invalid verification code');
-            }
-
-            // Set auth cookie
-            document.cookie = 'auth-token=logged-in; path=/; max-age=86400'; // 1 day
-
-            // Redirect to dashboard
-            window.location.href = '/';
-        } catch (err) {
-            setError('Invalid verification code. Please try again.');
-            console.error('Error verifying code:', err);
-        } finally {
-            setIsLoading(false);
+        const success = await verifyCode(email, code);
+        if (success) {
+            router.push('/');
         }
     };
 
     const handleResendCode = async () => {
-        setIsLoading(true);
-        setError('');
-
-        try {
-            const response = await fetch('/api/auth/send-verification-code', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email }),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to resend verification code');
-            }
-
-            alert('Verification code resent successfully!');
-        } catch (err) {
-            setError('Failed to resend code. Please try again.');
-            console.error('Error resending code:', err);
-        } finally {
-            setIsLoading(false);
-        }
+        await sendVerificationCode(email);
+        setOtpDigits(['', '', '', '', '', '']);
+        setTimeout(() => inputRefs.current[0]?.focus(), 100);
     };
 
     return (
-        <div className="bg-gray-50 flex items-center p-8">
+        <div className="bg-gray-50 flex items-center p-8 max-h-screen">
             {/* Left Sidebar - Benefits */}
             <aside className="hidden rounded-lg lg:block w-2/5 bg-white p-10 relative overflow-hidden max-h-[1000px] ">
                 <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-blue-100 rounded-full opacity-50"></div>
@@ -112,17 +98,17 @@ export default function LoginPage() {
                         </svg>
                         <div>
                             <div className="text-2xl font-bold">Trustify</div>
-                            <div className="text-sm text-gray-600">For Company</div>
+                            <div className="text-sm text-gray-600">For Business</div>
                         </div>
                     </div>
 
                     <div className="space-y-6">
                         <div>
                             <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                                Welcome back to<br />Trustify Company
+                                Welcome back to<br />Trustify Business
                             </h2>
                             <p className="text-gray-600 text-lg">
-                                Sign in to access your company.
+                                Sign in to manage your company reviews.
                             </p>
                         </div>
 
@@ -171,7 +157,7 @@ export default function LoginPage() {
                         </svg>
                         <div>
                             <div className="text-2xl font-bold">Trustify</div>
-                            <div className="text-sm text-gray-600">For Company</div>
+                            <div className="text-sm text-gray-600">For Business</div>
                         </div>
                     </div>
 
@@ -179,7 +165,7 @@ export default function LoginPage() {
                         <form onSubmit={handleSendCode} className="space-y-6">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Work Email
+                                    Company Email
                                 </label>
                                 <div className="relative">
                                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -187,16 +173,16 @@ export default function LoginPage() {
                                         type="email"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        placeholder="you@company.com"
+                                        placeholder="contact@company.com"
                                         required
                                         className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
                                     />
                                 </div>
                             </div>
 
-                            {error && (
+                            {storeError && (
                                 <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-                                    {error}
+                                    {storeError}
                                 </div>
                             )}
 
@@ -230,7 +216,7 @@ export default function LoginPage() {
 
             {/* Verification Code Modal */}
             {showVerificationModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 animate-fadeIn">
+                <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center p-4 z-50 animate-fadeIn">
                     <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative animate-slideUp">
                         {/* Close Button */}
                         <button
@@ -257,23 +243,29 @@ export default function LoginPage() {
                         {/* Verification Form */}
                         <form onSubmit={handleVerifyCode} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 mb-3 text-center">
                                     Verification Code
                                 </label>
-                                <input
-                                    type="text"
-                                    value={verificationCode}
-                                    onChange={(e) => setVerificationCode(e.target.value)}
-                                    placeholder="Enter 6-digit code"
-                                    maxLength={6}
-                                    required
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition text-center text-2xl tracking-widest font-semibold"
-                                />
+                                <div className="flex justify-center gap-2" onPaste={handleOtpPaste}>
+                                    {otpDigits.map((digit, index) => (
+                                        <input
+                                            key={index}
+                                            ref={(el) => { inputRefs.current[index] = el; }}
+                                            type="text"
+                                            inputMode="numeric"
+                                            value={digit}
+                                            onChange={(e) => handleOtpChange(index, e.target.value)}
+                                            onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                                            maxLength={1}
+                                            className="w-12 h-14 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                                        />
+                                    ))}
+                                </div>
                             </div>
 
-                            {error && (
+                            {storeError && (
                                 <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-                                    {error}
+                                    {storeError}
                                 </div>
                             )}
 
