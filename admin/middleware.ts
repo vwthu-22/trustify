@@ -12,12 +12,12 @@ export function middleware(request: NextRequest) {
     );
 
     // If not authenticated and trying to access protected route
-    if (!isAuthenticated && !isPublicRoute) {
-        const loginUrl = new URL('/login', request.url);
-        // Optionally store the original URL to redirect back after login
-        loginUrl.searchParams.set('callbackUrl', request.nextUrl.pathname);
-        return NextResponse.redirect(loginUrl);
-    }
+    // if (!isAuthenticated && !isPublicRoute) {
+    //     const loginUrl = new URL('/login', request.url);
+    //     // Optionally store the original URL to redirect back after login
+    //     loginUrl.searchParams.set('callbackUrl', request.nextUrl.pathname);
+    //     return NextResponse.redirect(loginUrl);
+    // }
 
     // If authenticated and trying to access login page, redirect to dashboard
     if (isAuthenticated && isPublicRoute) {
