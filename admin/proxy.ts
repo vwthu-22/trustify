@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
     // Check if user is authenticated via cookie
     const isAuthenticated = request.cookies.get('admin-auth');
 
