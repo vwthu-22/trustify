@@ -1,22 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { User, Building2, Mail, Phone, Lock, Bell, Globe, Save, CheckCircle } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-import useLanguageStore, { Locale } from '@/store/useLanguageStore';
 
 export default function SettingsPage() {
-    const t = useTranslations('settings');
-    const tCommon = useTranslations('common');
-    const { locale, setLocale } = useLanguageStore();
-
     const [saved, setSaved] = useState(false);
-    const [activeTab, setActiveTab] = useState<'profile' | 'company' | 'notifications' | 'security' | 'language'>('profile');
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
+    const [activeTab, setActiveTab] = useState<'profile' | 'company' | 'notifications' | 'security'>('profile');
 
     const [profileData, setProfileData] = useState({
         name: 'Nguyễn Văn A',
@@ -49,19 +38,12 @@ export default function SettingsPage() {
         setTimeout(() => setSaved(false), 3000);
     };
 
-    const handleLanguageChange = (newLocale: Locale) => {
-        setLocale(newLocale);
-    };
-
     const tabs = [
         { id: 'profile', name: 'Profile', icon: User },
         { id: 'company', name: 'Company Info', icon: Building2 },
         { id: 'notifications', name: 'Notifications', icon: Bell },
-        { id: 'security', name: 'Security', icon: Lock },
-        { id: 'language', name: t('language'), icon: Globe }
+        { id: 'security', name: 'Security', icon: Lock }
     ];
-
-    if (!mounted) return null;
 
     return (
         <div className="space-y-8">
@@ -376,37 +358,6 @@ export default function SettingsPage() {
                                         </p>
                                         <button className="px-6 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors">
                                             Delete Account
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Language Tab */}
-                        {activeTab === 'language' && (
-                            <div className="space-y-6">
-                                <div>
-                                    <h3 className="text-lg font-bold text-gray-900 mb-4">{t('language')}</h3>
-                                    <div className="flex gap-3">
-                                        <button
-                                            onClick={() => handleLanguageChange('vi')}
-                                            className={`flex-1 py-4 px-6 rounded-xl border-2 transition flex items-center justify-center gap-3 ${locale === 'vi'
-                                                    ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                                    : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                                                }`}
-                                        >
-                                            <span className="text-2xl">🇻🇳</span>
-                                            <span className="font-medium">Tiếng Việt</span>
-                                        </button>
-                                        <button
-                                            onClick={() => handleLanguageChange('en')}
-                                            className={`flex-1 py-4 px-6 rounded-xl border-2 transition flex items-center justify-center gap-3 ${locale === 'en'
-                                                    ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                                    : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                                                }`}
-                                        >
-                                            <span className="text-2xl">🇺🇸</span>
-                                            <span className="font-medium">English</span>
                                         </button>
                                     </div>
                                 </div>
