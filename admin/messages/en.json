@@ -1,0 +1,220 @@
+{
+    "common": {
+        "save": "Save Changes",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "edit": "Edit",
+        "create": "Create",
+        "search": "Search",
+        "filter": "Filter",
+        "loading": "Loading...",
+        "success": "Success",
+        "error": "Error",
+        "confirm": "Confirm",
+        "back": "Back",
+        "next": "Next",
+        "previous": "Previous",
+        "all": "All",
+        "active": "Active",
+        "inactive": "Inactive",
+        "suspended": "Suspended",
+        "login": "Login",
+        "logout": "Logout",
+        "profile": "Profile",
+        "settings": "Settings"
+    },
+    "header": {
+        "search": "Search...",
+        "notifications": "Notifications",
+        "signOut": "Sign Out"
+    },
+    "sidebar": {
+        "dashboard": "Dashboard",
+        "users": "User Management",
+        "companies": "Company Management",
+        "reviews": "Review Management",
+        "reports": "Violation Reports",
+        "support": "Support",
+        "billing": "Billing & Plans",
+        "settings": "System Settings"
+    },
+    "login": {
+        "title": "Trustify Admin",
+        "subtitle": "Sign in to access the admin panel",
+        "email": "Email",
+        "emailPlaceholder": "admin@trustify.io.vn",
+        "password": "Password",
+        "passwordPlaceholder": "Enter your password",
+        "submit": "Sign In",
+        "signingIn": "Signing in...",
+        "protectedArea": "Protected area. Authorized personnel only."
+    },
+    "dashboard": {
+        "title": "Dashboard",
+        "subtitle": "System Overview",
+        "totalUsers": "Total Users",
+        "totalCompanies": "Total Companies",
+        "totalReviews": "Total Reviews",
+        "pendingReports": "Pending Reports"
+    },
+    "users": {
+        "title": "User Management",
+        "addNewAdmin": "Add New Admin",
+        "searchPlaceholder": "Search users by name or email...",
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "status": "Status",
+        "joinedDate": "Joined Date",
+        "actions": "Actions",
+        "showing": "Showing",
+        "to": "to",
+        "of": "of",
+        "noUsers": "No users found",
+        "createAdmin": {
+            "title": "Add New Admin",
+            "fullName": "Full Name",
+            "fullNamePlaceholder": "John Doe",
+            "email": "Email",
+            "emailPlaceholder": "admin@example.com",
+            "password": "Password",
+            "roleNote": "This user will have administrator privileges.",
+            "submit": "Create Admin"
+        },
+        "editStatus": {
+            "title": "Change Status",
+            "selectStatus": "Select new status:",
+            "current": "(Current)"
+        },
+        "deleteConfirm": {
+            "title": "Delete User?",
+            "message": "Are you sure you want to delete:"
+        }
+    },
+    "profile": {
+        "title": "Profile",
+        "subtitle": "Manage your admin account information",
+        "updated": "Profile updated successfully!",
+        "emailAddress": "Email Address",
+        "emailNote": "Email cannot be changed",
+        "role": "Role",
+        "lastLogin": "Last Login",
+        "security": "Security",
+        "securitySubtitle": "Manage your password and security settings",
+        "password": "Password",
+        "lastChanged": "Last changed:",
+        "changePassword": "Change Password",
+        "recentActivity": "Recent Activity",
+        "activities": {
+            "loggedIn": "Logged in",
+            "updatedUser": "Updated user status",
+            "createdAdmin": "Created new admin",
+            "reviewedReports": "Reviewed reports"
+        }
+    },
+    "settings": {
+        "title": "Settings",
+        "subtitle": "Manage your admin panel preferences",
+        "saved": "Settings saved successfully!",
+        "notifications": {
+            "title": "Notifications",
+            "subtitle": "Configure how you receive notifications",
+            "email": "Email Notifications",
+            "emailDesc": "Receive updates via email",
+            "push": "Push Notifications",
+            "pushDesc": "Receive push notifications in browser",
+            "weekly": "Weekly Report",
+            "weeklyDesc": "Receive weekly summary reports",
+            "newUser": "New User Alerts",
+            "newUserDesc": "Get notified when new users register"
+        },
+        "appearance": {
+            "title": "Appearance",
+            "subtitle": "Customize the look and feel",
+            "theme": "Theme",
+            "light": "Light",
+            "dark": "Dark",
+            "system": "System",
+            "language": "Language"
+        },
+        "security": {
+            "title": "Security",
+            "subtitle": "Manage your security preferences",
+            "twoFactor": "Two-Factor Authentication",
+            "twoFactorDesc": "Add an extra layer of security",
+            "loginAlerts": "Login Alerts",
+            "loginAlertsDesc": "Get notified of new login attempts",
+            "sessionTimeout": "Session Timeout",
+            "sessionTimeoutDesc": "Auto logout after inactivity",
+            "minutes": "minutes",
+            "hour": "hour",
+            "hours": "hours"
+        },
+        "dangerZone": {
+            "title": "Danger Zone",
+            "subtitle": "Irreversible and destructive actions",
+            "deleteAccount": "Delete Account",
+            "deleteAccountDesc": "Permanently delete your admin account"
+        }
+    },
+    "billing": {
+        "title": "Billing & Plans",
+        "subtitle": "Manage subscription plans, features and transactions",
+        "createPlan": "Create New Plan",
+        "totalRevenue": "Total Revenue",
+        "activePlans": "Active Plans",
+        "paidTransactions": "Paid Transactions",
+        "totalFeatures": "Total Features",
+        "tabs": {
+            "overview": "Overview",
+            "plans": "Plans",
+            "features": "Features"
+        },
+        "transactions": {
+            "title": "Recent Transactions",
+            "export": "Export",
+            "invoiceId": "Invoice ID",
+            "company": "Company",
+            "amount": "Amount",
+            "status": "Status",
+            "date": "Date",
+            "paid": "Paid",
+            "pending": "Pending",
+            "failed": "Failed"
+        },
+        "plans": {
+            "noPlan": "No plans yet",
+            "createFirst": "Create first plan",
+            "free": "Free",
+            "days": "days",
+            "duration": "duration",
+            "moreFeatures": "more features",
+            "viewAll": "View all"
+        },
+        "createPlanModal": {
+            "title": "Create New Plan",
+            "editTitle": "Edit Plan",
+            "name": "Plan Name",
+            "namePlaceholder": "e.g., Pro Plan",
+            "description": "Description",
+            "descriptionPlaceholder": "Describe the plan benefits...",
+            "price": "Price ($)",
+            "durationDays": "Duration (days)",
+            "activePlan": "Active Plan",
+            "showToCustomers": "Show this plan to customers",
+            "creating": "Creating...",
+            "updating": "Updating...",
+            "createButton": "Create Plan",
+            "updateButton": "Update Plan"
+        },
+        "deletePlanModal": {
+            "title": "Delete Plan?",
+            "message": "This action cannot be undone. All data associated with this plan will be permanently removed."
+        },
+        "features": {
+            "title": "All Features",
+            "addFeature": "Add Feature",
+            "noFeatures": "No features available"
+        }
+    }
+}

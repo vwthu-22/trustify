@@ -1,0 +1,220 @@
+{
+  "common": {
+    "save": "Lưu thay đổi",
+    "cancel": "Hủy",
+    "delete": "Xóa",
+    "edit": "Sửa",
+    "create": "Tạo mới",
+    "search": "Tìm kiếm",
+    "filter": "Lọc",
+    "loading": "Đang tải...",
+    "success": "Thành công",
+    "error": "Lỗi",
+    "confirm": "Xác nhận",
+    "back": "Quay lại",
+    "next": "Tiếp",
+    "previous": "Trước",
+    "all": "Tất cả",
+    "active": "Hoạt động",
+    "inactive": "Không hoạt động",
+    "suspended": "Đình chỉ",
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất",
+    "profile": "Hồ sơ",
+    "settings": "Cài đặt"
+  },
+  "header": {
+    "search": "Tìm kiếm...",
+    "notifications": "Thông báo",
+    "signOut": "Đăng xuất"
+  },
+  "sidebar": {
+    "dashboard": "Bảng điều khiển",
+    "users": "Quản lý người dùng",
+    "companies": "Quản lý doanh nghiệp",
+    "reviews": "Quản lý đánh giá",
+    "reports": "Báo cáo vi phạm",
+    "support": "Hỗ trợ",
+    "billing": "Thanh toán & Gói",
+    "settings": "Cài đặt hệ thống"
+  },
+  "login": {
+    "title": "Trustify Admin",
+    "subtitle": "Đăng nhập để truy cập trang quản trị",
+    "email": "Email",
+    "emailPlaceholder": "admin@trustify.io.vn",
+    "password": "Mật khẩu",
+    "passwordPlaceholder": "Nhập mật khẩu",
+    "submit": "Đăng nhập",
+    "signingIn": "Đang đăng nhập...",
+    "protectedArea": "Khu vực được bảo vệ. Chỉ dành cho nhân viên được ủy quyền."
+  },
+  "dashboard": {
+    "title": "Bảng điều khiển",
+    "subtitle": "Tổng quan hệ thống",
+    "totalUsers": "Tổng người dùng",
+    "totalCompanies": "Tổng doanh nghiệp",
+    "totalReviews": "Tổng đánh giá",
+    "pendingReports": "Báo cáo chờ xử lý"
+  },
+  "users": {
+    "title": "Quản lý người dùng",
+    "addNewAdmin": "Thêm Admin mới",
+    "searchPlaceholder": "Tìm kiếm người dùng theo tên hoặc email...",
+    "name": "Tên",
+    "email": "Email",
+    "role": "Vai trò",
+    "status": "Trạng thái",
+    "joinedDate": "Ngày tham gia",
+    "actions": "Hành động",
+    "showing": "Hiển thị",
+    "to": "đến",
+    "of": "trong số",
+    "noUsers": "Không tìm thấy người dùng",
+    "createAdmin": {
+      "title": "Thêm Admin mới",
+      "fullName": "Họ và tên",
+      "fullNamePlaceholder": "Nguyễn Văn A",
+      "email": "Email",
+      "emailPlaceholder": "admin@example.com",
+      "password": "Mật khẩu",
+      "roleNote": "Người dùng này sẽ có quyền quản trị viên.",
+      "submit": "Tạo Admin"
+    },
+    "editStatus": {
+      "title": "Thay đổi trạng thái",
+      "selectStatus": "Chọn trạng thái mới:",
+      "current": "(Hiện tại)"
+    },
+    "deleteConfirm": {
+      "title": "Xóa người dùng?",
+      "message": "Bạn có chắc chắn muốn xóa:"
+    }
+  },
+  "profile": {
+    "title": "Hồ sơ",
+    "subtitle": "Quản lý thông tin tài khoản admin",
+    "updated": "Cập nhật hồ sơ thành công!",
+    "emailAddress": "Địa chỉ email",
+    "emailNote": "Không thể thay đổi email",
+    "role": "Vai trò",
+    "lastLogin": "Đăng nhập lần cuối",
+    "security": "Bảo mật",
+    "securitySubtitle": "Quản lý mật khẩu và cài đặt bảo mật",
+    "password": "Mật khẩu",
+    "lastChanged": "Thay đổi lần cuối:",
+    "changePassword": "Đổi mật khẩu",
+    "recentActivity": "Hoạt động gần đây",
+    "activities": {
+      "loggedIn": "Đã đăng nhập",
+      "updatedUser": "Đã cập nhật trạng thái người dùng",
+      "createdAdmin": "Đã tạo admin mới",
+      "reviewedReports": "Đã xem xét báo cáo"
+    }
+  },
+  "settings": {
+    "title": "Cài đặt",
+    "subtitle": "Quản lý tùy chọn trang quản trị",
+    "saved": "Đã lưu cài đặt thành công!",
+    "notifications": {
+      "title": "Thông báo",
+      "subtitle": "Cấu hình cách nhận thông báo",
+      "email": "Thông báo qua Email",
+      "emailDesc": "Nhận cập nhật qua email",
+      "push": "Thông báo đẩy",
+      "pushDesc": "Nhận thông báo đẩy trên trình duyệt",
+      "weekly": "Báo cáo hàng tuần",
+      "weeklyDesc": "Nhận báo cáo tổng hợp hàng tuần",
+      "newUser": "Cảnh báo người dùng mới",
+      "newUserDesc": "Được thông báo khi có người dùng mới đăng ký"
+    },
+    "appearance": {
+      "title": "Giao diện",
+      "subtitle": "Tùy chỉnh giao diện",
+      "theme": "Chủ đề",
+      "light": "Sáng",
+      "dark": "Tối",
+      "system": "Hệ thống",
+      "language": "Ngôn ngữ"
+    },
+    "security": {
+      "title": "Bảo mật",
+      "subtitle": "Quản lý tùy chọn bảo mật",
+      "twoFactor": "Xác thực hai yếu tố",
+      "twoFactorDesc": "Thêm một lớp bảo mật",
+      "loginAlerts": "Cảnh báo đăng nhập",
+      "loginAlertsDesc": "Được thông báo khi có đăng nhập mới",
+      "sessionTimeout": "Thời gian hết phiên",
+      "sessionTimeoutDesc": "Tự động đăng xuất sau khi không hoạt động",
+      "minutes": "phút",
+      "hour": "giờ",
+      "hours": "giờ"
+    },
+    "dangerZone": {
+      "title": "Vùng nguy hiểm",
+      "subtitle": "Các hành động không thể hoàn tác",
+      "deleteAccount": "Xóa tài khoản",
+      "deleteAccountDesc": "Xóa vĩnh viễn tài khoản admin của bạn"
+    }
+  },
+  "billing": {
+    "title": "Thanh toán & Gói",
+    "subtitle": "Quản lý gói đăng ký, tính năng và giao dịch",
+    "createPlan": "Tạo gói mới",
+    "totalRevenue": "Tổng doanh thu",
+    "activePlans": "Gói hoạt động",
+    "paidTransactions": "Giao dịch đã thanh toán",
+    "totalFeatures": "Tổng tính năng",
+    "tabs": {
+      "overview": "Tổng quan",
+      "plans": "Gói dịch vụ",
+      "features": "Tính năng"
+    },
+    "transactions": {
+      "title": "Giao dịch gần đây",
+      "export": "Xuất",
+      "invoiceId": "Mã hóa đơn",
+      "company": "Doanh nghiệp",
+      "amount": "Số tiền",
+      "status": "Trạng thái",
+      "date": "Ngày",
+      "paid": "Đã thanh toán",
+      "pending": "Đang chờ",
+      "failed": "Thất bại"
+    },
+    "plans": {
+      "noPlan": "Chưa có gói nào",
+      "createFirst": "Tạo gói đầu tiên",
+      "free": "Miễn phí",
+      "days": "ngày",
+      "duration": "Thời hạn",
+      "moreFeatures": "tính năng khác",
+      "viewAll": "Xem tất cả"
+    },
+    "createPlanModal": {
+      "title": "Tạo gói mới",
+      "editTitle": "Sửa gói",
+      "name": "Tên gói",
+      "namePlaceholder": "VD: Gói Pro",
+      "description": "Mô tả",
+      "descriptionPlaceholder": "Mô tả các lợi ích của gói...",
+      "price": "Giá ($)",
+      "durationDays": "Thời hạn (ngày)",
+      "activePlan": "Gói hoạt động",
+      "showToCustomers": "Hiển thị gói này cho khách hàng",
+      "creating": "Đang tạo...",
+      "updating": "Đang cập nhật...",
+      "createButton": "Tạo gói",
+      "updateButton": "Cập nhật gói"
+    },
+    "deletePlanModal": {
+      "title": "Xóa gói?",
+      "message": "Hành động này không thể hoàn tác. Tất cả dữ liệu liên quan đến gói này sẽ bị xóa vĩnh viễn."
+    },
+    "features": {
+      "title": "Tất cả tính năng",
+      "addFeature": "Thêm tính năng",
+      "noFeatures": "Không có tính năng nào"
+    }
+  }
+}

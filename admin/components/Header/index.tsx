@@ -95,11 +95,23 @@ export default function Header() {
                     </div>
 
                     <div className="py-1">
-                      <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                      <button
+                        onClick={() => {
+                          setShowDropdown(false)
+                          router.push('/profile')
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                      >
                         <User className="w-4 h-4 text-gray-400" />
                         Profile
                       </button>
-                      <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                      <button
+                        onClick={() => {
+                          setShowDropdown(false)
+                          router.push('/settings')
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                      >
                         <Settings className="w-4 h-4 text-gray-400" />
                         Settings
                       </button>

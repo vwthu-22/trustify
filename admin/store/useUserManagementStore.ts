@@ -48,6 +48,46 @@ interface UserManagementStore {
     clearError: () => void;
 }
 
+// ==================== Mock Data (for development) ====================
+
+const MOCK_USERS: User[] = [
+    { id: 1, fullName: 'Nguyen Van A', email: 'nguyenvana@gmail.com', role: 'USER', status: 'Active', createdAt: '2023-10-15T10:30:00' },
+    { id: 2, fullName: 'Tran Thi B', email: 'tranthib@company.com', role: 'BUSINESS', status: 'Active', createdAt: '2023-11-02T14:20:00' },
+    { id: 3, fullName: 'Le Van C', email: 'levanc@admin.com', role: 'ADMIN', status: 'Active', createdAt: '2023-09-20T08:00:00' },
+    { id: 4, fullName: 'Pham Thi D', email: 'phamthid@gmail.com', role: 'USER', status: 'Inactive', createdAt: '2023-12-05T16:45:00' },
+    { id: 5, fullName: 'Hoang Van E', email: 'hoangvane@tech.com', role: 'BUSINESS', status: 'Suspended', createdAt: '2023-10-30T11:15:00' },
+    { id: 6, fullName: 'Do Thi F', email: 'dothif@email.com', role: 'USER', status: 'Active', createdAt: '2023-11-15T09:30:00' },
+    { id: 7, fullName: 'Vu Van G', email: 'vuvang@business.com', role: 'BUSINESS', status: 'Active', createdAt: '2023-12-01T13:00:00' },
+    { id: 8, fullName: 'Bui Thi H', email: 'buithih@admin.com', role: 'ADMIN', status: 'Active', createdAt: '2023-08-10T07:30:00' },
+    { id: 9, fullName: 'Ngo Van I', email: 'ngovani@gmail.com', role: 'USER', status: 'Active', createdAt: '2023-11-20T15:00:00' },
+    { id: 10, fullName: 'Dang Thi K', email: 'dangthik@company.com', role: 'BUSINESS', status: 'Inactive', createdAt: '2023-10-05T10:00:00' },
+    { id: 11, fullName: 'Trinh Van L', email: 'trinhvanl@gmail.com', role: 'USER', status: 'Active', createdAt: '2023-12-10T11:30:00' },
+    { id: 12, fullName: 'Mai Thi M', email: 'maithim@tech.com', role: 'BUSINESS', status: 'Active', createdAt: '2023-09-25T14:00:00' },
+    { id: 13, fullName: 'Cao Van N', email: 'caovann@email.com', role: 'USER', status: 'Suspended', createdAt: '2023-11-08T08:45:00' },
+    { id: 14, fullName: 'Duong Thi O', email: 'duongthio@business.com', role: 'BUSINESS', status: 'Active', createdAt: '2023-10-18T16:30:00' },
+    { id: 15, fullName: 'Ly Van P', email: 'lyvanp@gmail.com', role: 'USER', status: 'Active', createdAt: '2023-12-15T12:00:00' },
+    { id: 16, fullName: 'Ho Thi Q', email: 'hothiq@company.com', role: 'USER', status: 'Inactive', createdAt: '2023-11-28T09:15:00' },
+    { id: 17, fullName: 'Ta Van R', email: 'tavanr@admin.com', role: 'ADMIN', status: 'Active', createdAt: '2023-07-15T10:00:00' },
+    { id: 18, fullName: 'Dinh Thi S', email: 'dinhthis@email.com', role: 'USER', status: 'Active', createdAt: '2023-12-20T14:30:00' },
+    { id: 19, fullName: 'Truong Van T', email: 'truongvant@tech.com', role: 'BUSINESS', status: 'Active', createdAt: '2023-10-22T11:45:00' },
+    { id: 20, fullName: 'Lam Thi U', email: 'lamthiu@gmail.com', role: 'USER', status: 'Active', createdAt: '2023-11-30T08:30:00' },
+    { id: 21, fullName: 'Quach Van V', email: 'quachvanv@company.com', role: 'BUSINESS', status: 'Suspended', createdAt: '2023-09-12T15:15:00' },
+    { id: 22, fullName: 'Chau Thi W', email: 'chauthiw@email.com', role: 'USER', status: 'Active', createdAt: '2023-12-08T13:45:00' },
+    { id: 23, fullName: 'Kieu Van X', email: 'kieuvanx@business.com', role: 'BUSINESS', status: 'Active', createdAt: '2023-10-28T10:30:00' },
+    { id: 24, fullName: 'Son Thi Y', email: 'sonthiy@gmail.com', role: 'USER', status: 'Inactive', createdAt: '2023-11-05T16:00:00' },
+    { id: 25, fullName: 'Tong Van Z', email: 'tongvanz@admin.com', role: 'ADMIN', status: 'Active', createdAt: '2023-06-20T09:00:00' },
+];
+
+// Helper function to get mock users with optional search filter
+function getMockUsers(searchQuery: string): User[] {
+    if (!searchQuery) return MOCK_USERS;
+    const query = searchQuery.toLowerCase();
+    return MOCK_USERS.filter(user =>
+        user.fullName.toLowerCase().includes(query) ||
+        user.email.toLowerCase().includes(query)
+    );
+}
+
 // ==================== Store Implementation ====================
 
 const useUserManagementStore = create<UserManagementStore>()(
@@ -68,7 +108,7 @@ const useUserManagementStore = create<UserManagementStore>()(
                 set({ isLoading: true, error: null });
                 try {
                     const searchQuery = get().searchQuery;
-                    let url = `${API_BASE_URL}/admin/users?page=${page}&size=${size}`;
+                    let url = `${API_BASE_URL}/admin/user/all?page=${page}&size=${size}`;
                     if (searchQuery) {
                         url += `&search=${encodeURIComponent(searchQuery)}`;
                     }
@@ -85,6 +125,24 @@ const useUserManagementStore = create<UserManagementStore>()(
                     if (!response.ok) {
                         if (response.status === 401) {
                             throw new Error('Unauthorized. Please login again.');
+                        }
+                        // API not available - use mock data for development
+                        if (response.status === 404) {
+                            console.warn('Users API not found, using mock data');
+                            const mockUsers = getMockUsers(searchQuery);
+                            const startIdx = page * size;
+                            const endIdx = startIdx + size;
+                            const paginatedUsers = mockUsers.slice(startIdx, endIdx);
+
+                            set({
+                                users: paginatedUsers,
+                                totalUsers: mockUsers.length,
+                                currentPage: page,
+                                totalPages: Math.ceil(mockUsers.length / size),
+                                pageSize: size,
+                                isLoading: false,
+                            });
+                            return;
                         }
                         throw new Error('Failed to fetch users');
                     }
@@ -114,6 +172,15 @@ const useUserManagementStore = create<UserManagementStore>()(
             createAdmin: async (data: CreateAdminData) => {
                 set({ isLoading: true, error: null });
                 try {
+                    const requestBody = {
+                        email: data.email,
+                        password: data.password,
+                        fullName: data.fullName,
+                        role: 'ADMIN', // Force ADMIN role
+                    };
+
+                    console.log('Creating admin with:', { ...requestBody, password: '***' });
+
                     const response = await fetch(`${API_BASE_URL}/admin/user/create`, {
                         method: 'POST',
                         credentials: 'include',
@@ -121,31 +188,33 @@ const useUserManagementStore = create<UserManagementStore>()(
                             'Content-Type': 'application/json',
                             'ngrok-skip-browser-warning': 'true',
                         },
-                        body: JSON.stringify({
-                            ...data,
-                            role: 'ADMIN', // Force ADMIN role
-                        }),
+                        body: JSON.stringify(requestBody),
                     });
 
-                    // Handle response
-                    let responseData;
+                    // Handle response - try to parse JSON first
+                    let responseData: Record<string, unknown> = {};
                     const contentType = response.headers.get('content-type');
                     if (contentType && contentType.includes('application/json')) {
                         responseData = await response.json();
+                        console.log('API response:', responseData);
                     } else {
                         const text = await response.text();
-                        responseData = { error: text };
+                        console.log('API response (text):', text);
+                        responseData = { error: text || `Error ${response.status}` };
                     }
 
                     if (!response.ok) {
-                        if (response.status === 400) {
-                            throw new Error(responseData.error || 'Email already exists or invalid data');
-                        } else if (response.status === 401) {
-                            throw new Error('Unauthorized. Please login again.');
-                        } else if (response.status === 403) {
-                            throw new Error('You do not have permission to create users');
-                        }
-                        throw new Error(responseData.error || 'Failed to create admin');
+                        // Extract error message from various possible response formats
+                        const errorMessage =
+                            responseData.error ||
+                            responseData.message ||
+                            responseData.errors ||
+                            (response.status === 400 ? 'Invalid data. Please check all fields.' : null) ||
+                            (response.status === 401 ? 'Unauthorized. Please login again.' : null) ||
+                            (response.status === 403 ? 'You do not have permission to create users' : null) ||
+                            `Server error (${response.status})`;
+
+                        throw new Error(String(errorMessage));
                     }
 
                     // Refresh users list
