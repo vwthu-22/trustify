@@ -3,10 +3,13 @@
 import { Search, Bell, LogOut, User, Settings, Shield } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import useAdminAuthStore from '@/store/useAdminAuthStore'
 
 export default function Header() {
   const router = useRouter();
+  const t = useTranslations('header');
+  const tCommon = useTranslations('common');
   const { adminUser, isAuthenticated, logout, checkAuthStatus } = useAdminAuthStore();
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -56,13 +59,13 @@ export default function Header() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               type="text"
-              placeholder="Search..."
+              placeholder={t('search')}
               className="w-full pl-12 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
             />
           </div>
 
           {/* Notifications */}
-          <button className="relative p-2.5 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+          <button className="relative p-2.5 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors" title={t('notifications')}>
             <Bell className="w-5 h-5 text-gray-600" />
             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
           </button>
@@ -103,7 +106,7 @@ export default function Header() {
                         className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                       >
                         <User className="w-4 h-4 text-gray-400" />
-                        Profile
+                        {tCommon('profile')}
                       </button>
                       <button
                         onClick={() => {
@@ -113,7 +116,7 @@ export default function Header() {
                         className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                       >
                         <Settings className="w-4 h-4 text-gray-400" />
-                        Settings
+                        {tCommon('settings')}
                       </button>
                     </div>
 
@@ -123,7 +126,7 @@ export default function Header() {
                         className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
                       >
                         <LogOut className="w-4 h-4" />
-                        Sign Out
+                        {t('signOut')}
                       </button>
                     </div>
                   </div>
@@ -136,7 +139,7 @@ export default function Header() {
                 className="flex items-center gap-2 pl-4 border-l border-gray-200 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
               >
                 <User className="w-4 h-4" />
-                Login
+                {tCommon('login')}
               </button>
             )}
           </div>

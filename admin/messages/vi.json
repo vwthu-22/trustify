@@ -29,12 +29,14 @@
     "signOut": "Đăng xuất"
   },
   "sidebar": {
+    "adminPanel": "Trang quản trị",
     "dashboard": "Bảng điều khiển",
-    "users": "Quản lý người dùng",
-    "companies": "Quản lý doanh nghiệp",
-    "reviews": "Quản lý đánh giá",
-    "reports": "Báo cáo vi phạm",
-    "support": "Hỗ trợ",
+    "users": "Người dùng",
+    "companies": "Doanh nghiệp",
+    "allCompanies": "Tất cả doanh nghiệp",
+    "verificationRequests": "Yêu cầu xác thực",
+    "moderation": "Kiểm duyệt nội dung",
+    "support": "Trung tâm hỗ trợ",
     "billing": "Thanh toán & Gói",
     "settings": "Cài đặt hệ thống"
   },

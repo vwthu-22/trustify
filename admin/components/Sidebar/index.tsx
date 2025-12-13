@@ -14,10 +14,12 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 export default function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
+  const t = useTranslations('sidebar')
   const [expandedMenus, setExpandedMenus] = useState<string[]>(['companies'])
 
   const toggleMenu = (key: string) => {
@@ -32,46 +34,46 @@ export default function Sidebar() {
     {
       key: 'dashboard',
       icon: Home,
-      label: 'Dashboard',
+      label: t('dashboard'),
       path: '/dashboard'
     },
     {
       key: 'users',
       icon: Users,
-      label: 'Users',
+      label: t('users'),
       path: '/users'
     },
     {
       key: 'companies',
       icon: Building2,
-      label: 'Companies',
+      label: t('companies'),
       subItems: [
-        { label: 'All Companies', path: '/companies' },
-        { label: 'Verification Requests', path: '/companies/verification', icon: FileCheck }
+        { label: t('allCompanies'), path: '/companies' },
+        { label: t('verificationRequests'), path: '/companies/verification', icon: FileCheck }
       ]
     },
     {
       key: 'moderation',
       icon: ShieldAlert,
-      label: 'Content Moderation',
+      label: t('moderation'),
       path: '/moderation'
     },
     {
       key: 'support',
       icon: MessageSquare,
-      label: 'Support Center',
+      label: t('support'),
       path: '/support'
     },
     {
       key: 'billing',
       icon: CreditCard,
-      label: 'Billing & Plans',
+      label: t('billing'),
       path: '/billing'
     },
     {
       key: 'settings',
       icon: Settings,
-      label: 'System Settings',
+      label: t('settings'),
       path: '/settings'
     }
   ]
@@ -87,7 +89,7 @@ export default function Sidebar() {
           </div>
           <div>
             <span className="text-xl font-bold text-gray-900 block leading-none">Trustify</span>
-            <span className="text-xs text-gray-500 font-medium">Admin Panel</span>
+            <span className="text-xs text-gray-500 font-medium">{t('adminPanel')}</span>
           </div>
         </div>
       </div>
@@ -104,8 +106,8 @@ export default function Sidebar() {
               <button
                 onClick={() => hasSubItems ? toggleMenu(item.key) : router.push(item.path!)}
                 className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors ${active && !hasSubItems
-                    ? 'bg-blue-50 text-blue-600'
-                    : 'text-gray-600 hover:bg-gray-50'
+                  ? 'bg-blue-50 text-blue-600'
+                  : 'text-gray-600 hover:bg-gray-50'
                   }`}
               >
                 <div className="flex items-center gap-3">
@@ -124,8 +126,8 @@ export default function Sidebar() {
                       key={subItem.path}
                       onClick={() => router.push(subItem.path)}
                       className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors ${isActive(subItem.path)
-                          ? 'text-blue-600 bg-blue-50 font-medium'
-                          : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
+                        ? 'text-blue-600 bg-blue-50 font-medium'
+                        : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
                         }`}
                     >
                       {subItem.label}

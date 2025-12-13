@@ -29,12 +29,14 @@
         "signOut": "Sign Out"
     },
     "sidebar": {
+        "adminPanel": "Admin Panel",
         "dashboard": "Dashboard",
-        "users": "User Management",
-        "companies": "Company Management",
-        "reviews": "Review Management",
-        "reports": "Violation Reports",
-        "support": "Support",
+        "users": "Users",
+        "companies": "Companies",
+        "allCompanies": "All Companies",
+        "verificationRequests": "Verification Requests",
+        "moderation": "Content Moderation",
+        "support": "Support Center",
         "billing": "Billing & Plans",
         "settings": "System Settings"
     },
