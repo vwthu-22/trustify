@@ -148,13 +148,24 @@ const useUserManagementStore = create<UserManagementStore>()(
                     }
 
                     const data = await response.json();
+                    console.log('Users API response:', data);
+
+                    // Ensure users is always an array
+                    let usersData = [];
+                    if (Array.isArray(data)) {
+                        usersData = data;
+                    } else if (data.content && Array.isArray(data.content)) {
+                        usersData = data.content;
+                    } else if (data.data && Array.isArray(data.data)) {
+                        usersData = data.data;
+                    }
 
                     // Handle paginated response
                     set({
-                        users: data.content || data,
-                        totalUsers: data.totalElements || data.length || 0,
-                        currentPage: data.number || page,
-                        totalPages: data.totalPages || Math.ceil((data.totalElements || data.length) / size),
+                        users: usersData,
+                        totalUsers: data.totalElements || data.total || usersData.length || 0,
+                        currentPage: data.number || data.page || page,
+                        totalPages: data.totalPages || Math.ceil((data.totalElements || data.total || usersData.length) / size),
                         pageSize: size,
                         isLoading: false,
                     });

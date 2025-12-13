@@ -36,9 +36,6 @@ export default function SettingsPage() {
         weeklyReport: true,
         newUserAlert: true,
 
-        // Appearance
-        theme: 'light' as 'light' | 'dark' | 'system',
-
         // Security
         twoFactorAuth: false,
         sessionTimeout: '30',
@@ -175,38 +172,13 @@ export default function SettingsPage() {
                         <Sun className="w-5 h-5 text-purple-600" />
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-gray-900">{t('appearance.title')}</h3>
-                        <p className="text-sm text-gray-500">{t('appearance.subtitle')}</p>
+                        <h3 className="text-lg font-bold text-gray-900">{t('appearance.language')}</h3>
                     </div>
                 </div>
                 <div className="p-6 space-y-6">
-                    {/* Theme */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-3">{t('appearance.theme')}</label>
-                        <div className="flex gap-3">
-                            {[
-                                { value: 'light', label: t('appearance.light'), icon: Sun },
-                                { value: 'dark', label: t('appearance.dark'), icon: Moon },
-                                { value: 'system', label: t('appearance.system'), icon: Monitor },
-                            ].map(({ value, label, icon: Icon }) => (
-                                <button
-                                    key={value}
-                                    onClick={() => setSettings({ ...settings, theme: value as typeof settings.theme })}
-                                    className={`flex-1 py-3 px-4 rounded-lg border-2 transition flex items-center justify-center gap-2 ${settings.theme === value
-                                            ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                            : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                                        }`}
-                                >
-                                    <Icon className="w-5 h-5" />
-                                    {label}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
 
                     {/* Language */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-3">{t('appearance.language')}</label>
                         <div className="flex gap-3">
                             <button
                                 onClick={() => handleLanguageChange('vi')}

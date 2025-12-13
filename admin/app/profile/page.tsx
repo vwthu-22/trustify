@@ -1,14 +1,14 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { User, Mail, Shield, Calendar, Key, Save, Loader2, CheckCircle } from 'lucide-react'
+import { User, Mail, Shield, Calendar, Key, CheckCircle } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import useAdminAuthStore from '@/store/useAdminAuthStore'
 
 export default function ProfilePage() {
+  const t = useTranslations('profile')
   const { adminUser, checkAuthStatus } = useAdminAuthStore()
 
-  const [isEditing, setIsEditing] = useState(false)
-  const [isSaving, setIsSaving] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
 
   const [formData, setFormData] = useState({
@@ -29,29 +29,19 @@ export default function ProfilePage() {
     }
   }, [adminUser])
 
-  const handleSave = async () => {
-    setIsSaving(true)
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    setIsSaving(false)
-    setIsEditing(false)
-    setShowSuccess(true)
-    setTimeout(() => setShowSuccess(false), 3000)
-  }
-
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Profile</h1>
-        <p className="text-gray-500 mt-1">Manage your admin account information</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t('title')}</h1>
+        <p className="text-gray-500 mt-1">{t('subtitle')}</p>
       </div>
 
       {/* Success Message */}
       {showSuccess && (
         <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-center gap-2">
           <CheckCircle className="w-5 h-5" />
-          Profile updated successfully!
+          {t('updated')}
         </div>
       )}
 
@@ -81,9 +71,9 @@ export default function ProfilePage() {
               <Mail className="w-5 h-5 text-blue-600" />
             </div>
             <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-500 mb-1">Email Address</label>
+              <label className="block text-sm font-medium text-gray-500 mb-1">{t('emailAddress')}</label>
               <p className="text-gray-900 font-medium">{formData.email}</p>
-              <p className="text-xs text-gray-400 mt-1">Email cannot be changed</p>
+              <p className="text-xs text-gray-400 mt-1">{t('emailNote')}</p>
             </div>
           </div>
 
@@ -93,7 +83,7 @@ export default function ProfilePage() {
               <Shield className="w-5 h-5 text-purple-600" />
             </div>
             <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-500 mb-1">Role</label>
+              <label className="block text-sm font-medium text-gray-500 mb-1">{t('role')}</label>
               <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">
                 <Shield className="w-3.5 h-3.5" />
                 {adminUser?.role || 'Administrator'}
@@ -107,7 +97,7 @@ export default function ProfilePage() {
               <Calendar className="w-5 h-5 text-green-600" />
             </div>
             <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-500 mb-1">Last Login</label>
+              <label className="block text-sm font-medium text-gray-500 mb-1">{t('lastLogin')}</label>
               <p className="text-gray-900">
                 {adminUser?.loginTime
                   ? new Date(adminUser.loginTime).toLocaleString('vi-VN')
@@ -121,8 +111,8 @@ export default function ProfilePage() {
       {/* Security Section */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="p-6 border-b border-gray-200">
-          <h3 className="text-lg font-bold text-gray-900">Security</h3>
-          <p className="text-sm text-gray-500">Manage your password and security settings</p>
+          <h3 className="text-lg font-bold text-gray-900">{t('security')}</h3>
+          <p className="text-sm text-gray-500">{t('securitySubtitle')}</p>
         </div>
         <div className="p-6">
           <div className="flex items-center justify-between">
@@ -131,12 +121,12 @@ export default function ProfilePage() {
                 <Key className="w-5 h-5 text-orange-600" />
               </div>
               <div>
-                <p className="font-medium text-gray-900">Password</p>
-                <p className="text-sm text-gray-500">Last changed: Never</p>
+                <p className="font-medium text-gray-900">{t('password')}</p>
+                <p className="text-sm text-gray-500">{t('lastChanged')} Never</p>
               </div>
             </div>
             <button className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-              Change Password
+              {t('changePassword')}
             </button>
           </div>
         </div>
@@ -145,14 +135,14 @@ export default function ProfilePage() {
       {/* Activity Log */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="p-6 border-b border-gray-200">
-          <h3 className="text-lg font-bold text-gray-900">Recent Activity</h3>
+          <h3 className="text-lg font-bold text-gray-900">{t('recentActivity')}</h3>
         </div>
         <div className="divide-y divide-gray-100">
           {[
-            { action: 'Logged in', time: 'Just now', icon: '🔐' },
-            { action: 'Updated user status', time: '2 hours ago', icon: '👤' },
-            { action: 'Created new admin', time: 'Yesterday', icon: '➕' },
-            { action: 'Reviewed reports', time: '2 days ago', icon: '📊' },
+            { action: t('activities.loggedIn'), time: 'Just now', icon: '🔐' },
+            { action: t('activities.updatedUser'), time: '2 hours ago', icon: '👤' },
+            { action: t('activities.createdAdmin'), time: 'Yesterday', icon: '➕' },
+            { action: t('activities.reviewedReports'), time: '2 days ago', icon: '📊' },
           ].map((activity, index) => (
             <div key={index} className="px-6 py-4 flex items-center gap-4">
               <span className="text-xl">{activity.icon}</span>

@@ -54,6 +54,8 @@
     "dashboard": {
         "title": "Dashboard",
         "subtitle": "System Overview",
+        "totalViews": "Total Views",
+        "totalRevenue": "Total Revenue",
         "totalUsers": "Total Users",
         "totalCompanies": "Total Companies",
         "totalReviews": "Total Reviews",

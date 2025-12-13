@@ -3,10 +3,12 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, Lock, Mail, Shield } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import useAdminAuthStore from '@/store/useAdminAuthStore';
 
 export default function AdminLoginPage() {
     const router = useRouter();
+    const t = useTranslations('login');
     const { login, isLoading, error, clearError } = useAdminAuthStore();
 
     const [email, setEmail] = useState('');
@@ -37,8 +39,8 @@ export default function AdminLoginPage() {
                         <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/30">
                             <Shield className="w-8 h-8 text-white" />
                         </div>
-                        <h1 className="text-2xl font-bold text-white mb-1">Trustify Admin</h1>
-                        <p className="text-gray-400 text-sm">Sign in to access the admin panel</p>
+                        <h1 className="text-2xl font-bold text-white mb-1">{t('title')}</h1>
+                        <p className="text-gray-400 text-sm">{t('subtitle')}</p>
                     </div>
 
                     {/* Login Form */}
@@ -46,7 +48,7 @@ export default function AdminLoginPage() {
                         {/* Email Field */}
                         <div>
                             <label className="block text-sm font-medium text-gray-300 mb-2">
-                                Email
+                                {t('email')}
                             </label>
                             <div className="relative">
                                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -54,7 +56,7 @@ export default function AdminLoginPage() {
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="admin@trustify.io.vn"
+                                    placeholder={t('emailPlaceholder')}
                                     required
                                     className="w-full pl-12 pr-4 py-3.5 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition"
                                 />
@@ -64,7 +66,7 @@ export default function AdminLoginPage() {
                         {/* Password Field */}
                         <div>
                             <label className="block text-sm font-medium text-gray-300 mb-2">
-                                Password
+                                {t('password')}
                             </label>
                             <div className="relative">
                                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -72,7 +74,7 @@ export default function AdminLoginPage() {
                                     type={showPassword ? 'text' : 'password'}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    placeholder="Enter your password"
+                                    placeholder={t('passwordPlaceholder')}
                                     required
                                     className="w-full pl-12 pr-12 py-3.5 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition"
                                 />
@@ -109,10 +111,10 @@ export default function AdminLoginPage() {
                             {isLoading ? (
                                 <>
                                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                                    Signing in...
+                                    {t('signingIn')}
                                 </>
                             ) : (
-                                'Sign In'
+                                t('submit')
                             )}
                         </button>
                     </form>
@@ -120,7 +122,7 @@ export default function AdminLoginPage() {
                     {/* Footer */}
                     <div className="mt-8 pt-6 border-t border-white/10 text-center">
                         <p className="text-gray-500 text-xs">
-                            Protected area. Authorized personnel only.
+                            {t('protectedArea')}
                         </p>
                     </div>
                 </div>

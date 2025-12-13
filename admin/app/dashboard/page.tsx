@@ -1,14 +1,19 @@
+'use client'
+
 import StatCard from '@/components/Startcard'
 import PaymentsChart from '@/components/PaymentsChart'
 import ProfitChart from '@/components/ProfitChart'
 import { Eye, DollarSign, Package, Users } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 export default function DashboardPage() {
+  const t = useTranslations('dashboard')
+
   return (
     <>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-500 mt-1">Admin Dashboard Solution</p>
+        <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
+        <p className="text-gray-500 mt-1">{t('subtitle')}</p>
       </div>
 
       {/* Stats Grid */}
@@ -17,7 +22,7 @@ export default function DashboardPage() {
           icon={<Eye className="w-6 h-6" />}
           iconBgColor="bg-green-500"
           value="3.5K"
-          label="Total Views"
+          label={t('totalViews')}
           change={0.43}
           isPositive={true}
         />
@@ -25,7 +30,7 @@ export default function DashboardPage() {
           icon={<DollarSign className="w-6 h-6" />}
           iconBgColor="bg-orange-500"
           value="$4.2K"
-          label="Total Profit"
+          label={t('totalRevenue')}
           change={4.35}
           isPositive={true}
         />
@@ -33,7 +38,7 @@ export default function DashboardPage() {
           icon={<Package className="w-6 h-6" />}
           iconBgColor="bg-purple-600"
           value="3.5K"
-          label="Total Products"
+          label={t('totalCompanies')}
           change={2.59}
           isPositive={true}
         />
@@ -41,7 +46,7 @@ export default function DashboardPage() {
           icon={<Users className="w-6 h-6" />}
           iconBgColor="bg-cyan-500"
           value="3.5K"
-          label="Total Users"
+          label={t('totalUsers')}
           change={-0.95}
           isPositive={false}
         />

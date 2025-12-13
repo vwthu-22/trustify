@@ -2,9 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import { Search, Filter, Trash2, Edit, Shield, Plus, X, Loader2, ChevronLeft, ChevronRight, UserPlus } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import useUserManagementStore, { User, CreateAdminData } from '@/store/useUserManagementStore'
 
 export default function UsersPage() {
+    const t = useTranslations('users')
+    const tCommon = useTranslations('common')
+
     const {
         users,
         totalUsers,
@@ -108,13 +112,13 @@ export default function UsersPage() {
         <div className="space-y-6">
             {/* Header */}
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
+                <h1 className="text-2xl font-bold text-gray-900">{t('title')}</h1>
                 <button
                     onClick={() => setShowCreateModal(true)}
                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
                 >
                     <UserPlus className="w-4 h-4" />
-                    <span>Add New Admin</span>
+                    <span>{t('addNewAdmin')}</span>
                 </button>
             </div>
 
@@ -135,7 +139,7 @@ export default function UsersPage() {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
                             type="text"
-                            placeholder="Search users by name or email..."
+                            placeholder={t('searchPlaceholder')}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
@@ -147,7 +151,7 @@ export default function UsersPage() {
                             className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2 text-gray-600"
                         >
                             <Filter className="w-4 h-4" />
-                            <span>Filter: {statusFilter === 'all' ? 'All' : statusFilter}</span>
+                            <span>{tCommon('filter')}: {statusFilter === 'all' ? tCommon('all') : statusFilter}</span>
                         </button>
                         {showFilterDropdown && (
                             <div className="absolute right-0 top-full mt-1 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
@@ -160,7 +164,9 @@ export default function UsersPage() {
                                         }}
                                         className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-50 ${statusFilter === status ? 'text-blue-600 font-medium' : 'text-gray-700'}`}
                                     >
-                                        {status === 'all' ? 'All Status' : status}
+                                        {status === 'all' ? tCommon('all') :
+                                            status === 'Active' ? tCommon('active') :
+                                                status === 'Inactive' ? tCommon('inactive') : tCommon('suspended')}
                                     </button>
                                 ))}
                             </div>
@@ -173,12 +179,12 @@ export default function UsersPage() {
                     <table className="w-full text-left text-sm">
                         <thead className="bg-gray-50 text-gray-600 font-medium border-b border-gray-200">
                             <tr>
-                                <th className="px-6 py-3">Name</th>
-                                <th className="px-6 py-3">Email</th>
-                                <th className="px-6 py-3">Role</th>
-                                <th className="px-6 py-3">Status</th>
-                                <th className="px-6 py-3">Joined Date</th>
-                                <th className="px-6 py-3 text-right">Actions</th>
+                                <th className="px-6 py-3">{t('name')}</th>
+                                <th className="px-6 py-3">{t('email')}</th>
+                                <th className="px-6 py-3">{t('role')}</th>
+                                <th className="px-6 py-3">{t('status')}</th>
+                                <th className="px-6 py-3">{t('joinedDate')}</th>
+                                <th className="px-6 py-3 text-right">{t('actions')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
@@ -186,13 +192,13 @@ export default function UsersPage() {
                                 <tr>
                                     <td colSpan={6} className="px-6 py-12 text-center">
                                         <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-2" />
-                                        <span className="text-gray-500">Loading users...</span>
+                                        <span className="text-gray-500">{tCommon('loading')}</span>
                                     </td>
                                 </tr>
                             ) : filteredUsers.length === 0 ? (
                                 <tr>
                                     <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
-                                        No users found
+                                        {t('noUsers')}
                                     </td>
                                 </tr>
                             ) : (
@@ -214,7 +220,8 @@ export default function UsersPage() {
                                                 ${user.status === 'Active' ? 'bg-green-100 text-green-700' :
                                                     user.status === 'Inactive' ? 'bg-gray-100 text-gray-700' :
                                                         'bg-red-100 text-red-700'}`}>
-                                                {user.status}
+                                                {user.status === 'Active' ? tCommon('active') :
+                                                    user.status === 'Inactive' ? tCommon('inactive') : tCommon('suspended')}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-gray-600">
@@ -228,7 +235,7 @@ export default function UsersPage() {
                                                         setShowEditModal(true)
                                                     }}
                                                     className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                    title="Edit Status"
+                                                    title={tCommon('edit')}
                                                 >
                                                     <Edit className="w-4 h-4" />
                                                 </button>
@@ -238,7 +245,7 @@ export default function UsersPage() {
                                                         setShowDeleteModal(true)
                                                     }}
                                                     className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                    title="Delete User"
+                                                    title={tCommon('delete')}
                                                 >
                                                     <Trash2 className="w-4 h-4" />
                                                 </button>
@@ -254,7 +261,7 @@ export default function UsersPage() {
                 {/* Pagination */}
                 <div className="p-4 border-t border-gray-200 flex items-center justify-between text-sm text-gray-500">
                     <span>
-                        Showing {startItem} to {endItem} of {totalUsers} users
+                        {t('showing')} {startItem} {t('to')} {endItem} {t('of')} {totalUsers}
                     </span>
                     <div className="flex gap-2">
                         <button
@@ -263,17 +270,17 @@ export default function UsersPage() {
                             className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                         >
                             <ChevronLeft className="w-4 h-4" />
-                            Previous
+                            {tCommon('previous')}
                         </button>
                         <span className="px-3 py-1 text-gray-700">
-                            Page {currentPage + 1} of {totalPages || 1}
+                            {currentPage + 1} / {totalPages || 1}
                         </span>
                         <button
                             onClick={handleNextPage}
                             disabled={currentPage >= totalPages - 1 || isLoading}
                             className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                         >
-                            Next
+                            {tCommon('next')}
                             <ChevronRight className="w-4 h-4" />
                         </button>
                     </div>
@@ -285,7 +292,7 @@ export default function UsersPage() {
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
                     <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
                         <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-bold text-gray-900">Add New Admin</h2>
+                            <h2 className="text-xl font-bold text-gray-900">{t('createAdmin.title')}</h2>
                             <button
                                 onClick={() => setShowCreateModal(false)}
                                 className="text-gray-400 hover:text-gray-600 transition"
@@ -297,13 +304,13 @@ export default function UsersPage() {
                         <form onSubmit={handleCreateAdmin} className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Full Name *
+                                    {t('createAdmin.fullName')} *
                                 </label>
                                 <input
                                     type="text"
                                     value={createForm.fullName}
                                     onChange={(e) => setCreateForm({ ...createForm, fullName: e.target.value })}
-                                    placeholder="Nguyen Van A"
+                                    placeholder={t('createAdmin.fullNamePlaceholder')}
                                     required
                                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                                 />
@@ -311,13 +318,13 @@ export default function UsersPage() {
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Email *
+                                    {t('createAdmin.email')} *
                                 </label>
                                 <input
                                     type="email"
                                     value={createForm.email}
                                     onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
-                                    placeholder="admin@example.com"
+                                    placeholder={t('createAdmin.emailPlaceholder')}
                                     required
                                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                                 />
@@ -325,7 +332,7 @@ export default function UsersPage() {
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Password *
+                                    {t('createAdmin.password')} *
                                 </label>
                                 <input
                                     type="password"
@@ -341,10 +348,10 @@ export default function UsersPage() {
                             <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
                                 <div className="flex items-center gap-2 text-purple-700">
                                     <Shield className="w-4 h-4" />
-                                    <span className="text-sm font-medium">Role: ADMIN</span>
+                                    <span className="text-sm font-medium">{t('role')}: ADMIN</span>
                                 </div>
                                 <p className="text-xs text-purple-600 mt-1">
-                                    This user will have administrator privileges.
+                                    {t('createAdmin.roleNote')}
                                 </p>
                             </div>
 
@@ -360,7 +367,7 @@ export default function UsersPage() {
                                     onClick={() => setShowCreateModal(false)}
                                     className="flex-1 py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition"
                                 >
-                                    Cancel
+                                    {tCommon('cancel')}
                                 </button>
                                 <button
                                     type="submit"
@@ -372,7 +379,7 @@ export default function UsersPage() {
                                     ) : (
                                         <>
                                             <Plus className="w-4 h-4" />
-                                            Create Admin
+                                            {t('createAdmin.submit')}
                                         </>
                                     )}
                                 </button>
@@ -387,7 +394,7 @@ export default function UsersPage() {
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
                     <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6">
                         <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-bold text-gray-900">Change Status</h2>
+                            <h2 className="text-xl font-bold text-gray-900">{t('editStatus.title')}</h2>
                             <button
                                 onClick={() => {
                                     setShowEditModal(false)
@@ -407,7 +414,7 @@ export default function UsersPage() {
                         </div>
 
                         <div className="space-y-2 mb-6">
-                            <p className="text-sm font-medium text-gray-700 mb-3">Select new status:</p>
+                            <p className="text-sm font-medium text-gray-700 mb-3">{t('editStatus.selectStatus')}</p>
                             {(['Active', 'Inactive', 'Suspended'] as const).map((status) => (
                                 <button
                                     key={status}
@@ -426,9 +433,10 @@ export default function UsersPage() {
                                     {isLoading ? (
                                         <Loader2 className="w-4 h-4 animate-spin" />
                                     ) : (
-                                        status
+                                        status === 'Active' ? tCommon('active') :
+                                            status === 'Inactive' ? tCommon('inactive') : tCommon('suspended')
                                     )}
-                                    {selectedUser.status === status && <span className="text-xs">(Current)</span>}
+                                    {selectedUser.status === status && <span className="text-xs">{t('editStatus.current')}</span>}
                                 </button>
                             ))}
                         </div>
@@ -440,7 +448,7 @@ export default function UsersPage() {
                             }}
                             className="w-full py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition"
                         >
-                            Cancel
+                            {tCommon('cancel')}
                         </button>
                     </div>
                 </div>
@@ -453,9 +461,9 @@ export default function UsersPage() {
                         <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                             <Trash2 className="w-6 h-6 text-red-600" />
                         </div>
-                        <h3 className="text-lg font-bold text-gray-900 text-center mb-2">Delete User?</h3>
+                        <h3 className="text-lg font-bold text-gray-900 text-center mb-2">{t('deleteConfirm.title')}</h3>
                         <p className="text-gray-500 text-center mb-2">
-                            Are you sure you want to delete:
+                            {t('deleteConfirm.message')}
                         </p>
                         <p className="text-center font-medium text-gray-900 mb-6">
                             {selectedUser.fullName} ({selectedUser.email})
@@ -468,7 +476,7 @@ export default function UsersPage() {
                                 }}
                                 className="flex-1 py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition"
                             >
-                                Cancel
+                                {tCommon('cancel')}
                             </button>
                             <button
                                 onClick={handleDelete}
@@ -478,7 +486,7 @@ export default function UsersPage() {
                                 {isLoading ? (
                                     <Loader2 className="w-5 h-5 animate-spin" />
                                 ) : (
-                                    'Delete'
+                                    tCommon('delete')
                                 )}
                             </button>
                         </div>

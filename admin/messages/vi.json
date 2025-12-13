@@ -54,6 +54,8 @@
   "dashboard": {
     "title": "Bảng điều khiển",
     "subtitle": "Tổng quan hệ thống",
+    "totalViews": "Tổng lượt xem",
+    "totalRevenue": "Tổng doanh thu",
     "totalUsers": "Tổng người dùng",
     "totalCompanies": "Tổng doanh nghiệp",
     "totalReviews": "Tổng đánh giá",
