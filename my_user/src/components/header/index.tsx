@@ -1,21 +1,24 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import { Search, Bell, ChevronDown, Menu, X, MessageSquare } from 'lucide-react';
+import { Search, Bell, ChevronDown, Menu, X, MessageSquare, Globe } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import useAuthStore from '@/stores/userAuthStore/user';
 import useNotificationStore from '@/stores/notificationStore/notification';
+import useLanguageStore from '@/store/useLanguageStore';
 
 export default function Header() {
     const [showSearchBar, setShowSearchBar] = useState(false);
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [showMobileMenu, setShowMobileMenu] = useState(false);
     const [showNotifications, setShowNotifications] = useState(false);
+    const [showLanguageMenu, setShowLanguageMenu] = useState(false);
     const pathname = usePathname();
     const router = useRouter();
 
     const { user, isAuthenticated, logout, fetchUserInfo } = useAuthStore();
     const { notifications, unreadCount, fetchNotifications, markAsRead, markAllAsRead } = useNotificationStore();
+    const { locale, setLocale } = useLanguageStore();
 
     // Verify session with backend on mount
     useEffect(() => {
@@ -231,6 +234,34 @@ export default function Header() {
                                 <Link href={"/login"} className="text-sm hover:text-gray-300 transition">Log in</Link>
                             )}
 
+                            {/* Language Switcher */}
+                            <div className="relative">
+                                <button
+                                    onClick={() => { setShowLanguageMenu(!showLanguageMenu); setShowUserMenu(false); setShowNotifications(false); }}
+                                    className="flex items-center gap-1 p-2 hover:bg-gray-700 rounded-full transition"
+                                    title="Change Language"
+                                >
+                                    <Globe className="w-5 h-5" />
+                                    <span className="text-xs">{locale === 'vi' ? '🇻🇳' : '🇺🇸'}</span>
+                                </button>
+                                {showLanguageMenu && (
+                                    <div className="absolute right-0 top-10 w-36 bg-white text-gray-800 rounded-lg shadow-lg py-2">
+                                        <button
+                                            onClick={() => { setLocale('vi'); setShowLanguageMenu(false); }}
+                                            className={`w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 transition ${locale === 'vi' ? 'text-blue-600 font-medium' : ''}`}
+                                        >
+                                            <span>🇻🇳</span> Tiếng Việt
+                                        </button>
+                                        <button
+                                            onClick={() => { setLocale('en'); setShowLanguageMenu(false); }}
+                                            className={`w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 transition ${locale === 'en' ? 'text-blue-600 font-medium' : ''}`}
+                                        >
+                                            <span>🇺🇸</span> English
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+
                             {buttonConfig && (
                                 <button onClick={() => router.push(buttonConfig.href)} className="bg-[#5e5eff] hover:bg-[#4d4dff] text-white px-4 xl:px-6 py-2 rounded-full text-sm font-medium transition whitespace-nowrap">
                                     {buttonConfig.text}
@@ -321,6 +352,25 @@ export default function Header() {
                                         <Link href="/login" onClick={() => setShowMobileMenu(false)} className="block py-3 px-4 text-gray-300 hover:bg-gray-800 rounded-lg transition">Log in</Link>
                                     </div>
                                 )}
+                            </div>
+
+                            {/* Mobile Language Switcher */}
+                            <div className="border-t border-gray-700 pt-4">
+                                <p className="px-4 py-2 text-gray-400 text-sm">Language / Ngôn ngữ</p>
+                                <div className="flex gap-2 px-4">
+                                    <button
+                                        onClick={() => { setLocale('vi'); setShowMobileMenu(false); }}
+                                        className={`flex-1 py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition ${locale === 'vi' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
+                                    >
+                                        <span>🇻🇳</span> VI
+                                    </button>
+                                    <button
+                                        onClick={() => { setLocale('en'); setShowMobileMenu(false); }}
+                                        className={`flex-1 py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition ${locale === 'en' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
+                                    >
+                                        <span>🇺🇸</span> EN
+                                    </button>
+                                </div>
                             </div>
 
                             {buttonConfig && (
