@@ -3,26 +3,18 @@
 import { Search, Bell, LogOut, User, Settings, Shield } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-
-interface AdminUser {
-  username: string;
-  role: string;
-  loginTime: string;
-}
+import useAdminAuthStore from '@/store/useAdminAuthStore'
 
 export default function Header() {
   const router = useRouter();
+  const { adminUser, logout, checkAuthStatus } = useAdminAuthStore();
   const [showDropdown, setShowDropdown] = useState(false);
-  const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Load admin user from localStorage
-    const storedUser = localStorage.getItem('admin-user');
-    if (storedUser) {
-      setAdminUser(JSON.parse(storedUser));
-    }
-  }, []);
+    // Load admin user from store/localStorage
+    checkAuthStatus();
+  }, [checkAuthStatus]);
 
   useEffect(() => {
     // Close dropdown when clicking outside
@@ -36,11 +28,13 @@ export default function Header() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('admin-authenticated');
-    localStorage.removeItem('admin-user');
-    document.cookie = 'admin-auth=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    logout();
     router.push('/login');
   };
+
+  // Get display name (email)
+  const displayName = adminUser?.email || 'Admin';
+  const displayInitial = displayName.charAt(0).toUpperCase();
 
   return (
     <header className="bg-white border-b border-gray-200 px-8 py-4 z-50 sticky top-0 ml-64">
@@ -80,11 +74,11 @@ export default function Header() {
               className="flex items-center gap-3 pl-4 border-l border-gray-200 hover:bg-gray-50 rounded-lg py-1 pr-2 transition-colors"
             >
               <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                {adminUser?.username?.charAt(0).toUpperCase() || 'A'}
+                {displayInitial}
               </div>
               <div className="text-left">
-                <p className="font-medium text-gray-900 text-sm">{adminUser?.username || 'Admin'}</p>
-                <p className="text-xs text-gray-500">{adminUser?.role || 'Administrator'}</p>
+                <p className="font-medium text-gray-900 text-sm max-w-[150px] truncate">{displayName}</p>
+                <p className="text-xs text-gray-500">{adminUser?.role}</p>
               </div>
               <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${showDropdown ? 'rotate-180' : ''}`} />
             </button>
@@ -93,8 +87,8 @@ export default function Header() {
             {showDropdown && (
               <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
                 <div className="px-4 py-3 border-b border-gray-100">
-                  <p className="text-sm font-medium text-gray-900">{adminUser?.username || 'Admin'}</p>
-                  <p className="text-xs text-gray-500">{adminUser?.role || 'Administrator'}</p>
+                  <p className="text-sm font-medium text-gray-900 truncate">{displayName}</p>
+                  <p className="text-xs text-gray-500">{adminUser?.role}</p>
                 </div>
 
                 <div className="py-1">

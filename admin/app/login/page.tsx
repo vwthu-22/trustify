@@ -2,48 +2,26 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff, Lock, User, Shield } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, Shield } from 'lucide-react';
+import useAdminAuthStore from '@/store/useAdminAuthStore';
 
 export default function AdminLoginPage() {
     const router = useRouter();
-    const [username, setUsername] = useState('');
+    const { login, isLoading, error, clearError } = useAdminAuthStore();
+
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState('');
-
-    // Admin credentials - replace with API call in production
-    const ADMIN_USERNAME = 'admin';
-    const ADMIN_PASSWORD = 'admin123';
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
-        setIsLoading(true);
+        clearError();
 
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 800));
+        const success = await login(email, password);
 
-        // Check credentials
-        if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-            // Set auth cookie for middleware
-            document.cookie = 'admin-auth=true; path=/; max-age=86400';
-
-            // Store user info in localStorage
-            localStorage.setItem('admin-authenticated', 'true');
-            localStorage.setItem('admin-user', JSON.stringify({
-                username: username,
-                role: 'Administrator',
-                loginTime: new Date().toISOString()
-            }));
-
-            // Redirect to dashboard
+        if (success) {
             router.push('/dashboard');
-        } else {
-            setError('Invalid username or password');
         }
-
-        setIsLoading(false);
     };
 
     return (
@@ -65,18 +43,18 @@ export default function AdminLoginPage() {
 
                     {/* Login Form */}
                     <form onSubmit={handleLogin} className="space-y-5">
-                        {/* Username Field */}
+                        {/* Email Field */}
                         <div>
                             <label className="block text-sm font-medium text-gray-300 mb-2">
-                                Username
+                                Email
                             </label>
                             <div className="relative">
-                                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                 <input
-                                    type="text"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    placeholder="Enter your username"
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="admin@trustify.io.vn"
                                     required
                                     className="w-full pl-12 pr-4 py-3.5 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition"
                                 />
@@ -145,13 +123,6 @@ export default function AdminLoginPage() {
                             Protected area. Authorized personnel only.
                         </p>
                     </div>
-                </div>
-
-                {/* Demo Credentials Hint */}
-                <div className="mt-6 text-center">
-                    <p className="text-gray-500 text-xs">
-                        Demo: username <span className="text-gray-400 font-mono">admin</span> / password <span className="text-gray-400 font-mono">admin123</span>
-                    </p>
                 </div>
             </div>
         </div>

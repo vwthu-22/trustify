@@ -1,8 +1,17 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Check, Plus, X, Edit2, Trash2, Loader2, DollarSign, Calendar, ToggleLeft, ToggleRight } from 'lucide-react'
+import { Check, Plus, X, Edit2, Trash2, Loader2, DollarSign, Calendar, ToggleLeft, ToggleRight, Download, CreditCard, LayoutGrid, List } from 'lucide-react'
 import usePlanFeatureStore, { Plan, CreatePlanData } from '@/store/usePlanFeatureStore'
+
+// Mock transactions data - replace with API when available
+const mockTransactions = [
+    { id: 'TRX-001', company: 'Tech Solutions Ltd.', plan: 'Pro Plan', amount: 49.00, date: '2024-01-25', status: 'Paid' },
+    { id: 'TRX-002', company: 'Global Logistics', plan: 'Enterprise', amount: 199.00, date: '2024-01-24', status: 'Paid' },
+    { id: 'TRX-003', company: 'Elite Fitness', plan: 'Pro Plan', amount: 49.00, date: '2024-01-23', status: 'Failed' },
+    { id: 'TRX-004', company: 'Sunrise Cafe', plan: 'Pro Plan', amount: 49.00, date: '2024-01-22', status: 'Paid' },
+    { id: 'TRX-005', company: 'Digital Agency', plan: 'Enterprise', amount: 199.00, date: '2024-01-21', status: 'Pending' },
+]
 
 export default function BillingPage() {
     const {
@@ -18,6 +27,7 @@ export default function BillingPage() {
         clearError,
     } = usePlanFeatureStore()
 
+    const [activeTab, setActiveTab] = useState<'overview' | 'plans' | 'features'>('overview')
     const [showPlanModal, setShowPlanModal] = useState(false)
     const [editingPlan, setEditingPlan] = useState<Plan | null>(null)
     const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null)
@@ -98,13 +108,18 @@ export default function BillingPage() {
         return price === 0 ? 'Free' : `$${price.toFixed(2)}`
     }
 
+    // Calculate stats
+    const totalRevenue = mockTransactions.filter(t => t.status === 'Paid').reduce((sum, t) => sum + t.amount, 0)
+    const activePlans = plans.filter(p => p.active).length
+    const paidTransactions = mockTransactions.filter(t => t.status === 'Paid').length
+
     return (
         <div className="space-y-6">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">Billing & Plans</h1>
-                    <p className="text-gray-500 mt-1">Manage subscription plans and features</p>
+                    <p className="text-gray-500 mt-1">Manage subscription plans, features and transactions</p>
                 </div>
                 <button
                     onClick={handleCreateClick}
@@ -115,147 +130,347 @@ export default function BillingPage() {
                 </button>
             </div>
 
-            {/* Error Message */}
-            {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center justify-between">
-                    <span>{error}</span>
-                    <button onClick={clearError} className="text-red-500 hover:text-red-700">
-                        <X className="w-4 h-4" />
-                    </button>
-                </div>
-            )}
-
-            {/* Plans Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {isLoading && plans.length === 0 ? (
-                    // Loading skeleton
-                    [...Array(3)].map((_, i) => (
-                        <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 animate-pulse">
-                            <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
-                            <div className="h-8 bg-gray-200 rounded w-1/2 mb-4"></div>
-                            <div className="space-y-2">
-                                <div className="h-4 bg-gray-200 rounded w-full"></div>
-                                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                            </div>
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                            <DollarSign className="w-5 h-5 text-green-600" />
                         </div>
-                    ))
-                ) : plans.length === 0 ? (
-                    <div className="col-span-full text-center py-12 bg-white rounded-xl border border-gray-200">
-                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <DollarSign className="w-8 h-8 text-gray-400" />
+                        <div>
+                            <p className="text-sm text-gray-500">Total Revenue</p>
+                            <p className="text-xl font-bold text-gray-900">${totalRevenue.toFixed(2)}</p>
                         </div>
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">No plans yet</h3>
-                        <p className="text-gray-500 mb-4">Create your first subscription plan</p>
-                        <button
-                            onClick={handleCreateClick}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center gap-2"
-                        >
-                            <Plus className="w-4 h-4" />
-                            Create Plan
-                        </button>
                     </div>
-                ) : (
-                    plans.map((plan) => (
-                        <div
-                            key={plan.id}
-                            className={`bg-white rounded-xl shadow-sm border p-6 relative ${plan.active ? 'border-blue-500 ring-1 ring-blue-500' : 'border-gray-200'
-                                }`}
-                        >
-                            {/* Status Badge */}
-                            <div className="absolute top-4 right-4 flex items-center gap-2">
-                                {!plan.active && (
-                                    <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded font-medium">
-                                        Inactive
-                                    </span>
-                                )}
-                                {plan.price === 0 && plan.active && (
-                                    <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded font-medium">
-                                        Free
-                                    </span>
-                                )}
-                            </div>
-
-                            {/* Plan Info */}
-                            <div className="mb-4">
-                                <h3 className="font-bold text-lg text-gray-900">{plan.name}</h3>
-                                <p className="text-sm text-gray-500 mt-1 line-clamp-2">{plan.description}</p>
-                            </div>
-
-                            {/* Price */}
-                            <div className="mb-4">
-                                <span className="text-3xl font-bold text-gray-900">
-                                    {formatPrice(plan.price)}
-                                </span>
-                                {plan.price > 0 && (
-                                    <span className="text-sm text-gray-500 font-normal">
-                                        /{plan.durationDays} days
-                                    </span>
-                                )}
-                            </div>
-
-                            {/* Features */}
-                            {plan.features && plan.features.length > 0 && (
-                                <ul className="space-y-2 mb-6">
-                                    {plan.features.slice(0, 4).map((feature) => (
-                                        <li key={feature.id} className="flex items-center gap-2 text-sm text-gray-600">
-                                            <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
-                                            {feature.name}
-                                        </li>
-                                    ))}
-                                    {plan.features.length > 4 && (
-                                        <li className="text-sm text-blue-600">
-                                            +{plan.features.length - 4} more features
-                                        </li>
-                                    )}
-                                </ul>
-                            )}
-
-                            {/* Duration */}
-                            <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
-                                <Calendar className="w-4 h-4" />
-                                {plan.durationDays} days duration
-                            </div>
-
-                            {/* Actions */}
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => handleEditClick(plan)}
-                                    className="flex-1 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
-                                >
-                                    <Edit2 className="w-4 h-4" />
-                                    Edit
-                                </button>
-                                <button
-                                    onClick={() => setDeleteConfirmId(plan.id)}
-                                    className="px-3 py-2 border border-red-200 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
-                                >
-                                    <Trash2 className="w-4 h-4" />
-                                </button>
-                            </div>
+                </div>
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <LayoutGrid className="w-5 h-5 text-blue-600" />
                         </div>
-                    ))
-                )}
+                        <div>
+                            <p className="text-sm text-gray-500">Active Plans</p>
+                            <p className="text-xl font-bold text-gray-900">{activePlans}</p>
+                        </div>
+                    </div>
+                </div>
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <CreditCard className="w-5 h-5 text-purple-600" />
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-500">Paid Transactions</p>
+                            <p className="text-xl font-bold text-gray-900">{paidTransactions}</p>
+                        </div>
+                    </div>
+                </div>
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                            <List className="w-5 h-5 text-orange-600" />
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-500">Total Features</p>
+                            <p className="text-xl font-bold text-gray-900">{features.length}</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            {/* Features Section */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-                    <h2 className="text-lg font-bold text-gray-900">All Features</h2>
-                    <span className="text-sm text-gray-500">{features.length} features</span>
+            {/* Tabs */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+                <div className="border-b border-gray-200">
+                    <nav className="flex gap-6 px-6">
+                        {[
+                            { id: 'overview', label: 'Overview' },
+                            { id: 'plans', label: 'Plans' },
+                            { id: 'features', label: 'Features' },
+                        ].map((tab) => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id as typeof activeTab)}
+                                className={`py-4 text-sm font-medium border-b-2 transition-colors ${activeTab === tab.id
+                                        ? 'border-blue-600 text-blue-600'
+                                        : 'border-transparent text-gray-500 hover:text-gray-700'
+                                    }`}
+                            >
+                                {tab.label}
+                            </button>
+                        ))}
+                    </nav>
                 </div>
+
+                {/* Error Message */}
+                {error && (
+                    <div className="m-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center justify-between">
+                        <span>{error}</span>
+                        <button onClick={clearError} className="text-red-500 hover:text-red-700">
+                            <X className="w-4 h-4" />
+                        </button>
+                    </div>
+                )}
+
+                {/* Tab Content */}
                 <div className="p-6">
-                    {features.length === 0 ? (
-                        <p className="text-gray-500 text-center py-4">No features available</p>
-                    ) : (
-                        <div className="flex flex-wrap gap-2">
-                            {features.map((feature) => (
-                                <span
-                                    key={feature.id}
-                                    className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm"
-                                >
-                                    {feature.name}
-                                </span>
-                            ))}
+                    {/* Overview Tab - Transactions + Plans Summary */}
+                    {activeTab === 'overview' && (
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            {/* Transactions Table */}
+                            <div className="lg:col-span-2">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h2 className="text-lg font-bold text-gray-900">Recent Transactions</h2>
+                                    <button className="text-sm text-blue-600 hover:underline flex items-center gap-1">
+                                        <Download className="w-4 h-4" />
+                                        Export
+                                    </button>
+                                </div>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left text-sm">
+                                        <thead className="bg-gray-50 text-gray-600 font-medium">
+                                            <tr>
+                                                <th className="px-4 py-3 rounded-l-lg">Invoice ID</th>
+                                                <th className="px-4 py-3">Company</th>
+                                                <th className="px-4 py-3">Amount</th>
+                                                <th className="px-4 py-3">Status</th>
+                                                <th className="px-4 py-3 rounded-r-lg text-right">Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-gray-100">
+                                            {mockTransactions.map((trx) => (
+                                                <tr key={trx.id} className="hover:bg-gray-50 transition-colors">
+                                                    <td className="px-4 py-3 font-medium text-gray-900">{trx.id}</td>
+                                                    <td className="px-4 py-3 text-gray-600">
+                                                        <div>{trx.company}</div>
+                                                        <div className="text-xs text-gray-400">{trx.plan}</div>
+                                                    </td>
+                                                    <td className="px-4 py-3 font-medium text-gray-900">${trx.amount.toFixed(2)}</td>
+                                                    <td className="px-4 py-3">
+                                                        <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium
+                                                            ${trx.status === 'Paid' ? 'bg-green-100 text-green-700' :
+                                                                trx.status === 'Failed' ? 'bg-red-100 text-red-700' :
+                                                                    'bg-yellow-100 text-yellow-700'}`}>
+                                                            {trx.status}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-4 py-3 text-right text-gray-500">{trx.date}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            {/* Plans Summary */}
+                            <div className="space-y-4">
+                                <h2 className="text-lg font-bold text-gray-900">Plans</h2>
+                                {isLoading && plans.length === 0 ? (
+                                    <div className="animate-pulse space-y-3">
+                                        {[1, 2, 3].map((i) => (
+                                            <div key={i} className="h-24 bg-gray-100 rounded-lg"></div>
+                                        ))}
+                                    </div>
+                                ) : plans.length === 0 ? (
+                                    <div className="text-center py-8 bg-gray-50 rounded-lg">
+                                        <p className="text-gray-500">No plans yet</p>
+                                        <button
+                                            onClick={handleCreateClick}
+                                            className="mt-2 text-sm text-blue-600 hover:underline"
+                                        >
+                                            Create first plan
+                                        </button>
+                                    </div>
+                                ) : (
+                                    plans.slice(0, 3).map((plan) => (
+                                        <div
+                                            key={plan.id}
+                                            className={`border rounded-lg p-4 ${plan.active ? 'border-blue-500 bg-blue-50/50' : 'border-gray-200'
+                                                }`}
+                                        >
+                                            <div className="flex justify-between items-start mb-2">
+                                                <div>
+                                                    <h3 className="font-semibold text-gray-900">{plan.name}</h3>
+                                                    <p className="text-lg font-bold text-gray-900">
+                                                        {formatPrice(plan.price)}
+                                                        {plan.price > 0 && <span className="text-sm font-normal text-gray-500">/{plan.durationDays}d</span>}
+                                                    </p>
+                                                </div>
+                                                {!plan.active && (
+                                                    <span className="px-2 py-0.5 bg-gray-100 text-gray-500 text-xs rounded">
+                                                        Inactive
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <button
+                                                onClick={() => handleEditClick(plan)}
+                                                className="text-sm text-blue-600 hover:underline"
+                                            >
+                                                Edit Plan
+                                            </button>
+                                        </div>
+                                    ))
+                                )}
+                                {plans.length > 3 && (
+                                    <button
+                                        onClick={() => setActiveTab('plans')}
+                                        className="w-full py-2 text-sm text-blue-600 hover:underline"
+                                    >
+                                        View all {plans.length} plans →
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Plans Tab - Full Grid */}
+                    {activeTab === 'plans' && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {isLoading && plans.length === 0 ? (
+                                [...Array(3)].map((_, i) => (
+                                    <div key={i} className="border border-gray-200 rounded-xl p-6 animate-pulse">
+                                        <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
+                                        <div className="h-8 bg-gray-200 rounded w-1/2 mb-4"></div>
+                                        <div className="space-y-2">
+                                            <div className="h-4 bg-gray-200 rounded w-full"></div>
+                                            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : plans.length === 0 ? (
+                                <div className="col-span-full text-center py-12 bg-gray-50 rounded-xl">
+                                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <DollarSign className="w-8 h-8 text-gray-400" />
+                                    </div>
+                                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No plans yet</h3>
+                                    <p className="text-gray-500 mb-4">Create your first subscription plan</p>
+                                    <button
+                                        onClick={handleCreateClick}
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center gap-2"
+                                    >
+                                        <Plus className="w-4 h-4" />
+                                        Create Plan
+                                    </button>
+                                </div>
+                            ) : (
+                                plans.map((plan) => (
+                                    <div
+                                        key={plan.id}
+                                        className={`border rounded-xl p-6 relative ${plan.active ? 'border-blue-500 ring-1 ring-blue-500' : 'border-gray-200'
+                                            }`}
+                                    >
+                                        {/* Status Badge */}
+                                        <div className="absolute top-4 right-4 flex items-center gap-2">
+                                            {!plan.active && (
+                                                <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded font-medium">
+                                                    Inactive
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        {/* Plan Info */}
+                                        <div className="mb-4">
+                                            <h3 className="font-bold text-lg text-gray-900">{plan.name}</h3>
+                                            <p className="text-sm text-gray-500 mt-1 line-clamp-2">{plan.description}</p>
+                                        </div>
+
+                                        {/* Price */}
+                                        <div className="mb-4">
+                                            <span className="text-3xl font-bold text-gray-900">
+                                                {formatPrice(plan.price)}
+                                            </span>
+                                            {plan.price > 0 && (
+                                                <span className="text-sm text-gray-500 font-normal">
+                                                    /{plan.durationDays} days
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        {/* Features */}
+                                        {plan.features && plan.features.length > 0 && (
+                                            <ul className="space-y-2 mb-6">
+                                                {plan.features.slice(0, 4).map((feature) => (
+                                                    <li key={feature.id} className="flex items-center gap-2 text-sm text-gray-600">
+                                                        <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                                                        {feature.name}
+                                                    </li>
+                                                ))}
+                                                {plan.features.length > 4 && (
+                                                    <li className="text-sm text-blue-600">
+                                                        +{plan.features.length - 4} more
+                                                    </li>
+                                                )}
+                                            </ul>
+                                        )}
+
+                                        {/* Duration */}
+                                        <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
+                                            <Calendar className="w-4 h-4" />
+                                            {plan.durationDays} days duration
+                                        </div>
+
+                                        {/* Actions */}
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => handleEditClick(plan)}
+                                                className="flex-1 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+                                            >
+                                                <Edit2 className="w-4 h-4" />
+                                                Edit
+                                            </button>
+                                            <button
+                                                onClick={() => setDeleteConfirmId(plan.id)}
+                                                className="px-3 py-2 border border-red-200 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    )}
+
+                    {/* Features Tab */}
+                    {activeTab === 'features' && (
+                        <div>
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-lg font-bold text-gray-900">All Features ({features.length})</h2>
+                                <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm">
+                                    <Plus className="w-4 h-4" />
+                                    Add Feature
+                                </button>
+                            </div>
+                            {features.length === 0 ? (
+                                <div className="text-center py-12 bg-gray-50 rounded-lg">
+                                    <p className="text-gray-500">No features available</p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {features.map((feature) => (
+                                        <div
+                                            key={feature.id}
+                                            className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors"
+                                        >
+                                            <div className="flex items-start justify-between">
+                                                <div>
+                                                    <h3 className="font-medium text-gray-900">{feature.name}</h3>
+                                                    {feature.description && (
+                                                        <p className="text-sm text-gray-500 mt-1">{feature.description}</p>
+                                                    )}
+                                                </div>
+                                                <div className="flex gap-1">
+                                                    <button className="p-1.5 text-gray-400 hover:text-blue-600 rounded">
+                                                        <Edit2 className="w-4 h-4" />
+                                                    </button>
+                                                    <button className="p-1.5 text-gray-400 hover:text-red-600 rounded">
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
