@@ -12,11 +12,9 @@ export default function AdminLoginPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
-    // Hardcoded admin credentials (for demo - should be replaced with API call)
-    const ADMIN_CREDENTIALS = {
-        username: 'admin',
-        password: 'admin123'
-    };
+    // Admin credentials - replace with API call in production
+    const ADMIN_USERNAME = 'admin';
+    const ADMIN_PASSWORD = 'admin123';
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -27,16 +25,19 @@ export default function AdminLoginPage() {
         await new Promise(resolve => setTimeout(resolve, 800));
 
         // Check credentials
-        if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
-            // Set auth cookie/localStorage
+        if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+            // Set auth cookie for middleware
+            document.cookie = 'admin-auth=true; path=/; max-age=86400';
+
+            // Store user info in localStorage
             localStorage.setItem('admin-authenticated', 'true');
             localStorage.setItem('admin-user', JSON.stringify({
                 username: username,
                 role: 'Administrator',
                 loginTime: new Date().toISOString()
             }));
-            document.cookie = 'admin-auth=true; path=/; max-age=86400';
 
+            // Redirect to dashboard
             router.push('/dashboard');
         } else {
             setError('Invalid username or password');
