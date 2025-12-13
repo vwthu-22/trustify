@@ -465,9 +465,10 @@ export default function CompanyReviewPage() {
                                 </div>
                             ) : (
                                 searchedReviews.map((review) => {
-                                    const userName = review.userName || 'Anonymous';
+                                    const userName = review.userName || '';
                                     const userInitial = userName.charAt(0).toUpperCase();
-                                    const reviewDate = review.expDate ? new Date(review.expDate).toLocaleDateString() : 'Recently';
+                                    const experienceDate = review.expDate ? new Date(review.expDate).toLocaleDateString() : '';
+                                    const createdDate = review.createdAt ? new Date(review.createdAt).toLocaleDateString() : 'Recently';
 
                                     return (
                                         <div key={review.id} className="border p-3 sm:p-4 border-gray-200 rounded-lg sm:rounded-md">
@@ -482,7 +483,7 @@ export default function CompanyReviewPage() {
                                                         <p className="text-xs sm:text-sm text-gray-500 truncate">{review.userEmail || 'User'}</p>
                                                     </div>
                                                 </div>
-                                                <span className="text-xs sm:text-sm text-gray-500 flex-shrink-0 ml-2">{reviewDate}</span>
+                                                <span className="text-xs sm:text-sm text-gray-500 flex-shrink-0 ml-2">{createdDate}</span>
                                             </div>
 
                                             {/* Rating */}
@@ -491,6 +492,13 @@ export default function CompanyReviewPage() {
                                             {/* Review Content */}
                                             <h5 className="font-semibold text-gray-900 text-base sm:text-lg mb-2 sm:mb-3">{review.title}</h5>
                                             <p className="text-gray-700 text-sm sm:text-base leading-relaxed whitespace-pre-line">{review.description}</p>
+
+                                            {/* Experience Date */}
+                                            {experienceDate && (
+                                                <p className="text-xs sm:text-sm text-gray-500 mt-3 sm:mt-4">
+                                                    <span className="font-medium">Experience Date:</span> {experienceDate}
+                                                </p>
+                                            )}
                                         </div>
                                     );
                                 })

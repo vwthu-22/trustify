@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect } from 'react';
-import { Star, Eye, ThumbsUp, Trash2, Flag, ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star, Eye, ThumbsUp, Trash2, Flag, ArrowLeft, ChevronLeft, ChevronRight, Pencil } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import useAuthStore from '@/stores/userAuthStore/user';
@@ -67,7 +67,7 @@ export default function MyReviewPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 mx-20">
       {/* User Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
@@ -205,18 +205,39 @@ export default function MyReviewPage() {
                     )}
 
                     {/* Review Content */}
-                    <p className="text-gray-700 text-sm sm:text-base mb-4 leading-relaxed">
+                    <p className="text-gray-700 text-sm sm:text-base mb-3 leading-relaxed">
                       {review.description}
                     </p>
 
+                    {/* Experience Date */}
+                    {review.expDate && (
+                      <p className="text-xs sm:text-sm text-gray-500 mb-4">
+                        <span className="font-medium">Experience Date:</span> {formatDate(review.expDate)}
+                      </p>
+                    )}
+
                     {/* Actions */}
-                    <div className="flex items-center gap-4 pt-3 sm:pt-4 border-t border-gray-200">
-                      <Link
-                        href={review.companyId ? `/bussiness/${review.companyId}` : '#'}
-                        className="text-blue-600 hover:text-blue-700 text-xs sm:text-sm font-medium transition"
+                    <div className="flex items-center gap-3 pt-3 sm:pt-4 border-t border-gray-200">
+                      <button
+                        onClick={() => {
+                          // TODO: Implement edit functionality
+                          console.log('Edit review:', review.id);
+                        }}
+                        className="flex items-center gap-1.5 text-blue-600 hover:text-blue-700 text-xs sm:text-sm font-medium transition"
                       >
-                        View Company
-                      </Link>
+                        <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => {
+                          // TODO: Implement delete functionality
+                          console.log('Delete review:', review.id);
+                        }}
+                        className="flex items-center gap-1.5 text-red-600 hover:text-red-700 text-xs sm:text-sm font-medium transition"
+                      >
+                        <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                        Delete
+                      </button>
                     </div>
                   </div>
                 </div>

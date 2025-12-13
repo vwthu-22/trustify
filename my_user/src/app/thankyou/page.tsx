@@ -32,7 +32,6 @@ export default function ThankYouModal({
 
   // Get user country and review count from stores
   const userCountry = user?.country || 'VN';
-  const reviewCount = myReviews?.length || 0;
 
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
@@ -103,7 +102,7 @@ export default function ThankYouModal({
               </div>
               <div>
                 <h4 className="font-semibold text-gray-900">{reviewData.userName || user?.name || 'User'}</h4>
-                <p className="text-sm text-gray-600">{reviewCount} reviews • {userCountry}</p>
+                <p className="text-sm text-gray-600">{userCountry}</p>
               </div>
             </div>
 
