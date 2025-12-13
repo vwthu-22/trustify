@@ -74,8 +74,8 @@ export default function SettingsPage() {
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id as any)}
                                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeTab === tab.id
-                                        ? 'bg-blue-50 text-blue-700'
-                                        : 'text-gray-700 hover:bg-gray-50'
+                                            ? 'bg-blue-50 text-blue-700'
+                                            : 'text-gray-700 hover:bg-gray-50'
                                         }`}
                                 >
                                     <Icon className="h-5 w-5" />
@@ -337,7 +337,7 @@ export default function SettingsPage() {
                         {/* Security Tab */}
                         {activeTab === 'security' && (
                             <div className="space-y-6">
-
+                                
                                 <div className="pt-6 border-t border-gray-200">
                                     <h3 className="text-lg font-bold text-gray-900 mb-4">Two-Factor Authentication</h3>
                                     <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
