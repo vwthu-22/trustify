@@ -7,7 +7,7 @@ import useAdminAuthStore from '@/store/useAdminAuthStore'
 
 export default function Header() {
   const router = useRouter();
-  const { adminUser, logout, checkAuthStatus } = useAdminAuthStore();
+  const { adminUser, isAuthenticated, logout, checkAuthStatus } = useAdminAuthStore();
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -67,51 +67,65 @@ export default function Header() {
             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
           </button>
 
-          {/* User Profile Dropdown */}
+          {/* User Profile / Login */}
           <div className="relative" ref={dropdownRef}>
-            <button
-              onClick={() => setShowDropdown(!showDropdown)}
-              className="flex items-center gap-3 pl-4 border-l border-gray-200 hover:bg-gray-50 rounded-lg py-1 pr-2 transition-colors"
-            >
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                {displayInitial}
-              </div>
-              <div className="text-left">
-                <p className="font-medium text-gray-900 text-sm max-w-[150px] truncate">{displayName}</p>
-                <p className="text-xs text-gray-500">{adminUser?.role}</p>
-              </div>
-              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${showDropdown ? 'rotate-180' : ''}`} />
-            </button>
+            {isAuthenticated && adminUser ? (
+              // User is logged in - show profile dropdown
+              <>
+                <button
+                  onClick={() => setShowDropdown(!showDropdown)}
+                  className="flex items-center gap-3 pl-4 border-l border-gray-200 hover:bg-gray-50 rounded-lg py-1 pr-2 transition-colors"
+                >
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                    {displayInitial}
+                  </div>
+                  <div className="text-left">
+                    <p className="font-medium text-gray-900 text-sm max-w-[150px] truncate">{displayName}</p>
+                    <p className="text-xs text-gray-500">{adminUser.role}</p>
+                  </div>
+                  <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${showDropdown ? 'rotate-180' : ''}`} />
+                </button>
 
-            {/* Dropdown Menu */}
-            {showDropdown && (
-              <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
-                <div className="px-4 py-3 border-b border-gray-100">
-                  <p className="text-sm font-medium text-gray-900 truncate">{displayName}</p>
-                  <p className="text-xs text-gray-500">{adminUser?.role}</p>
-                </div>
+                {/* Dropdown Menu */}
+                {showDropdown && (
+                  <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
+                    <div className="px-4 py-3 border-b border-gray-100">
+                      <p className="text-sm font-medium text-gray-900 truncate">{displayName}</p>
+                      <p className="text-xs text-gray-500">{adminUser.role}</p>
+                    </div>
 
-                <div className="py-1">
-                  <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                    <User className="w-4 h-4 text-gray-400" />
-                    Profile
-                  </button>
-                  <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                    <Settings className="w-4 h-4 text-gray-400" />
-                    Settings
-                  </button>
-                </div>
+                    <div className="py-1">
+                      <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                        <User className="w-4 h-4 text-gray-400" />
+                        Profile
+                      </button>
+                      <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                        <Settings className="w-4 h-4 text-gray-400" />
+                        Settings
+                      </button>
+                    </div>
 
-                <div className="border-t border-gray-100 py-1">
-                  <button
-                    onClick={handleLogout}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    Sign Out
-                  </button>
-                </div>
-              </div>
+                    <div className="border-t border-gray-100 py-1">
+                      <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Sign Out
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              // User is NOT logged in - show login button
+              <button
+                onClick={() => router.push('/login')}
+                className="flex items-center gap-2 pl-4 border-l border-gray-200 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+              >
+                <User className="w-4 h-4" />
+                Login
+              </button>
             )}
           </div>
         </div>

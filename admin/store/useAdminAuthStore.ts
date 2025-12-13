@@ -46,10 +46,27 @@ const useAdminAuthStore = create<AdminAuthStore>()(
                         body: JSON.stringify({ email, password }),
                     });
 
-                    const data = await response.json();
+                    // Handle non-JSON responses (like 500 errors)
+                    let data;
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        data = await response.json();
+                    } else {
+                        const text = await response.text();
+                        data = { error: text || `Server error (${response.status})` };
+                    }
 
                     if (!response.ok) {
-                        throw new Error(data.error || 'Invalid credentials');
+                        // Provide more specific error messages
+                        if (response.status === 500) {
+                            throw new Error('Server error. Please try again later or contact support.');
+                        } else if (response.status === 401) {
+                            throw new Error(data.error || 'Invalid email or password');
+                        } else if (response.status === 404) {
+                            throw new Error('Login service not available');
+                        } else {
+                            throw new Error(data.error || `Error: ${response.status}`);
+                        }
                     }
 
                     // Login successful - JWT is set via HttpOnly cookie by the server
@@ -79,7 +96,7 @@ const useAdminAuthStore = create<AdminAuthStore>()(
                 } catch (error) {
                     console.error('Admin login error:', error);
                     set({
-                        error: error instanceof Error ? error.message : 'Login failed',
+                        error: error instanceof Error ? error.message : 'Login failed. Please try again.',
                         isLoading: false,
                         isAuthenticated: false,
                     });
