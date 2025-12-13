@@ -169,7 +169,7 @@ export default function SettingsPage() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div className="p-6 border-b border-gray-200 flex items-center gap-3">
                     <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <Sun className="w-5 h-5 text-purple-600" />
+                        <Globe className="w-5 h-5 text-purple-600" />
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-gray-900">{t('appearance.language')}</h3>
@@ -183,8 +183,8 @@ export default function SettingsPage() {
                             <button
                                 onClick={() => handleLanguageChange('vi')}
                                 className={`flex-1 py-3 px-4 rounded-lg border-2 transition flex items-center justify-center gap-2 ${locale === 'vi'
-                                        ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                        : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                                    ? 'border-blue-500 bg-blue-50 text-blue-700'
+                                    : 'border-gray-200 hover:border-gray-300 text-gray-700'
                                     }`}
                             >
                                 <span className="text-xl">🇻🇳</span>
@@ -193,8 +193,8 @@ export default function SettingsPage() {
                             <button
                                 onClick={() => handleLanguageChange('en')}
                                 className={`flex-1 py-3 px-4 rounded-lg border-2 transition flex items-center justify-center gap-2 ${locale === 'en'
-                                        ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                        : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                                    ? 'border-blue-500 bg-blue-50 text-blue-700'
+                                    : 'border-gray-200 hover:border-gray-300 text-gray-700'
                                     }`}
                             >
                                 <span className="text-xl">🇺🇸</span>
