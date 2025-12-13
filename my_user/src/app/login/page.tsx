@@ -93,7 +93,7 @@ function LoginSignupContent() {
                         </button>
 
                         {/* Email Option */}
-                        <div className="text-center pt-2">
+                        {/* <div className="text-center pt-2">
                             <button
                                 type="button"
                                 onClick={() => setShowEmailForm(prev => !prev)}
@@ -101,10 +101,10 @@ function LoginSignupContent() {
                             >
                                 Continue with email
                             </button>
-                        </div>
+                        </div> */}
 
                         {/* Email Form */}
-                        {showEmailForm && (
+                        {/* {showEmailForm && (
                             <div className="mt-4 space-y-3 animate-fadeIn">
                                 <input
                                     type="email"
@@ -120,7 +120,7 @@ function LoginSignupContent() {
                                     Tiếp tục
                                 </button>
                             </div>
-                        )}
+                        )} */}
                     </div>
                 </div>
 
@@ -133,9 +133,14 @@ function LoginSignupContent() {
                         Set up your business account on Trustify for free
                     </p>
                     <div className="flex items-center justify-center gap-4">
-                        <button className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition shadow-sm">
+                        <a
+                            href="https://trustify-company.vercel.app/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition shadow-sm"
+                        >
                             Log in
-                        </button>
+                        </a>
                         <button
                             onClick={() => router.push('/intro_bus/register_bussiness')}
                             className="px-6 py-2 border-1 border-blue-500 text-blue-600 hover:bg-blue-50 rounded-full transition"

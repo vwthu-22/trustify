@@ -1,25 +1,69 @@
 'use client'
 
-import { Search, Sun, Moon, Bell } from 'lucide-react'
-import { useState } from 'react'
+import { Search, Bell, LogOut, User, Settings, Shield } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
+
+interface AdminUser {
+  username: string;
+  role: string;
+  loginTime: string;
+}
 
 export default function Header() {
+  const router = useRouter();
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    // Load admin user from localStorage
+    const storedUser = localStorage.getItem('admin-user');
+    if (storedUser) {
+      setAdminUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  useEffect(() => {
+    // Close dropdown when clicking outside
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('admin-authenticated');
+    localStorage.removeItem('admin-user');
+    document.cookie = 'admin-auth=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    router.push('/login');
+  };
 
   return (
-    <header className="bg-white border-b border-gray-200 px-8 py-4 z-50 sticky top-0 ">
+    <header className="bg-white border-b border-gray-200 px-8 py-4 z-50 sticky top-0 ml-64">
       <div className='flex items-center justify-between'>
-        <div>
-          {/* Theme Toggle (Light/Dark) */}Logo
+        {/* Logo */}
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center">
+            <Shield className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <span className="text-lg font-bold text-gray-900">Trustify</span>
+            <span className="text-xs text-gray-500 ml-1">Admin</span>
+          </div>
         </div>
+
         <div className="flex items-center justify-end gap-4">
           {/* Search */}
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               type="text"
-              placeholder="Search"
-              className="w-full pl-12 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              placeholder="Search..."
+              className="w-full pl-12 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
             />
           </div>
 
@@ -29,17 +73,52 @@ export default function Header() {
             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
           </button>
 
-          {/* User Profile */}
-          <div className="flex items-center gap-3 pl-4 border-l border-gray-200">
-            <img
-              src="https://api.dicebear.com/7.x/avataaars/svg?seed=Nam"
-              alt="User"
-              className="w-10 h-10 rounded-full"
-            />
-            <div className="flex items-center gap-2">
-              <span className="font-medium text-gray-900">Nam Millio</span>
-              <ChevronDown className="w-4 h-4 text-gray-400" />
-            </div>
+          {/* User Profile Dropdown */}
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => setShowDropdown(!showDropdown)}
+              className="flex items-center gap-3 pl-4 border-l border-gray-200 hover:bg-gray-50 rounded-lg py-1 pr-2 transition-colors"
+            >
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                {adminUser?.username?.charAt(0).toUpperCase() || 'A'}
+              </div>
+              <div className="text-left">
+                <p className="font-medium text-gray-900 text-sm">{adminUser?.username || 'Admin'}</p>
+                <p className="text-xs text-gray-500">{adminUser?.role || 'Administrator'}</p>
+              </div>
+              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${showDropdown ? 'rotate-180' : ''}`} />
+            </button>
+
+            {/* Dropdown Menu */}
+            {showDropdown && (
+              <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
+                <div className="px-4 py-3 border-b border-gray-100">
+                  <p className="text-sm font-medium text-gray-900">{adminUser?.username || 'Admin'}</p>
+                  <p className="text-xs text-gray-500">{adminUser?.role || 'Administrator'}</p>
+                </div>
+
+                <div className="py-1">
+                  <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                    <User className="w-4 h-4 text-gray-400" />
+                    Profile
+                  </button>
+                  <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                    <Settings className="w-4 h-4 text-gray-400" />
+                    Settings
+                  </button>
+                </div>
+
+                <div className="border-t border-gray-100 py-1">
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Sign Out
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

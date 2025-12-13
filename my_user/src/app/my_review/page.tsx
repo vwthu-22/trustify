@@ -67,7 +67,7 @@ export default function MyReviewPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 mx-20">
+    <div className="min-h-screen bg-gray-50">
       {/* User Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
@@ -155,7 +155,7 @@ export default function MyReviewPage() {
             </Link>
           </div>
         ) : (
-          <>
+          <div className="mx-20">
             {/* Review Cards */}
             <div className="space-y-4 sm:space-y-6">
               {myReviews.map((review: any) => (
@@ -194,7 +194,7 @@ export default function MyReviewPage() {
                       </div>
                       <div className="text-left sm:text-right">
                         <p className="text-gray-600 text-xs sm:text-sm">
-                          {review.createdAt ? formatDate(review.createdAt) : formatDate(review.expDate)}
+                          {review.createdAt && formatDate(review.createdAt)}
                         </p>
                       </div>
                     </div>
@@ -266,7 +266,7 @@ export default function MyReviewPage() {
                 </button>
               </div>
             )}
-          </>
+          </div>
         )}
       </div>
     </div>

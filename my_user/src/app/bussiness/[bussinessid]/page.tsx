@@ -468,7 +468,6 @@ export default function CompanyReviewPage() {
                                     const userName = review.userName || '';
                                     const userInitial = userName.charAt(0).toUpperCase();
                                     const experienceDate = review.expDate ? new Date(review.expDate).toLocaleDateString() : '';
-                                    const createdDate = review.createdAt ? new Date(review.createdAt).toLocaleDateString() : 'Recently';
 
                                     return (
                                         <div key={review.id} className="border p-3 sm:p-4 border-gray-200 rounded-lg sm:rounded-md">
@@ -483,7 +482,6 @@ export default function CompanyReviewPage() {
                                                         <p className="text-xs sm:text-sm text-gray-500 truncate">{review.userEmail || 'User'}</p>
                                                     </div>
                                                 </div>
-                                                <span className="text-xs sm:text-sm text-gray-500 flex-shrink-0 ml-2">{createdDate}</span>
                                             </div>
 
                                             {/* Rating */}
@@ -506,7 +504,7 @@ export default function CompanyReviewPage() {
                         </div>
 
                         {/* Pagination Controls */}
-                        {!reviewsLoading && searchedReviews.length > 0 && (
+                        {!reviewsLoading && totalPages > 1 && (
                             <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-between gap-3">
                                 <button
                                     onClick={loadPreviousReviews}

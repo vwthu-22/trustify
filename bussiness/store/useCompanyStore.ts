@@ -80,24 +80,34 @@ export const useCompanyStore = create<CompanyStore>()(
                 }
             },
 
-            // Send verification code to email
+            // Send magic link to email
             sendVerificationCode: async (email: string) => {
                 set({ isLoading: true, error: null });
                 try {
-                    // TODO: Replace with actual API call
-                    // const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/send-verification-code`, {
-                    //     method: 'POST',
-                    //     headers: { 'Content-Type': 'application/json' },
-                    //     body: JSON.stringify({ email }),
-                    // });
+                    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://trustify.io.vn';
 
-                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    const response = await fetch(`${API_BASE_URL}/magic-link?email=${encodeURIComponent(email)}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'ngrok-skip-browser-warning': 'true',
+                        },
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(errorText || 'Failed to send magic link');
+                    }
+
+                    const result = await response.text();
+                    console.log('Magic link sent:', result);
 
                     set({ isLoading: false });
                     return true;
                 } catch (error) {
+                    console.error('Send magic link error:', error);
                     set({
-                        error: error instanceof Error ? error.message : 'Failed to send verification code',
+                        error: error instanceof Error ? error.message : 'Failed to send magic link',
                         isLoading: false,
                     });
                     return false;
