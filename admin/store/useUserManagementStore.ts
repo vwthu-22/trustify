@@ -215,17 +215,47 @@ const useUserManagementStore = create<UserManagementStore>()(
                     }
 
                     if (!response.ok) {
-                        // Extract error message from various possible response formats
-                        const errorMessage =
-                            responseData.error ||
-                            responseData.message ||
-                            responseData.errors ||
-                            (response.status === 400 ? 'Invalid data. Please check all fields.' : null) ||
-                            (response.status === 401 ? 'Unauthorized. Please login again.' : null) ||
-                            (response.status === 403 ? 'You do not have permission to create users' : null) ||
-                            `Server error (${response.status})`;
+                        // Log full response for debugging
+                        console.error('API Error Response:', {
+                            status: response.status,
+                            statusText: response.statusText,
+                            data: responseData,
+                        });
 
-                        throw new Error(String(errorMessage));
+                        // Extract error message from various possible response formats
+                        let errorMessage: string;
+
+                        // Handle different error response formats
+                        if (typeof responseData.error === 'string') {
+                            errorMessage = responseData.error;
+                        } else if (typeof responseData.message === 'string') {
+                            errorMessage = responseData.message;
+                        } else if (typeof responseData.errors === 'string') {
+                            errorMessage = responseData.errors;
+                        } else if (Array.isArray(responseData.errors)) {
+                            // Handle validation errors array
+                            errorMessage = responseData.errors.map((e: { field?: string; message?: string; defaultMessage?: string }) =>
+                                e.field ? `${e.field}: ${e.message || e.defaultMessage}` : (e.message || e.defaultMessage || String(e))
+                            ).join(', ');
+                        } else if (typeof responseData.errors === 'object' && responseData.errors !== null) {
+                            // Handle object with field errors
+                            errorMessage = Object.entries(responseData.errors)
+                                .map(([field, msg]) => `${field}: ${msg}`)
+                                .join(', ');
+                        } else if (responseData.detail) {
+                            errorMessage = String(responseData.detail);
+                        } else {
+                            // Default error messages based on status code
+                            errorMessage = response.status === 400
+                                ? `Bad Request: ${JSON.stringify(responseData)}`
+                                : response.status === 401
+                                    ? 'Unauthorized. Please login again.'
+                                    : response.status === 403
+                                        ? 'You do not have permission to create users'
+                                        : `Server error (${response.status})`;
+                        }
+
+                        throw new Error(errorMessage);
                     }
 
                     // Refresh users list
