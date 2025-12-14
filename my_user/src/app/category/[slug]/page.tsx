@@ -7,46 +7,28 @@ import useCompanyStore from '@/stores/companyStore/company';
 import useReviewStore from '@/stores/reviewStore/review';
 import Link from 'next/link';
 import { getStarFillColor, STAR_FILL_COLORS } from '@/utils/ratingColors';
+import { useTranslations } from 'next-intl';
 
-const CATEGORIES = {
-  'bank': {
-    name: 'Bank',
-    title: 'Best in Bank',
-  },
-  'travel': {
-    name: 'Travel',
-    title: 'Best in Travel',
-  },
-  'car-dealer': {
-    name: 'Car Dealer',
-    title: 'Best in Car Dealer',
-  },
-  'furniture-store': {
-    name: 'Furniture Store',
-    title: 'Best in Furniture Store',
-  },
-  'jewelry-store': {
-    name: 'Jewelry Store',
-    title: 'Best in Jewelry Store',
-  },
-  'clothing-store': {
-    name: 'Clothing Store',
-    title: 'Best in Clothing Store',
-  },
-  'electronics': {
-    name: 'Electronics & Technology',
-    title: 'Best in Electronics',
-  },
-  'fitness': {
-    name: 'Fitness and Nutrition Service',
-    title: 'Best in Fitness',
-  }
+// Constant mapping - defined outside component to avoid recreating on each render
+const CATEGORY_MAP: { [key: string]: { name: string; key: string } } = {
+  'bank': { name: 'Bank', key: 'bank' },
+  'travel': { name: 'Travel', key: 'travel' },
+  'car-dealer': { name: 'Car Dealer', key: 'carDealer' },
+  'furniture-store': { name: 'Furniture Store', key: 'furniture' },
+  'jewelry-store': { name: 'Jewelry Store', key: 'jewelry' },
+  'clothing-store': { name: 'Clothing Store', key: 'clothing' },
+  'electronics': { name: 'Electronics & Technology', key: 'electronics' },
+  'fitness': { name: 'Fitness and Nutrition Service', key: 'fitness' }
 };
 
 export default function CategoryPage() {
   const params = useParams();
   const router = useRouter();
   const slug = params.slug as string;
+  const t = useTranslations('categoryPage');
+  const tCat = useTranslations('categories');
+  const tHome = useTranslations('home');
+  const tReview = useTranslations('review');
 
   const [page, setPage] = useState(0);
   const [sortBy, setSortBy] = useState('most-relevant');
@@ -54,7 +36,7 @@ export default function CategoryPage() {
   const { companies, isLoading, error, fetchCompaniesByIndustry } = useCompanyStore();
   const { companyRatings, fetchCompanyRatings } = useReviewStore();
 
-  const category = CATEGORIES[slug as keyof typeof CATEGORIES];
+  const category = CATEGORY_MAP[slug];
 
   useEffect(() => {
     if (!category) {
@@ -63,11 +45,11 @@ export default function CategoryPage() {
   }, [category, router]);
 
   useEffect(() => {
-    if (category) {
-      const industryName = category.name;
-      fetchCompaniesByIndustry(industryName, page, 4);
+    if (category && slug) {
+      fetchCompaniesByIndustry(category.name, page, 4);
     }
-  }, [slug, page, category, fetchCompaniesByIndustry]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slug, page]);
 
   // Fetch ratings for companies when they load
   useEffect(() => {
@@ -75,7 +57,8 @@ export default function CategoryPage() {
       const companyIds = companies.map(c => c.id);
       fetchCompanyRatings(companyIds);
     }
-  }, [companies, fetchCompanyRatings]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [companies]);
 
   // Helper function to get rating data for a company
   const getCompanyRating = (companyId: string) => {
@@ -101,17 +84,17 @@ export default function CategoryPage() {
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">{category.title}</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">{t('bestIn')} {tCat(category.key)}</h1>
 
           {/* Filter Buttons - Scrollable on mobile */}
           <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto pb-2 scrollbar-hide">
             <button className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 border border-gray-300 rounded-full hover:bg-gray-50 transition text-sm whitespace-nowrap flex-shrink-0">
               <SlidersHorizontal size={16} className="sm:w-[18px] sm:h-[18px]" />
-              <span>All filters</span>
+              <span>{t('allFilters')}</span>
             </button>
             <button className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 border border-gray-300 rounded-full hover:bg-gray-50 transition text-sm whitespace-nowrap flex-shrink-0">
               <Star size={16} className="sm:w-[18px] sm:h-[18px]" />
-              <span>Rating</span>
+              <span>{t('rating')}</span>
             </button>
           </div>
         </div>
@@ -122,19 +105,19 @@ export default function CategoryPage() {
         {/* Header with Sort */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
           <h2 className="text-base sm:text-lg font-semibold text-gray-900">
-            Companies ({isLoading ? '...' : companies.length.toLocaleString()})
+            {t('companies')} ({isLoading ? '...' : companies.length.toLocaleString()})
           </h2>
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600">Sort by:</span>
+            <span className="text-sm text-gray-600">{t('sortBy')}:</span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
               className="border border-gray-300 rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 bg-white cursor-pointer text-sm"
             >
-              <option value="most-relevant">Most relevant</option>
-              <option value="highest-rated">Highest rated</option>
-              <option value="most-reviewed">Most reviewed</option>
-              <option value="newest">Newest</option>
+              <option value="most-relevant">{t('mostRelevant')}</option>
+              <option value="highest-rated">{t('highestRated')}</option>
+              <option value="most-reviewed">{t('mostReviewed')}</option>
+              <option value="newest">{t('newest')}</option>
             </select>
           </div>
         </div>
@@ -164,7 +147,7 @@ export default function CategoryPage() {
           </div>
         ) : companies.length === 0 ? (
           <div className="bg-white rounded-lg p-8 sm:p-12 text-center">
-            <p className="text-gray-600">No companies found in this category.</p>
+            <p className="text-gray-600">{t('noCompaniesInCategory')}</p>
           </div>
         ) : (
           <div className="space-y-4 sm:space-y-6">
@@ -193,7 +176,7 @@ export default function CategoryPage() {
                     <div className="flex-1 min-w-0">
                       {company.verified && (
                         <span className="inline-block text-[10px] sm:text-xs font-semibold text-blue-600 bg-blue-100 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded mb-1 sm:mb-2">
-                          VERIFIED
+                          {tReview('verified')}
                         </span>
                       )}
 
@@ -213,7 +196,7 @@ export default function CategoryPage() {
                           <span className="font-bold text-gray-900 text-sm sm:text-base">{ratingData.rating.toFixed(1)}</span>
                           <span className="text-gray-600 text-xs sm:text-sm">·</span>
                           <span className="text-gray-900 font-medium text-xs sm:text-sm">
-                            {ratingData.reviewCount.toLocaleString()} reviews
+                            {ratingData.reviewCount.toLocaleString()} {tReview('reviews')}
                           </span>
                         </div>
                       ) : (
@@ -221,7 +204,7 @@ export default function CategoryPage() {
                           <div className="flex items-center gap-0.5">
                             {renderStars(0)}
                           </div>
-                          <span className="text-gray-500 text-xs sm:text-sm italic">No reviews yet</span>
+                          <span className="text-gray-500 text-xs sm:text-sm italic">{tReview('noReviews')}</span>
                         </div>
                       )}
                     </div>
@@ -240,17 +223,17 @@ export default function CategoryPage() {
               disabled={page === 0}
               className="px-3 sm:px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition text-sm"
             >
-              Previous
+              {t('previous')}
             </button>
             <span className="px-3 sm:px-4 py-2 text-gray-600 text-sm">
-              Page {page + 1}
+              {t('page')} {page + 1}
             </span>
             <button
               onClick={() => setPage(page + 1)}
               disabled={companies.length < 4}
               className="px-3 sm:px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition text-sm"
             >
-              Next
+              {t('next')}
             </button>
           </div>
         )}

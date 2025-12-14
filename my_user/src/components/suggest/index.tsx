@@ -5,22 +5,25 @@ import { usePathname } from 'next/navigation';
 import useCompanyStore from '@/stores/companyStore/company';
 import useReviewStore from '@/stores/reviewStore/review';
 import { getStarColor, STAR_COLORS } from '@/utils/ratingColors';
+import { useTranslations } from 'next-intl';
 
-const categories = [
-    { slug: 'bank', name: 'Bank', icon: '🏛️' },
-    { slug: 'travel', name: 'Travel', icon: '✈️' },
-    { slug: 'car-dealer', name: 'Car Dealer', icon: '🚗' },
-    { slug: 'furniture-store', name: 'Furniture', icon: '🛋️' },
-    { slug: 'jewelry-store', name: 'Jewelry', icon: '💎' },
-    { slug: 'clothing-store', name: 'Clothing', icon: '👕' },
-    { slug: 'electronics', name: 'Electronics', icon: '💻' },
-    { slug: 'fitness', name: 'Fitness', icon: '🏋️' }
+const categoryKeys = [
+    { slug: 'bank', key: 'bank', icon: '🏛️' },
+    { slug: 'travel', key: 'travel', icon: '✈️' },
+    { slug: 'car-dealer', key: 'carDealer', icon: '🚗' },
+    { slug: 'furniture-store', key: 'furniture', icon: '🛋️' },
+    { slug: 'jewelry-store', key: 'jewelry', icon: '💎' },
+    { slug: 'clothing-store', key: 'clothing', icon: '👕' },
+    { slug: 'electronics', key: 'electronics', icon: '💻' },
+    { slug: 'fitness', key: 'fitness', icon: '🏋️' }
 ];
 
 export default function Suggest() {
     const pathname = usePathname();
     const { companies, isLoading, fetchCompanies } = useCompanyStore();
     const { companyRatings, fetchCompanyRatings } = useReviewStore();
+    const t = useTranslations('home');
+    const tCat = useTranslations('categories');
 
     useEffect(() => {
         fetchCompanies({ limit: 50 });
@@ -67,7 +70,7 @@ export default function Suggest() {
         <div className="rounded-md mt-6 sm:mt-10">
             {/* Pick up where you left off */}
             <div className="px-0 sm:px-4 lg:px-6 rounded-lg py-4 sm:py-6">
-                <h2 className="text-xl sm:text-2xl text-gray-900 mb-4">Pick up where you left off</h2>
+                <h2 className="text-xl sm:text-2xl text-gray-900 mb-4">{t('pickUpWhereLeft')}</h2>
 
                 {isLoading ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
@@ -82,7 +85,7 @@ export default function Suggest() {
                     </div>
                 ) : topCompanies.length === 0 ? (
                     <div className="bg-white rounded-2xl border border-gray-300 p-6 sm:p-8 text-center">
-                        <p className="text-gray-600">No top rated companies found.</p>
+                        <p className="text-gray-600">{t('noTopRated')}</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
@@ -123,10 +126,10 @@ export default function Suggest() {
             {/* What are you looking for? */}
             <div className="bg-white py-8 sm:py-12 -mx-4 sm:mx-0 px-4 sm:px-0 sm:rounded-lg">
                 <div className="max-w-7xl mx-auto px-0 sm:px-4 lg:px-8">
-                    <h2 className="text-xl sm:text-2xl text-gray-900 mb-4 sm:mb-6">What are you looking for?</h2>
+                    <h2 className="text-xl sm:text-2xl text-gray-900 mb-4 sm:mb-6">{t('whatLookingFor')}</h2>
 
                     <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-8 gap-2 sm:gap-4">
-                        {categories.map((category) => {
+                        {categoryKeys.map((category) => {
                             const isActive = pathname?.includes(category.slug);
                             return (
                                 <Link
@@ -138,7 +141,7 @@ export default function Suggest() {
                                         }`}
                                 >
                                     <span className="text-xl sm:text-2xl md:text-3xl">{category.icon}</span>
-                                    <p className="text-center text-[10px] sm:text-xs font-medium leading-tight">{category.name}</p>
+                                    <p className="text-center text-[10px] sm:text-xs font-medium leading-tight">{tCat(category.key)}</p>
                                 </Link>
                             );
                         })}
@@ -150,17 +153,17 @@ export default function Suggest() {
             <div className="bg-gradient-to-r from-pink-200 via-pink-100 to-purple-100 rounded-2xl sm:rounded-3xl py-4 sm:py-6 px-4 sm:px-6 md:px-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-6 sm:mt-0">
                 <div>
                     <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 mb-1">
-                        Looking to grow your business?
+                        {t('lookingToGrow')}
                     </h3>
                     <p className="text-sm sm:text-md text-gray-700">
-                        Strengthen your reputation with reviews on Trustify.
+                        {t('strengthenReputation')}
                     </p>
                 </div>
                 <Link
                     href={"/intro_bus"}
                     className="bg-gray-900 hover:bg-gray-800 text-white px-4 sm:px-6 py-2 rounded-full text-sm sm:text-base md:text-lg transition whitespace-nowrap w-full sm:w-auto text-center"
                 >
-                    Get started
+                    {t('getStarted')}
                 </Link>
             </div>
         </div>

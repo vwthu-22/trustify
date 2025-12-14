@@ -6,9 +6,11 @@ import Travel from '@/components/besttravel';
 import RecentReview from '@/components/rv_recent';
 import SearchHD from '@/components/search';
 import useAuthStore from '@/stores/userAuthStore/user';
+import { useTranslations } from 'next-intl';
 
 export default function Home() {
   const { fetchUserInfo, isAuthenticated, user, isLoading } = useAuthStore();
+  const t = useTranslations('home');
 
   useEffect(() => {
     // Luôn gọi fetchUserInfo khi vào trang home để kiểm tra authentication
@@ -35,8 +37,8 @@ export default function Home() {
         <div className="bg-green-50 border-b border-green-100 py-2 sm:py-3">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <p className="text-center text-green-800 text-sm sm:text-base">
-              <span className="font-semibold">Welcome, {user.name}!</span>
-              <span className="ml-1 sm:ml-2 text-green-600 hidden sm:inline">Ready to share your experience?</span>
+              <span className="font-semibold">{t('welcome')} {user.name}!</span>
+              <span className="ml-1 sm:ml-2 text-green-600 hidden sm:inline">{t('shareExperience')}</span>
             </p>
           </div>
         </div>
@@ -52,4 +54,3 @@ export default function Home() {
     </div>
   );
 }
- 

@@ -4,6 +4,7 @@ import { X, Info, Sparkles } from 'lucide-react';
 import useRatingStore from '@/stores/ratingStore/rating';
 import useReviewStore from '@/stores/reviewStore/review';
 import useUserAuthStore from '@/stores/userAuthStore/user';
+import { useTranslations } from 'next-intl';
 
 interface WriteReviewModalProps {
     isOpen: boolean;
@@ -32,6 +33,8 @@ export default function WriteReviewModal({
     const [reviewTitle, setReviewTitle] = useState('');
     const [isTitleManuallyEdited, setIsTitleManuallyEdited] = useState(false);
     const [experienceDate, setExperienceDate] = useState('');
+
+    const t = useTranslations('reviewModal');
 
     const { submitRating, isLoading: ratingLoading, error: ratingError, clearError: clearRatingError } = useRatingStore();
     const { createReview, isLoading: reviewLoading, error: reviewError, successMessage, clearError: clearReviewError } = useReviewStore();
@@ -91,7 +94,7 @@ export default function WriteReviewModal({
         e.preventDefault();
 
         if (!user) {
-            alert("Please log in to write a review.");
+            alert(t('pleaseLogin'));
             return;
         }
 
@@ -102,7 +105,7 @@ export default function WriteReviewModal({
 
         if (!companyId) {
             console.error('Company ID is required for rating submission');
-            alert('Unable to submit review: Company ID is missing');
+            alert(t('companyIdMissing'));
             return;
         }
 
@@ -155,7 +158,7 @@ export default function WriteReviewModal({
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
             <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative shadow-2xl">
                 <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
-                    <h2 className="text-xl font-bold text-gray-900">Write a review</h2>
+                    <h2 className="text-xl font-bold text-gray-900">{t('writeReview')}</h2>
                     <button
                         onClick={onClose}
                         className="p-1.5 hover:bg-gray-100 rounded-full transition"
@@ -226,12 +229,12 @@ export default function WriteReviewModal({
 
                         <div className="mb-5">
                             <label className="block text-base font-semibold text-gray-900 mb-2">
-                                Tell us more about your experience
+                                {t('tellUsMore')}
                             </label>
                             <textarea
                                 value={reviewText}
                                 onChange={(e) => setReviewText(e.target.value)}
-                                placeholder="What did you like or dislike? What is company doing well, or how can they improve?"
+                                placeholder={t('whatDidYouLike')}
                                 required
                                 rows={6}
                                 disabled={isLoading}
@@ -242,7 +245,7 @@ export default function WriteReviewModal({
                         <div className="mb-5">
                             <div className="flex items-center justify-between mb-2">
                                 <label className="block text-base font-semibold text-gray-900">
-                                    Give your review a title
+                                    {t('giveTitle')}
                                 </label>
                                 {reviewText.trim() && (
                                     <button
@@ -252,7 +255,7 @@ export default function WriteReviewModal({
                                         className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 disabled:text-gray-400 transition"
                                     >
                                         <Sparkles className="w-3 h-3" />
-                                        Suggest title
+                                        {t('suggestTitle')}
                                     </button>
                                 )}
                             </div>
@@ -261,27 +264,27 @@ export default function WriteReviewModal({
                                     type="text"
                                     value={reviewTitle}
                                     onChange={(e) => handleTitleChange(e.target.value)}
-                                    placeholder="What is important for people to know"
+                                    placeholder={t('titlePlaceholder')}
                                     required
                                     disabled={isLoading}
                                     className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm disabled:bg-gray-100"
                                 />
                                 {!isTitleManuallyEdited && reviewTitle && (
                                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
-                                        Auto
+                                        {t('auto')}
                                     </span>
                                 )}
                             </div>
                             {!reviewText.trim() && (
                                 <p className="text-xs text-gray-500 mt-1">
-                                    Write your experience first, and we'll suggest a title for you
+                                    {t('writeExperienceFirst')}
                                 </p>
                             )}
                         </div>
 
                         <div className="mb-5">
                             <label className="flex items-center gap-2 text-base font-semibold text-gray-900 mb-2">
-                                Date of experience
+                                {t('dateOfExperience')}
                                 <button type="button" className="p-1 hover:bg-gray-100 rounded-full transition">
                                     <Info className="w-4 h-4 text-gray-500" />
                                 </button>
@@ -299,11 +302,11 @@ export default function WriteReviewModal({
 
                         <div className="mb-5">
                             <p className="text-xs text-gray-600">
-                                By submitting this review, you confirm it's{' '}
+                                {t('submissionConfirm')}{' '}
                                 <a href="#" className="text-blue-600 hover:underline">
-                                    based on a genuine experience
+                                    {t('genuineExperience')}
                                 </a>{' '}
-                                and you haven't received an incentive to write it.
+                                {t('noIncentive')}
                             </p>
                         </div>
 
@@ -318,10 +321,10 @@ export default function WriteReviewModal({
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
-                                    Submitting...
+                                    {t('submitting')}
                                 </>
                             ) : (
-                                'Submit review'
+                                t('submitReview')
                             )}
                         </button>
                     </form>

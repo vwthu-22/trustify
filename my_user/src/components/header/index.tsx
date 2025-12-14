@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import useAuthStore from '@/stores/userAuthStore/user';
 import useNotificationStore from '@/stores/notificationStore/notification';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { useTranslations } from 'next-intl';
 
 export default function Header() {
     const [showSearchBar, setShowSearchBar] = useState(false);
@@ -13,6 +15,7 @@ export default function Header() {
     const [showNotifications, setShowNotifications] = useState(false);
     const pathname = usePathname();
     const router = useRouter();
+    const t = useTranslations('header');
 
     const { user, isAuthenticated, logout, fetchUserInfo } = useAuthStore();
     const { notifications, unreadCount, fetchNotifications, markAsRead, markAllAsRead } = useNotificationStore();
@@ -70,8 +73,8 @@ export default function Header() {
 
     const getButtonConfig = () => {
         if (isBusinessSignup) return null;
-        if (isBusinessIntro) return { text: 'Create account', href: '/intro_bus/register_bussiness' };
-        return { text: 'For businesses', href: '/intro_bus' };
+        if (isBusinessIntro) return { text: t('createAccount'), href: '/intro_bus/register_bussiness' };
+        return { text: t('forBusinesses'), href: '/intro_bus' };
     };
 
     const buttonConfig = getButtonConfig();
@@ -141,10 +144,10 @@ export default function Header() {
                         {/* Desktop Navigation */}
                         <nav className="hidden lg:flex items-center gap-3 xl:gap-6">
                             <Link href="/write-review" className="flex items-center gap-1 hover:text-gray-300 transition text-sm">
-                                Write a review
+                                {t('writeReview')}
                             </Link>
                             <Link href="/categories" className="hover:text-gray-300 transition text-sm">
-                                Categories
+                                {t('categories')}
                             </Link>
 
                             {isAuthenticated && user && (
@@ -168,10 +171,10 @@ export default function Header() {
                                     {showNotifications && (
                                         <div className="absolute right-0 top-12 w-80 bg-white text-gray-900 rounded-lg shadow-xl border border-gray-200 overflow-hidden">
                                             <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-gray-50">
-                                                <h3 className="font-semibold">Notifications</h3>
+                                                <h3 className="font-semibold">{t('notifications')}</h3>
                                                 {unreadCount > 0 && (
                                                     <button onClick={() => markAllAsRead()} className="text-sm text-blue-600 hover:text-blue-800">
-                                                        Mark all as read
+                                                        {t('markAllAsRead')}
                                                     </button>
                                                 )}
                                             </div>
@@ -179,7 +182,7 @@ export default function Header() {
                                                 {notifications.length === 0 ? (
                                                     <div className="px-4 py-8 text-center text-gray-500">
                                                         <Bell className="w-8 h-8 mx-auto mb-2 text-gray-300" />
-                                                        <p>No notifications yet</p>
+                                                        <p>{t('noNotifications')}</p>
                                                     </div>
                                                 ) : (
                                                     notifications.map((notification) => (
@@ -206,7 +209,8 @@ export default function Header() {
                                     )}
                                 </div>
                             )}
-
+                            {/* Language Switcher */}
+                            <LanguageSwitcher />
                             {isAuthenticated && user ? (
                                 <div className="relative">
                                     <button
@@ -221,14 +225,14 @@ export default function Header() {
                                     </button>
                                     {showUserMenu && (
                                         <div className="absolute right-0 top-10 w-48 bg-white text-gray-800 rounded-lg shadow-lg py-2">
-                                            <Link href="/my_review" className="block px-4 py-2 text-sm hover:bg-gray-100 transition" onClick={() => setShowUserMenu(false)}>My Reviews</Link>
-                                            <Link href="/profile" className="block px-4 py-2 text-sm hover:bg-gray-100 transition" onClick={() => setShowUserMenu(false)}>Profile</Link>
-                                            <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition text-red-600">Logout</button>
+                                            <Link href="/my_review" className="block px-4 py-2 text-sm hover:bg-gray-100 transition" onClick={() => setShowUserMenu(false)}>{t('myReviews')}</Link>
+                                            <Link href="/profile" className="block px-4 py-2 text-sm hover:bg-gray-100 transition" onClick={() => setShowUserMenu(false)}>{t('profile')}</Link>
+                                            <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition text-red-600">{t('logout')}</button>
                                         </div>
                                     )}
                                 </div>
                             ) : (
-                                <Link href={"/login"} className="text-sm hover:text-gray-300 transition">Log in</Link>
+                                <Link href={"/login"} className="text-sm hover:text-gray-300 transition">{t('login')}</Link>
                             )}
 
                             {buttonConfig && (
@@ -236,6 +240,7 @@ export default function Header() {
                                     {buttonConfig.text}
                                 </button>
                             )}
+
                         </nav>
 
                         {/* Mobile Menu Button */}
@@ -294,15 +299,15 @@ export default function Header() {
                     <div className="lg:hidden bg-[#191919] border-t border-gray-700">
                         <div className="px-4 py-4 space-y-4">
                             <div className="relative">
-                                <input type="text" placeholder="Search company or category" className="w-full px-4 py-3 rounded-full border-2 border-gray-600 focus:border-blue-500 focus:outline-none text-sm bg-gray-800 text-white placeholder-gray-400" />
+                                <input type="text" placeholder={t('searchPlaceholder')} className="w-full px-4 py-3 rounded-full border-2 border-gray-600 focus:border-blue-500 focus:outline-none text-sm bg-gray-800 text-white placeholder-gray-400" />
                                 <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#5e5eff] hover:bg-[#4d4dff] text-white p-2 rounded-full transition">
                                     <Search className="w-4 h-4" />
                                 </button>
                             </div>
 
                             <div className="space-y-2">
-                                <Link href="/write-review" onClick={() => setShowMobileMenu(false)} className="block py-3 px-4 text-gray-300 hover:bg-gray-800 rounded-lg transition">Write a review</Link>
-                                <Link href="/categories" onClick={() => setShowMobileMenu(false)} className="block py-3 px-4 text-gray-300 hover:bg-gray-800 rounded-lg transition">Categories</Link>
+                                <Link href="/write-review" onClick={() => setShowMobileMenu(false)} className="block py-3 px-4 text-gray-300 hover:bg-gray-800 rounded-lg transition">{t('writeReview')}</Link>
+                                <Link href="/categories" onClick={() => setShowMobileMenu(false)} className="block py-3 px-4 text-gray-300 hover:bg-gray-800 rounded-lg transition">{t('categories')}</Link>
                             </div>
 
                             <div className="border-t border-gray-700 pt-4">
@@ -312,15 +317,20 @@ export default function Header() {
                                             <div className="w-10 h-10 bg-[#6b5b4f] rounded-full flex items-center justify-center font-semibold">{user.name?.charAt(0).toUpperCase()}</div>
                                             <span className="font-medium">{user.name}</span>
                                         </div>
-                                        <Link href="/my_review" onClick={() => setShowMobileMenu(false)} className="block py-3 px-4 text-gray-300 hover:bg-gray-800 rounded-lg transition">My Reviews</Link>
-                                        <Link href="/profile" onClick={() => setShowMobileMenu(false)} className="block py-3 px-4 text-gray-300 hover:bg-gray-800 rounded-lg transition">Profile</Link>
-                                        <button onClick={handleLogout} className="w-full text-left py-3 px-4 text-red-400 hover:bg-gray-800 rounded-lg transition">Logout</button>
+                                        <Link href="/my_review" onClick={() => setShowMobileMenu(false)} className="block py-3 px-4 text-gray-300 hover:bg-gray-800 rounded-lg transition">{t('myReviews')}</Link>
+                                        <Link href="/profile" onClick={() => setShowMobileMenu(false)} className="block py-3 px-4 text-gray-300 hover:bg-gray-800 rounded-lg transition">{t('profile')}</Link>
+                                        <button onClick={handleLogout} className="w-full text-left py-3 px-4 text-red-400 hover:bg-gray-800 rounded-lg transition">{t('logout')}</button>
                                     </div>
                                 ) : (
                                     <div className="space-y-2">
-                                        <Link href="/login" onClick={() => setShowMobileMenu(false)} className="block py-3 px-4 text-gray-300 hover:bg-gray-800 rounded-lg transition">Log in</Link>
+                                        <Link href="/login" onClick={() => setShowMobileMenu(false)} className="block py-3 px-4 text-gray-300 hover:bg-gray-800 rounded-lg transition">{t('login')}</Link>
                                     </div>
                                 )}
+                            </div>
+
+                            {/* Language Switcher for Mobile */}
+                            <div className="border-t border-gray-700 pt-4">
+                                <LanguageSwitcher />
                             </div>
 
                             {buttonConfig && (

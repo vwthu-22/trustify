@@ -6,11 +6,15 @@ import { useRouter } from 'next/navigation';
 import useAuthStore from '@/stores/userAuthStore/user';
 import useReviewStore from '@/stores/reviewStore/review';
 import { getStarFillColor, STAR_FILL_COLORS } from '@/utils/ratingColors';
+import { useTranslations } from 'next-intl';
 
 export default function MyReviewPage() {
   const router = useRouter();
   const { user, isAuthenticated } = useAuthStore();
   const { myReviews, isLoading, error, currentPage, totalPages, totalItems, fetchReviewsByEmail } = useReviewStore();
+  const t = useTranslations('myReviews');
+  const tReview = useTranslations('review');
+  const tProfile = useTranslations('profile');
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -77,7 +81,7 @@ export default function MyReviewPage() {
             className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Back to Home</span>
+            <span>{tProfile('backToHome')}</span>
           </Link>
 
           <div className="flex flex-col sm:flex-row items-center sm:items-start sm:justify-between gap-6">
@@ -109,7 +113,7 @@ export default function MyReviewPage() {
                   <Star size={20} className="sm:w-6 sm:h-6" />
                   <span className="text-2xl sm:text-4xl font-bold">{totalItems}</span>
                 </div>
-                <span className="text-xs sm:text-sm text-gray-600">Reviews</span>
+                <span className="text-xs sm:text-sm text-gray-600">{tProfile('reviews')}</span>
               </div>
             </div>
           </div>
@@ -118,7 +122,7 @@ export default function MyReviewPage() {
 
       {/* Reviews Section */}
       <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">My Reviews</h2>
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">{t('title')}</h2>
 
         {/* Loading State */}
         {isLoading ? (
@@ -144,14 +148,14 @@ export default function MyReviewPage() {
         ) : myReviews.length === 0 ? (
           <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
             <Star className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No reviews yet</h3>
-            <p className="text-gray-600 mb-4">You haven't written any reviews yet.</p>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('noReviews')}</h3>
+            <p className="text-gray-600 mb-4">{t('noReviewsDesc')}</p>
             <Link
               href="/write-review"
               className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
             >
               <Star className="w-4 h-4" />
-              Write your first review
+              {t('writeFirst')}
             </Link>
           </div>
         ) : (
@@ -163,12 +167,12 @@ export default function MyReviewPage() {
                   {/* Review Header */}
                   <div>
                     <p className="text-gray-700 text-sm sm:text-base">
-                      Review of{' '}
+                      {t('reviewOf')}{' '}
                       <Link
                         href={review.companyId ? `/bussiness/${review.companyId}` : '#'}
                         className="text-blue-600 hover:underline"
                       >
-                        {review.companyName || 'Unknown Company'}
+                        {review.companyName || t('unknownCompany')}
                       </Link>
                     </p>
                   </div>
@@ -182,7 +186,7 @@ export default function MyReviewPage() {
                       </div>
                       <div>
                         <p className="font-semibold text-gray-900 text-sm sm:text-base">{user.name}</p>
-                        <p className="text-xs sm:text-sm text-gray-600">{totalItems} reviews</p>
+                        <p className="text-xs sm:text-sm text-gray-600">{totalItems} {tProfile('reviews')}</p>
                       </div>
                     </div>
 
@@ -212,7 +216,7 @@ export default function MyReviewPage() {
                     {/* Experience Date */}
                     {review.expDate && (
                       <p className="text-xs sm:text-sm text-gray-500 mb-4">
-                        <span className="font-medium">Experience Date:</span> {formatDate(review.expDate)}
+                        <span className="font-medium">{t('experienceDate')}:</span> {formatDate(review.expDate)}
                       </p>
                     )}
 
@@ -226,7 +230,7 @@ export default function MyReviewPage() {
                         className="flex items-center gap-1.5 text-blue-600 hover:text-blue-700 text-xs sm:text-sm font-medium transition"
                       >
                         <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                        Edit
+                        {tReview('editReview')}
                       </button>
                       <button
                         onClick={() => {
@@ -236,7 +240,7 @@ export default function MyReviewPage() {
                         className="flex items-center gap-1.5 text-red-600 hover:text-red-700 text-xs sm:text-sm font-medium transition"
                       >
                         <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                        Delete
+                        {tReview('deleteReview')}
                       </button>
                     </div>
                   </div>
@@ -255,7 +259,7 @@ export default function MyReviewPage() {
                   <ChevronLeft className="w-5 h-5" />
                 </button>
                 <span className="px-4 py-2 text-sm text-gray-700">
-                  Page {currentPage + 1} of {totalPages}
+                  {t('page')} {currentPage + 1} {t('of')} {totalPages}
                 </span>
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}

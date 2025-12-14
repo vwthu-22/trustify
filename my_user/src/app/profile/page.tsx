@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { User, Mail, MapPin, Save, ArrowLeft, Check } from 'lucide-react';
 import Link from 'next/link';
 import useAuthStore from '@/stores/userAuthStore/user';
+import { useTranslations } from 'next-intl';
 
 const COUNTRIES = [
     'Afghanistan', 'Albania', 'Algeria', 'Argentina', 'Australia', 'Austria',
@@ -22,6 +23,8 @@ const COUNTRIES = [
 
 export default function ProfilePage() {
     const router = useRouter();
+    const t = useTranslations('profile');
+    const tCommon = useTranslations('common');
     const {
         user,
         isAuthenticated,
@@ -89,7 +92,7 @@ export default function ProfilePage() {
                     className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition"
                 >
                     <ArrowLeft className="w-4 h-4" />
-                    <span>Back to Home</span>
+                    <span>{t('backToHome')}</span>
                 </Link>
 
                 {/* Profile Card */}
@@ -129,7 +132,7 @@ export default function ProfilePage() {
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 <div className="flex items-center gap-2">
                                     <Mail className="w-4 h-4" />
-                                    Email
+                                    {t('email')}
                                 </div>
                             </label>
                             <input
@@ -138,7 +141,7 @@ export default function ProfilePage() {
                                 disabled
                                 className="w-full px-4 py-3 bg-gray-100 border border-gray-200 rounded-lg text-gray-500 cursor-not-allowed"
                             />
-                            <p className="mt-1 text-xs text-gray-500">Email cannot be changed</p>
+                            <p className="mt-1 text-xs text-gray-500">{t('emailCannotChange')}</p>
                         </div>
 
                         {/* Name */}
@@ -146,14 +149,14 @@ export default function ProfilePage() {
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 <div className="flex items-center gap-2">
                                     <User className="w-4 h-4" />
-                                    Full Name
+                                    {t('fullName')}
                                 </div>
                             </label>
                             <input
                                 type="text"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                placeholder="Enter your full name"
+                                placeholder={t('enterFullName')}
                                 required
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
                             />
@@ -164,7 +167,7 @@ export default function ProfilePage() {
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 <div className="flex items-center gap-2">
                                     <MapPin className="w-4 h-4" />
-                                    Country
+                                    {t('country')}
                                 </div>
                             </label>
                             <select
@@ -172,7 +175,7 @@ export default function ProfilePage() {
                                 onChange={(e) => setCountry(e.target.value)}
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition bg-white"
                             >
-                                <option value="">Select your country</option>
+                                <option value="">{t('selectCountry')}</option>
                                 {COUNTRIES.map((c) => (
                                     <option key={c} value={c}>{c}</option>
                                 ))}
@@ -189,12 +192,12 @@ export default function ProfilePage() {
                                 {isLoading ? (
                                     <>
                                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                                        Saving...
+                                        {t('saving')}
                                     </>
                                 ) : (
                                     <>
                                         <Save className="w-5 h-5" />
-                                        Save Changes
+                                        {t('saveChanges')}
                                     </>
                                 )}
                             </button>
@@ -204,7 +207,7 @@ export default function ProfilePage() {
 
                 {/* Additional Info */}
                 <div className="mt-6 text-center text-sm text-gray-500">
-                    <p>Need help? <Link href="/support" className="text-blue-600 hover:underline">Contact Support</Link></p>
+                    <p>{t('needHelp')} <Link href="/support" className="text-blue-600 hover:underline">{t('contactSupport')}</Link></p>
                 </div>
             </div>
         </div>

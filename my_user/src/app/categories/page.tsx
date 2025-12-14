@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Search, Star, Building2, ArrowRight } from 'lucide-react';
 import useCompanyStore from '@/stores/companyStore/company';
+import { useTranslations } from 'next-intl';
 
 const CATEGORIES = [
     { slug: 'bank', name: 'Bank', icon: '🏛️', description: 'Banks, Credit Unions & Financial Services' },
@@ -20,10 +21,23 @@ const CATEGORIES = [
 export default function CategoriesPage() {
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState('');
+    const t = useTranslations('categories');
+    const tHeader = useTranslations('header');
+
+    const CATEGORIES = [
+        { slug: 'bank', key: 'bank', icon: '🏛️', descKey: 'bankDesc' },
+        { slug: 'travel', key: 'travel', icon: '✈️', descKey: 'travelDesc' },
+        { slug: 'car-dealer', key: 'carDealer', icon: '🚗', descKey: 'carDealerDesc' },
+        { slug: 'furniture-store', key: 'furniture', icon: '🛋️', descKey: 'furnitureDesc' },
+        { slug: 'jewelry-store', key: 'jewelry', icon: '💎', descKey: 'jewelryDesc' },
+        { slug: 'clothing-store', key: 'clothing', icon: '👕', descKey: 'clothingDesc' },
+        { slug: 'electronics', key: 'electronics', icon: '💻', descKey: 'electronicsDesc' },
+        { slug: 'fitness', key: 'fitness', icon: '🏋️', descKey: 'fitnessDesc' }
+    ];
 
     const filteredCategories = CATEGORIES.filter(cat =>
-        cat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        cat.description.toLowerCase().includes(searchQuery.toLowerCase())
+        t(cat.key).toLowerCase().includes(searchQuery.toLowerCase()) ||
+        t(cat.descKey).toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     return (
@@ -32,10 +46,10 @@ export default function CategoriesPage() {
             <div className="bg-gradient-to-br from-blue-600 to-blue-200 text-white py-12 sm:py-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-center">
-                        Browse Categories
+                        {t('title')}
                     </h1>
                     <p className="text-lg sm:text-xl text-blue-100 text-center mb-8 max-w-2xl mx-auto">
-                        Find trusted companies across all industries. Read reviews and make informed decisions.
+                        {t('heroSubtitle')}
                     </p>
 
                     {/* Search Box */}
@@ -43,7 +57,7 @@ export default function CategoriesPage() {
                         <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                         <input
                             type="text"
-                            placeholder="Search categories..."
+                            placeholder={t('searchCategories')}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full pl-12 pr-4 py-3 sm:py-4 rounded-full text-gray-900 text-base sm:text-lg ring-blue-200 ring-1 focus:ring-2 focus:ring-blue-100 focus:outline-none"
@@ -65,15 +79,15 @@ export default function CategoriesPage() {
                                 <span className="text-4xl sm:text-5xl">{category.icon}</span>
                                 <div className="flex-1 min-w-0">
                                     <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-1 group-hover:text-blue-600 transition">
-                                        {category.name}
+                                        {t(category.key)}
                                     </h3>
                                     <p className="text-sm text-gray-600 leading-relaxed">
-                                        {category.description}
+                                        {t(category.descKey)}
                                     </p>
                                 </div>
                             </div>
                             <div className="mt-4 flex items-center text-blue-600 text-sm font-medium">
-                                <span>Browse companies</span>
+                                <span>{t('browseCompanies')}</span>
                                 <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition" />
                             </div>
                         </Link>
@@ -82,7 +96,7 @@ export default function CategoriesPage() {
 
                 {filteredCategories.length === 0 && (
                     <div className="text-center py-12">
-                        <p className="text-gray-600 text-lg">No categories found matching "{searchQuery}"</p>
+                        <p className="text-gray-600 text-lg">{t('noCategories')} "{searchQuery}"</p>
                     </div>
                 )}
             </div>
@@ -91,17 +105,17 @@ export default function CategoriesPage() {
             <div className="bg-gradient-to-r from-pink-100 via-purple-100 to-blue-100 py-12 sm:py-16">
                 <div className="max-w-4xl mx-auto px-4 text-center">
                     <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
-                        Can't find what you're looking for?
+                        {t('cantFind')}
                     </h2>
                     <p className="text-gray-700 mb-6">
-                        Search for any company directly and share your experience.
+                        {t('searchDirectly')}
                     </p>
                     <Link
                         href="/write-review"
                         className="inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white px-6 py-3 rounded-full font-medium transition"
                     >
                         <Star className="w-5 h-5" />
-                        Write a Review
+                        {tHeader('writeReview')}
                     </Link>
                 </div>
             </div>

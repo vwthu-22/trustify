@@ -4,10 +4,12 @@ import Link from 'next/link';
 import useCompanyStore from '@/stores/companyStore/company';
 import useReviewStore from '@/stores/reviewStore/review';
 import { getStarColor, STAR_COLORS } from '@/utils/ratingColors';
+import { useTranslations } from 'next-intl';
 
 export default function Bank() {
     const { bankCompanies, isLoading, fetchBankCompanies } = useCompanyStore();
     const { companyRatings, fetchCompanyRatings } = useReviewStore();
+    const t = useTranslations('home');
 
     useEffect(() => {
         fetchBankCompanies(0, 3);
@@ -45,12 +47,12 @@ export default function Bank() {
         <div className="rounded-md mt-8 sm:mt-12">
             <div className="px-0 sm:px-4 lg:px-6 rounded-lg py-4 sm:py-6">
                 <div className="flex items-center justify-between mb-3 sm:mb-4">
-                    <h2 className="text-xl sm:text-2xl text-gray-900">Best in Bank</h2>
+                    <h2 className="text-xl sm:text-2xl text-gray-900">{t('bestBanks')}</h2>
                     <Link
                         href="/category/bank"
                         className="px-3 sm:px-5 py-1.5 sm:py-2 border border-gray-300 rounded-full hover:bg-gray-100 transition text-xs sm:text-sm font-medium text-[#5e5eff]"
                     >
-                        See more
+                        {t('seeMore')}
                     </Link>
                 </div>
 
@@ -67,7 +69,7 @@ export default function Bank() {
                     </div>
                 ) : bankCompanies.length === 0 ? (
                     <div className="bg-white rounded-2xl border border-gray-300 p-6 sm:p-8 text-center">
-                        <p className="text-gray-600">No banks found.</p>
+                        <p className="text-gray-600">{t('noBanksFound')}</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">

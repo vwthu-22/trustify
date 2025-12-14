@@ -3,6 +3,7 @@ import React from 'react';
 import { X, Info, Pencil, Trash2 } from 'lucide-react';
 import useAuthStore from '@/stores/userAuthStore/user';
 import useReviewStore from '@/stores/reviewStore/review';
+import { useTranslations } from 'next-intl';
 
 interface ReviewData {
   rating: number;
@@ -27,6 +28,7 @@ export default function ThankYouModal({
 }: ThankYouModalProps) {
   const { user } = useAuthStore();
   const { myReviews } = useReviewStore();
+  const t = useTranslations('thankYou');
 
   if (!isOpen) return null;
 
@@ -67,7 +69,7 @@ export default function ThankYouModal({
 
         <div className="px-6 py-12 relative z-10">
           <h1 className="text-3xl font-bold text-center text-gray-900 mb-8">
-            Thanks for your review!
+            {t('thanksForReview')}
           </h1>
 
           {/* Review Card */}
@@ -87,8 +89,8 @@ export default function ThankYouModal({
               <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
                 <p className="text-sm text-gray-700">
-                  Your review is pending.{' '}
-                  <a href="#" className="text-blue-600 hover:underline font-medium">Read more</a>
+                  {t('reviewPending')}{' '}
+                  <a href="#" className="text-blue-600 hover:underline font-medium">{t('readMore')}</a>
                 </p>
               </div>
             </div>
@@ -128,7 +130,7 @@ export default function ThankYouModal({
                 {reviewData.experienceDate}
               </span>
               <span className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
-                Unprompted review
+                {t('unpromptedReview')}
               </span>
             </div>
 
@@ -136,11 +138,11 @@ export default function ThankYouModal({
             <div className="flex gap-4 pt-4 border-t border-gray-200">
               <button className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition">
                 <Pencil className="w-4 h-4" />
-                <span className="text-sm font-medium">Edit</span>
+                <span className="text-sm font-medium">{t('edit')}</span>
               </button>
               <button className="flex items-center gap-2 text-gray-700 hover:text-red-600 transition">
                 <Trash2 className="w-4 h-4" />
-                <span className="text-sm font-medium">Delete</span>
+                <span className="text-sm font-medium">{t('delete')}</span>
               </button>
             </div>
           </div>

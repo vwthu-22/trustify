@@ -2,20 +2,23 @@
 import React from 'react';
 import { Facebook, Twitter, Instagram, Linkedin, Youtube } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 export default function Footer() {
+    const t = useTranslations('footer');
+
     const sections = [
         {
-            title: 'Về',
-            links: ['Về chúng tôi', 'Jobs', 'Sự tiếp xúc', 'Bài viết', 'Cách hoạt động của Trustify', 'Báo cáo tin cậy', 'Báo chí', 'Quan hệ nhà đầu tư']
+            title: t('about'),
+            links: [t('aboutUs'), t('jobs'), t('contact'), t('blog'), t('howItWorks'), t('trustReport'), t('press'), t('investors')]
         },
         {
-            title: 'Cộng đồng',
-            links: ['Tin tưởng vào các bài đánh giá', 'Trung tâm trợ giúp', 'Đăng nhập', 'Đăng ký']
+            title: t('community'),
+            links: [t('trustReviews'), t('helpCenter'), t('login'), t('register')]
         },
         {
-            title: 'Doanh nghiệp',
-            links: ['Kinh doanh Trustify', 'Sản phẩm', 'Kế hoạch & Giá cả', 'Đăng nhập doanh nghiệp', 'Blog dành cho doanh nghiệp']
+            title: t('businesses'),
+            links: [t('trustifyBusiness'), t('products'), t('pricing'), t('businessLogin'), t('businessBlog')]
         }
     ];
 
@@ -61,7 +64,7 @@ export default function Footer() {
 
                     {/* Social & Country - Takes full width on small screens */}
                     <div className="col-span-2 sm:col-span-2 md:col-span-3 lg:col-span-1">
-                        <h3 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base">Theo dõi chúng tôi trên</h3>
+                        <h3 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base">{t('followUs')}</h3>
                         <div className="flex gap-2 sm:gap-3 mb-6 sm:mb-8">
                             {socials.map(({ Icon, href }, i) => (
                                 <Link
@@ -74,10 +77,10 @@ export default function Footer() {
                             ))}
                         </div>
 
-                        <h3 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base">Chọn quốc gia</h3>
+                        <h3 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base">{t('selectCountry')}</h3>
                         <select className="w-full sm:w-auto min-w-[150px] bg-white text-gray-900 px-3 sm:px-4 py-2 rounded border-0 focus:ring-2 focus:ring-blue-500 text-sm sm:text-base">
-                            <option>🇺🇸 Hoa Kỳ</option>
-                            <option>🇻🇳 Việt Nam</option>
+                            <option>🇺🇸 {t('unitedStates')}</option>
+                            <option>🇻🇳 {t('vietnam')}</option>
                         </select>
                     </div>
                 </div>
@@ -85,7 +88,7 @@ export default function Footer() {
                 {/* Copyright */}
                 <div className="border-t border-gray-700 mt-8 sm:mt-12 pt-6 sm:pt-8">
                     <p className="text-gray-400 text-xs sm:text-sm text-center">
-                        © {new Date().getFullYear()} Trustify. All rights reserved.
+                        © {new Date().getFullYear()} Trustify. {t('allRights')}
                     </p>
                 </div>
             </div>

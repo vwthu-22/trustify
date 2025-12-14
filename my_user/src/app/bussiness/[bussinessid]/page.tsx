@@ -8,10 +8,15 @@ import ThankYouModal from '../../thankyou/page';
 import useCompanyStore from '@/stores/companyStore/company';
 import useReviewStore from '@/stores/reviewStore/review';
 import { getStarColor, getBarColor, getRatingLabel, STAR_COLORS } from '@/utils/ratingColors';
+import { useTranslations } from 'next-intl';
 
 export default function CompanyReviewPage() {
     const params = useParams();
     const businessId = params.bussinessid as string;
+    const t = useTranslations('company');
+    const tReview = useTranslations('review');
+    const tHeader = useTranslations('header');
+    const tCommon = useTranslations('common');
 
     const { currentCompany, isLoading, error, fetchCompanyById } = useCompanyStore();
     const {
@@ -162,7 +167,7 @@ export default function CompanyReviewPage() {
             <div className="min-h-screen bg-white flex items-center justify-center">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                    <p className="text-gray-600">Loading company details...</p>
+                    <p className="text-gray-600">{t('loadingDetails')}</p>
                 </div>
             </div>
         );
@@ -177,7 +182,7 @@ export default function CompanyReviewPage() {
                         onClick={() => fetchCompanyById(businessId)}
                         className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                     >
-                        Retry
+                        {tCommon('retry')}
                     </button>
                 </div>
             </div>
@@ -187,7 +192,7 @@ export default function CompanyReviewPage() {
     if (!currentCompany) {
         return (
             <div className="min-h-screen bg-white flex items-center justify-center">
-                <p className="text-gray-600">Company not found</p>
+                <p className="text-gray-600">{t('companyNotFound')}</p>
             </div>
         );
     }
@@ -215,7 +220,7 @@ export default function CompanyReviewPage() {
                                         {currentCompany.claimed && (
                                             <span className="flex items-center gap-1 px-2 sm:px-3 py-0.5 sm:py-1 border border-gray-300 rounded-full text-xs sm:text-sm">
                                                 <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />
-                                                Claimed
+                                                {t('claimed')}
                                             </span>
                                         )}
                                     </div>
@@ -236,8 +241,8 @@ export default function CompanyReviewPage() {
                                     <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                     </svg>
-                                    <span className="hidden sm:inline">Write a review</span>
-                                    <span className="sm:hidden">Review</span>
+                                    <span className="hidden sm:inline">{tHeader('writeReview')}</span>
+                                    <span className="sm:hidden">{tReview('review')}</span>
                                 </button>
 
                                 <a
@@ -246,8 +251,8 @@ export default function CompanyReviewPage() {
                                     rel="noopener noreferrer"
                                     className="border border-gray-300 hover:bg-gray-50 px-3 sm:px-4 py-2 rounded-full transition flex items-center gap-2 text-sm sm:text-base"
                                 >
-                                    <span className="hidden sm:inline">Visit website</span>
-                                    <span className="sm:hidden">Website</span>
+                                    <span className="hidden sm:inline">{t('visitWebsite')}</span>
+                                    <span className="sm:hidden">{t('website')}</span>
                                     <ExternalLink className="w-4 h-4" />
                                 </a>
                             </div>
@@ -256,30 +261,30 @@ export default function CompanyReviewPage() {
                         {/* Info Banner */}
                         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 flex items-start gap-2 sm:gap-3">
                             <Star className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                            <p className="text-xs sm:text-sm text-gray-700">Companies on Trustify aren't allowed to offer incentives or pay to hide reviews.</p>
+                            <p className="text-xs sm:text-sm text-gray-700">{t('noIncentives')}</p>
                         </div>
 
                         {/* Company Details */}
                         <div className="mb-6 sm:mb-8 pb-6 sm:pb-8 border-b border-gray-200">
                             <div className="flex flex-wrap items-center gap-2 mb-3 sm:mb-4">
-                                <h3 className="text-xl sm:text-2xl font-bold text-gray-900">Company details</h3>
+                                <h3 className="text-xl sm:text-2xl font-bold text-gray-900">{t('companyDetails')}</h3>
                                 <span className="flex items-center gap-1 text-xs sm:text-sm text-gray-600">
                                     <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
-                                    Active subscription
+                                    {t('activeSubscription')}
                                 </span>
                             </div>
                             <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6">
-                                <h4 className="font-bold text-base sm:text-lg mb-2">About {currentCompany.name}</h4>
-                                <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">Written by the company</p>
+                                <h4 className="font-bold text-base sm:text-lg mb-2">{t('about')} {currentCompany.name}</h4>
+                                <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">{t('writtenByCompany')}</p>
                                 <p className="text-sm sm:text-base text-gray-700 leading-relaxed mb-4">
-                                    {currentCompany.description || 'No description available.'}
+                                    {currentCompany.description || t('noDescription')}
                                 </p>
                             </div>
                         </div>
 
                         {/* Contact Info */}
                         <div className="mb-6 sm:mb-8">
-                            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">Contact info</h3>
+                            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">{t('contactInfo')}</h3>
                             <div className="space-y-2 sm:space-y-3">
                                 {currentCompany.address && (
                                     <div className="flex items-start gap-2 sm:gap-3 text-gray-700">
@@ -311,7 +316,7 @@ export default function CompanyReviewPage() {
                                     </span>
                                 </div>
                                 <div className="flex mb-3 sm:mb-4">{renderStars(actualRating, 'w-4 h-4 sm:w-5 sm:h-5')}</div>
-                                <p className="text-xs sm:text-sm text-gray-600 mb-4 sm:mb-6">{actualReviewCount.toLocaleString()} reviews</p>
+                                <p className="text-xs sm:text-sm text-gray-600 mb-4 sm:mb-6">{actualReviewCount.toLocaleString()} {tReview('reviews')}</p>
 
                                 {/* Rating Breakdown */}
                                 <div className="space-y-2 mb-4 sm:mb-6">
@@ -328,7 +333,7 @@ export default function CompanyReviewPage() {
                                     ))}
                                 </div>
 
-                                <Link href="#" className="text-xs sm:text-sm text-gray-600 hover:underline">How is the TrustScore calculated?</Link>
+                                <Link href="#" className="text-xs sm:text-sm text-gray-600 hover:underline">{t('howTrustScore')}</Link>
                             </div>
 
                             {/* Reply Stats */}
@@ -336,8 +341,8 @@ export default function CompanyReviewPage() {
                                 <div className="flex items-start gap-2 sm:gap-3">
                                     <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0 mt-1" />
                                     <div>
-                                        <p className="font-semibold text-sm sm:text-base mb-1">Replied to 82% of negative reviews</p>
-                                        <p className="text-xs sm:text-sm text-gray-600">Typically replies within 1 week</p>
+                                        <p className="font-semibold text-sm sm:text-base mb-1">{t('repliedToNegative')}</p>
+                                        <p className="text-xs sm:text-sm text-gray-600">{t('typicallyReplies')}</p>
                                     </div>
                                 </div>
                             </div>
@@ -365,11 +370,11 @@ export default function CompanyReviewPage() {
 
                         {/* All Reviews */}
                         <div className="mb-4 sm:mb-6">
-                            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">All reviews</h2>
+                            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{t('allReviews')}</h2>
                             <div className="flex items-center gap-2 text-gray-600 text-sm sm:text-base">
-                                <span>{actualReviewCount.toLocaleString()} total</span>
+                                <span>{actualReviewCount.toLocaleString()} {t('total')}</span>
                                 <span>•</span>
-                                <button onClick={() => setIsWriteModalOpen(true)} className="text-blue-600 hover:underline">Write a review</button>
+                                <button onClick={() => setIsWriteModalOpen(true)} className="text-blue-600 hover:underline">{tHeader('writeReview')}</button>
                             </div>
                         </div>
 
@@ -416,7 +421,7 @@ export default function CompanyReviewPage() {
                             <Search className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2" />
                             <input
                                 type="text"
-                                placeholder="Search by keyword..."
+                                placeholder={t('searchByKeyword')}
                                 value={searchKeyword}
                                 onChange={(e) => setSearchKeyword(e.target.value)}
                                 className="w-full pl-9 sm:pl-12 pr-3 sm:pr-4 py-2 sm:py-3 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
@@ -455,12 +460,12 @@ export default function CompanyReviewPage() {
                             {reviewsLoading ? (
                                 <div className="text-center py-6 sm:py-8">
                                     <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                                    <p className="text-gray-600 text-sm sm:text-base">Loading reviews...</p>
+                                    <p className="text-gray-600 text-sm sm:text-base">{t('loadingReviews')}</p>
                                 </div>
                             ) : searchedReviews.length === 0 ? (
                                 <div className="text-center py-6 sm:py-8">
                                     <p className="text-gray-600 text-sm sm:text-base">
-                                        {reviews.length === 0 ? 'No reviews yet. Be the first to review!' : 'No reviews match your search.'}
+                                        {reviews.length === 0 ? t('noReviewsBeFirst') : t('noReviewsMatch')}
                                     </p>
                                 </div>
                             ) : (
@@ -494,7 +499,7 @@ export default function CompanyReviewPage() {
                                             {/* Experience Date */}
                                             {experienceDate && (
                                                 <p className="text-xs sm:text-sm text-gray-500 mt-3 sm:mt-4">
-                                                    <span className="font-medium">Experience Date:</span> {experienceDate}
+                                                    <span className="font-medium">{t('experienceDate')}:</span> {experienceDate}
                                                 </p>
                                             )}
                                         </div>
@@ -512,17 +517,17 @@ export default function CompanyReviewPage() {
                                     className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 border border-gray-300 rounded-full hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base w-full sm:w-auto justify-center"
                                 >
                                     <ChevronLeft className="w-4 h-4" />
-                                    Previous
+                                    {t('previous')}
                                 </button>
                                 <div className="text-xs sm:text-sm text-gray-600 order-first sm:order-none">
-                                    Page {currentReviewPage + 1} of {totalPages}
+                                    {t('page')} {currentReviewPage + 1} {t('of')} {totalPages}
                                 </div>
                                 <button
                                     onClick={loadMoreReviews}
                                     disabled={currentReviewPage >= totalPages - 1}
                                     className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 border border-gray-300 rounded-full hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base w-full sm:w-auto justify-center"
                                 >
-                                    Next
+                                    {t('next')}
                                     <ChevronRight className="w-4 h-4" />
                                 </button>
                             </div>

@@ -2,6 +2,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import useAuthStore from '@/stores/userAuthStore/user';
+import { useTranslations } from 'next-intl';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://trustify.io.vn';
 
@@ -10,6 +11,8 @@ function LoginSignupContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { isAuthenticated } = useAuthStore();
+    const t = useTranslations('login');
+    const tBusiness = useTranslations('business');
 
     // Hiển thị lỗi nếu có
     useEffect(() => {
@@ -57,12 +60,12 @@ function LoginSignupContent() {
         <div className="min-h-screen flex flex-col items-center justify-center mt-16 px-4">
             <div className="max-w-2xl w-full">
                 <h1 className="text-xl md:text-3xl font-bold text-gray-900 text-center mb-10">
-                    Read reviews. Write reviews. Find companies.
+                    {t('heroTitle')}
                 </h1>
 
                 <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 md:p-5 mb-10">
                     <h2 className="text-xl font-semibold text-gray-900 text-center mb-4">
-                        Log in or sign up below
+                        {t('loginOrSignup')}
                     </h2>
                     <div className="space-y-4 max-w-md mx-auto">
                         {/* Google Login Button */}
@@ -77,7 +80,7 @@ function LoginSignupContent() {
                                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                             </svg>
                             <div className="text-left">
-                                <p className="font-medium text-gray-900">Continue with Google</p>
+                                <p className="font-medium text-gray-900">{t('continueGoogle')}</p>
                             </div>
                         </button>
 
@@ -89,7 +92,7 @@ function LoginSignupContent() {
                             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                             </svg>
-                            <span>Continue with Facebook</span>
+                            <span>{t('continueFacebook')}</span>
                         </button>
 
                         {/* Email Option */}
@@ -127,10 +130,10 @@ function LoginSignupContent() {
                 {/* Business Section */}
                 <div className="text-center">
                     <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-1">
-                        Are you a business?
+                        {t('areYouBusiness')}
                     </h2>
                     <p className="text-md text-gray-600 mb-5">
-                        Set up your business account on Trustify for free
+                        {t('setupBusiness')}
                     </p>
                     <div className="flex items-center justify-center gap-4">
                         <a
@@ -139,13 +142,13 @@ function LoginSignupContent() {
                             rel="noopener noreferrer"
                             className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition shadow-sm"
                         >
-                            Log in
+                            {t('businessLogin')}
                         </a>
                         <button
                             onClick={() => router.push('/intro_bus/register_bussiness')}
                             className="px-6 py-2 border-1 border-blue-500 text-blue-600 hover:bg-blue-50 rounded-full transition"
                         >
-                            Sign up
+                            {t('businessSignup')}
                         </button>
                     </div>
                 </div>
