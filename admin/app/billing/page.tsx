@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Check, Plus, X, Edit2, Trash2, Loader2, DollarSign, Calendar, ToggleLeft, ToggleRight, Download, CreditCard, LayoutGrid, List } from 'lucide-react'
-import usePlanFeatureStore, { Plan, CreatePlanData } from '@/store/usePlanFeatureStore'
+import usePlanFeatureStore, { Plan, Feature, CreatePlanData, CreateFeatureData } from '@/store/usePlanFeatureStore'
 
 // Mock transactions data - replace with API when available
 const mockTransactions = [
@@ -24,6 +24,9 @@ export default function BillingPage() {
         createPlan,
         updatePlan,
         deletePlan,
+        createFeature,
+        updateFeature,
+        deleteFeature,
         clearError,
     } = usePlanFeatureStore()
 
@@ -32,7 +35,7 @@ export default function BillingPage() {
     const [editingPlan, setEditingPlan] = useState<Plan | null>(null)
     const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null)
 
-    // Form state
+    // Form state for Plan
     const [formData, setFormData] = useState<CreatePlanData>({
         name: '',
         description: '',
@@ -41,13 +44,24 @@ export default function BillingPage() {
         active: true,
     })
 
+    // Feature modal states
+    const [showFeatureModal, setShowFeatureModal] = useState(false)
+    const [editingFeature, setEditingFeature] = useState<Feature | null>(null)
+    const [deleteFeatureConfirmId, setDeleteFeatureConfirmId] = useState<number | null>(null)
+
+    // Form state for Feature
+    const [featureFormData, setFeatureFormData] = useState<CreateFeatureData>({
+        name: '',
+        description: '',
+    })
+
     // Fetch data on mount
     useEffect(() => {
         fetchPlans()
         fetchFeatures()
     }, [fetchPlans, fetchFeatures])
 
-    // Reset form
+    // Reset plan form
     const resetForm = () => {
         setFormData({
             name: '',
@@ -57,6 +71,15 @@ export default function BillingPage() {
             active: true,
         })
         setEditingPlan(null)
+    }
+
+    // Reset feature form
+    const resetFeatureForm = () => {
+        setFeatureFormData({
+            name: '',
+            description: '',
+        })
+        setEditingFeature(null)
     }
 
     // Open create modal
@@ -95,11 +118,54 @@ export default function BillingPage() {
         }
     }
 
-    // Handle delete
+    // Handle delete plan
     const handleDelete = async (id: number) => {
         const success = await deletePlan(id)
         if (success) {
             setDeleteConfirmId(null)
+        }
+    }
+
+    // ==================== Feature Handlers ====================
+
+    // Open create feature modal
+    const handleCreateFeatureClick = () => {
+        resetFeatureForm()
+        setShowFeatureModal(true)
+    }
+
+    // Open edit feature modal
+    const handleEditFeatureClick = (feature: Feature) => {
+        setEditingFeature(feature)
+        setFeatureFormData({
+            name: feature.name,
+            description: feature.description || '',
+        })
+        setShowFeatureModal(true)
+    }
+
+    // Handle feature form submit
+    const handleFeatureSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+
+        let success: boolean
+        if (editingFeature) {
+            success = await updateFeature(editingFeature.id, featureFormData)
+        } else {
+            success = await createFeature(featureFormData)
+        }
+
+        if (success) {
+            setShowFeatureModal(false)
+            resetFeatureForm()
+        }
+    }
+
+    // Handle delete feature
+    const handleDeleteFeature = async (id: number) => {
+        const success = await deleteFeature(id)
+        if (success) {
+            setDeleteFeatureConfirmId(null)
         }
     }
 
@@ -191,8 +257,8 @@ export default function BillingPage() {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id as typeof activeTab)}
                                 className={`py-4 text-sm font-medium border-b-2 transition-colors ${activeTab === tab.id
-                                        ? 'border-blue-600 text-blue-600'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700'
+                                    ? 'border-blue-600 text-blue-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700'
                                     }`}
                             >
                                 {tab.label}
@@ -435,14 +501,28 @@ export default function BillingPage() {
                         <div>
                             <div className="flex justify-between items-center mb-6">
                                 <h2 className="text-lg font-bold text-gray-900">All Features ({features.length})</h2>
-                                <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm">
+                                <button
+                                    onClick={handleCreateFeatureClick}
+                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm"
+                                >
                                     <Plus className="w-4 h-4" />
                                     Add Feature
                                 </button>
                             </div>
                             {features.length === 0 ? (
                                 <div className="text-center py-12 bg-gray-50 rounded-lg">
-                                    <p className="text-gray-500">No features available</p>
+                                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <List className="w-8 h-8 text-gray-400" />
+                                    </div>
+                                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No features yet</h3>
+                                    <p className="text-gray-500 mb-4">Create your first feature</p>
+                                    <button
+                                        onClick={handleCreateFeatureClick}
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center gap-2"
+                                    >
+                                        <Plus className="w-4 h-4" />
+                                        Add Feature
+                                    </button>
                                 </div>
                             ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -452,17 +532,28 @@ export default function BillingPage() {
                                             className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors"
                                         >
                                             <div className="flex items-start justify-between">
-                                                <div>
+                                                <div className="flex-1 min-w-0">
                                                     <h3 className="font-medium text-gray-900">{feature.name}</h3>
                                                     {feature.description && (
-                                                        <p className="text-sm text-gray-500 mt-1">{feature.description}</p>
+                                                        <p className="text-sm text-gray-500 mt-1 line-clamp-2">{feature.description}</p>
+                                                    )}
+                                                    {feature.createdAt && (
+                                                        <p className="text-xs text-gray-400 mt-2">
+                                                            Created: {new Date(feature.createdAt).toLocaleDateString()}
+                                                        </p>
                                                     )}
                                                 </div>
-                                                <div className="flex gap-1">
-                                                    <button className="p-1.5 text-gray-400 hover:text-blue-600 rounded">
+                                                <div className="flex gap-1 ml-2">
+                                                    <button
+                                                        onClick={() => handleEditFeatureClick(feature)}
+                                                        className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition"
+                                                    >
                                                         <Edit2 className="w-4 h-4" />
                                                     </button>
-                                                    <button className="p-1.5 text-gray-400 hover:text-red-600 rounded">
+                                                    <button
+                                                        onClick={() => setDeleteFeatureConfirmId(feature.id)}
+                                                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition"
+                                                    >
                                                         <Trash2 className="w-4 h-4" />
                                                     </button>
                                                 </div>
@@ -619,7 +710,7 @@ export default function BillingPage() {
                 </div>
             )}
 
-            {/* Delete Confirmation Modal */}
+            {/* Delete Plan Confirmation Modal */}
             {deleteConfirmId !== null && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
                     <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6">
@@ -652,6 +743,130 @@ export default function BillingPage() {
                     </div>
                 </div>
             )}
+
+            {/* Create/Edit Feature Modal */}
+            {showFeatureModal && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-xl font-bold text-gray-900">
+                                {editingFeature ? 'Edit Feature' : 'Create New Feature'}
+                            </h2>
+                            <button
+                                onClick={() => {
+                                    setShowFeatureModal(false)
+                                    resetFeatureForm()
+                                }}
+                                className="text-gray-400 hover:text-gray-600 transition"
+                            >
+                                <X className="w-6 h-6" />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleFeatureSubmit} className="space-y-5">
+                            {/* Name */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Feature Name *
+                                </label>
+                                <input
+                                    type="text"
+                                    value={featureFormData.name}
+                                    onChange={(e) => setFeatureFormData({ ...featureFormData, name: e.target.value })}
+                                    placeholder="e.g., Reply to Reviews"
+                                    required
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                                />
+                                <p className="text-xs text-gray-500 mt-1">Feature name must be unique</p>
+                            </div>
+
+                            {/* Description */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Description
+                                </label>
+                                <textarea
+                                    value={featureFormData.description || ''}
+                                    onChange={(e) => setFeatureFormData({ ...featureFormData, description: e.target.value })}
+                                    placeholder="Describe what this feature does..."
+                                    rows={3}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition resize-none"
+                                />
+                            </div>
+
+                            {/* Error */}
+                            {error && (
+                                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                                    {error}
+                                </div>
+                            )}
+
+                            {/* Actions */}
+                            <div className="flex gap-3 pt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setShowFeatureModal(false)
+                                        resetFeatureForm()
+                                    }}
+                                    className="flex-1 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={isLoading}
+                                    className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg font-medium transition flex items-center justify-center gap-2"
+                                >
+                                    {isLoading ? (
+                                        <>
+                                            <Loader2 className="w-5 h-5 animate-spin" />
+                                            {editingFeature ? 'Updating...' : 'Creating...'}
+                                        </>
+                                    ) : (
+                                        editingFeature ? 'Update Feature' : 'Create Feature'
+                                    )}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Feature Confirmation Modal */}
+            {deleteFeatureConfirmId !== null && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6">
+                        <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Trash2 className="w-6 h-6 text-red-600" />
+                        </div>
+                        <h3 className="text-lg font-bold text-gray-900 text-center mb-2">Delete Feature?</h3>
+                        <p className="text-gray-500 text-center mb-6">
+                            This action cannot be undone. This feature will be removed from all plans.
+                        </p>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setDeleteFeatureConfirmId(null)}
+                                className="flex-1 py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={() => deleteFeatureConfirmId !== null && handleDeleteFeature(deleteFeatureConfirmId)}
+                                disabled={isLoading}
+                                className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white rounded-lg font-medium transition flex items-center justify-center gap-2"
+                            >
+                                {isLoading ? (
+                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                ) : (
+                                    'Delete'
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
+

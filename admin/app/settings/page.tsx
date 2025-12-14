@@ -169,7 +169,7 @@ export default function SettingsPage() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div className="p-6 border-b border-gray-200 flex items-center gap-3">
                     <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <Sun className="w-5 h-5 text-purple-600" />
+                        <Globe className="w-5 h-5 text-purple-600" />
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-gray-900">{t('appearance.language')}</h3>

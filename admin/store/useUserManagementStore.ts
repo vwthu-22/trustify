@@ -183,12 +183,12 @@ const useUserManagementStore = create<UserManagementStore>()(
             createAdmin: async (data: CreateAdminData) => {
                 set({ isLoading: true, error: null });
                 try {
+                    // Only send required fields according to API documentation
                     const requestBody = {
                         email: data.email,
                         password: data.password,
                         fullName: data.fullName,
-                        name: data.fullName, // Some APIs use 'name' instead of 'fullName'
-                        role: 'ADMIN', // Force ADMIN role
+                        role: data.role || 'ADMIN',
                     };
 
                     console.log('Creating admin with:', { ...requestBody, password: '***' });
