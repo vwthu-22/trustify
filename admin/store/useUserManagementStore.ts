@@ -187,10 +187,12 @@ const useUserManagementStore = create<UserManagementStore>()(
                         email: data.email,
                         password: data.password,
                         fullName: data.fullName,
+                        name: data.fullName, // Some APIs use 'name' instead of 'fullName'
                         role: 'ADMIN', // Force ADMIN role
                     };
 
                     console.log('Creating admin with:', { ...requestBody, password: '***' });
+                    console.log('API URL:', `${API_BASE_URL}/admin/user/create`);
 
                     const response = await fetch(`${API_BASE_URL}/admin/user/create`, {
                         method: 'POST',
