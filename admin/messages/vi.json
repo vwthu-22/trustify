@@ -97,6 +97,26 @@
       "message": "Bạn có chắc chắn muốn xóa:"
     }
   },
+  "companies": {
+    "title": "Quản lý doanh nghiệp",
+    "searchPlaceholder": "Tìm kiếm doanh nghiệp theo tên hoặc email...",
+    "logo": "Logo",
+    "name": "Tên doanh nghiệp",
+    "email": "Email liên hệ",
+    "website": "Website",
+    "industry": "Ngành nghề",
+    "country": "Quốc gia",
+    "plan": "Gói",
+    "status": "Trạng thái",
+    "actions": "Hành động",
+    "showing": "Hiển thị",
+    "to": "đến",
+    "of": "trong số",
+    "noCompanies": "Không tìm thấy doanh nghiệp",
+    "editStatus": {
+      "title": "Sửa trạng thái doanh nghiệp"
+    }
+  },
   "profile": {
     "title": "Hồ sơ",
     "subtitle": "Quản lý thông tin tài khoản admin",

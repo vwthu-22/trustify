@@ -97,6 +97,26 @@
             "message": "Are you sure you want to delete:"
         }
     },
+    "companies": {
+        "title": "Company Management",
+        "searchPlaceholder": "Search companies by name or email...",
+        "logo": "Logo",
+        "name": "Company Name",
+        "email": "Contact Email",
+        "website": "Website",
+        "industry": "Industry",
+        "country": "Country",
+        "plan": "Plan",
+        "status": "Status",
+        "actions": "Actions",
+        "showing": "Showing",
+        "to": "to",
+        "of": "of",
+        "noCompanies": "No companies found",
+        "editStatus": {
+            "title": "Edit Company Status"
+        }
+    },
     "profile": {
         "title": "Profile",
         "subtitle": "Manage your admin account information",

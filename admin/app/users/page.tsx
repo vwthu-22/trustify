@@ -14,7 +14,6 @@ export default function UsersPage() {
         totalUsers,
         currentPage,
         totalPages,
-        pageSize,
         isLoading,
         error,
         searchQuery,
@@ -25,6 +24,8 @@ export default function UsersPage() {
         setSearchQuery,
         clearError,
     } = useUserManagementStore()
+
+    const pageSize = 5 // Show 5 users per page
 
     // Modal states
     const [showCreateModal, setShowCreateModal] = useState(false)
@@ -37,6 +38,15 @@ export default function UsersPage() {
         email: '',
         password: '',
         fullName: '',
+    })
+
+    // Edit form
+    const [editForm, setEditForm] = useState<{
+        status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED'
+        role: string
+    }>({
+        status: 'ACTIVE',
+        role: 'USER'
     })
 
     // Status filter
@@ -71,14 +81,23 @@ export default function UsersPage() {
         }
     }
 
-    // Handle edit status
-    const handleEditStatus = async (newStatus: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED') => {
+    // Handle save edit (status and role)
+    const handleSaveEdit = async () => {
         if (!selectedUser) return
-        const success = await updateUserStatus(selectedUser.id, newStatus)
-        if (success) {
-            setShowEditModal(false)
-            setSelectedUser(null)
+
+        // Update status if changed
+        if (editForm.status !== selectedUser.status) {
+            await updateUserStatus(selectedUser.id, editForm.status)
         }
+
+        // TODO: Add updateUserRole API call when backend is ready
+        // if (editForm.role !== selectedUser.role) {
+        //     await updateUserRole(selectedUser.id, editForm.role)
+        // }
+
+        setShowEditModal(false)
+        setSelectedUser(null)
+        fetchUsers(currentPage, pageSize)
     }
 
     // Handle delete
@@ -184,19 +203,20 @@ export default function UsersPage() {
                                 <th className="px-6 py-3">{t('country')}</th>
                                 <th className="px-6 py-3">{t('role')}</th>
                                 <th className="px-6 py-3">{t('status')}</th>
+                                <th className="px-6 py-3 text-right">{t('actions')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
                             {isLoading && users.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="px-6 py-12 text-center">
+                                    <td colSpan={7} className="px-6 py-12 text-center">
                                         <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-2" />
                                         <span className="text-gray-500">{tCommon('loading')}</span>
                                     </td>
                                 </tr>
                             ) : filteredUsers.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                                    <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
                                         {t('noUsers')}
                                     </td>
                                 </tr>
@@ -230,6 +250,24 @@ export default function UsersPage() {
                                                 {user.status === 'ACTIVE' ? tCommon('active') :
                                                     user.status === 'INACTIVE' ? tCommon('inactive') : tCommon('suspended')}
                                             </span>
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            {user.role !== 'ADMIN' && (
+                                                <button
+                                                    onClick={() => {
+                                                        setSelectedUser(user)
+                                                        setEditForm({
+                                                            status: user.status,
+                                                            role: user.role
+                                                        })
+                                                        setShowEditModal(true)
+                                                    }}
+                                                    className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                    title={tCommon('edit')}
+                                                >
+                                                    <Edit className="w-4 h-4" />
+                                                </button>
+                                            )}
                                         </td>
                                     </tr>
                                 ))
@@ -361,72 +399,88 @@ export default function UsersPage() {
                 )
             }
 
-            {/* Edit Status Modal */}
-            {
-                showEditModal && selectedUser && (
-                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                        <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6">
-                            <div className="flex items-center justify-between mb-6">
-                                <h2 className="text-xl font-bold text-gray-900">{t('editStatus.title')}</h2>
-                                <button
-                                    onClick={() => {
-                                        setShowEditModal(false)
-                                        setSelectedUser(null)
-                                    }}
-                                    className="text-gray-400 hover:text-gray-600 transition"
-                                >
-                                    <X className="w-6 h-6" />
-                                </button>
-                            </div>
-
-                            <div className="mb-6">
-                                <p className="text-gray-600 mb-2">
-                                    <span className="font-medium">{selectedUser.name}</span>
-                                </p>
-                                <p className="text-sm text-gray-500">{selectedUser.email}</p>
-                            </div>
-
-                            <div className="space-y-2 mb-6">
-                                <p className="text-sm font-medium text-gray-700 mb-3">{t('editStatus.selectStatus')}</p>
-                                {(['ACTIVE', 'INACTIVE', 'SUSPENDED'] as const).map((status) => (
-                                    <button
-                                        key={status}
-                                        onClick={() => handleEditStatus(status)}
-                                        disabled={isLoading || selectedUser.status === status}
-                                        className={`w-full py-3 rounded-lg font-medium transition flex items-center justify-center gap-2
-                                        ${selectedUser.status === status
-                                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                                : status === 'ACTIVE'
-                                                    ? 'bg-green-50 text-green-700 hover:bg-green-100 border border-green-200'
-                                                    : status === 'INACTIVE'
-                                                        ? 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200'
-                                                        : 'bg-red-50 text-red-700 hover:bg-red-100 border border-red-200'
-                                            }`}
-                                    >
-                                        {isLoading ? (
-                                            <Loader2 className="w-4 h-4 animate-spin" />
-                                        ) : (
-                                            status === 'ACTIVE' ? tCommon('active') :
-                                                status === 'INACTIVE' ? tCommon('inactive') : tCommon('suspended')
-                                        )}
-                                        {selectedUser.status === status && <span className="text-xs">{t('editStatus.current')}</span>}
-                                    </button>
-                                ))}
-                            </div>
-
+            {/* Edit User Modal */}
+            {showEditModal && selectedUser && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-xl font-bold text-gray-900">Edit User</h2>
                             <button
                                 onClick={() => {
                                     setShowEditModal(false)
                                     setSelectedUser(null)
                                 }}
-                                className="w-full py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition"
+                                className="text-gray-400 hover:text-gray-600 transition"
+                            >
+                                <X className="w-6 h-6" />
+                            </button>
+                        </div>
+
+                        <div className="mb-6">
+                            <p className="text-gray-600 mb-2">
+                                <span className="font-medium">{selectedUser.name}</span>
+                            </p>
+                            <p className="text-sm text-gray-500">{selectedUser.email}</p>
+                        </div>
+
+                        <div className="space-y-4 mb-6">
+                            {/* Role Dropdown */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    {t('role')}
+                                </label>
+                                <select
+                                    value={editForm.role}
+                                    onChange={(e) => setEditForm({ ...editForm, role: e.target.value })}
+                                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                >
+                                    <option value="USER">USER</option>
+                                    <option value="BUSINESS">BUSINESS</option>
+                                </select>
+                            </div>
+
+                            {/* Status Dropdown */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    {t('status')}
+                                </label>
+                                <select
+                                    value={editForm.status}
+                                    onChange={(e) => setEditForm({ ...editForm, status: e.target.value as 'ACTIVE' | 'INACTIVE' | 'SUSPENDED' })}
+                                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                >
+                                    <option value="ACTIVE">{tCommon('active')}</option>
+                                    <option value="INACTIVE">{tCommon('inactive')}</option>
+                                    <option value="SUSPENDED">{tCommon('suspended')}</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => {
+                                    setShowEditModal(false)
+                                    setSelectedUser(null)
+                                }}
+                                className="flex-1 py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition"
                             >
                                 {tCommon('cancel')}
                             </button>
+                            <button
+                                onClick={handleSaveEdit}
+                                disabled={isLoading}
+                                className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg font-medium transition flex items-center justify-center gap-2"
+                            >
+                                {isLoading ? (
+                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                ) : (
+                                    tCommon('save')
+                                )}
+                            </button>
                         </div>
                     </div>
-                )
-            }
+                </div>
+            )}
 
             {/* Delete Confirmation Modal */}
             {
