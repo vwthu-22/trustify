@@ -335,6 +335,7 @@ const usePlanFeatureStore = create<PlanFeatureStore>()(
             createFeature: async (data: CreateFeatureData) => {
                 set({ isLoading: true, error: null });
                 try {
+                    console.log('Creating feature with data:', data);
                     const response = await fetch(`${API_BASE_URL}/api/feature`, {
                         method: 'POST',
                         credentials: 'include',
@@ -347,10 +348,12 @@ const usePlanFeatureStore = create<PlanFeatureStore>()(
 
                     if (!response.ok) {
                         const errorText = await response.text();
+                        console.error('Create feature error response:', errorText);
                         throw new Error(errorText || 'Failed to create feature');
                     }
 
                     const newFeature = await response.json();
+                    console.log('Created feature response:', newFeature);
                     set((state) => ({
                         features: [...state.features, newFeature],
                         isLoading: false,
