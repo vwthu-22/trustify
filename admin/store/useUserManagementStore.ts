@@ -18,7 +18,6 @@ export interface CreateAdminData {
     email: string;
     password: string;
     fullName: string;
-    role: 'ADMIN'; // Only admin can be created via this API
 }
 
 export interface UpdateUserStatusData {
@@ -48,45 +47,7 @@ interface UserManagementStore {
     clearError: () => void;
 }
 
-// ==================== Mock Data (for development) ====================
-
-const MOCK_USERS: User[] = [
-    { id: 1, fullName: 'Nguyen Van A', email: 'nguyenvana@gmail.com', role: 'USER', status: 'Active', createdAt: '2023-10-15T10:30:00' },
-    { id: 2, fullName: 'Tran Thi B', email: 'tranthib@company.com', role: 'BUSINESS', status: 'Active', createdAt: '2023-11-02T14:20:00' },
-    { id: 3, fullName: 'Le Van C', email: 'levanc@admin.com', role: 'ADMIN', status: 'Active', createdAt: '2023-09-20T08:00:00' },
-    { id: 4, fullName: 'Pham Thi D', email: 'phamthid@gmail.com', role: 'USER', status: 'Inactive', createdAt: '2023-12-05T16:45:00' },
-    { id: 5, fullName: 'Hoang Van E', email: 'hoangvane@tech.com', role: 'BUSINESS', status: 'Suspended', createdAt: '2023-10-30T11:15:00' },
-    { id: 6, fullName: 'Do Thi F', email: 'dothif@email.com', role: 'USER', status: 'Active', createdAt: '2023-11-15T09:30:00' },
-    { id: 7, fullName: 'Vu Van G', email: 'vuvang@business.com', role: 'BUSINESS', status: 'Active', createdAt: '2023-12-01T13:00:00' },
-    { id: 8, fullName: 'Bui Thi H', email: 'buithih@admin.com', role: 'ADMIN', status: 'Active', createdAt: '2023-08-10T07:30:00' },
-    { id: 9, fullName: 'Ngo Van I', email: 'ngovani@gmail.com', role: 'USER', status: 'Active', createdAt: '2023-11-20T15:00:00' },
-    { id: 10, fullName: 'Dang Thi K', email: 'dangthik@company.com', role: 'BUSINESS', status: 'Inactive', createdAt: '2023-10-05T10:00:00' },
-    { id: 11, fullName: 'Trinh Van L', email: 'trinhvanl@gmail.com', role: 'USER', status: 'Active', createdAt: '2023-12-10T11:30:00' },
-    { id: 12, fullName: 'Mai Thi M', email: 'maithim@tech.com', role: 'BUSINESS', status: 'Active', createdAt: '2023-09-25T14:00:00' },
-    { id: 13, fullName: 'Cao Van N', email: 'caovann@email.com', role: 'USER', status: 'Suspended', createdAt: '2023-11-08T08:45:00' },
-    { id: 14, fullName: 'Duong Thi O', email: 'duongthio@business.com', role: 'BUSINESS', status: 'Active', createdAt: '2023-10-18T16:30:00' },
-    { id: 15, fullName: 'Ly Van P', email: 'lyvanp@gmail.com', role: 'USER', status: 'Active', createdAt: '2023-12-15T12:00:00' },
-    { id: 16, fullName: 'Ho Thi Q', email: 'hothiq@company.com', role: 'USER', status: 'Inactive', createdAt: '2023-11-28T09:15:00' },
-    { id: 17, fullName: 'Ta Van R', email: 'tavanr@admin.com', role: 'ADMIN', status: 'Active', createdAt: '2023-07-15T10:00:00' },
-    { id: 18, fullName: 'Dinh Thi S', email: 'dinhthis@email.com', role: 'USER', status: 'Active', createdAt: '2023-12-20T14:30:00' },
-    { id: 19, fullName: 'Truong Van T', email: 'truongvant@tech.com', role: 'BUSINESS', status: 'Active', createdAt: '2023-10-22T11:45:00' },
-    { id: 20, fullName: 'Lam Thi U', email: 'lamthiu@gmail.com', role: 'USER', status: 'Active', createdAt: '2023-11-30T08:30:00' },
-    { id: 21, fullName: 'Quach Van V', email: 'quachvanv@company.com', role: 'BUSINESS', status: 'Suspended', createdAt: '2023-09-12T15:15:00' },
-    { id: 22, fullName: 'Chau Thi W', email: 'chauthiw@email.com', role: 'USER', status: 'Active', createdAt: '2023-12-08T13:45:00' },
-    { id: 23, fullName: 'Kieu Van X', email: 'kieuvanx@business.com', role: 'BUSINESS', status: 'Active', createdAt: '2023-10-28T10:30:00' },
-    { id: 24, fullName: 'Son Thi Y', email: 'sonthiy@gmail.com', role: 'USER', status: 'Inactive', createdAt: '2023-11-05T16:00:00' },
-    { id: 25, fullName: 'Tong Van Z', email: 'tongvanz@admin.com', role: 'ADMIN', status: 'Active', createdAt: '2023-06-20T09:00:00' },
-];
-
-// Helper function to get mock users with optional search filter
-function getMockUsers(searchQuery: string): User[] {
-    if (!searchQuery) return MOCK_USERS;
-    const query = searchQuery.toLowerCase();
-    return MOCK_USERS.filter(user =>
-        user.fullName.toLowerCase().includes(query) ||
-        user.email.toLowerCase().includes(query)
-    );
-}
+// ==================== Store Implementation ====================
 
 // ==================== Store Implementation ====================
 
@@ -126,23 +87,8 @@ const useUserManagementStore = create<UserManagementStore>()(
                         if (response.status === 401) {
                             throw new Error('Unauthorized. Please login again.');
                         }
-                        // API not available - use mock data for development
                         if (response.status === 404) {
-                            console.warn('Users API not found, using mock data');
-                            const mockUsers = getMockUsers(searchQuery);
-                            const startIdx = page * size;
-                            const endIdx = startIdx + size;
-                            const paginatedUsers = mockUsers.slice(startIdx, endIdx);
-
-                            set({
-                                users: paginatedUsers,
-                                totalUsers: mockUsers.length,
-                                currentPage: page,
-                                totalPages: Math.ceil(mockUsers.length / size),
-                                pageSize: size,
-                                isLoading: false,
-                            });
-                            return;
+                            throw new Error('Users API not found');
                         }
                         throw new Error('Failed to fetch users');
                     }
@@ -188,7 +134,6 @@ const useUserManagementStore = create<UserManagementStore>()(
                         email: data.email,
                         password: data.password,
                         fullName: data.fullName,
-                        role: data.role || 'ADMIN',
                     };
 
                     console.log('Creating admin with:', { ...requestBody, password: '***' });

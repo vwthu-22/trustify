@@ -37,7 +37,6 @@ export default function UsersPage() {
         email: '',
         password: '',
         fullName: '',
-        role: 'ADMIN',
     })
 
     // Status filter
@@ -68,7 +67,7 @@ export default function UsersPage() {
         const success = await createAdmin(createForm)
         if (success) {
             setShowCreateModal(false)
-            setCreateForm({ email: '', password: '', fullName: '', role: 'ADMIN' })
+            setCreateForm({ email: '', password: '', fullName: '' })
         }
     }
 
@@ -343,16 +342,6 @@ export default function UsersPage() {
                                     minLength={6}
                                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                                 />
-                            </div>
-
-                            <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
-                                <div className="flex items-center gap-2 text-purple-700">
-                                    <Shield className="w-4 h-4" />
-                                    <span className="text-sm font-medium">{t('role')}: ADMIN</span>
-                                </div>
-                                <p className="text-xs text-purple-600 mt-1">
-                                    {t('createAdmin.roleNote')}
-                                </p>
                             </div>
 
                             {error && (
