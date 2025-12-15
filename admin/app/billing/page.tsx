@@ -54,6 +54,7 @@ export default function BillingPage() {
         name: '',
         description: '',
     })
+    const [selectedPlanIds, setSelectedPlanIds] = useState<number[]>([])
 
     // Fetch data on mount
     useEffect(() => {
@@ -79,6 +80,7 @@ export default function BillingPage() {
             name: '',
             description: '',
         })
+        setSelectedPlanIds([])
         setEditingFeature(null)
     }
 
@@ -148,16 +150,24 @@ export default function BillingPage() {
     const handleFeatureSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
+        // Add selected plans to form data
+        const dataToSubmit: CreateFeatureData = {
+            ...featureFormData,
+            plans: selectedPlanIds.length > 0 ? selectedPlanIds.map(id => ({ id })) : undefined
+        }
+
         let success: boolean
         if (editingFeature) {
-            success = await updateFeature(editingFeature.id, featureFormData)
+            success = await updateFeature(editingFeature.id, dataToSubmit)
         } else {
-            success = await createFeature(featureFormData)
+            success = await createFeature(dataToSubmit)
         }
 
         if (success) {
             setShowFeatureModal(false)
             resetFeatureForm()
+            // Refresh plans to show updated features
+            fetchPlans()
         }
     }
 
@@ -798,6 +808,45 @@ export default function BillingPage() {
                                     rows={3}
                                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition resize-none"
                                 />
+                            </div>
+
+                            {/* Assign to Plans */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Assign to Plans (Optional)
+                                </label>
+                                <div className="border border-gray-300 rounded-lg p-3 max-h-48 overflow-y-auto space-y-2">
+                                    {plans.length === 0 ? (
+                                        <p className="text-sm text-gray-500 text-center py-2">No plans available</p>
+                                    ) : (
+                                        plans.map((plan) => (
+                                            <label
+                                                key={plan.id}
+                                                className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer"
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedPlanIds.includes(plan.id)}
+                                                    onChange={(e) => {
+                                                        if (e.target.checked) {
+                                                            setSelectedPlanIds([...selectedPlanIds, plan.id])
+                                                        } else {
+                                                            setSelectedPlanIds(selectedPlanIds.filter(id => id !== plan.id))
+                                                        }
+                                                    }}
+                                                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                                />
+                                                <div className="flex-1">
+                                                    <p className="text-sm font-medium text-gray-900">{plan.name}</p>
+                                                    <p className="text-xs text-gray-500">{formatPrice(plan.price)}</p>
+                                                </div>
+                                            </label>
+                                        ))
+                                    )}
+                                </div>
+                                <p className="text-xs text-gray-500 mt-1">
+                                    Select which plans should include this feature
+                                </p>
                             </div>
 
                             {/* Error */}

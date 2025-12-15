@@ -35,6 +35,7 @@ export interface CreatePlanData {
 export interface CreateFeatureData {
     name: string;
     description?: string;
+    plans?: { id: number }[];
 }
 
 // ==================== Store Interface ====================
