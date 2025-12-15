@@ -72,7 +72,7 @@ export default function UsersPage() {
     }
 
     // Handle edit status
-    const handleEditStatus = async (newStatus: 'Active' | 'Inactive' | 'Suspended') => {
+    const handleEditStatus = async (newStatus: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED') => {
         if (!selectedUser) return
         const success = await updateUserStatus(selectedUser.id, newStatus)
         if (success) {
@@ -154,7 +154,7 @@ export default function UsersPage() {
                         </button>
                         {showFilterDropdown && (
                             <div className="absolute right-0 top-full mt-1 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
-                                {['all', 'Active', 'Inactive', 'Suspended'].map((status) => (
+                                {['all', 'ACTIVE', 'INACTIVE', 'SUSPENDED'].map((status) => (
                                     <button
                                         key={status}
                                         onClick={() => {
@@ -164,8 +164,8 @@ export default function UsersPage() {
                                         className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-50 ${statusFilter === status ? 'text-blue-600 font-medium' : 'text-gray-700'}`}
                                     >
                                         {status === 'all' ? tCommon('all') :
-                                            status === 'Active' ? tCommon('active') :
-                                                status === 'Inactive' ? tCommon('inactive') : tCommon('suspended')}
+                                            status === 'ACTIVE' ? tCommon('active') :
+                                                status === 'INACTIVE' ? tCommon('inactive') : tCommon('suspended')}
                                     </button>
                                 ))}
                             </div>
@@ -178,12 +178,12 @@ export default function UsersPage() {
                     <table className="w-full text-left text-sm">
                         <thead className="bg-gray-50 text-gray-600 font-medium border-b border-gray-200">
                             <tr>
+                                <th className="px-6 py-3">{t('avatar')}</th>
                                 <th className="px-6 py-3">{t('name')}</th>
                                 <th className="px-6 py-3">{t('email')}</th>
+                                <th className="px-6 py-3">{t('country')}</th>
                                 <th className="px-6 py-3">{t('role')}</th>
                                 <th className="px-6 py-3">{t('status')}</th>
-                                <th className="px-6 py-3">{t('joinedDate')}</th>
-                                <th className="px-6 py-3 text-right">{t('actions')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
@@ -203,8 +203,16 @@ export default function UsersPage() {
                             ) : (
                                 filteredUsers.map((user) => (
                                     <tr key={user.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-6 py-4 font-medium text-gray-900">{user.fullName}</td>
+                                        <td className="px-6 py-4">
+                                            <img
+                                                src={user.avatarUrl || '/default-avatar.png'}
+                                                alt={user.name}
+                                                className="w-10 h-10 rounded-full object-cover"
+                                            />
+                                        </td>
+                                        <td className="px-6 py-4 font-medium text-gray-900">{user.name}</td>
                                         <td className="px-6 py-4 text-gray-600">{user.email}</td>
+                                        <td className="px-6 py-4 text-gray-600">{user.country}</td>
                                         <td className="px-6 py-4">
                                             <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium
                                                 ${user.role === 'ADMIN' ? 'bg-purple-100 text-purple-700' :
@@ -216,39 +224,12 @@ export default function UsersPage() {
                                         </td>
                                         <td className="px-6 py-4">
                                             <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                ${user.status === 'Active' ? 'bg-green-100 text-green-700' :
-                                                    user.status === 'Inactive' ? 'bg-gray-100 text-gray-700' :
+                                                ${user.status === 'ACTIVE' ? 'bg-green-100 text-green-700' :
+                                                    user.status === 'INACTIVE' ? 'bg-gray-100 text-gray-700' :
                                                         'bg-red-100 text-red-700'}`}>
-                                                {user.status === 'Active' ? tCommon('active') :
-                                                    user.status === 'Inactive' ? tCommon('inactive') : tCommon('suspended')}
+                                                {user.status === 'ACTIVE' ? tCommon('active') :
+                                                    user.status === 'INACTIVE' ? tCommon('inactive') : tCommon('suspended')}
                                             </span>
-                                        </td>
-                                        <td className="px-6 py-4 text-gray-600">
-                                            {new Date(user.createdAt).toLocaleDateString()}
-                                        </td>
-                                        <td className="px-6 py-4 text-right">
-                                            <div className="flex items-center justify-end gap-2">
-                                                <button
-                                                    onClick={() => {
-                                                        setSelectedUser(user)
-                                                        setShowEditModal(true)
-                                                    }}
-                                                    className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                    title={tCommon('edit')}
-                                                >
-                                                    <Edit className="w-4 h-4" />
-                                                </button>
-                                                <button
-                                                    onClick={() => {
-                                                        setSelectedUser(user)
-                                                        setShowDeleteModal(true)
-                                                    }}
-                                                    className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                    title={tCommon('delete')}
-                                                >
-                                                    <Trash2 className="w-4 h-4" />
-                                                </button>
-                                            </div>
                                         </td>
                                     </tr>
                                 ))
@@ -287,201 +268,207 @@ export default function UsersPage() {
             </div>
 
             {/* Create Admin Modal */}
-            {showCreateModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-bold text-gray-900">{t('createAdmin.title')}</h2>
-                            <button
-                                onClick={() => setShowCreateModal(false)}
-                                className="text-gray-400 hover:text-gray-600 transition"
-                            >
-                                <X className="w-6 h-6" />
-                            </button>
-                        </div>
-
-                        <form onSubmit={handleCreateAdmin} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    {t('createAdmin.fullName')} *
-                                </label>
-                                <input
-                                    type="text"
-                                    value={createForm.fullName}
-                                    onChange={(e) => setCreateForm({ ...createForm, fullName: e.target.value })}
-                                    placeholder={t('createAdmin.fullNamePlaceholder')}
-                                    required
-                                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    {t('createAdmin.email')} *
-                                </label>
-                                <input
-                                    type="email"
-                                    value={createForm.email}
-                                    onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
-                                    placeholder={t('createAdmin.emailPlaceholder')}
-                                    required
-                                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    {t('createAdmin.password')} *
-                                </label>
-                                <input
-                                    type="password"
-                                    value={createForm.password}
-                                    onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })}
-                                    placeholder="••••••••"
-                                    required
-                                    minLength={6}
-                                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                                />
-                            </div>
-
-                            {error && (
-                                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-                                    {error}
-                                </div>
-                            )}
-
-                            <div className="flex gap-3 pt-2">
+            {
+                showCreateModal && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+                        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="text-xl font-bold text-gray-900">{t('createAdmin.title')}</h2>
                                 <button
-                                    type="button"
                                     onClick={() => setShowCreateModal(false)}
-                                    className="flex-1 py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition"
+                                    className="text-gray-400 hover:text-gray-600 transition"
                                 >
-                                    {tCommon('cancel')}
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={isLoading}
-                                    className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg font-medium transition flex items-center justify-center gap-2"
-                                >
-                                    {isLoading ? (
-                                        <Loader2 className="w-5 h-5 animate-spin" />
-                                    ) : (
-                                        <>
-                                            <Plus className="w-4 h-4" />
-                                            {t('createAdmin.submit')}
-                                        </>
-                                    )}
+                                    <X className="w-6 h-6" />
                                 </button>
                             </div>
-                        </form>
+
+                            <form onSubmit={handleCreateAdmin} className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        {t('createAdmin.fullName')} *
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={createForm.fullName}
+                                        onChange={(e) => setCreateForm({ ...createForm, fullName: e.target.value })}
+                                        placeholder={t('createAdmin.fullNamePlaceholder')}
+                                        required
+                                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        {t('createAdmin.email')} *
+                                    </label>
+                                    <input
+                                        type="email"
+                                        value={createForm.email}
+                                        onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
+                                        placeholder={t('createAdmin.emailPlaceholder')}
+                                        required
+                                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        {t('createAdmin.password')} *
+                                    </label>
+                                    <input
+                                        type="password"
+                                        value={createForm.password}
+                                        onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })}
+                                        placeholder="••••••••"
+                                        required
+                                        minLength={6}
+                                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                    />
+                                </div>
+
+                                {error && (
+                                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                                        {error}
+                                    </div>
+                                )}
+
+                                <div className="flex gap-3 pt-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowCreateModal(false)}
+                                        className="flex-1 py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition"
+                                    >
+                                        {tCommon('cancel')}
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={isLoading}
+                                        className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg font-medium transition flex items-center justify-center gap-2"
+                                    >
+                                        {isLoading ? (
+                                            <Loader2 className="w-5 h-5 animate-spin" />
+                                        ) : (
+                                            <>
+                                                <Plus className="w-4 h-4" />
+                                                {t('createAdmin.submit')}
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
             {/* Edit Status Modal */}
-            {showEditModal && selectedUser && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-bold text-gray-900">{t('editStatus.title')}</h2>
+            {
+                showEditModal && selectedUser && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+                        <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6">
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="text-xl font-bold text-gray-900">{t('editStatus.title')}</h2>
+                                <button
+                                    onClick={() => {
+                                        setShowEditModal(false)
+                                        setSelectedUser(null)
+                                    }}
+                                    className="text-gray-400 hover:text-gray-600 transition"
+                                >
+                                    <X className="w-6 h-6" />
+                                </button>
+                            </div>
+
+                            <div className="mb-6">
+                                <p className="text-gray-600 mb-2">
+                                    <span className="font-medium">{selectedUser.name}</span>
+                                </p>
+                                <p className="text-sm text-gray-500">{selectedUser.email}</p>
+                            </div>
+
+                            <div className="space-y-2 mb-6">
+                                <p className="text-sm font-medium text-gray-700 mb-3">{t('editStatus.selectStatus')}</p>
+                                {(['ACTIVE', 'INACTIVE', 'SUSPENDED'] as const).map((status) => (
+                                    <button
+                                        key={status}
+                                        onClick={() => handleEditStatus(status)}
+                                        disabled={isLoading || selectedUser.status === status}
+                                        className={`w-full py-3 rounded-lg font-medium transition flex items-center justify-center gap-2
+                                        ${selectedUser.status === status
+                                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                                : status === 'ACTIVE'
+                                                    ? 'bg-green-50 text-green-700 hover:bg-green-100 border border-green-200'
+                                                    : status === 'INACTIVE'
+                                                        ? 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200'
+                                                        : 'bg-red-50 text-red-700 hover:bg-red-100 border border-red-200'
+                                            }`}
+                                    >
+                                        {isLoading ? (
+                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                        ) : (
+                                            status === 'ACTIVE' ? tCommon('active') :
+                                                status === 'INACTIVE' ? tCommon('inactive') : tCommon('suspended')
+                                        )}
+                                        {selectedUser.status === status && <span className="text-xs">{t('editStatus.current')}</span>}
+                                    </button>
+                                ))}
+                            </div>
+
                             <button
                                 onClick={() => {
                                     setShowEditModal(false)
                                     setSelectedUser(null)
                                 }}
-                                className="text-gray-400 hover:text-gray-600 transition"
-                            >
-                                <X className="w-6 h-6" />
-                            </button>
-                        </div>
-
-                        <div className="mb-6">
-                            <p className="text-gray-600 mb-2">
-                                <span className="font-medium">{selectedUser.fullName}</span>
-                            </p>
-                            <p className="text-sm text-gray-500">{selectedUser.email}</p>
-                        </div>
-
-                        <div className="space-y-2 mb-6">
-                            <p className="text-sm font-medium text-gray-700 mb-3">{t('editStatus.selectStatus')}</p>
-                            {(['Active', 'Inactive', 'Suspended'] as const).map((status) => (
-                                <button
-                                    key={status}
-                                    onClick={() => handleEditStatus(status)}
-                                    disabled={isLoading || selectedUser.status === status}
-                                    className={`w-full py-3 rounded-lg font-medium transition flex items-center justify-center gap-2
-                                        ${selectedUser.status === status
-                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                            : status === 'Active'
-                                                ? 'bg-green-50 text-green-700 hover:bg-green-100 border border-green-200'
-                                                : status === 'Inactive'
-                                                    ? 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200'
-                                                    : 'bg-red-50 text-red-700 hover:bg-red-100 border border-red-200'
-                                        }`}
-                                >
-                                    {isLoading ? (
-                                        <Loader2 className="w-4 h-4 animate-spin" />
-                                    ) : (
-                                        status === 'Active' ? tCommon('active') :
-                                            status === 'Inactive' ? tCommon('inactive') : tCommon('suspended')
-                                    )}
-                                    {selectedUser.status === status && <span className="text-xs">{t('editStatus.current')}</span>}
-                                </button>
-                            ))}
-                        </div>
-
-                        <button
-                            onClick={() => {
-                                setShowEditModal(false)
-                                setSelectedUser(null)
-                            }}
-                            className="w-full py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition"
-                        >
-                            {tCommon('cancel')}
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {/* Delete Confirmation Modal */}
-            {showDeleteModal && selectedUser && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6">
-                        <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Trash2 className="w-6 h-6 text-red-600" />
-                        </div>
-                        <h3 className="text-lg font-bold text-gray-900 text-center mb-2">{t('deleteConfirm.title')}</h3>
-                        <p className="text-gray-500 text-center mb-2">
-                            {t('deleteConfirm.message')}
-                        </p>
-                        <p className="text-center font-medium text-gray-900 mb-6">
-                            {selectedUser.fullName} ({selectedUser.email})
-                        </p>
-                        <div className="flex gap-3">
-                            <button
-                                onClick={() => {
-                                    setShowDeleteModal(false)
-                                    setSelectedUser(null)
-                                }}
-                                className="flex-1 py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition"
+                                className="w-full py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition"
                             >
                                 {tCommon('cancel')}
                             </button>
-                            <button
-                                onClick={handleDelete}
-                                disabled={isLoading}
-                                className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white rounded-lg font-medium transition flex items-center justify-center gap-2"
-                            >
-                                {isLoading ? (
-                                    <Loader2 className="w-5 h-5 animate-spin" />
-                                ) : (
-                                    tCommon('delete')
-                                )}
-                            </button>
                         </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+
+            {/* Delete Confirmation Modal */}
+            {
+                showDeleteModal && selectedUser && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+                        <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6">
+                            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <Trash2 className="w-6 h-6 text-red-600" />
+                            </div>
+                            <h3 className="text-lg font-bold text-gray-900 text-center mb-2">{t('deleteConfirm.title')}</h3>
+                            <p className="text-gray-500 text-center mb-2">
+                                {t('deleteConfirm.message')}
+                            </p>
+                            <p className="text-center font-medium text-gray-900 mb-6">
+                                {selectedUser.name} ({selectedUser.email})
+                            </p>
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => {
+                                        setShowDeleteModal(false)
+                                        setSelectedUser(null)
+                                    }}
+                                    className="flex-1 py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition"
+                                >
+                                    {tCommon('cancel')}
+                                </button>
+                                <button
+                                    onClick={handleDelete}
+                                    disabled={isLoading}
+                                    className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white rounded-lg font-medium transition flex items-center justify-center gap-2"
+                                >
+                                    {isLoading ? (
+                                        <Loader2 className="w-5 h-5 animate-spin" />
+                                    ) : (
+                                        tCommon('delete')
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+        </div >
     )
 }

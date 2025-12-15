@@ -8,10 +8,11 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://trustify.io.vn'
 export interface User {
     id: number;
     email: string;
-    fullName: string;
+    name: string;
+    country: string;
+    avatarUrl: string;
     role: string;
-    status: 'Active' | 'Inactive' | 'Suspended';
-    createdAt: string;
+    status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
 }
 
 export interface CreateAdminData {
@@ -21,7 +22,7 @@ export interface CreateAdminData {
 }
 
 export interface UpdateUserStatusData {
-    status: 'Active' | 'Inactive' | 'Suspended';
+    status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
 }
 
 // ==================== Store Interface ====================
@@ -46,8 +47,6 @@ interface UserManagementStore {
     setCurrentPage: (page: number) => void;
     clearError: () => void;
 }
-
-// ==================== Store Implementation ====================
 
 // ==================== Store Implementation ====================
 
@@ -96,9 +95,11 @@ const useUserManagementStore = create<UserManagementStore>()(
                     const data = await response.json();
                     console.log('Users API response:', data);
 
-                    // Ensure users is always an array
+                    // Parse new API response structure
                     let usersData = [];
-                    if (Array.isArray(data)) {
+                    if (data.success && Array.isArray(data.users)) {
+                        usersData = data.users;
+                    } else if (Array.isArray(data)) {
                         usersData = data;
                     } else if (data.content && Array.isArray(data.content)) {
                         usersData = data.content;
@@ -106,7 +107,7 @@ const useUserManagementStore = create<UserManagementStore>()(
                         usersData = data.data;
                     }
 
-                    // Handle paginated response
+                    // Handle response (API doesn't seem to have pagination yet)
                     set({
                         users: usersData,
                         totalUsers: data.totalElements || data.total || usersData.length || 0,
