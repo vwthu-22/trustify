@@ -56,20 +56,20 @@ export default function UsersPage() {
     // Fetch users on mount and when page changes
     useEffect(() => {
         fetchUsers(currentPage, pageSize)
-    }, [fetchUsers, currentPage, pageSize])
+    }, [fetchUsers, currentPage])
 
-    // Search handler with debounce
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            fetchUsers(0, pageSize)
-        }, 500)
-        return () => clearTimeout(timer)
-    }, [searchQuery, fetchUsers, pageSize])
+    // Filter users by status and search query
+    const filteredUsers = users.filter(user => {
+        // Status filter
+        const matchesStatus = statusFilter === 'all' || user.status === statusFilter
 
-    // Filter users by status
-    const filteredUsers = statusFilter === 'all'
-        ? users
-        : users.filter(user => user.status === statusFilter)
+        // Search filter (search in name and email)
+        const matchesSearch = !searchQuery ||
+            user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            user.email.toLowerCase().includes(searchQuery.toLowerCase())
+
+        return matchesStatus && matchesSearch
+    })
 
     // Handle create admin
     const handleCreateAdmin = async (e: React.FormEvent) => {

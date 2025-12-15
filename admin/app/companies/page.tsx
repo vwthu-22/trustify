@@ -40,18 +40,18 @@ export default function CompaniesPage() {
         fetchCompanies(currentPage, pageSize)
     }, [fetchCompanies, currentPage])
 
-    // Search handler with debounce
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            fetchCompanies(0, pageSize)
-        }, 500)
-        return () => clearTimeout(timer)
-    }, [searchQuery, fetchCompanies])
+    // Filter companies by status and search query
+    const filteredCompanies = companies.filter(company => {
+        // Status filter
+        const matchesStatus = statusFilter === 'all' || company.status === statusFilter
 
-    // Filter companies by status
-    const filteredCompanies = statusFilter === 'all'
-        ? companies
-        : companies.filter(company => company.status === statusFilter)
+        // Search filter (search in name and email)
+        const matchesSearch = !searchQuery ||
+            company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            company.contactEmail.toLowerCase().includes(searchQuery.toLowerCase())
+
+        return matchesStatus && matchesSearch
+    })
 
     // Handle save edit
     const handleSaveEdit = async () => {

@@ -29,6 +29,7 @@ export interface CreatePlanData {
     price: number;
     durationDays: number;
     active: boolean;
+    features?: { id: number }[];
 }
 
 export interface CreateFeatureData {
@@ -91,6 +92,7 @@ const usePlanFeatureStore = create<PlanFeatureStore>()(
                 try {
                     const response = await fetch(`${API_BASE_URL}/api/plan`, {
                         method: 'GET',
+                        credentials: 'include',
                         headers: {
                             'Content-Type': 'application/json',
                             'ngrok-skip-browser-warning': 'true',
@@ -118,6 +120,7 @@ const usePlanFeatureStore = create<PlanFeatureStore>()(
                 try {
                     const response = await fetch(`${API_BASE_URL}/api/plan/${id}`, {
                         method: 'GET',
+                        credentials: 'include',
                         headers: {
                             'Content-Type': 'application/json',
                             'ngrok-skip-browser-warning': 'true',
@@ -145,6 +148,7 @@ const usePlanFeatureStore = create<PlanFeatureStore>()(
                 try {
                     const response = await fetch(`${API_BASE_URL}/api/plan`, {
                         method: 'POST',
+                        credentials: 'include',
                         headers: {
                             'Content-Type': 'application/json',
                             'ngrok-skip-browser-warning': 'true',
@@ -179,6 +183,7 @@ const usePlanFeatureStore = create<PlanFeatureStore>()(
                 try {
                     const response = await fetch(`${API_BASE_URL}/api/plan/${id}`, {
                         method: 'PUT',
+                        credentials: 'include',
                         headers: {
                             'Content-Type': 'application/json',
                             'ngrok-skip-browser-warning': 'true',
@@ -214,6 +219,7 @@ const usePlanFeatureStore = create<PlanFeatureStore>()(
                 try {
                     const response = await fetch(`${API_BASE_URL}/api/plan/${id}`, {
                         method: 'DELETE',
+                        credentials: 'include',
                         headers: {
                             'ngrok-skip-browser-warning': 'true',
                         },
@@ -246,6 +252,7 @@ const usePlanFeatureStore = create<PlanFeatureStore>()(
                 try {
                     const response = await fetch(`${API_BASE_URL}/api/feature`, {
                         method: 'GET',
+                        credentials: 'include',
                         headers: {
                             'Content-Type': 'application/json',
                             'ngrok-skip-browser-warning': 'true',
@@ -273,6 +280,7 @@ const usePlanFeatureStore = create<PlanFeatureStore>()(
                 try {
                     const response = await fetch(`${API_BASE_URL}/api/feature/${id}`, {
                         method: 'GET',
+                        credentials: 'include',
                         headers: {
                             'Content-Type': 'application/json',
                             'ngrok-skip-browser-warning': 'true',
@@ -300,6 +308,7 @@ const usePlanFeatureStore = create<PlanFeatureStore>()(
                 try {
                     const response = await fetch(`${API_BASE_URL}/api/feature/plan/${planId}`, {
                         method: 'GET',
+                        credentials: 'include',
                         headers: {
                             'Content-Type': 'application/json',
                             'ngrok-skip-browser-warning': 'true',
@@ -327,6 +336,7 @@ const usePlanFeatureStore = create<PlanFeatureStore>()(
                 try {
                     const response = await fetch(`${API_BASE_URL}/api/feature`, {
                         method: 'POST',
+                        credentials: 'include',
                         headers: {
                             'Content-Type': 'application/json',
                             'ngrok-skip-browser-warning': 'true',
@@ -361,6 +371,7 @@ const usePlanFeatureStore = create<PlanFeatureStore>()(
                 try {
                     const response = await fetch(`${API_BASE_URL}/api/feature/${id}`, {
                         method: 'PUT',
+                        credentials: 'include',
                         headers: {
                             'Content-Type': 'application/json',
                             'ngrok-skip-browser-warning': 'true',
@@ -396,6 +407,7 @@ const usePlanFeatureStore = create<PlanFeatureStore>()(
                 try {
                     const response = await fetch(`${API_BASE_URL}/api/feature/${id}`, {
                         method: 'DELETE',
+                        credentials: 'include',
                         headers: {
                             'ngrok-skip-browser-warning': 'true',
                         },

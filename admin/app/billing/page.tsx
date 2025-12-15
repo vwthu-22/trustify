@@ -626,11 +626,17 @@ export default function BillingPage() {
                                     <div className="relative">
                                         <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                                         <input
-                                            type="number"
-                                            step="0.01"
-                                            min="0"
+                                            type="text"
+                                            inputMode="decimal"
                                             value={formData.price}
-                                            onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })}
+                                            onChange={(e) => {
+                                                const value = e.target.value
+                                                // Allow only numbers and decimal point
+                                                if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                                                    setFormData({ ...formData, price: value === '' ? 0 : parseFloat(value) || 0 })
+                                                }
+                                            }}
+                                            placeholder="0.00"
                                             className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
                                         />
                                     </div>
