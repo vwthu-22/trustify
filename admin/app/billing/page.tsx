@@ -365,9 +365,12 @@ export default function BillingPage() {
                                                 }`}
                                         >
                                             <div className="flex justify-between items-start mb-2">
-                                                <div>
+                                                <div className="flex-1">
                                                     <h3 className="font-semibold text-gray-900">{plan.name}</h3>
-                                                    <p className="text-lg font-bold text-gray-900">
+                                                    {plan.description && (
+                                                        <p className="text-xs text-gray-600 mt-1 line-clamp-2">{plan.description}</p>
+                                                    )}
+                                                    <p className="text-lg font-bold text-gray-900 mt-2">
                                                         {formatPrice(plan.price)}
                                                         {plan.price > 0 && <span className="text-sm font-normal text-gray-500">/{plan.durationDays}d</span>}
                                                     </p>
@@ -378,6 +381,24 @@ export default function BillingPage() {
                                                     </span>
                                                 )}
                                             </div>
+
+                                            {/* Features */}
+                                            {plan.features && plan.features.length > 0 && (
+                                                <div className="mt-3 mb-3 space-y-1">
+                                                    {plan.features.slice(0, 3).map((feature) => (
+                                                        <div key={feature.id} className="flex items-center gap-1.5 text-xs text-gray-600">
+                                                            <Check className="w-3 h-3 text-green-500 flex-shrink-0" />
+                                                            <span className="line-clamp-1">{feature.name}</span>
+                                                        </div>
+                                                    ))}
+                                                    {plan.features.length > 3 && (
+                                                        <p className="text-xs text-blue-600 pl-4">
+                                                            +{plan.features.length - 3} more
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            )}
+
                                             <button
                                                 onClick={() => handleEditClick(plan)}
                                                 className="text-sm text-blue-600 hover:underline"
