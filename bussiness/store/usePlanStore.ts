@@ -45,6 +45,7 @@ const usePlanStore = create<PlanStore>((set) => ({
         try {
             const response = await fetch(`${API_BASE_URL}/api/plan`, {
                 method: 'GET',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                     'ngrok-skip-browser-warning': 'true',
