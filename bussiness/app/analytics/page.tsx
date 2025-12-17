@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { TrendingUp, TrendingDown, Star, MessageSquare, Users, Clock } from 'lucide-react';
+import { useProtectedRoute } from '@/hooks/useFeatureAccess';
 
 const kpiData = [
     { title: 'Avg Rating', value: '4.5', change: '+0.3', trend: 'up', icon: Star, color: 'text-yellow-500', bgColor: 'bg-yellow-50' },
@@ -32,7 +33,18 @@ const topPerformers = [
 ];
 
 export default function AnalyticsOverviewPage() {
+    const { isAllowed, loading } = useProtectedRoute('Advanced Analytics');
     const [timeRange, setTimeRange] = useState('30');
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-96">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+        );
+    }
+
+    if (!isAllowed) return null; // Will redirect to subscription
 
     return (
         <div className="space-y-8">
