@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function proxy(request: NextRequest) {
-    // Check if user is authenticated
-    const isAuthenticated = request.cookies.get('auth-token');
+    // Check if user is authenticated (access_token from backend)
+    const isAuthenticated = request.cookies.get('access_token');
 
     // Public routes that don't require authentication
     const publicRoutes = ['/login', '/auth', '/magic-link', '/verify'];

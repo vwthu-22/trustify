@@ -32,13 +32,11 @@ export default function VerifyPage() {
             setStatus('success');
             setMessage('Email verified successfully! Redirecting to dashboard...');
 
-            // Set local auth cookie for middleware
-            document.cookie = 'auth-token=authenticated; path=/; max-age=3600';
-
+            // Backend sets access_token cookie automatically
             // Fetch company profile to populate header
             await fetchCompanyProfile();
 
-            // Redirect to dashboard after 1 second (user is already authenticated)
+            // Redirect to dashboard after 1 second
             setTimeout(() => {
                 router.push('/');
             }, 1000);

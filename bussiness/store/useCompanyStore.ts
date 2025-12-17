@@ -140,9 +140,7 @@ export const useCompanyStore = create<CompanyStore>()(
 
                     console.log('Magic link verified:', data);
 
-                    // JWT is set via HttpOnly cookie by the server
-                    // Set local auth cookie for middleware
-                    document.cookie = 'auth-token=authenticated; path=/; max-age=3600';
+                    // JWT is set via HttpOnly cookie (access_token) by the server
 
                     set({ isLoading: false, magicLinkSent: false });
 
@@ -194,8 +192,7 @@ export const useCompanyStore = create<CompanyStore>()(
                     console.error('Logout error:', error);
                 } finally {
                     set({ company: null, isLoading: false, error: null, magicLinkSent: false });
-                    // Clear local auth cookie
-                    document.cookie = 'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+                    // Clear access_token cookie
                     document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
                 }
             },
