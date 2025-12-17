@@ -4,13 +4,11 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { authApi } from '@/lib/api';
-import { useCompanyStore } from '@/store/useCompanyStore';
 
 export default function VerifyPage() {
     const params = useParams();
     const router = useRouter();
     const code = params.code as string;
-    const fetchCompanyProfile = useCompanyStore(state => state.fetchCompanyProfile);
 
     const [status, setStatus] = useState<'verifying' | 'success' | 'error'>('verifying');
     const [message, setMessage] = useState('Verifying your email...');
@@ -33,12 +31,9 @@ export default function VerifyPage() {
             setMessage('Email verified successfully! Redirecting to dashboard...');
 
             // Backend sets access_token cookie automatically
-            // Fetch company profile to populate header
-            await fetchCompanyProfile();
-
-            // Redirect to dashboard after 1 second
+            // Redirect to dashboard - it will fetch profile on its own
             setTimeout(() => {
-                router.push('/');
+                window.location.href = '/'; // Use window.location for full page reload
             }, 1000);
 
         } catch (error) {

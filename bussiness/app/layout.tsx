@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 // @ts-ignore: side-effect import of CSS without type declarations
 import "./globals.css";
-import Header from "@/components/header";
-import Sidebar from "@/components/sidebar";
+import LayoutContent from "@/components/LayoutContent";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -29,16 +29,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="flex h-screen overflow-hidden">
-          <Sidebar />
-          <div className="flex-1 ml-64 flex flex-col overflow-hidden">
-            <Header />
-            <main className="flex-1 overflow-y-auto bg-gray-50">
-              <div className="p-8">{children}</div>
-            </main>
-          </div>
-        </div>
+        <LayoutContent>{children}</LayoutContent>
       </body>
     </html>
   );
 }
+

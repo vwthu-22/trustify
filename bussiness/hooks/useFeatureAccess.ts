@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { companyApi } from '@/lib/api';
 
 interface CompanyProfile {
@@ -28,13 +28,23 @@ export const ROUTE_FEATURES: Record<string, string> = {
     '/settings': 'Advanced Settings',
 };
 
+// Public routes - don't fetch profile
+const PUBLIC_ROUTES = ['/login', '/auth', '/magic-link', '/verify'];
+
 export function useFeatureAccess() {
+    const pathname = usePathname();
     const [profile, setProfile] = useState<CompanyProfile | null>(null);
     const [loading, setLoading] = useState(true);
 
+    const isPublicRoute = PUBLIC_ROUTES.some(route => pathname?.startsWith(route));
+
     useEffect(() => {
-        loadProfile();
-    }, []);
+        if (!isPublicRoute) {
+            loadProfile();
+        } else {
+            setLoading(false);
+        }
+    }, [isPublicRoute]);
 
     const loadProfile = async () => {
         try {

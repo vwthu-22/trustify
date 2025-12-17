@@ -47,12 +47,16 @@ export default function Header() {
     const [showCompanyDropdown, setShowCompanyDropdown] = useState(false);
     const [unreadMessages] = useState(3);
 
-    // Fetch company profile on mount if not already loaded
+    // Public routes - don't fetch profile
+    const publicRoutes = ['/login', '/auth', '/magic-link', '/verify'];
+    const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
+
+    // Fetch company profile on mount if not already loaded (only on protected routes)
     useEffect(() => {
-        if (!company) {
+        if (!company && !isPublicRoute) {
             fetchCompanyProfile();
         }
-    }, [company, fetchCompanyProfile]);
+    }, [company, fetchCompanyProfile, isPublicRoute]);
 
     const handleLogout = async () => {
         await logout();
@@ -254,8 +258,8 @@ export default function Header() {
                             <p className="text-sm text-gray-600">{company?.email || ''}</p>
                             <div className="mt-2 flex items-center gap-2">
                                 <span className={`px-3 py-1 text-xs font-semibold rounded-full ${company?.plan === 'Premium' ? 'bg-purple-100 text-purple-700' :
-                                        company?.plan === 'Pro' ? 'bg-blue-100 text-blue-700' :
-                                            'bg-green-100 text-green-700'
+                                    company?.plan === 'Pro' ? 'bg-blue-100 text-blue-700' :
+                                        'bg-green-100 text-green-700'
                                     }`}>
                                     {company?.plan || 'Free'} Plan
                                 </span>

@@ -2,25 +2,11 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function proxy(request: NextRequest) {
-    // Check if user is authenticated (access_token from backend)
-    const isAuthenticated = request.cookies.get('access_token');
+    // NOTE: Backend sets access_token cookie on trustify.io.vn domain
+    // This middleware runs on vercel.app - different domain
+    // So we can't check the cookie here. Backend handles auth with 401 errors.
 
-    // Public routes that don't require authentication
-    const publicRoutes = ['/login', '/auth', '/magic-link', '/verify'];
-    const isPublicRoute = publicRoutes.some(route =>
-        request.nextUrl.pathname.startsWith(route)
-    );
-
-    // If not authenticated and trying to access protected route
-    if (!isAuthenticated && !isPublicRoute) {
-        return NextResponse.redirect(new URL('/login', request.url));
-    }
-
-    // If authenticated and trying to access login page, redirect to dashboard
-    if (isAuthenticated && isPublicRoute) {
-        return NextResponse.redirect(new URL('/', request.url));
-    }
-
+    // Just pass through all requests
     return NextResponse.next();
 }
 
@@ -37,3 +23,4 @@ export const config = {
         '/((?!api|_next/static|_next/image|favicon.ico).*)',
     ],
 };
+
