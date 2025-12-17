@@ -150,10 +150,11 @@ export default function BillingPage() {
     const handleFeatureSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
-        // Add selected plans to form data
+        // Add selected plans to form data - send as array of IDs
         const dataToSubmit: CreateFeatureData = {
-            ...featureFormData,
-            plans: selectedPlanIds.length > 0 ? selectedPlanIds.map(id => ({ id })) : undefined
+            name: featureFormData.name,
+            description: featureFormData.description,
+            plans: selectedPlanIds.length > 0 ? selectedPlanIds : undefined
         }
 
         let success: boolean

@@ -35,7 +35,7 @@ export interface CreatePlanData {
 export interface CreateFeatureData {
     name: string;
     description?: string;
-    plans?: { id: number }[];
+    plans?: number[];  // Array of plan IDs
 }
 
 // ==================== Store Interface ====================
@@ -105,6 +105,7 @@ const usePlanFeatureStore = create<PlanFeatureStore>()(
                     }
 
                     const data = await response.json();
+                    console.log('Fetched plans with features:', data);
                     set({ plans: data, isLoading: false });
                 } catch (error) {
                     console.error('Fetch plans error:', error);
@@ -336,6 +337,11 @@ const usePlanFeatureStore = create<PlanFeatureStore>()(
                 set({ isLoading: true, error: null });
                 try {
                     console.log('Creating feature with data:', data);
+                    console.log('Plans before stringify:', data.plans);
+
+                    const bodyData = JSON.stringify(data);
+                    console.log('Stringified body:', bodyData);
+
                     const response = await fetch(`${API_BASE_URL}/api/feature`, {
                         method: 'POST',
                         credentials: 'include',
@@ -343,7 +349,7 @@ const usePlanFeatureStore = create<PlanFeatureStore>()(
                             'Content-Type': 'application/json',
                             'ngrok-skip-browser-warning': 'true',
                         },
-                        body: JSON.stringify(data),
+                        body: bodyData,
                     });
 
                     if (!response.ok) {

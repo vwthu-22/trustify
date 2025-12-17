@@ -89,8 +89,8 @@ export default function Search_Header() {
                     </h1>
 
                     {/* Search Bar with Dropdown */}
-                    <div className="max-w-xl sm:max-w-2xl md:max-w-3xl mx-auto mb-8 sm:mb-12 md:mb-20 animate-fade-in-up-delay-1 px-2 sm:px-0" ref={searchBarRef}>
-                        <div className="relative" ref={dropdownRef}>
+                    <div className="max-w-xl sm:max-w-2xl md:max-w-3xl mx-auto mb-8 sm:mb-12 md:mb-20 animate-fade-in-up-delay-1 px-2 sm:px-0 relative z-40" ref={searchBarRef}>
+                        <div className="relative z-50" ref={dropdownRef}>
                             <form onSubmit={handleSearchSubmit}>
                                 <input
                                     type="text"
@@ -161,7 +161,7 @@ export default function Search_Header() {
                     </div>
 
                     {/* CTA Banner */}
-                    <div className="inline-flex flex-col sm:flex-row items-center gap-2 text-gray-700 bg-white px-4 sm:px-6 py-2 sm:py-3 rounded-full border border-gray-200 animate-fade-in-up-delay-2">
+                    <div className="inline-flex flex-col sm:flex-row items-center gap-2 text-gray-700 bg-white px-4 sm:px-6 py-2 sm:py-3 rounded-full border border-gray-200 animate-fade-in-up-delay-2 relative z-10">
                         <span className="text-sm sm:text-base">{t('boughtRecently')}</span>
                         <Link href="/write-review" className="text-[#5e5eff] hover:text-[#4d4dff] font-medium flex items-center gap-1 transition text-sm sm:text-base">
                             {tHeader('writeReview')}
