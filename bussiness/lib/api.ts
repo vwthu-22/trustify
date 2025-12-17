@@ -46,7 +46,7 @@ export const authApi = {
     // Verify email with magic link code
     verifyEmail: async (code: string) => {
         const response = await fetch(`${API_BASE_URL}/api/auth/magic-link/${code}`, {
-            method: 'GET',
+            method: 'GET',  // Must be GET - called from email link
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',

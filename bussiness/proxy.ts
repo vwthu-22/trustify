@@ -6,15 +6,15 @@ export function proxy(request: NextRequest) {
     const isAuthenticated = request.cookies.get('auth-token');
 
     // Public routes that don't require authentication
-    const publicRoutes = ['/login', '/auth'];
+    const publicRoutes = ['/login', '/auth', '/magic-link', '/verify'];
     const isPublicRoute = publicRoutes.some(route =>
         request.nextUrl.pathname.startsWith(route)
     );
 
     // If not authenticated and trying to access protected route
-    // if (!isAuthenticated && !isPublicRoute) {
-    //     return NextResponse.redirect(new URL('/login', request.url));
-    // }
+    if (!isAuthenticated && !isPublicRoute) {
+        return NextResponse.redirect(new URL('/login', request.url));
+    }
 
     // If authenticated and trying to access login page, redirect to dashboard
     if (isAuthenticated && isPublicRoute) {
