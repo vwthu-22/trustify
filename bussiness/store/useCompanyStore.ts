@@ -61,7 +61,7 @@ export const useCompanyStore = create<CompanyStore>()(
             fetchCompanyProfile: async () => {
                 set({ isLoading: true, error: null });
                 try {
-                    const response = await fetch(`${API_BASE_URL}/api/company/profile`, {
+                    const response = await fetch(`${API_BASE_URL}/api/companies/my-companies`, {
                         method: 'GET',
                         credentials: 'include',
                         headers: {
@@ -163,7 +163,7 @@ export const useCompanyStore = create<CompanyStore>()(
             // Check if user is authenticated (by checking if JWT cookie is valid)
             checkAuthStatus: async () => {
                 try {
-                    const response = await fetch(`${API_BASE_URL}/api/company/profile`, {
+                    const response = await fetch(`${API_BASE_URL}/api/companies/my-companies`, {
                         method: 'GET',
                         credentials: 'include',
                         headers: {
