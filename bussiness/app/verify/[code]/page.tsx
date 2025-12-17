@@ -4,11 +4,13 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { authApi } from '@/lib/api';
+import { useCompanyStore } from '@/store/useCompanyStore';
 
 export default function VerifyPage() {
     const params = useParams();
     const router = useRouter();
     const code = params.code as string;
+    const fetchCompanyProfile = useCompanyStore(state => state.fetchCompanyProfile);
 
     const [status, setStatus] = useState<'verifying' | 'success' | 'error'>('verifying');
     const [message, setMessage] = useState('Verifying your email...');
@@ -28,12 +30,18 @@ export default function VerifyPage() {
             await authApi.verifyEmail(verificationCode);
 
             setStatus('success');
-            setMessage('Email verified successfully! Redirecting to login...');
+            setMessage('Email verified successfully! Redirecting to dashboard...');
 
-            // Redirect to login after 2 seconds
+            // Set local auth cookie for middleware
+            document.cookie = 'auth-token=authenticated; path=/; max-age=3600';
+
+            // Fetch company profile to populate header
+            await fetchCompanyProfile();
+
+            // Redirect to dashboard after 1 second (user is already authenticated)
             setTimeout(() => {
-                router.push('/login');
-            }, 2000);
+                router.push('/');
+            }, 1000);
 
         } catch (error) {
             console.error('Verification error:', error);
@@ -73,8 +81,8 @@ export default function VerifyPage() {
 
                 {/* Message */}
                 <p className={`text-center mb-6 ${status === 'success' ? 'text-green-700' :
-                        status === 'error' ? 'text-red-700' :
-                            'text-gray-600'
+                    status === 'error' ? 'text-red-700' :
+                        'text-gray-600'
                     }`}>
                     {message}
                 </p>
