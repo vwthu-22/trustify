@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Crown, Check, Zap, TrendingUp, Shield, Sparkles } from 'lucide-react';
 
 interface Plan {
@@ -77,8 +78,13 @@ const plans: Plan[] = [
 ];
 
 export default function SubscriptionPage() {
+    const router = useRouter();
     const [billingPeriod, setBillingPeriod] = useState<'month' | 'year'>('month');
     const currentPlan = plans.find(p => p.current);
+
+    const handleUpgrade = (planId: string) => {
+        router.push(`/checkout?plan=${planId}&period=${billingPeriod}`);
+    };
 
     const getPrice = (plan: Plan) => {
         if (plan.price === 0) return 'Free';
@@ -139,7 +145,10 @@ export default function SubscriptionPage() {
                             </div>
                         </div>
                         {currentPlan.id !== 'premium' && (
-                            <button className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors">
+                            <button
+                                onClick={() => handleUpgrade(currentPlan.id === 'free' ? 'pro' : 'premium')}
+                                className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                            >
                                 Upgrade Now
                             </button>
                         )}
@@ -153,10 +162,10 @@ export default function SubscriptionPage() {
                     <div
                         key={plan.id}
                         className={`relative bg-white rounded-xl shadow-sm border-2 p-6 transition-all ${plan.popular
-                                ? 'border-green-500 shadow-xl scale-105'
-                                : plan.current
-                                    ? 'border-blue-500'
-                                    : 'border-gray-200 hover:border-gray-300'
+                            ? 'border-green-500 shadow-xl scale-105'
+                            : plan.current
+                                ? 'border-blue-500'
+                                : 'border-gray-200 hover:border-gray-300'
                             }`}
                     >
                         {plan.popular && (
@@ -177,8 +186,8 @@ export default function SubscriptionPage() {
 
                         <div className="text-center mb-6">
                             <div className={`inline-flex p-3 rounded-full mb-4 ${plan.id === 'free' ? 'bg-gray-100' :
-                                    plan.id === 'pro' ? 'bg-purple-100' :
-                                        'bg-blue-100'
+                                plan.id === 'pro' ? 'bg-purple-100' :
+                                    'bg-blue-100'
                                 }`}>
                                 {plan.id === 'free' ? <Shield className="h-8 w-8 text-gray-600" /> :
                                     plan.id === 'pro' ? <Zap className="h-8 w-8 text-purple-600" /> :
@@ -198,12 +207,13 @@ export default function SubscriptionPage() {
                         </div>
 
                         <button
+                            onClick={() => !plan.current && handleUpgrade(plan.id)}
                             disabled={plan.current}
                             className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors mb-6 ${plan.current
-                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                    : plan.popular
-                                        ? 'bg-green-600 text-white hover:bg-green-700'
-                                        : 'bg-gray-900 text-white hover:bg-gray-800'
+                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                : plan.popular
+                                    ? 'bg-green-600 text-white hover:bg-green-700'
+                                    : 'bg-gray-900 text-white hover:bg-gray-800'
                                 }`}
                         >
                             {plan.current ? 'Current Plan' : plan.price === 0 ? 'Get Started' : 'Upgrade Now'}
