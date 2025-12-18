@@ -23,7 +23,7 @@ export default function SettingsPage() {
 
     const [companyData, setCompanyData] = useState({
         name: '',
-        taxId: '',
+        detail: '',
         address: '',
         website: '',
         industry: '',
@@ -57,7 +57,7 @@ export default function SettingsPage() {
             });
             setCompanyData({
                 name: company.name || '',
-                taxId: company.taxId || '',
+                detail: company.taxId || '',
                 address: company.address || '',
                 website: company.website || '',
                 industry: company.industry || '',
@@ -79,7 +79,7 @@ export default function SettingsPage() {
                 address: companyData.address,
                 industry: companyData.industry,
                 size: companyData.size,
-                taxId: companyData.taxId,
+                taxId: companyData.detail,
             });
 
             // Update local store
@@ -92,7 +92,7 @@ export default function SettingsPage() {
                 address: companyData.address,
                 industry: companyData.industry,
                 size: companyData.size,
-                taxId: companyData.taxId,
+                taxId: companyData.detail,
             });
 
             setSaved(true);
@@ -107,7 +107,7 @@ export default function SettingsPage() {
 
     const tabs = [
         { id: 'profile', name: 'Profile', icon: User },
-        { id: 'company', name: 'Company Info', icon: Building2 },
+        { id: 'company', name: 'Company', icon: Building2 },
         { id: 'notifications', name: 'Notifications', icon: Bell },
         { id: 'security', name: 'Security', icon: Lock }
     ];
@@ -160,27 +160,6 @@ export default function SettingsPage() {
                             );
                         })}
                     </div>
-
-                    {/* Company Info Card */}
-                    {company && (
-                        <div className="mt-4 bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-                            <div className="text-center">
-                                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                                    <Building2 className="w-8 h-8 text-blue-600" />
-                                </div>
-                                <h3 className="font-semibold text-gray-900">{company.name}</h3>
-                                <p className="text-sm text-gray-500 mt-1">{company.email}</p>
-                                <div className="mt-3">
-                                    <span className={`px-3 py-1 text-xs font-semibold rounded-full ${company.plan === 'Premium' ? 'bg-purple-100 text-purple-700' :
-                                        company.plan === 'Pro' ? 'bg-blue-100 text-blue-700' :
-                                            'bg-green-100 text-green-700'
-                                        }`}>
-                                        {company.plan || 'Free'} Plan
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    )}
                 </div>
 
                 {/* Content Area */}
@@ -270,14 +249,14 @@ export default function SettingsPage() {
 
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Tax ID / Business Registration Number
+                                                Detail
                                             </label>
                                             <input
                                                 type="text"
-                                                value={companyData.taxId}
-                                                onChange={(e) => setCompanyData({ ...companyData, taxId: e.target.value })}
+                                                value={companyData.detail}
+                                                onChange={(e) => setCompanyData({ ...companyData, detail: e.target.value })}
                                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                placeholder="Enter tax ID"
+                                                placeholder="Enter detail"
                                             />
                                         </div>
 
@@ -307,7 +286,7 @@ export default function SettingsPage() {
                                             />
                                         </div>
 
-                                        <div className="grid grid-cols-2 gap-4">
+                                        {/* <div className="grid grid-cols-2 gap-4">
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                                     Industry
@@ -343,7 +322,7 @@ export default function SettingsPage() {
                                                     <option value="100+">100+ employees</option>
                                                 </select>
                                             </div>
-                                        </div>
+                                        </div> */}
                                     </div>
                                 </div>
                             </div>
