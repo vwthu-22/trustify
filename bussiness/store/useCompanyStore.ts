@@ -75,7 +75,41 @@ export const useCompanyStore = create<CompanyStore>()(
                     }
 
                     const data = await response.json();
-                    set({ company: data, isLoading: false });
+                    console.log('Company profile response:', data);
+
+                    // Handle both array and object responses
+                    // API might return: { companies: [...] } or [...] or single object
+                    let companyData = data;
+
+                    if (Array.isArray(data)) {
+                        // API returns array of companies, take the first one
+                        companyData = data[0] || null;
+                    } else if (data.companies && Array.isArray(data.companies)) {
+                        // API returns { companies: [...] }
+                        companyData = data.companies[0] || null;
+                    } else if (data.content && Array.isArray(data.content)) {
+                        // API returns paginated { content: [...] }
+                        companyData = data.content[0] || null;
+                    }
+
+                    // Map API response to our Company interface
+                    if (companyData) {
+                        const company: Company = {
+                            id: companyData.id?.toString() || '',
+                            name: companyData.name || companyData.companyName || '',
+                            email: companyData.email || companyData.workEmail || '',
+                            logo: companyData.logo || companyData.logoUrl || '',
+                            plan: companyData.plan?.name || companyData.planName || 'Free',
+                            verified: companyData.verified ?? companyData.isVerified ?? false,
+                            website: companyData.website || '',
+                            industry: companyData.industry || '',
+                            address: companyData.address || '',
+                            phone: companyData.phone || companyData.phoneNumber || '',
+                        };
+                        set({ company, isLoading: false });
+                    } else {
+                        set({ company: null, isLoading: false });
+                    }
                 } catch (error) {
                     console.error('Fetch profile error:', error);
                     set({
@@ -171,8 +205,33 @@ export const useCompanyStore = create<CompanyStore>()(
 
                     if (response.ok) {
                         const data = await response.json();
-                        set({ company: data });
-                        return true;
+
+                        // Handle both array and object responses
+                        let companyData = data;
+                        if (Array.isArray(data)) {
+                            companyData = data[0] || null;
+                        } else if (data.companies && Array.isArray(data.companies)) {
+                            companyData = data.companies[0] || null;
+                        } else if (data.content && Array.isArray(data.content)) {
+                            companyData = data.content[0] || null;
+                        }
+
+                        if (companyData) {
+                            const company: Company = {
+                                id: companyData.id?.toString() || '',
+                                name: companyData.name || companyData.companyName || '',
+                                email: companyData.email || companyData.workEmail || '',
+                                logo: companyData.logo || companyData.logoUrl || '',
+                                plan: companyData.plan?.name || companyData.planName || 'Free',
+                                verified: companyData.verified ?? companyData.isVerified ?? false,
+                                website: companyData.website || '',
+                                industry: companyData.industry || '',
+                                address: companyData.address || '',
+                                phone: companyData.phone || companyData.phoneNumber || '',
+                            };
+                            set({ company });
+                            return true;
+                        }
                     }
                     return false;
                 } catch {

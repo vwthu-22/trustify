@@ -1,18 +1,24 @@
 import { create } from 'zustand';
+import { reviewApi } from '@/lib/api';
+import { companyApi } from '@/lib/api';
 
-// Types
+// Types matching API response
+export interface ReviewUser {
+    id: number;
+    name: string;
+    avatarUrl?: string;
+}
+
 export interface Review {
-    id: string;
-    customerName: string;
-    customerEmail: string;
+    id: number;
     rating: number;
-    title: string;
-    content: string;
-    status: 'pending' | 'replied' | 'flagged';
-    reply?: string;
-    repliedAt?: string;
+    comment: string;
     createdAt: string;
-    source: 'website' | 'email' | 'invitation';
+    user: ReviewUser;
+    // Additional fields for UI
+    status?: 'pending' | 'replied' | 'flagged';
+    reply?: string;
+    replyDate?: string;
 }
 
 export interface ReviewFilters {
@@ -40,63 +46,20 @@ interface ReviewStore {
     error: string | null;
     currentPage: number;
     totalPages: number;
+    totalItems: number;
+    companyId: number | null;
 
     // Actions
-    fetchReviews: (filters?: ReviewFilters) => Promise<void>;
-    fetchStats: () => Promise<void>;
-    replyToReview: (reviewId: string, reply: string) => Promise<boolean>;
-    flagReview: (reviewId: string, reason: string) => Promise<boolean>;
+    fetchReviews: (page?: number, size?: number) => Promise<void>;
+    fetchCompanyReviews: (companyId: number, page?: number, size?: number) => Promise<void>;
+    calculateStats: () => void;
+    replyToReview: (reviewId: number, reply: string) => Promise<boolean>;
+    flagReview: (reviewId: number, reason: string) => Promise<boolean>;
     setFilters: (filters: ReviewFilters) => void;
     setPage: (page: number) => void;
     clearError: () => void;
+    setCompanyId: (companyId: number) => void;
 }
-
-// Mock data for development
-const mockReviews: Review[] = [
-    {
-        id: '1',
-        customerName: 'Nguyễn Văn A',
-        customerEmail: 'nguyenvana@email.com',
-        rating: 5,
-        title: 'Dịch vụ tuyệt vời!',
-        content: 'Tôi rất hài lòng với dịch vụ của công ty. Nhân viên nhiệt tình và chuyên nghiệp.',
-        status: 'pending',
-        createdAt: '2024-12-10T10:30:00Z',
-        source: 'website'
-    },
-    {
-        id: '2',
-        customerName: 'Trần Thị B',
-        customerEmail: 'tranthib@email.com',
-        rating: 4,
-        title: 'Khá tốt',
-        content: 'Sản phẩm chất lượng, giao hàng nhanh. Sẽ quay lại lần sau.',
-        status: 'replied',
-        reply: 'Cảm ơn bạn đã tin tưởng! Chúng tôi luôn cố gắng phục vụ tốt nhất.',
-        repliedAt: '2024-12-09T14:00:00Z',
-        createdAt: '2024-12-08T09:15:00Z',
-        source: 'email'
-    },
-    {
-        id: '3',
-        customerName: 'Lê Văn C',
-        customerEmail: 'levanc@email.com',
-        rating: 3,
-        title: 'Cần cải thiện',
-        content: 'Dịch vụ ổn nhưng thời gian chờ đợi hơi lâu.',
-        status: 'pending',
-        createdAt: '2024-12-07T16:45:00Z',
-        source: 'invitation'
-    }
-];
-
-const mockStats: ReviewStats = {
-    totalReviews: 156,
-    averageRating: 4.2,
-    pendingCount: 12,
-    repliedCount: 144,
-    ratingDistribution: { 1: 5, 2: 8, 3: 20, 4: 48, 5: 75 }
-};
 
 export const useReviewStore = create<ReviewStore>((set, get) => ({
     reviews: [],
@@ -104,30 +67,56 @@ export const useReviewStore = create<ReviewStore>((set, get) => ({
     filters: {},
     isLoading: false,
     error: null,
-    currentPage: 1,
+    currentPage: 0,
     totalPages: 1,
+    totalItems: 0,
+    companyId: null,
 
-    fetchReviews: async (filters?: ReviewFilters) => {
-        set({ isLoading: true, error: null });
+    fetchReviews: async (page = 0, size = 10) => {
+        const { companyId } = get();
+        if (!companyId) {
+            // Try to get company ID from profile
+            try {
+                const profile = await companyApi.getProfile();
+                if (profile?.id) {
+                    set({ companyId: profile.id });
+                    await get().fetchCompanyReviews(profile.id, page, size);
+                }
+            } catch (error) {
+                set({ error: 'Could not determine company ID', isLoading: false });
+            }
+            return;
+        }
+        await get().fetchCompanyReviews(companyId, page, size);
+    },
+
+    fetchCompanyReviews: async (companyId: number, page = 0, size = 10) => {
+        set({ isLoading: true, error: null, companyId });
         try {
-            // TODO: Replace with actual API call
-            // const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews`, {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify({ ...get().filters, ...filters }),
-            //     credentials: 'include',
-            // });
-            // const data = await response.json();
+            const response = await reviewApi.getCompanyReviews(companyId, page, size);
 
-            // Mock delay
-            await new Promise(resolve => setTimeout(resolve, 500));
+            // Map API response to our Review type
+            const reviews: Review[] = (response.reviews || []).map((r: any) => ({
+                id: r.id,
+                rating: r.rating,
+                comment: r.comment,
+                createdAt: r.createdAt,
+                user: r.user,
+                status: r.reply ? 'replied' : 'pending',
+                reply: r.reply,
+                replyDate: r.replyDate,
+            }));
 
             set({
-                reviews: mockReviews,
-                totalPages: 1,
+                reviews,
+                currentPage: response.currentPage || 0,
+                totalPages: response.totalPages || 1,
+                totalItems: response.totalItems || reviews.length,
                 isLoading: false,
-                filters: { ...get().filters, ...filters }
             });
+
+            // Calculate stats after fetching
+            get().calculateStats();
         } catch (error) {
             set({
                 error: error instanceof Error ? error.message : 'Failed to fetch reviews',
@@ -136,47 +125,50 @@ export const useReviewStore = create<ReviewStore>((set, get) => ({
         }
     },
 
-    fetchStats: async () => {
-        set({ isLoading: true, error: null });
-        try {
-            // TODO: Replace with actual API call
-            // const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/stats`, {
-            //     credentials: 'include',
-            // });
-            // const data = await response.json();
-
-            await new Promise(resolve => setTimeout(resolve, 300));
-
-            set({ stats: mockStats, isLoading: false });
-        } catch (error) {
-            set({
-                error: error instanceof Error ? error.message : 'Failed to fetch stats',
-                isLoading: false,
-            });
+    calculateStats: () => {
+        const { reviews, totalItems } = get();
+        if (reviews.length === 0) {
+            set({ stats: null });
+            return;
         }
+
+        const totalReviews = totalItems;
+        const averageRating = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
+        const pendingCount = reviews.filter(r => r.status === 'pending').length;
+        const repliedCount = reviews.filter(r => r.status === 'replied').length;
+
+        const ratingDistribution: { [key: number]: number } = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+        reviews.forEach(r => {
+            if (r.rating >= 1 && r.rating <= 5) {
+                ratingDistribution[r.rating]++;
+            }
+        });
+
+        set({
+            stats: {
+                totalReviews,
+                averageRating: Math.round(averageRating * 10) / 10,
+                pendingCount,
+                repliedCount,
+                ratingDistribution,
+            },
+        });
     },
 
-    replyToReview: async (reviewId: string, reply: string) => {
+    replyToReview: async (reviewId: number, reply: string) => {
         set({ isLoading: true, error: null });
         try {
-            // TODO: Replace with actual API call
-            // await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${reviewId}/reply`, {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify({ reply }),
-            //     credentials: 'include',
-            // });
-
-            await new Promise(resolve => setTimeout(resolve, 500));
+            await reviewApi.replyToReview(reviewId, reply);
 
             // Update local state
             const reviews = get().reviews.map(r =>
                 r.id === reviewId
-                    ? { ...r, status: 'replied' as const, reply, repliedAt: new Date().toISOString() }
+                    ? { ...r, status: 'replied' as const, reply, replyDate: new Date().toISOString() }
                     : r
             );
 
             set({ reviews, isLoading: false });
+            get().calculateStats();
             return true;
         } catch (error) {
             set({
@@ -187,10 +179,10 @@ export const useReviewStore = create<ReviewStore>((set, get) => ({
         }
     },
 
-    flagReview: async (reviewId: string, reason: string) => {
+    flagReview: async (reviewId: number, reason: string) => {
         set({ isLoading: true, error: null });
         try {
-            // TODO: Replace with actual API call
+            // TODO: Implement API call when endpoint is available
             await new Promise(resolve => setTimeout(resolve, 500));
 
             const reviews = get().reviews.map(r =>
@@ -198,6 +190,7 @@ export const useReviewStore = create<ReviewStore>((set, get) => ({
             );
 
             set({ reviews, isLoading: false });
+            get().calculateStats();
             return true;
         } catch (error) {
             set({
@@ -210,13 +203,15 @@ export const useReviewStore = create<ReviewStore>((set, get) => ({
 
     setFilters: (filters: ReviewFilters) => {
         set({ filters });
-        get().fetchReviews(filters);
+        get().fetchReviews(0);
     },
 
     setPage: (page: number) => {
         set({ currentPage: page });
-        get().fetchReviews();
+        get().fetchReviews(page);
     },
 
     clearError: () => set({ error: null }),
+
+    setCompanyId: (companyId: number) => set({ companyId }),
 }));

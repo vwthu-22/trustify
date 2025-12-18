@@ -24,8 +24,7 @@ export const ROUTE_FEATURES: Record<string, string> = {
     '/widgets': 'Custom Widgets',
     '/integrations': 'Integrations',
     '/invitations': 'Team Invitations',
-    '/manage': 'Review Management',
-    '/settings': 'Advanced Settings',
+    '/manage': 'Review Management'
 };
 
 // Public routes - don't fetch profile

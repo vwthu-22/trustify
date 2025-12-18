@@ -1,27 +1,33 @@
 'use client';
 
-import { useState } from 'react';
-import { User, Building2, Mail, Phone, Lock, Bell, Globe, Save, CheckCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { User, Building2, Mail, Phone, Lock, Bell, Globe, Save, CheckCircle, Loader2 } from 'lucide-react';
+import { useCompanyStore } from '@/store/useCompanyStore';
+import { companyApi } from '@/lib/api';
 
 export default function SettingsPage() {
     const [saved, setSaved] = useState(false);
+    const [saving, setSaving] = useState(false);
     const [activeTab, setActiveTab] = useState<'profile' | 'company' | 'notifications' | 'security'>('profile');
 
+    const { company, fetchCompanyProfile, updateCompany, isLoading } = useCompanyStore();
+
+    // Local state for form editing
     const [profileData, setProfileData] = useState({
-        name: 'Nguyễn Văn A',
-        email: 'admin@company.com',
-        phone: '0123-456-789',
-        position: 'CEO',
+        name: '',
+        email: '',
+        phone: '',
+        position: '',
         avatar: ''
     });
 
     const [companyData, setCompanyData] = useState({
-        name: 'Your Company Ltd.',
-        taxId: '0123456789',
-        address: '123 Street Name, District, City',
-        website: 'https://yourcompany.com',
-        industry: 'technology',
-        size: '50-100'
+        name: '',
+        taxId: '',
+        address: '',
+        website: '',
+        industry: '',
+        size: ''
     });
 
     const [notifications, setNotifications] = useState({
@@ -33,9 +39,63 @@ export default function SettingsPage() {
         pushMilestone: true
     });
 
-    const handleSave = () => {
-        setSaved(true);
-        setTimeout(() => setSaved(false), 3000);
+    // Fetch company profile on mount
+    useEffect(() => {
+        fetchCompanyProfile();
+    }, [fetchCompanyProfile]);
+
+    // Populate form when company data is loaded
+    useEffect(() => {
+        if (company) {
+            setProfileData({
+                name: company.name || '',
+                email: company.email || '',
+                phone: company.phone || '',
+                position: '', // Not in current Company interface
+                avatar: company.logo || ''
+            });
+            setCompanyData({
+                name: company.name || '',
+                taxId: '', // Need to add to interface if backend supports
+                address: company.address || '',
+                website: company.website || '',
+                industry: company.industry || '',
+                size: '' // Need to add to interface if backend supports
+            });
+        }
+    }, [company]);
+
+    const handleSave = async () => {
+        setSaving(true);
+        try {
+            // Update company profile via API
+            await companyApi.updateProfile({
+                name: companyData.name,
+                email: profileData.email,
+                phone: profileData.phone,
+                website: companyData.website,
+                address: companyData.address,
+                industry: companyData.industry,
+            });
+
+            // Update local store
+            updateCompany({
+                name: companyData.name,
+                email: profileData.email,
+                phone: profileData.phone,
+                website: companyData.website,
+                address: companyData.address,
+                industry: companyData.industry,
+            });
+
+            setSaved(true);
+            setTimeout(() => setSaved(false), 3000);
+        } catch (error) {
+            console.error('Failed to save settings:', error);
+            alert('Failed to save settings. Please try again.');
+        } finally {
+            setSaving(false);
+        }
     };
 
     const tabs = [
@@ -44,6 +104,15 @@ export default function SettingsPage() {
         { id: 'notifications', name: 'Notifications', icon: Bell },
         { id: 'security', name: 'Security', icon: Lock }
     ];
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+                <span className="ml-2 text-gray-600">Loading settings...</span>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-8">
@@ -74,8 +143,8 @@ export default function SettingsPage() {
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id as any)}
                                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeTab === tab.id
-                                            ? 'bg-blue-50 text-blue-700'
-                                            : 'text-gray-700 hover:bg-gray-50'
+                                        ? 'bg-blue-50 text-blue-700'
+                                        : 'text-gray-700 hover:bg-gray-50'
                                         }`}
                                 >
                                     <Icon className="h-5 w-5" />
@@ -84,6 +153,27 @@ export default function SettingsPage() {
                             );
                         })}
                     </div>
+
+                    {/* Company Info Card */}
+                    {company && (
+                        <div className="mt-4 bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                            <div className="text-center">
+                                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <Building2 className="w-8 h-8 text-blue-600" />
+                                </div>
+                                <h3 className="font-semibold text-gray-900">{company.name}</h3>
+                                <p className="text-sm text-gray-500 mt-1">{company.email}</p>
+                                <div className="mt-3">
+                                    <span className={`px-3 py-1 text-xs font-semibold rounded-full ${company.plan === 'Premium' ? 'bg-purple-100 text-purple-700' :
+                                            company.plan === 'Pro' ? 'bg-blue-100 text-blue-700' :
+                                                'bg-green-100 text-green-700'
+                                        }`}>
+                                        {company.plan || 'Free'} Plan
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Content Area */}
@@ -104,6 +194,7 @@ export default function SettingsPage() {
                                                 value={profileData.name}
                                                 onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
                                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                placeholder="Enter your name"
                                             />
                                         </div>
 
@@ -115,8 +206,10 @@ export default function SettingsPage() {
                                                 type="email"
                                                 value={profileData.email}
                                                 onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
+                                                disabled
                                             />
+                                            <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
                                         </div>
 
                                         <div>
@@ -128,6 +221,7 @@ export default function SettingsPage() {
                                                 value={profileData.phone}
                                                 onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
                                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                placeholder="Enter phone number"
                                             />
                                         </div>
 
@@ -140,6 +234,7 @@ export default function SettingsPage() {
                                                 value={profileData.position}
                                                 onChange={(e) => setProfileData({ ...profileData, position: e.target.value })}
                                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                placeholder="e.g. CEO, Manager"
                                             />
                                         </div>
                                     </div>
@@ -162,6 +257,7 @@ export default function SettingsPage() {
                                                 value={companyData.name}
                                                 onChange={(e) => setCompanyData({ ...companyData, name: e.target.value })}
                                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                placeholder="Enter company name"
                                             />
                                         </div>
 
@@ -174,6 +270,7 @@ export default function SettingsPage() {
                                                 value={companyData.taxId}
                                                 onChange={(e) => setCompanyData({ ...companyData, taxId: e.target.value })}
                                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                placeholder="Enter tax ID"
                                             />
                                         </div>
 
@@ -186,6 +283,7 @@ export default function SettingsPage() {
                                                 value={companyData.address}
                                                 onChange={(e) => setCompanyData({ ...companyData, address: e.target.value })}
                                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                placeholder="Enter business address"
                                             />
                                         </div>
 
@@ -198,6 +296,7 @@ export default function SettingsPage() {
                                                 value={companyData.website}
                                                 onChange={(e) => setCompanyData({ ...companyData, website: e.target.value })}
                                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                placeholder="https://yourcompany.com"
                                             />
                                         </div>
 
@@ -211,6 +310,7 @@ export default function SettingsPage() {
                                                     onChange={(e) => setCompanyData({ ...companyData, industry: e.target.value })}
                                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                 >
+                                                    <option value="">Select industry</option>
                                                     <option value="technology">Technology</option>
                                                     <option value="retail">Retail</option>
                                                     <option value="food">Food & Beverage</option>
@@ -229,6 +329,7 @@ export default function SettingsPage() {
                                                     onChange={(e) => setCompanyData({ ...companyData, size: e.target.value })}
                                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                 >
+                                                    <option value="">Select size</option>
                                                     <option value="1-10">1-10 employees</option>
                                                     <option value="11-50">11-50 employees</option>
                                                     <option value="50-100">50-100 employees</option>
@@ -337,7 +438,7 @@ export default function SettingsPage() {
                         {/* Security Tab */}
                         {activeTab === 'security' && (
                             <div className="space-y-6">
-                                
+
                                 <div className="pt-6 border-t border-gray-200">
                                     <h3 className="text-lg font-bold text-gray-900 mb-4">Two-Factor Authentication</h3>
                                     <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
@@ -368,10 +469,20 @@ export default function SettingsPage() {
                         <div className="mt-6 pt-6 border-t border-gray-200">
                             <button
                                 onClick={handleSave}
-                                className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                                disabled={saving}
+                                className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                <Save className="h-4 w-4" />
-                                Save Changes
+                                {saving ? (
+                                    <>
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                        Saving...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Save className="h-4 w-4" />
+                                        Save Changes
+                                    </>
+                                )}
                             </button>
                         </div>
                     </div>

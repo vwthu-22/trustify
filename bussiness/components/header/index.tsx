@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     Info, Mail, User, Star, Settings, ShieldCheck, Crown, X
 } from 'lucide-react';
@@ -47,6 +47,10 @@ export default function Header() {
     const [showCompanyDropdown, setShowCompanyDropdown] = useState(false);
     const [unreadMessages] = useState(3);
 
+    // Refs for click outside detection
+    const helpDropdownRef = useRef<HTMLDivElement>(null);
+    const companyDropdownRef = useRef<HTMLDivElement>(null);
+
     // Public routes - don't fetch profile
     const publicRoutes = ['/login', '/auth', '/magic-link', '/verify'];
     const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
@@ -57,6 +61,25 @@ export default function Header() {
             fetchCompanyProfile();
         }
     }, [company, fetchCompanyProfile, isPublicRoute]);
+
+    // Click outside to close dropdowns
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            // Close help dropdown if clicked outside
+            if (helpDropdownRef.current && !helpDropdownRef.current.contains(event.target as Node)) {
+                setShowHelpDropdown(false);
+            }
+            // Close company dropdown if clicked outside
+            if (companyDropdownRef.current && !companyDropdownRef.current.contains(event.target as Node)) {
+                setShowCompanyDropdown(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     const handleLogout = async () => {
         await logout();
@@ -71,51 +94,53 @@ export default function Header() {
 
             <div className="flex items-center gap-3">
                 {/* Help Center Button */}
-                <button
-                    onClick={() => setShowHelpDropdown(!showHelpDropdown)}
-                    className="relative p-2 bg-blue-100 hover:bg-blue-200 rounded-full transition"
-                    title="Help Center"
-                >
-                    <Info className="w-5 h-5 text-blue-600" />
-                </button>
+                <div ref={helpDropdownRef} className="relative">
+                    <button
+                        onClick={() => setShowHelpDropdown(!showHelpDropdown)}
+                        className="relative p-2 bg-blue-100 hover:bg-blue-200 rounded-full transition"
+                        title="Help Center"
+                    >
+                        <Info className="w-5 h-5 text-blue-600" />
+                    </button>
 
-                {/* Help Dropdown */}
-                {showHelpDropdown && (
-                    <div className="absolute right-48 top-16 w-72 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
-                        <div className="p-4 border-b border-gray-200">
-                            <h3 className="font-bold text-gray-900">Help Center</h3>
+                    {/* Help Dropdown */}
+                    {showHelpDropdown && (
+                        <div className="absolute right-0 top-12 w-72 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                            <div className="p-4 border-b border-gray-200">
+                                <h3 className="font-bold text-gray-900">Help Center</h3>
+                            </div>
+                            <div className="p-2">
+                                <a href="#" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-lg">
+                                    <div className="p-2 bg-blue-100 rounded-lg">
+                                        <Info className="w-4 h-4 text-blue-600" />
+                                    </div>
+                                    <div>
+                                        <p className="font-medium text-gray-900 text-sm">Documentation</p>
+                                        <p className="text-xs text-gray-600">Learn how to use Trustify</p>
+                                    </div>
+                                </a>
+                                <a href="#" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-lg">
+                                    <div className="p-2 bg-green-100 rounded-lg">
+                                        <Mail className="w-4 h-4 text-green-600" />
+                                    </div>
+                                    <div>
+                                        <p className="font-medium text-gray-900 text-sm">Video Tutorials</p>
+                                        <p className="text-xs text-gray-600">Watch step-by-step guides</p>
+                                    </div>
+                                </a>
+                                <a href="#" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-lg">
+                                    <div className="p-2 bg-purple-100 rounded-lg">
+                                        <Star className="w-4 h-4 text-purple-600" />
+                                    </div>
+                                    <div>
+                                        <p className="font-medium text-gray-900 text-sm">FAQ</p>
+                                        <p className="text-xs text-gray-600">Common questions answered</p>
+                                    </div>
+                                </a>
+                            </div>
                         </div>
-                        <div className="p-2">
-                            <a href="#" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-lg">
-                                <div className="p-2 bg-blue-100 rounded-lg">
-                                    <Info className="w-4 h-4 text-blue-600" />
-                                </div>
-                                <div>
-                                    <p className="font-medium text-gray-900 text-sm">Documentation</p>
-                                    <p className="text-xs text-gray-600">Learn how to use Trustify</p>
-                                </div>
-                            </a>
-                            <a href="#" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-lg">
-                                <div className="p-2 bg-green-100 rounded-lg">
-                                    <Mail className="w-4 h-4 text-green-600" />
-                                </div>
-                                <div>
-                                    <p className="font-medium text-gray-900 text-sm">Video Tutorials</p>
-                                    <p className="text-xs text-gray-600">Watch step-by-step guides</p>
-                                </div>
-                            </a>
-                            <a href="#" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-lg">
-                                <div className="p-2 bg-purple-100 rounded-lg">
-                                    <Star className="w-4 h-4 text-purple-600" />
-                                </div>
-                                <div>
-                                    <p className="font-medium text-gray-900 text-sm">FAQ</p>
-                                    <p className="text-xs text-gray-600">Common questions answered</p>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                )}
+                    )}
+                </div>
 
                 {/* Support Messages Button */}
                 <button
@@ -242,58 +267,60 @@ export default function Header() {
                 )}
 
                 {/* Company Profile Button */}
-                <button
-                    onClick={() => setShowCompanyDropdown(!showCompanyDropdown)}
-                    className="relative p-2 bg-blue-100 hover:bg-blue-200 rounded-full transition"
-                    title="Company Account"
-                >
-                    <User className="w-5 h-5 text-blue-600" />
-                </button>
+                <div ref={companyDropdownRef} className="relative">
+                    <button
+                        onClick={() => setShowCompanyDropdown(!showCompanyDropdown)}
+                        className="relative p-2 bg-blue-100 hover:bg-blue-200 rounded-full transition"
+                        title="Company Account"
+                    >
+                        <User className="w-5 h-5 text-blue-600" />
+                    </button>
 
-                {/* Company Dropdown */}
-                {showCompanyDropdown && (
-                    <div className="absolute right-6 top-16 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
-                        <div className="p-4 border-b border-gray-200">
-                            <p className="font-bold text-gray-900">{company?.name || 'Loading...'}</p>
-                            <p className="text-sm text-gray-600">{company?.email || ''}</p>
-                            <div className="mt-2 flex items-center gap-2">
-                                <span className={`px-3 py-1 text-xs font-semibold rounded-full ${company?.plan === 'Premium' ? 'bg-purple-100 text-purple-700' :
-                                    company?.plan === 'Pro' ? 'bg-blue-100 text-blue-700' :
-                                        'bg-green-100 text-green-700'
-                                    }`}>
-                                    {company?.plan || 'Free'} Plan
-                                </span>
-                                {company?.verified && (
-                                    <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full flex items-center gap-1">
-                                        <ShieldCheck className="w-3 h-3" />
-                                        Verified
+                    {/* Company Dropdown */}
+                    {showCompanyDropdown && (
+                        <div className="absolute right-0 top-12 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                            <div className="p-4 border-b border-gray-200">
+                                <p className="font-bold text-gray-900">{company?.name || 'Loading...'}</p>
+                                <p className="text-sm text-gray-600">{company?.email || ''}</p>
+                                <div className="mt-2 flex items-center gap-2">
+                                    <span className={`px-3 py-1 text-xs font-semibold rounded-full ${company?.plan === 'Premium' ? 'bg-purple-100 text-purple-700' :
+                                        company?.plan === 'Pro' ? 'bg-blue-100 text-blue-700' :
+                                            'bg-green-100 text-green-700'
+                                        }`}>
+                                        {company?.plan || 'Free'} Plan
                                     </span>
-                                )}
+                                    {company?.verified && (
+                                        <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full flex items-center gap-1">
+                                            <ShieldCheck className="w-3 h-3" />
+                                            Verified
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="p-2">
+                                <a href="/settings" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-lg">
+                                    <Settings className="w-4 h-4 text-gray-600" />
+                                    <span className="text-sm text-gray-700">Company Settings</span>
+                                </a>
+                                <a href="/subscription" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-lg">
+                                    <Crown className="w-4 h-4 text-gray-600" />
+                                    <span className="text-sm text-gray-700">Upgrade Plan</span>
+                                </a>
+                                <a href="/verification" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-lg">
+                                    <ShieldCheck className="w-4 h-4 text-gray-600" />
+                                    <span className="text-sm text-gray-700">Verification Status</span>
+                                </a>
+                                <hr className="my-2" />
+                                <button
+                                    onClick={handleLogout}
+                                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 rounded-lg text-red-600"
+                                >
+                                    <span className="text-sm font-medium">Sign Out</span>
+                                </button>
                             </div>
                         </div>
-                        <div className="p-2">
-                            <a href="/settings" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-lg">
-                                <Settings className="w-4 h-4 text-gray-600" />
-                                <span className="text-sm text-gray-700">Company Settings</span>
-                            </a>
-                            <a href="/subscription" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-lg">
-                                <Crown className="w-4 h-4 text-gray-600" />
-                                <span className="text-sm text-gray-700">Upgrade Plan</span>
-                            </a>
-                            <a href="/verification" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-lg">
-                                <ShieldCheck className="w-4 h-4 text-gray-600" />
-                                <span className="text-sm text-gray-700">Verification Status</span>
-                            </a>
-                            <hr className="my-2" />
-                            <button
-                                onClick={handleLogout}
-                                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 rounded-lg text-red-600"
-                            >
-                                <span className="text-sm font-medium">Sign Out</span>
-                            </button>
-                        </div>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
         </header>
     );

@@ -300,8 +300,52 @@ export const planApi = {
     },
 };
 
+// ==================== Review API ====================
+
+export const reviewApi = {
+    // Get reviews for a company with pagination
+    getCompanyReviews: async (companyId: number, page = 0, size = 10) => {
+        const response = await fetch(`${API_BASE_URL}/api/reviews/company/${companyId}?page=${page}&size=${size}`, {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'ngrok-skip-browser-warning': 'true',
+            },
+        });
+
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({ message: 'Failed to fetch reviews' }));
+            throw new Error(error.message || 'Failed to fetch reviews');
+        }
+
+        return response.json();
+    },
+
+    // Reply to a review
+    replyToReview: async (reviewId: number, reply: string) => {
+        const response = await fetch(`${API_BASE_URL}/api/reviews/${reviewId}/reply`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'ngrok-skip-browser-warning': 'true',
+            },
+            body: JSON.stringify({ reply }),
+        });
+
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({ message: 'Failed to reply to review' }));
+            throw new Error(error.message || 'Failed to reply to review');
+        }
+
+        return response.json();
+    },
+};
+
 export default {
     auth: authApi,
     company: companyApi,
     plan: planApi,
+    review: reviewApi,
 };
