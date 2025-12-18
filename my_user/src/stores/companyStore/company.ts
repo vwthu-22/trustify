@@ -16,6 +16,8 @@ export interface Company {
     city?: string;
     country?: string;
     industry?: string;
+    phone?: string;
+    email?: string;
     verified: boolean;
     claimed: boolean;
 }
@@ -293,6 +295,8 @@ const useCompanyStore = create<CompanyState>()(
                         city: companyData.city || '',
                         country: companyData.country || '',
                         industry: companyData.industry || '',
+                        phone: companyData.contactPhone || companyData.phone || '',
+                        email: companyData.contactEmail || companyData.email || '',
                         verified: companyData.isVerified ?? companyData.verified ?? false,
                         claimed: companyData.isClaimed ?? companyData.claimed ?? false,
                     };

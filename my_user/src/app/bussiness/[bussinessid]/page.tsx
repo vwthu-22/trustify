@@ -314,6 +314,18 @@ export default function CompanyReviewPage() {
                                         <span className="text-sm sm:text-base">{currentCompany.address}</span>
                                     </div>
                                 )}
+                                {currentCompany.phone && (
+                                    <div className="flex items-center gap-2 sm:gap-3">
+                                        <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
+                                        <a href={`tel:${currentCompany.phone}`} className="text-gray-900 hover:text-blue-600 text-sm sm:text-base">{currentCompany.phone}</a>
+                                    </div>
+                                )}
+                                {currentCompany.email && (
+                                    <div className="flex items-center gap-2 sm:gap-3">
+                                        <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
+                                        <a href={`mailto:${currentCompany.email}`} className="text-gray-900 hover:text-blue-600 text-sm sm:text-base break-all">{currentCompany.email}</a>
+                                    </div>
+                                )}
                                 {currentCompany.website && (
                                     <div className="flex items-center gap-2 sm:gap-3">
                                         <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
