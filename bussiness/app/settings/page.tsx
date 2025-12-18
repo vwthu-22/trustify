@@ -8,7 +8,7 @@ import { companyApi } from '@/lib/api';
 export default function SettingsPage() {
     const [saved, setSaved] = useState(false);
     const [saving, setSaving] = useState(false);
-    const [activeTab, setActiveTab] = useState<'profile' | 'company' | 'notifications' | 'security'>('profile');
+    const [activeTab, setActiveTab] = useState<'profile' | 'company' | 'security'>('profile');
 
     const { company, fetchCompanyProfile, updateCompany, isLoading } = useCompanyStore();
 
@@ -108,7 +108,7 @@ export default function SettingsPage() {
     const tabs = [
         { id: 'profile', name: 'Profile', icon: User },
         { id: 'company', name: 'Company', icon: Building2 },
-        { id: 'notifications', name: 'Notifications', icon: Bell },
+        // { id: 'notifications', name: 'Notifications', icon: Bell },
         { id: 'security', name: 'Security', icon: Lock }
     ];
 
@@ -328,7 +328,7 @@ export default function SettingsPage() {
                             </div>
                         )}
 
-                        {/* Notifications Tab */}
+                        {/* Notifications Tab
                         {activeTab === 'notifications' && (
                             <div className="space-y-6">
                                 <div>
@@ -419,7 +419,7 @@ export default function SettingsPage() {
                                     </div>
                                 </div>
                             </div>
-                        )}
+                        )} */}
 
                         {/* Security Tab */}
                         {activeTab === 'security' && (
