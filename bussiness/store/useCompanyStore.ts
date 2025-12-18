@@ -118,8 +118,14 @@ export const useCompanyStore = create<CompanyStore>()(
                             plan: companyData.plan?.name || companyData.planName || 'Free',
                             // API uses isVerified, not verified
                             verified: companyData.isVerified ?? companyData.verified ?? false,
-                            // API uses websiteUrl, not website
-                            website: companyData.websiteUrl || companyData.website || '',
+                            // API uses websiteUrl, not website - filter out internal/admin URLs
+                            website: (() => {
+                                const url = companyData.websiteUrl || companyData.website || '';
+                                // Filter out internal URLs (admin, vercel, trustify domains)
+                                const invalidPatterns = ['trustify-admin', 'vercel.app', 'trustify.io.vn', 'localhost', 'ngrok'];
+                                const isInvalidUrl = invalidPatterns.some(pattern => url.toLowerCase().includes(pattern));
+                                return isInvalidUrl ? '' : url;
+                            })(),
                             industry: companyData.industry || '',
                             // API uses address or city+country
                             address: companyData.address || (companyData.city ? `${companyData.city}, ${companyData.country}` : ''),
@@ -256,7 +262,13 @@ export const useCompanyStore = create<CompanyStore>()(
                                 logo: companyData.logoUrl || companyData.logo || '',
                                 plan: companyData.plan?.name || companyData.planName || 'Free',
                                 verified: companyData.isVerified ?? companyData.verified ?? false,
-                                website: companyData.websiteUrl || companyData.website || '',
+                                // Filter out internal URLs (admin, vercel, trustify domains)
+                                website: (() => {
+                                    const url = companyData.websiteUrl || companyData.website || '';
+                                    const invalidPatterns = ['trustify-admin', 'vercel.app', 'trustify.io.vn', 'localhost', 'ngrok'];
+                                    const isInvalidUrl = invalidPatterns.some(pattern => url.toLowerCase().includes(pattern));
+                                    return isInvalidUrl ? '' : url;
+                                })(),
                                 industry: companyData.industry || '',
                                 address: companyData.address || (companyData.city ? `${companyData.city}, ${companyData.country}` : ''),
                                 phone: companyData.contactPhone || companyData.phone || '',

@@ -156,6 +156,28 @@ export default function CompanyReviewPage() {
 
     const ratingFilters = calculateRatingBreakdown();
 
+    // Calculate reply stats from reviews
+    const calculateReplyStats = () => {
+        if (allReviews.length === 0) {
+            return { negativeTotal: 0, negativeReplied: 0, replyPercentage: 0 };
+        }
+
+        // Negative reviews are 1-2 stars
+        const negativeReviews = allReviews.filter(r => r.rating <= 2);
+        const negativeTotal = negativeReviews.length;
+        // Count replied reviews (has reply field or status !== 'PENDING')
+        const negativeReplied = negativeReviews.filter(r =>
+            r.reply || r.replyContent || (r.status && r.status.toLowerCase() !== 'pending')
+        ).length;
+        const replyPercentage = negativeTotal > 0
+            ? Math.round((negativeReplied / negativeTotal) * 100)
+            : 0;
+
+        return { negativeTotal, negativeReplied, replyPercentage };
+    };
+
+    const replyStats = calculateReplyStats();
+
     const topMentions = [
         'Location', 'Staff', 'Customer service', 'Service',
         'Booking process', 'Facilities', 'Solution', 'Application',
@@ -245,16 +267,18 @@ export default function CompanyReviewPage() {
                                     <span className="sm:hidden">{tReview('review')}</span>
                                 </button>
 
-                                <a
-                                    href={`https://${currentCompany.website}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="border border-gray-300 hover:bg-gray-50 px-3 sm:px-4 py-2 rounded-full transition flex items-center gap-2 text-sm sm:text-base"
-                                >
-                                    <span className="hidden sm:inline">{t('visitWebsite')}</span>
-                                    <span className="sm:hidden">{t('website')}</span>
-                                    <ExternalLink className="w-4 h-4" />
-                                </a>
+                                {currentCompany.website && (
+                                    <a
+                                        href={`https://${currentCompany.website}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="border border-gray-300 hover:bg-gray-50 px-3 sm:px-4 py-2 rounded-full transition flex items-center gap-2 text-sm sm:text-base"
+                                    >
+                                        <span className="hidden sm:inline">{t('visitWebsite')}</span>
+                                        <span className="sm:hidden">{t('website')}</span>
+                                        <ExternalLink className="w-4 h-4" />
+                                    </a>
+                                )}
                             </div>
                         </div>
 
@@ -337,15 +361,21 @@ export default function CompanyReviewPage() {
                             </div>
 
                             {/* Reply Stats */}
-                            <div className="bg-white border border-gray-200 shadow-md rounded-lg p-4 sm:p-6 hidden lg:block">
-                                <div className="flex items-start gap-2 sm:gap-3">
-                                    <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0 mt-1" />
-                                    <div>
-                                        <p className="font-semibold text-sm sm:text-base mb-1">{t('repliedToNegative')}</p>
-                                        <p className="text-xs sm:text-sm text-gray-600">{t('typicallyReplies')}</p>
+                            {replyStats.negativeTotal > 0 && (
+                                <div className="bg-white border border-gray-200 shadow-md rounded-lg p-4 sm:p-6 hidden lg:block">
+                                    <div className="flex items-start gap-2 sm:gap-3">
+                                        <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0 mt-1" />
+                                        <div>
+                                            <p className="font-semibold text-sm sm:text-base mb-1">
+                                                {replyStats.replyPercentage}% {t('repliedToNegative')}
+                                            </p>
+                                            <p className="text-xs sm:text-sm text-gray-600">
+                                                {replyStats.negativeReplied} / {replyStats.negativeTotal} negative reviews replied
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            )}
 
                             {/* How Company Uses - Hidden on mobile
                             <Link href="#" className="hidden lg:flex items-center gap-1 text-xs sm:text-sm text-gray-900 hover:underline">

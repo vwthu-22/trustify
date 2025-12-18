@@ -23,6 +23,10 @@ interface Review {
     companyName?: string;
     companyId?: string;
     createdAt?: string;
+    // Reply fields
+    reply?: string;
+    replyContent?: string;
+    status?: string;
 }
 
 interface CompanyRatingData {
