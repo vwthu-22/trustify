@@ -267,18 +267,16 @@ export default function CompanyReviewPage() {
                                     <span className="sm:hidden">{tReview('review')}</span>
                                 </button>
 
-                                {currentCompany.website && (
-                                    <a
-                                        href={`https://${currentCompany.website}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="border border-gray-300 hover:bg-gray-50 px-3 sm:px-4 py-2 rounded-full transition flex items-center gap-2 text-sm sm:text-base"
-                                    >
-                                        <span className="hidden sm:inline">{t('visitWebsite')}</span>
-                                        <span className="sm:hidden">{t('website')}</span>
-                                        <ExternalLink className="w-4 h-4" />
-                                    </a>
-                                )}
+                                <a
+                                    href={`https://${currentCompany.website}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="border border-gray-300 hover:bg-gray-50 px-3 sm:px-4 py-2 rounded-full transition flex items-center gap-2 text-sm sm:text-base"
+                                >
+                                    <span className="hidden sm:inline">{t('visitWebsite')}</span>
+                                    <span className="sm:hidden">{t('website')}</span>
+                                    <ExternalLink className="w-4 h-4" />
+                                </a>
                             </div>
                         </div>
 

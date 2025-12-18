@@ -285,13 +285,7 @@ const useCompanyStore = create<CompanyState>()(
                         name: companyData.name || '',
                         slug: companyData.slug || '',
                         logo: companyData.logoUrl || companyData.logo || '',
-                        // Filter out internal URLs (admin, vercel, trustify domains)
-                        website: (() => {
-                            const url = companyData.websiteUrl || companyData.website || '';
-                            const invalidPatterns = ['trustify-admin', 'vercel.app', 'trustify.io.vn', 'localhost', 'ngrok'];
-                            const isInvalidUrl = invalidPatterns.some(pattern => url.toLowerCase().includes(pattern));
-                            return isInvalidUrl ? '' : url;
-                        })(),
+                        website: companyData.websiteUrl || companyData.website || '',
                         description: companyData.description || '',
                         rating: companyData.averageRating || companyData.rating?.averageRating || 0,
                         reviewCount: companyData.totalReviews || companyData.rating?.totalReviews || 0,
