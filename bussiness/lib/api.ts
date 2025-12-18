@@ -305,7 +305,7 @@ export const planApi = {
 export const reviewApi = {
     // Get reviews for a company with pagination
     getCompanyReviews: async (companyId: number, page = 0, size = 10) => {
-        const response = await fetch(`${API_BASE_URL}/api/reviews/company/${companyId}?page=${page}&size=${size}`, {
+        const response = await fetch(`${API_BASE_URL}/api/review/company/${companyId}?page=${page}&size=${size}`, {
             method: 'GET',
             credentials: 'include',
             headers: {
