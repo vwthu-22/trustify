@@ -231,18 +231,19 @@ const useCompanyStore = create<CompanyState>()(
                 }
             },
 
-            // Fetch single company by ID
+            // Fetch single company by ID or slug
             fetchCompanyById: async (id: string) => {
                 console.log('=== Fetch Company By ID Start ===');
-                console.log('ID:', id);
+                console.log('ID/Slug:', id);
 
                 set({ isLoading: true, error: null, currentCompany: null });
 
                 try {
-                    const url = `${API_BASE_URL}/api/companies/${id}`;
+                    // Try /api/companies/{id} first
+                    let url = `${API_BASE_URL}/api/companies/${id}`;
                     console.log('Fetching from:', url);
 
-                    const response = await fetch(url, {
+                    let response = await fetch(url, {
                         method: 'GET',
                         credentials: 'include',
                         headers: {
@@ -253,6 +254,28 @@ const useCompanyStore = create<CompanyState>()(
                     });
 
                     console.log('Response Status:', response.status);
+
+                    // If 404, try /api/companies/slug/{slug}
+                    if (response.status === 404) {
+                        console.log('Trying slug endpoint...');
+                        url = `${API_BASE_URL}/api/companies/slug/${encodeURIComponent(id)}`;
+                        console.log('Fetching from:', url);
+
+                        response = await fetch(url, {
+                            method: 'GET',
+                            credentials: 'include',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'ngrok-skip-browser-warning': 'true',
+                                'bypass-tunnel-reminder': 'true',
+                            },
+                        });
+
+                        console.log('Slug Response Status:', response.status);
+                    }
+
+                    console.log('Response Status:', response.status);
+                    console.log('Response Headers:', Object.fromEntries(response.headers.entries()));
 
                     if (!response.ok) {
                         const errorData = await response.json();
@@ -267,8 +290,13 @@ const useCompanyStore = create<CompanyState>()(
                     // Handle different response structures
                     let companyData = data;
 
+                    // If response has success: true and company field
+                    if (data.success && data.company) {
+                        console.log('Using nested company object from success response');
+                        companyData = data.company;
+                    }
                     // If response has a 'company' field, use that
-                    if (data.company) {
+                    else if (data.company) {
                         console.log('Using nested company object');
                         companyData = data.company;
                     }
@@ -278,12 +306,30 @@ const useCompanyStore = create<CompanyState>()(
                         companyData = data.data;
                     }
 
-                    console.log('Final Company Data:', companyData);
-                    console.log('Company Name:', companyData.name || companyData.companyName || 'NOT FOUND');
+                    // Map API fields to our Company interface
+                    const mappedCompany: Company = {
+                        id: companyData.id?.toString() || '',
+                        name: companyData.name || '',
+                        slug: companyData.slug || '',
+                        logo: companyData.logoUrl || companyData.logo || '',
+                        website: companyData.websiteUrl || companyData.website || '',
+                        description: companyData.description || '',
+                        rating: companyData.averageRating || companyData.rating || 0,
+                        reviewCount: companyData.totalReviews || companyData.reviewCount || 0,
+                        address: companyData.address || '',
+                        city: companyData.city || '',
+                        country: companyData.country || '',
+                        industry: companyData.industry || '',
+                        verified: companyData.isVerified ?? companyData.verified ?? false,
+                        claimed: companyData.isClaimed ?? companyData.claimed ?? false,
+                    };
+
+                    console.log('Final Company Data:', mappedCompany);
+                    console.log('Company Name:', mappedCompany.name || 'NOT FOUND');
                     console.log('=== Fetch Company By ID Success ===');
 
                     set({
-                        currentCompany: companyData,
+                        currentCompany: mappedCompany,
                         isLoading: false
                     });
                 } catch (error) {

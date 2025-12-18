@@ -14,6 +14,11 @@ export interface Company {
     industry?: string;
     address?: string;
     phone?: string;
+    country?: string;
+    size?: string;
+    taxId?: string;
+    position?: string;
+    createdAt?: string;
 }
 
 interface CompanyStore {
@@ -105,15 +110,27 @@ export const useCompanyStore = create<CompanyStore>()(
                     if (companyData) {
                         const company: Company = {
                             id: companyData.id?.toString() || '',
-                            name: companyData.name || companyData.companyName || '',
-                            email: companyData.email || companyData.workEmail || '',
-                            logo: companyData.logo || companyData.logoUrl || '',
+                            name: companyData.name || '',
+                            // API uses contactEmail, not email
+                            email: companyData.contactEmail || companyData.email || '',
+                            // API uses logoUrl, not logo
+                            logo: companyData.logoUrl || companyData.logo || '',
                             plan: companyData.plan?.name || companyData.planName || 'Free',
-                            verified: companyData.verified ?? companyData.isVerified ?? false,
-                            website: companyData.website || '',
+                            // API uses isVerified, not verified
+                            verified: companyData.isVerified ?? companyData.verified ?? false,
+                            // API uses websiteUrl, not website
+                            website: companyData.websiteUrl || companyData.website || '',
                             industry: companyData.industry || '',
-                            address: companyData.address || '',
-                            phone: companyData.phone || companyData.phoneNumber || '',
+                            // API uses address or city+country
+                            address: companyData.address || (companyData.city ? `${companyData.city}, ${companyData.country}` : ''),
+                            // API uses contactPhone, not phone
+                            phone: companyData.contactPhone || companyData.phone || '',
+                            country: companyData.country || '',
+                            // API uses companySize, not size
+                            size: companyData.companySize || companyData.size || '',
+                            taxId: companyData.taxId || '',
+                            position: companyData.position || '',
+                            createdAt: companyData.createdAt || '',
                         };
                         set({ company, isLoading: false });
                     } else {
@@ -234,15 +251,20 @@ export const useCompanyStore = create<CompanyStore>()(
                         if (companyData) {
                             const company: Company = {
                                 id: companyData.id?.toString() || '',
-                                name: companyData.name || companyData.companyName || '',
-                                email: companyData.email || companyData.workEmail || '',
-                                logo: companyData.logo || companyData.logoUrl || '',
+                                name: companyData.name || '',
+                                email: companyData.contactEmail || companyData.email || '',
+                                logo: companyData.logoUrl || companyData.logo || '',
                                 plan: companyData.plan?.name || companyData.planName || 'Free',
-                                verified: companyData.verified ?? companyData.isVerified ?? false,
-                                website: companyData.website || '',
+                                verified: companyData.isVerified ?? companyData.verified ?? false,
+                                website: companyData.websiteUrl || companyData.website || '',
                                 industry: companyData.industry || '',
-                                address: companyData.address || '',
-                                phone: companyData.phone || companyData.phoneNumber || '',
+                                address: companyData.address || (companyData.city ? `${companyData.city}, ${companyData.country}` : ''),
+                                phone: companyData.contactPhone || companyData.phone || '',
+                                country: companyData.country || '',
+                                size: companyData.companySize || companyData.size || '',
+                                taxId: companyData.taxId || '',
+                                position: companyData.position || '',
+                                createdAt: companyData.createdAt || '',
                             };
                             set({ company });
                             return true;

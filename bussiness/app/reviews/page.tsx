@@ -35,6 +35,7 @@ export default function BusinessReviewDashboard() {
     // Fetch reviews when company is available
     useEffect(() => {
         if (company?.id) {
+            console.log('Reviews page - fetching with company.id:', company.id, 'as number:', Number(company.id));
             fetchCompanyReviews(Number(company.id), 0, 10);
         }
     }, [company?.id, fetchCompanyReviews]);

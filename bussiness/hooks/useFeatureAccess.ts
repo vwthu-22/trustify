@@ -47,7 +47,10 @@ export function useFeatureAccess() {
 
     const loadProfile = async () => {
         try {
-            const data = await companyApi.getProfile();
+            const response = await companyApi.getProfile();
+            // Handle format: { success: true, company: {...} }
+            const data = response.company || response;
+            console.log('Feature access - profile loaded:', data);
             setProfile(data);
         } catch (error) {
             console.error('Failed to load profile:', error);

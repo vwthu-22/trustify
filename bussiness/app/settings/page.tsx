@@ -47,20 +47,21 @@ export default function SettingsPage() {
     // Populate form when company data is loaded
     useEffect(() => {
         if (company) {
+            console.log('Settings - company data loaded:', company);
             setProfileData({
                 name: company.name || '',
                 email: company.email || '',
                 phone: company.phone || '',
-                position: '', // Not in current Company interface
+                position: company.position || '',
                 avatar: company.logo || ''
             });
             setCompanyData({
                 name: company.name || '',
-                taxId: '', // Need to add to interface if backend supports
+                taxId: company.taxId || '',
                 address: company.address || '',
                 website: company.website || '',
                 industry: company.industry || '',
-                size: '' // Need to add to interface if backend supports
+                size: company.size || ''
             });
         }
     }, [company]);
@@ -73,9 +74,12 @@ export default function SettingsPage() {
                 name: companyData.name,
                 email: profileData.email,
                 phone: profileData.phone,
+                position: profileData.position,
                 website: companyData.website,
                 address: companyData.address,
                 industry: companyData.industry,
+                size: companyData.size,
+                taxId: companyData.taxId,
             });
 
             // Update local store
@@ -83,9 +87,12 @@ export default function SettingsPage() {
                 name: companyData.name,
                 email: profileData.email,
                 phone: profileData.phone,
+                position: profileData.position,
                 website: companyData.website,
                 address: companyData.address,
                 industry: companyData.industry,
+                size: companyData.size,
+                taxId: companyData.taxId,
             });
 
             setSaved(true);
@@ -165,8 +172,8 @@ export default function SettingsPage() {
                                 <p className="text-sm text-gray-500 mt-1">{company.email}</p>
                                 <div className="mt-3">
                                     <span className={`px-3 py-1 text-xs font-semibold rounded-full ${company.plan === 'Premium' ? 'bg-purple-100 text-purple-700' :
-                                            company.plan === 'Pro' ? 'bg-blue-100 text-blue-700' :
-                                                'bg-green-100 text-green-700'
+                                        company.plan === 'Pro' ? 'bg-blue-100 text-blue-700' :
+                                            'bg-green-100 text-green-700'
                                         }`}>
                                         {company.plan || 'Free'} Plan
                                     </span>
