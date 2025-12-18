@@ -77,19 +77,28 @@ export const useCompanyStore = create<CompanyStore>()(
                     const data = await response.json();
                     console.log('Company profile response:', data);
 
-                    // Handle both array and object responses
-                    // API might return: { companies: [...] } or [...] or single object
-                    let companyData = data;
+                    // Handle different API response formats
+                    let companyData = null;
 
-                    if (Array.isArray(data)) {
-                        // API returns array of companies, take the first one
+                    // Format: { success: true, company: {...} }
+                    if (data.success && data.company) {
+                        companyData = data.company;
+                    }
+                    // Format: array of companies
+                    else if (Array.isArray(data)) {
                         companyData = data[0] || null;
-                    } else if (data.companies && Array.isArray(data.companies)) {
-                        // API returns { companies: [...] }
+                    }
+                    // Format: { companies: [...] }
+                    else if (data.companies && Array.isArray(data.companies)) {
                         companyData = data.companies[0] || null;
-                    } else if (data.content && Array.isArray(data.content)) {
-                        // API returns paginated { content: [...] }
+                    }
+                    // Format: paginated { content: [...] }
+                    else if (data.content && Array.isArray(data.content)) {
                         companyData = data.content[0] || null;
+                    }
+                    // Format: direct object (no wrapper)
+                    else if (data.id || data.name) {
+                        companyData = data;
                     }
 
                     // Map API response to our Company interface
@@ -108,6 +117,7 @@ export const useCompanyStore = create<CompanyStore>()(
                         };
                         set({ company, isLoading: false });
                     } else {
+                        console.error('No company data found in response');
                         set({ company: null, isLoading: false });
                     }
                 } catch (error) {
@@ -206,14 +216,19 @@ export const useCompanyStore = create<CompanyStore>()(
                     if (response.ok) {
                         const data = await response.json();
 
-                        // Handle both array and object responses
-                        let companyData = data;
-                        if (Array.isArray(data)) {
+                        // Handle different API response formats
+                        let companyData = null;
+
+                        if (data.success && data.company) {
+                            companyData = data.company;
+                        } else if (Array.isArray(data)) {
                             companyData = data[0] || null;
                         } else if (data.companies && Array.isArray(data.companies)) {
                             companyData = data.companies[0] || null;
                         } else if (data.content && Array.isArray(data.content)) {
                             companyData = data.content[0] || null;
+                        } else if (data.id || data.name) {
+                            companyData = data;
                         }
 
                         if (companyData) {

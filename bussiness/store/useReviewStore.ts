@@ -77,12 +77,15 @@ export const useReviewStore = create<ReviewStore>((set, get) => ({
         if (!companyId) {
             // Try to get company ID from profile
             try {
-                const profile = await companyApi.getProfile();
+                const response = await companyApi.getProfile();
+                // Handle format: { success: true, company: {...} }
+                const profile = response.company || response;
                 if (profile?.id) {
                     set({ companyId: profile.id });
                     await get().fetchCompanyReviews(profile.id, page, size);
                 }
             } catch (error) {
+                console.error('Failed to get company profile:', error);
                 set({ error: 'Could not determine company ID', isLoading: false });
             }
             return;
@@ -94,30 +97,35 @@ export const useReviewStore = create<ReviewStore>((set, get) => ({
         set({ isLoading: true, error: null, companyId });
         try {
             const response = await reviewApi.getCompanyReviews(companyId, page, size);
+            console.log('Reviews API response:', response);
+
+            // Handle format: { success: true, reviews: [...], currentPage, totalPages, totalItems }
+            const reviewsData = response.reviews || response.content || [];
 
             // Map API response to our Review type
-            const reviews: Review[] = (response.reviews || []).map((r: any) => ({
+            const reviews: Review[] = reviewsData.map((r: any) => ({
                 id: r.id,
                 rating: r.rating,
-                comment: r.comment,
+                comment: r.comment || r.content || '',
                 createdAt: r.createdAt,
-                user: r.user,
+                user: r.user || { id: 0, name: 'Anonymous', avatarUrl: '' },
                 status: r.reply ? 'replied' : 'pending',
-                reply: r.reply,
-                replyDate: r.replyDate,
+                reply: r.reply || null,
+                replyDate: r.replyDate || null,
             }));
 
             set({
                 reviews,
-                currentPage: response.currentPage || 0,
-                totalPages: response.totalPages || 1,
-                totalItems: response.totalItems || reviews.length,
+                currentPage: response.currentPage ?? 0,
+                totalPages: response.totalPages ?? 1,
+                totalItems: response.totalItems ?? reviews.length,
                 isLoading: false,
             });
 
             // Calculate stats after fetching
             get().calculateStats();
         } catch (error) {
+            console.error('Fetch reviews error:', error);
             set({
                 error: error instanceof Error ? error.message : 'Failed to fetch reviews',
                 isLoading: false,
