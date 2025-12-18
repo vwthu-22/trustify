@@ -34,7 +34,6 @@ interface CompanyState {
     fetchBankCompanies: (page?: number, size?: number) => Promise<void>;
     fetchTravelCompanies: (page?: number, size?: number) => Promise<void>;
     fetchCompanyById: (id: string) => Promise<void>;
-    fetchCompanyBySlug: (slug: string) => Promise<void>;
     searchCompanies: (query: string) => Promise<void>;
     fetchTopRatedCompanies: (limit?: number) => Promise<void>;
     clearError: () => void;
@@ -239,8 +238,9 @@ const useCompanyStore = create<CompanyState>()(
                 set({ isLoading: true, error: null, currentCompany: null });
 
                 try {
-                    const url = `${API_BASE_URL}/api/companies/my-companies/${id}`;
-                    console.log('Fetching from:', url);
+                    // Fetch from companies list and filter by ID
+                    const url = `${API_BASE_URL}/api/companies?page=0&size=100`;
+                    console.log('Fetching companies list from:', url);
 
                     const response = await fetch(url, {
                         method: 'GET',
@@ -257,29 +257,26 @@ const useCompanyStore = create<CompanyState>()(
                     if (!response.ok) {
                         const errorData = await response.json();
                         console.error('Response Error:', errorData);
-                        throw new Error(errorData.message || errorData.error || 'Company not found');
+                        throw new Error(errorData.message || errorData.error || 'Failed to fetch companies');
                     }
 
                     const data = await response.json();
                     console.log('Raw API Response:', data);
-                    console.log('Response keys:', Object.keys(data));
 
-                    // Handle different response structures
-                    let companyData = data;
+                    // Get companies array from response
+                    const companies = data.content || data.companies || data;
 
-                    // If response has a 'company' field, use that
-                    if (data.company) {
-                        console.log('Using nested company object');
-                        companyData = data.company;
-                    }
-                    // If response has a 'data' field, use that
-                    else if (data.data) {
-                        console.log('Using nested data object');
-                        companyData = data.data;
+                    // Find company by ID
+                    const companyData = companies.find((c: any) =>
+                        c.id?.toString() === id ||
+                        c.slug === id
+                    );
+
+                    if (!companyData) {
+                        throw new Error('Company not found');
                     }
 
-                    console.log('Final Company Data:', companyData);
-                    console.log('Company Name:', companyData.name || companyData.companyName || 'NOT FOUND');
+                    console.log('Found Company Data:', companyData);
                     console.log('=== Fetch Company By ID Success ===');
 
                     // Map API fields to our Company interface
@@ -306,50 +303,6 @@ const useCompanyStore = create<CompanyState>()(
                     });
                 } catch (error) {
                     console.error('=== Fetch Company By ID Error ===');
-                    console.error('Error:', error);
-                    set({
-                        error: error instanceof Error ? error.message : 'Failed to fetch company',
-                        isLoading: false,
-                    });
-                }
-            },
-
-            // Fetch single company by slug
-            fetchCompanyBySlug: async (slug: string) => {
-                console.log('=== Fetch Company By Slug Start ===');
-                console.log('Slug:', slug);
-
-                set({ isLoading: true, error: null, currentCompany: null });
-
-                try {
-                    const response = await fetch(`${API_BASE_URL}/api/companies/${slug}`, {
-                        method: 'GET',
-                        credentials: 'include',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'ngrok-skip-browser-warning': 'true',
-                            'bypass-tunnel-reminder': 'true',
-                        },
-                    });
-
-                    console.log('Response Status:', response.status);
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        console.error('Response Error:', errorData);
-                        throw new Error(errorData.message || errorData.error || 'Company not found');
-                    }
-
-                    const data = await response.json();
-                    console.log('Response Data:', data);
-                    console.log('=== Fetch Company Success ===');
-
-                    set({
-                        currentCompany: data.company || data,
-                        isLoading: false
-                    });
-                } catch (error) {
-                    console.error('=== Fetch Company Error ===');
                     console.error('Error:', error);
                     set({
                         error: error instanceof Error ? error.message : 'Failed to fetch company',

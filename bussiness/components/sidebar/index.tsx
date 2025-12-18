@@ -109,8 +109,7 @@ export default function Sidebar() {
             href: '/settings',
             label: 'Settings',
             icon: Settings,
-            title: 'Account Settings',
-            requiredFeature: 'Advanced Settings'
+            title: 'Account Settings'
         }
     ];
 
