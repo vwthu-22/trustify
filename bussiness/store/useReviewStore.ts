@@ -98,6 +98,7 @@ export const useReviewStore = create<ReviewStore>((set, get) => ({
         try {
             const response = await reviewApi.getCompanyReviews(companyId, page, size);
             console.log('Reviews API response:', response);
+            console.log('First review raw data:', response.reviews?.[0] || response.content?.[0] || response[0]);
 
             // Handle format: { success: true, reviews: [...], currentPage, totalPages, totalItems }
             const reviewsData = response.reviews || response.content || [];
@@ -106,12 +107,19 @@ export const useReviewStore = create<ReviewStore>((set, get) => ({
             const reviews: Review[] = reviewsData.map((r: any) => ({
                 id: r.id,
                 rating: r.rating,
-                comment: r.comment || r.content || '',
-                createdAt: r.createdAt,
-                user: r.user || { id: 0, name: 'Anonymous', avatarUrl: '' },
-                status: r.reply ? 'replied' : 'pending',
-                reply: r.reply || null,
-                replyDate: r.replyDate || null,
+                // API uses 'description' for review content, 'title' as fallback
+                comment: r.description || r.title || r.comment || r.content || '',
+                // API uses 'expDate' instead of 'createdAt'
+                createdAt: r.expDate || r.createdAt || r.date || '',
+                user: {
+                    id: r.user?.id || 0,
+                    name: r.user?.name || r.userName || 'Anonymous',
+                    avatarUrl: r.user?.avatar || r.user?.avatarUrl || '',
+                },
+                // API returns status in uppercase like "PENDING"
+                status: r.reply ? 'replied' : (r.status?.toLowerCase() === 'pending' ? 'pending' : 'replied'),
+                reply: r.reply || r.replyContent || null,
+                replyDate: r.replyDate || r.replyAt || null,
             }));
 
             set({
