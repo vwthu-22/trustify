@@ -26,9 +26,9 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="bg-gray-50 flex items-center p-8 max-h-screen">
+        <div className="bg-gray-50 flex items-center p-8 max-h-screen  ">
             {/* Left Sidebar - Benefits */}
-            <aside className="hidden rounded-lg lg:block w-2/5 bg-white p-10 relative overflow-hidden max-h-[1000px] ">
+            <aside className="hidden rounded-lg lg:block w-3/5 bg-white p-10 relative overflow-hidden max-h-[1000px] ">
                 <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-blue-100 rounded-full opacity-50"></div>
                 <div className="absolute -top-32 -right-32 w-64 h-64 bg-blue-500 rounded-full opacity-20"></div>
 
@@ -138,7 +138,7 @@ export default function LoginPage() {
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition text-lg flex items-center justify-center gap-2"
+                                    className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition text-md flex items-center justify-center gap-2"
                                 >
                                     {isLoading ? (
                                         <>
@@ -148,7 +148,7 @@ export default function LoginPage() {
                                     ) : (
                                         <>
                                             <Mail className="w-5 h-5" />
-                                            Send Magic Link
+                                            Send magic link to gmail
                                         </>
                                     )}
                                 </button>
