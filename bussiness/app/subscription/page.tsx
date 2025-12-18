@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Crown, Check, Zap, Shield, Sparkles, Loader2 } from 'lucide-react';
+import { Crown, Check, Zap, Shield, Loader2, Star } from 'lucide-react';
 import usePlanStore from '@/store/usePlanStore';
 
 export default function SubscriptionPage() {
@@ -34,19 +34,47 @@ export default function SubscriptionPage() {
         return `Save ${savings.toLocaleString('vi-VN')}₫/year`;
     };
 
-    const getPlanIcon = (index: number) => {
-        const icons = [
-            <Shield key="shield" className="h-8 w-8 text-gray-600" />,
+    // Dynamic icons based on plan price (free < paid plans)
+    const getPlanIcon = (plan: typeof plans[0], index: number) => {
+        if (plan.price === 0) {
+            return <Shield className="h-8 w-8 text-gray-600" />;
+        }
+        // For paid plans, use different icons
+        const paidIcons = [
             <Zap key="zap" className="h-8 w-8 text-purple-600" />,
-            <Crown key="crown" className="h-8 w-8 text-blue-600" />
+            <Crown key="crown" className="h-8 w-8 text-yellow-600" />,
+            <Star key="star" className="h-8 w-8 text-blue-600" />
         ];
-        return icons[index % icons.length];
+        return paidIcons[index % paidIcons.length];
     };
 
-    const getPlanColor = (index: number) => {
-        const colors = ['bg-gray-100', 'bg-purple-100', 'bg-blue-100'];
+    const getPlanColor = (plan: typeof plans[0], index: number) => {
+        if (plan.price === 0) return 'bg-gray-100';
+        const colors = ['bg-purple-100', 'bg-yellow-100', 'bg-blue-100'];
         return colors[index % colors.length];
     };
+
+    // Determine grid layout based on number of plans
+    const getGridClass = () => {
+        const count = plans.length;
+        if (count === 1) return 'grid-cols-1 max-w-md mx-auto';
+        if (count === 2) return 'grid-cols-1 md:grid-cols-2 max-w-3xl mx-auto';
+        if (count === 3) return 'grid-cols-1 md:grid-cols-3';
+        // 4+ plans: responsive grid
+        return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4';
+    };
+
+    // Mark recommended plan (highest price that's not free, or last paid plan)
+    const getRecommendedPlanId = () => {
+        const paidPlans = plans.filter(p => p.price > 0);
+        if (paidPlans.length === 0) return null;
+        // Sort by price and get the middle-to-high priced plan
+        const sorted = [...paidPlans].sort((a, b) => a.price - b.price);
+        // If 2+ paid plans, recommend the second one (better value), otherwise the first
+        return sorted.length >= 2 ? sorted[1].id : sorted[0].id;
+    };
+
+    const recommendedPlanId = getRecommendedPlanId();
 
     return (
         <div className="space-y-8">
@@ -102,45 +130,45 @@ export default function SubscriptionPage() {
                 </div>
             )}
 
-            {/* Plans Grid */}
+            {/* Plans Grid - Dynamic Layout */}
             {!isLoading && !error && plans.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className={`grid gap-6 ${getGridClass()}`}>
                     {plans.map((plan, index) => {
                         const isCurrentPlan = plan.id === currentPlanId;
-                        const isPopular = index === 1; // Middle plan is popular
+                        const isRecommended = plan.id === recommendedPlanId;
 
                         return (
                             <div
                                 key={plan.id}
-                                className={`relative bg-white rounded-xl shadow-sm border-2 p-6 transition-all ${isPopular
-                                        ? 'border-green-500 shadow-xl scale-105'
-                                        : isCurrentPlan
-                                            ? 'border-blue-500'
-                                            : 'border-gray-200 hover:border-gray-300'
+                                className={`relative bg-white rounded-xl shadow-sm border-2 p-6 transition-all flex flex-col ${isRecommended
+                                    ? 'border-green-500 shadow-xl md:scale-105 z-10'
+                                    : isCurrentPlan
+                                        ? 'border-blue-500'
+                                        : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
                                     }`}
                             >
-                                {isPopular && (
+                                {isRecommended && (
                                     <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                                        <span className="px-4 py-1 bg-green-600 text-white text-sm font-bold rounded-full shadow-lg">
-                                            Most Popular
+                                        <span className="px-4 py-1 bg-green-600 text-white text-sm font-bold rounded-full shadow-lg whitespace-nowrap">
+                                            Recommended
                                         </span>
                                     </div>
                                 )}
 
                                 {isCurrentPlan && (
                                     <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                                        <span className="px-4 py-1 bg-blue-600 text-white text-sm font-bold rounded-full shadow-lg">
+                                        <span className="px-4 py-1 bg-blue-600 text-white text-sm font-bold rounded-full shadow-lg whitespace-nowrap">
                                             Current Plan
                                         </span>
                                     </div>
                                 )}
 
                                 <div className="text-center mb-6">
-                                    <div className={`inline-flex p-3 rounded-full mb-4 ${getPlanColor(index)}`}>
-                                        {getPlanIcon(index)}
+                                    <div className={`inline-flex p-3 rounded-full mb-4 ${getPlanColor(plan, index)}`}>
+                                        {getPlanIcon(plan, index)}
                                     </div>
                                     <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
-                                    <p className="text-sm text-gray-600 mb-4">{plan.description}</p>
+                                    <p className="text-sm text-gray-600 mb-4 min-h-[40px]">{plan.description || 'Perfect for your needs'}</p>
                                     <div className="mb-2">
                                         <span className="text-4xl font-bold text-gray-900">{formatPrice(plan.price)}</span>
                                         {plan.price > 0 && (
@@ -156,16 +184,19 @@ export default function SubscriptionPage() {
                                     onClick={() => !isCurrentPlan && handleUpgrade(plan.id)}
                                     disabled={isCurrentPlan}
                                     className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors mb-6 ${isCurrentPlan
-                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                            : isPopular
-                                                ? 'bg-green-600 text-white hover:bg-green-700'
+                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                        : isRecommended
+                                            ? 'bg-green-600 text-white hover:bg-green-700'
+                                            : plan.price === 0
+                                                ? 'bg-gray-200 text-gray-800 hover:bg-gray-300'
                                                 : 'bg-gray-900 text-white hover:bg-gray-800'
                                         }`}
                                 >
-                                    {isCurrentPlan ? 'Current Plan' : plan.price === 0 ? 'Get Started' : 'Upgrade Now'}
+                                    {isCurrentPlan ? 'Current Plan' : plan.price === 0 ? 'Get Started Free' : 'Upgrade Now'}
                                 </button>
 
-                                <div className="space-y-3">
+                                {/* Features list - grows to fill space */}
+                                <div className="space-y-3 flex-1">
                                     {plan.features && plan.features.length > 0 ? (
                                         plan.features.map((feature) => (
                                             <div key={feature.id} className="flex items-start gap-2">
@@ -174,7 +205,7 @@ export default function SubscriptionPage() {
                                             </div>
                                         ))
                                     ) : (
-                                        <p className="text-sm text-gray-500 text-center">No features listed</p>
+                                        <p className="text-sm text-gray-500 text-center">Basic features included</p>
                                     )}
                                 </div>
                             </div>
@@ -189,18 +220,6 @@ export default function SubscriptionPage() {
                     <p className="text-gray-600">No subscription plans available at the moment.</p>
                 </div>
             )}
-
-            {/* Contact Sales */}
-            <div className="bg-gray-900 text-white rounded-xl p-8 text-center">
-                <Sparkles className="h-12 w-12 mx-auto mb-4 text-yellow-400" />
-                <h3 className="text-2xl font-bold mb-2">Need a Custom Plan?</h3>
-                <p className="text-gray-300 mb-6">
-                    Contact our sales team for enterprise solutions and custom pricing
-                </p>
-                <button className="px-6 py-3 bg-white text-gray-900 font-bold rounded-lg hover:bg-gray-100 transition-colors">
-                    Contact Sales
-                </button>
-            </div>
         </div>
     );
 }

@@ -1,72 +1,54 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { CreditCard, Building2, Check, ArrowLeft, Shield, Lock } from 'lucide-react';
+import { CreditCard, Building2, Check, ArrowLeft, Shield, Lock, Loader2 } from 'lucide-react';
+import usePlanStore, { Plan } from '@/store/usePlanStore';
 
-interface Plan {
-    id: string;
-    name: string;
-    price: number;
-    period: 'month' | 'year';
-    description: string;
-    features: string[];
-}
-
-const plans: Record<string, Plan> = {
-    'pro': {
-        id: 'pro',
-        name: 'Professional',
-        price: 299000,
-        period: 'month',
-        description: 'For growing businesses',
-        features: [
-            'AI Sentiment Analysis',
-            'Topic & Keyword Analysis',
-            'Branch Comparison Analytics',
-            'Custom widgets (unlimited)',
-            'Remove Trustify branding',
-            'API Access',
-            'Priority email support'
-        ]
-    },
-    'premium': {
-        id: 'premium',
-        name: 'Premium',
-        price: 599000,
-        period: 'month',
-        description: 'For enterprise businesses',
-        features: [
-            'Competitor Analysis',
-            'White-label solution',
-            'Custom campaigns',
-            'Dedicated account manager',
-            'Strategic consulting',
-            'Custom integrations',
-            '24/7 Priority support'
-        ]
-    }
-};
-
-export default function CheckoutPage() {
+function CheckoutContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const planId = searchParams.get('plan') || 'pro';
+    const planId = searchParams.get('plan');
     const billingPeriod = (searchParams.get('period') || 'month') as 'month' | 'year';
 
+    const { plans, isLoading, fetchPlans } = usePlanStore();
     const [paymentMethod, setPaymentMethod] = useState<'card' | 'bank'>('card');
     const [isProcessing, setIsProcessing] = useState(false);
     const [agreedToTerms, setAgreedToTerms] = useState(false);
+    const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
 
-    const plan = plans[planId];
+    // Fetch plans on mount
+    useEffect(() => {
+        fetchPlans();
+    }, [fetchPlans]);
 
-    if (!plan) {
-        router.push('/subscription');
-        return null;
+    // Find selected plan when plans are loaded
+    useEffect(() => {
+        if (plans.length > 0 && planId) {
+            const found = plans.find(p => p.id.toString() === planId);
+            if (found) {
+                setSelectedPlan(found);
+            } else {
+                // Plan not found, redirect
+                router.push('/subscription');
+            }
+        }
+    }, [plans, planId, router]);
+
+    // Loading state
+    if (isLoading || !selectedPlan) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="flex items-center gap-3">
+                    <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                    <span className="text-gray-600">Loading checkout...</span>
+                </div>
+            </div>
+        );
     }
 
-    const finalPrice = billingPeriod === 'year' ? plan.price * 10 : plan.price;
-    const savings = billingPeriod === 'year' ? plan.price * 2 : 0;
+    const finalPrice = billingPeriod === 'year' ? selectedPlan.price * 10 : selectedPlan.price;
+    const savings = billingPeriod === 'year' ? selectedPlan.price * 2 : 0;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -84,6 +66,11 @@ export default function CheckoutPage() {
             setIsProcessing(false);
             router.push('/checkout/success');
         }, 2000);
+    };
+
+    const formatPrice = (price: number) => {
+        if (price === 0) return 'Free';
+        return `${price.toLocaleString('vi-VN')}₫`;
     };
 
     return (
@@ -118,8 +105,8 @@ export default function CheckoutPage() {
                                     type="button"
                                     onClick={() => setPaymentMethod('card')}
                                     className={`p-4 border-2 rounded-lg transition-all ${paymentMethod === 'card'
-                                            ? 'border-blue-600 bg-blue-50'
-                                            : 'border-gray-200 hover:border-gray-300'
+                                        ? 'border-blue-600 bg-blue-50'
+                                        : 'border-gray-200 hover:border-gray-300'
                                         }`}
                                 >
                                     <CreditCard className={`w-6 h-6 mx-auto mb-2 ${paymentMethod === 'card' ? 'text-blue-600' : 'text-gray-600'
@@ -134,8 +121,8 @@ export default function CheckoutPage() {
                                     type="button"
                                     onClick={() => setPaymentMethod('bank')}
                                     className={`p-4 border-2 rounded-lg transition-all ${paymentMethod === 'bank'
-                                            ? 'border-blue-600 bg-blue-50'
-                                            : 'border-gray-200 hover:border-gray-300'
+                                        ? 'border-blue-600 bg-blue-50'
+                                        : 'border-gray-200 hover:border-gray-300'
                                         }`}
                                 >
                                     <Building2 className={`w-6 h-6 mx-auto mb-2 ${paymentMethod === 'bank' ? 'text-blue-600' : 'text-gray-600'
@@ -206,7 +193,7 @@ export default function CheckoutPage() {
                                             <p><span className="font-medium">Bank:</span> Vietcombank</p>
                                             <p><span className="font-medium">Account Number:</span> 1234567890</p>
                                             <p><span className="font-medium">Account Name:</span> TRUSTIFY VIETNAM</p>
-                                            <p><span className="font-medium">Transfer Content:</span> TRUSTIFY-{plan.id.toUpperCase()}-[YOUR_EMAIL]</p>
+                                            <p><span className="font-medium">Transfer Content:</span> TRUSTIFY-{selectedPlan.name.toUpperCase()}-[YOUR_EMAIL]</p>
                                         </div>
                                         <p className="text-xs text-gray-600 mt-3">
                                             Your subscription will be activated after we confirm your payment (usually within 24 hours)
@@ -263,8 +250,8 @@ export default function CheckoutPage() {
                             <div className="mb-6">
                                 <div className="flex items-start justify-between mb-2">
                                     <div>
-                                        <h3 className="font-semibold text-gray-900">{plan.name} Plan</h3>
-                                        <p className="text-sm text-gray-600">{plan.description}</p>
+                                        <h3 className="font-semibold text-gray-900">{selectedPlan.name} Plan</h3>
+                                        <p className="text-sm text-gray-600">{selectedPlan.description}</p>
                                     </div>
                                 </div>
 
@@ -280,16 +267,22 @@ export default function CheckoutPage() {
                             <div className="mb-6">
                                 <h4 className="font-semibold text-gray-900 mb-3">Included Features</h4>
                                 <div className="space-y-2">
-                                    {plan.features.slice(0, 5).map((feature, index) => (
-                                        <div key={index} className="flex items-start gap-2">
-                                            <Check className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                                            <span className="text-sm text-gray-700">{feature}</span>
-                                        </div>
-                                    ))}
-                                    {plan.features.length > 5 && (
-                                        <p className="text-sm text-blue-600 font-medium">
-                                            +{plan.features.length - 5} more features
-                                        </p>
+                                    {selectedPlan.features && selectedPlan.features.length > 0 ? (
+                                        <>
+                                            {selectedPlan.features.slice(0, 5).map((feature) => (
+                                                <div key={feature.id} className="flex items-start gap-2">
+                                                    <Check className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                                                    <span className="text-sm text-gray-700">{feature.name}</span>
+                                                </div>
+                                            ))}
+                                            {selectedPlan.features.length > 5 && (
+                                                <p className="text-sm text-blue-600 font-medium">
+                                                    +{selectedPlan.features.length - 5} more features
+                                                </p>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <p className="text-sm text-gray-500">No features listed</p>
                                     )}
                                 </div>
                             </div>
@@ -299,7 +292,7 @@ export default function CheckoutPage() {
                                 <div className="flex justify-between text-sm">
                                     <span className="text-gray-600">Subtotal</span>
                                     <span className="font-medium text-gray-900">
-                                        {plan.price.toLocaleString('vi-VN')}₫
+                                        {formatPrice(selectedPlan.price)}
                                     </span>
                                 </div>
 
@@ -308,7 +301,7 @@ export default function CheckoutPage() {
                                         <div className="flex justify-between text-sm">
                                             <span className="text-gray-600">Yearly discount (17%)</span>
                                             <span className="font-medium text-green-600">
-                                                -{savings.toLocaleString('vi-VN')}₫
+                                                -{formatPrice(savings)}
                                             </span>
                                         </div>
                                         <div className="flex justify-between text-sm">
@@ -321,7 +314,7 @@ export default function CheckoutPage() {
                                 <div className="border-t border-gray-200 pt-3 flex justify-between">
                                     <span className="font-bold text-gray-900">Total</span>
                                     <span className="font-bold text-2xl text-gray-900">
-                                        {finalPrice.toLocaleString('vi-VN')}₫
+                                        {formatPrice(finalPrice)}
                                     </span>
                                 </div>
 
@@ -347,5 +340,20 @@ export default function CheckoutPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function CheckoutPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="flex items-center gap-3">
+                    <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                    <span className="text-gray-600">Loading checkout...</span>
+                </div>
+            </div>
+        }>
+            <CheckoutContent />
+        </Suspense>
     );
 }
