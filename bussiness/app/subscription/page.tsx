@@ -141,7 +141,7 @@ export default function SubscriptionPage() {
                             <div
                                 key={plan.id}
                                 className={`relative bg-white rounded-xl shadow-sm border-2 p-6 transition-all flex flex-col ${isRecommended
-                                    ? 'border-green-500 shadow-xl md:scale-105 z-10'
+                                    ? 'border-green-500 shadow-xl md:scale-105'
                                     : isCurrentPlan
                                         ? 'border-blue-500'
                                         : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
