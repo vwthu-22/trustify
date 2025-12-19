@@ -4,15 +4,13 @@ import { useEffect, useState, Suspense, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircle, XCircle, Loader2, ArrowRight, RefreshCw, Clock } from 'lucide-react';
 import usePaymentStore from '@/store/usePaymentStore';
-import { useFeatureAccess } from '@/hooks/useFeatureAccess';
 
 function VNPayReturnContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    // Stores & Hooks
+    // Store
     const { getPaymentDetail, currentPayment, isLoading, clearCurrentPayment } = usePaymentStore();
-    const { refreshProfile } = useFeatureAccess();
 
     // Local state
     const [status, setStatus] = useState<'loading' | 'success' | 'failed' | 'pending'>('loading');
@@ -39,8 +37,6 @@ function VNPayReturnContent() {
             switch (detail.status) {
                 case 'SUCCESS':
                     setStatus('success');
-                    // Refresh profile để cập nhật plan/features mới
-                    await refreshProfile();
                     // Clear localStorage
                     clearCurrentPayment();
                     break;
@@ -57,7 +53,7 @@ function VNPayReturnContent() {
             // Nếu chưa có data, có thể IPN chưa xử lý xong
             setStatus('pending');
         }
-    }, [txnRef, getPaymentDetail, clearCurrentPayment, refreshProfile]);
+    }, [txnRef, getPaymentDetail, clearCurrentPayment]);
 
     // Initial verification
     useEffect(() => {
