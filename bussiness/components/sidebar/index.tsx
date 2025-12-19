@@ -32,76 +32,76 @@ export default function Sidebar() {
             href: '/',
             label: t('dashboard'),
             icon: Home,
-            title: 'Performance Dashboard'
+            title: t('titleDashboard')
         },
         {
             href: '/connect',
             label: t('connect'),
             icon: Share2,
-            title: 'Connect website'
+            title: t('titleConnect')
         },
         {
             href: '/reviews',
             label: t('reviews'),
             icon: MessageSquare,
-            title: 'Manage Reviews'
+            title: t('titleReviews')
         },
         {
             href: '/analytics',
             label: t('analytics'),
             icon: BarChart3,
-            title: 'Analytics Dashboard',
+            title: t('titleAnalytics'),
             requiredFeature: 'Advanced Analytics',
             children: [
-                { href: '/analytics', label: 'Overview', icon: TrendingUp, title: 'Analytics Overview', requiredFeature: 'Advanced Analytics' },
-                { href: '/analytics/sentiment', label: 'Sentiment Analysis', icon: BarChart3, title: 'Sentiment Analysis', requiredFeature: 'Advanced Analytics' },
-                { href: '/analytics/branches', label: 'Branch Comparison', icon: Building2, title: 'Branch Comparison', requiredFeature: 'Advanced Analytics' }
+                { href: '/analytics', label: t('labelOverview'), icon: TrendingUp, title: t('titleOverview'), requiredFeature: 'Advanced Analytics' },
+                { href: '/analytics/sentiment', label: t('labelSentiment'), icon: BarChart3, title: t('titleSentiment'), requiredFeature: 'Advanced Analytics' },
+                { href: '/analytics/branches', label: t('labelBranches'), icon: Building2, title: t('titleBranches'), requiredFeature: 'Advanced Analytics' }
             ]
         },
         {
             href: '/invitations',
             label: t('getReviews'),
             icon: Send,
-            title: 'Review Invitations',
+            title: t('titleInvitations'),
             requiredFeature: 'Team Invitations',
             children: [
-                { href: '/invitations/send', label: 'Send invitations', icon: Mail, title: 'Send Invitations', requiredFeature: 'Team Invitations' },
-                { href: '/invitations/campaigns', label: 'Campaigns', icon: Send, title: 'Campaigns', requiredFeature: 'Team Invitations' },
-                { href: '/invitations/templates', label: 'Email templates', icon: Mail, title: 'Templates', requiredFeature: 'Team Invitations' }
+                { href: '/invitations/send', label: t('labelSendInvitations'), icon: Mail, title: t('titleSendInvitations'), requiredFeature: 'Team Invitations' },
+                { href: '/invitations/campaigns', label: t('labelCampaigns'), icon: Send, title: t('titleCampaigns'), requiredFeature: 'Team Invitations' },
+                { href: '/invitations/templates', label: t('labelTemplates'), icon: Mail, title: t('titleTemplates'), requiredFeature: 'Team Invitations' }
             ]
         },
         {
             href: '/integrations',
             label: t('integrations'),
             icon: Puzzle,
-            title: 'Integrations & API',
+            title: t('titleIntegrations'),
             requiredFeature: 'Integrations'
         },
         {
             href: '/manage',
             label: t('manageReviews'),
             icon: Settings,
-            title: 'Review Management',
+            title: t('titleManage'),
             requiredFeature: 'Review Management'
         },
         {
             href: '/verification',
             label: t('verification'),
             icon: ShieldCheck,
-            title: 'Business Verification',
+            title: t('titleVerification'),
             badge: 'Verify'
         },
         {
             href: '/subscription',
             label: t('subscription'),
             icon: Crown,
-            title: 'Subscription Plans'
+            title: t('titleSubscription')
         },
         {
             href: '/settings',
             label: t('settings'),
             icon: Settings,
-            title: 'Account Settings'
+            title: t('titleSettings')
         }
     ];
 
