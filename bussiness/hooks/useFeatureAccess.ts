@@ -98,6 +98,7 @@ export function useFeatureAccess() {
         hasAllFeatures,
         planName: profile?.plan?.name || 'Free',
         planId: profile?.plan?.id,
+        refreshProfile: loadProfile, // Add ability to refresh profile
     };
 }
 
