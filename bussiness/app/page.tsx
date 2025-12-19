@@ -3,13 +3,6 @@
 import { Star, MessageSquare, TrendingUp, Clock, Package, MapPin } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-const kpiData = [
-    { title: 'Average Rating', value: '4.5', change: '+0.3', icon: Star, color: 'text-yellow-500', bgColor: 'bg-yellow-50' },
-    { title: 'Total Reviews', value: '1,234', change: '+89', icon: MessageSquare, color: 'text-blue-500', bgColor: 'bg-blue-50' },
-    { title: 'Growth Rate', value: '+15%', change: 'vs last month', icon: TrendingUp, color: 'text-green-500', bgColor: 'bg-green-50' },
-    { title: 'Avg Response Time', value: '2.5h', change: '-0.5h', icon: Clock, color: 'text-purple-500', bgColor: 'bg-purple-50' }
-];
-
 const starDistribution = [
     { stars: 5, count: 740, percentage: 60 },
     { stars: 4, count: 309, percentage: 25 },
@@ -38,6 +31,14 @@ const topicsNegative = [
 
 export default function DashboardPage() {
     const t = useTranslations('dashboard');
+
+    const kpiData = [
+        { titleKey: 'averageRating', value: '4.5', change: '+0.3', icon: Star, color: 'text-yellow-500', bgColor: 'bg-yellow-50' },
+        { titleKey: 'totalReviews', value: '1,234', change: '+89', icon: MessageSquare, color: 'text-blue-500', bgColor: 'bg-blue-50' },
+        { titleKey: 'growthRate', value: '+15%', changeKey: 'vsLastMonth', icon: TrendingUp, color: 'text-green-500', bgColor: 'bg-green-50' },
+        { titleKey: 'avgResponseTime', value: '2.5h', change: '-0.5h', icon: Clock, color: 'text-purple-500', bgColor: 'bg-purple-50' }
+    ];
+
     return (
         <div className="space-y-8">
             {/* KPI Cards */}
@@ -48,9 +49,9 @@ export default function DashboardPage() {
                         <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-shadow">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-sm font-medium text-gray-600">{kpi.title}</p>
+                                    <p className="text-sm font-medium text-gray-600">{t(kpi.titleKey)}</p>
                                     <p className="text-3xl font-bold text-gray-900 mt-2">{kpi.value}</p>
-                                    <p className="text-sm text-green-600 mt-1">{kpi.change}</p>
+                                    <p className="text-sm text-green-600 mt-1">{kpi.changeKey ? t(kpi.changeKey) : kpi.change}</p>
                                 </div>
                                 <div className={`p-3 rounded-full ${kpi.bgColor}`}>
                                     <Icon className={`h-8 w-8 ${kpi.color}`} />
@@ -163,42 +164,6 @@ export default function DashboardPage() {
                             </div>
                         ))}
                     </div>
-                </div>
-            </div>
-
-            {/* Recent Reviews */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6">{t('recentNeedResponse')}</h2>
-                <div className="space-y-4">
-                    {recentReviews.map((review) => (
-                        <div key={review.id} className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
-                            <div className="flex items-start justify-between">
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <div className="flex">
-                                            {[...Array(5)].map((_, i) => (
-                                                <Star key={i} className={`h-4 w-4 ${i < review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
-                                            ))}
-                                        </div>
-                                        <span className="font-semibold text-gray-900">{review.author}</span>
-                                        <span className="text-sm text-gray-500">• {review.time}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2 mb-2 text-sm text-gray-600">
-                                        <MapPin className="h-4 w-4" />
-                                        <span>{review.branch}</span>
-                                    </div>
-                                    <p className="text-gray-700 mb-3">{review.text}</p>
-                                    <span className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${review.sentiment === 'positive' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
-                                        }`}>
-                                        {review.sentiment === 'positive' ? 'Positive' : 'Neutral'}
-                                    </span>
-                                </div>
-                                <button className="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors">
-                                    {t('reply')}
-                                </button>
-                            </div>
-                        </div>
-                    ))}
                 </div>
             </div>
         </div>

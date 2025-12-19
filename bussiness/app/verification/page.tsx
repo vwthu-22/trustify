@@ -88,29 +88,29 @@ export default function VerificationPage() {
                     <div className="flex items-start gap-3">
                         <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
                         <div>
-                            <p className="font-medium text-gray-900">Build Trust</p>
-                            <p className="text-sm text-gray-600">Show customers you're a legitimate business</p>
+                            <p className="font-medium text-gray-900">{t('buildTrust')}</p>
+                            <p className="text-sm text-gray-600">{t('buildTrustDesc')}</p>
                         </div>
                     </div>
                     <div className="flex items-start gap-3">
                         <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
                         <div>
-                            <p className="font-medium text-gray-900">Verified Badge</p>
-                            <p className="text-sm text-gray-600">Get a verified badge on your profile</p>
+                            <p className="font-medium text-gray-900">{t('verifiedBadge')}</p>
+                            <p className="text-sm text-gray-600">{t('verifiedBadgeDesc')}</p>
                         </div>
                     </div>
                     <div className="flex items-start gap-3">
                         <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
                         <div>
-                            <p className="font-medium text-gray-900">Higher Rankings</p>
-                            <p className="text-sm text-gray-600">Verified businesses rank higher in search</p>
+                            <p className="font-medium text-gray-900">{t('higherRankings')}</p>
+                            <p className="text-sm text-gray-600">{t('higherRankingsDesc')}</p>
                         </div>
                     </div>
                     <div className="flex items-start gap-3">
                         <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
                         <div>
-                            <p className="font-medium text-gray-900">More Reviews</p>
-                            <p className="text-sm text-gray-600">Customers trust verified businesses more</p>
+                            <p className="font-medium text-gray-900">{t('moreReviews')}</p>
+                            <p className="text-sm text-gray-600">{t('moreReviewsDesc')}</p>
                         </div>
                     </div>
                 </div>
@@ -118,7 +118,7 @@ export default function VerificationPage() {
 
             {/* Verification Methods */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-6">Choose Verification Method</h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-6">{t('chooseMethod')}</h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <button
@@ -128,10 +128,10 @@ export default function VerificationPage() {
                             : 'border-gray-200 hover:border-gray-300'
                             }`}
                     >
-                        <Mail className="h-8 w-8 text-blue-600 mb-3" />
-                        <h4 className="font-bold text-gray-900 mb-2">Company Email Verification</h4>
-                        <p className="text-sm text-gray-600">Verify using your company domain email</p>
-                        <p className="text-xs text-gray-500 mt-2">⚡ Fastest method (instant)</p>
+
+                        <h4 className="font-bold text-gray-900 mb-2">{t('emailVerification')}</h4>
+                        <p className="text-sm text-gray-600">{t('emailVerificationDesc')}</p>
+                        <p className="text-xs text-gray-500 mt-2">⚡ {t('emailFastest')}</p>
                     </button>
 
                     <button
@@ -141,10 +141,10 @@ export default function VerificationPage() {
                             : 'border-gray-200 hover:border-gray-300'
                             }`}
                     >
-                        <FileText className="h-8 w-8 text-blue-600 mb-3" />
-                        <h4 className="font-bold text-gray-900 mb-2">Document Verification</h4>
-                        <p className="text-sm text-gray-600">Upload business license or tax documents</p>
-                        <p className="text-xs text-gray-500 mt-2">⏱️ 2-3 business days</p>
+
+                        <h4 className="font-bold text-gray-900 mb-2">{t('documentVerification')}</h4>
+                        <p className="text-sm text-gray-600">{t('documentVerificationDesc')}</p>
+                        <p className="text-xs text-gray-500 mt-2">⏱️ {t('documentTime')}</p>
                     </button>
                 </div>
 
@@ -153,24 +153,23 @@ export default function VerificationPage() {
                     <div className="space-y-4">
                         <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
                             <p className="text-sm text-blue-900">
-                                <strong>Note:</strong> You must have access to an email address with your company domain
-                                (e.g., yourname@yourcompany.com). Free email providers like Gmail, Yahoo are not accepted.
+                                <strong>Note:</strong> {t('emailNote')}
                             </p>
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Company Email Address <span className="text-red-500">*</span>
+                                {t('companyEmailAddress')} <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="email"
-                                placeholder="yourname@company.com"
+                                placeholder={t('emailPlaceholder')}
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 value={companyEmail}
                                 onChange={(e) => setCompanyEmail(e.target.value)}
                             />
                             <p className="text-xs text-gray-500 mt-1">
-                                We'll send a verification link to this email
+                                {t('sendVerificationLink')}
                             </p>
                         </div>
 
@@ -179,7 +178,7 @@ export default function VerificationPage() {
                             disabled={!companyEmail || status === 'pending'}
                             className="w-full px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Send Verification Email
+                            {t('sendVerificationEmail')}
                         </button>
                     </div>
                 )}
@@ -189,22 +188,22 @@ export default function VerificationPage() {
                     <div className="space-y-4">
                         <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
                             <p className="text-sm text-blue-900 mb-2">
-                                <strong>Accepted Documents:</strong>
+                                <strong>{t('acceptedDocuments')}:</strong>
                             </p>
                             <ul className="text-sm text-blue-800 list-disc list-inside space-y-1">
-                                <li>Business License (Giấy phép kinh doanh)</li>
-                                <li>Tax Registration Certificate (Giấy đăng ký thuế)</li>
-                                <li>Company Registration Certificate</li>
-                                <li>Recent Utility Bill with company name</li>
-                                <li>Bank Statement with company name</li>
+                                <li>{t('businessLicense')}</li>
+                                <li>{t('taxCertificate')}</li>
+                                <li>{t('companyCertificate')}</li>
+                                <li>{t('utilityBill')}</li>
+                                <li>{t('bankStatement')}</li>
                             </ul>
                         </div>
 
                         <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-500 transition-colors">
                             <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                            <p className="text-gray-700 font-medium mb-2">Upload Documents</p>
+                            <p className="text-gray-700 font-medium mb-2">{t('uploadDocuments')}</p>
                             <p className="text-sm text-gray-500 mb-4">
-                                Drag and drop or click to browse (PDF, JPG, PNG)
+                                {t('dragDrop')}
                             </p>
                             <input
                                 type="file"
@@ -218,13 +217,13 @@ export default function VerificationPage() {
                                 htmlFor="document-upload"
                                 className="inline-block px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 cursor-pointer transition-colors"
                             >
-                                Choose Files
+                                {t('chooseFiles')}
                             </label>
                         </div>
 
                         {uploadedFiles.length > 0 && (
                             <div className="space-y-2">
-                                <p className="text-sm font-medium text-gray-700">Uploaded Files:</p>
+                                <p className="text-sm font-medium text-gray-700">{t('uploadedFiles')}:</p>
                                 {uploadedFiles.map((file, index) => (
                                     <div key={index} className="flex items-center gap-2 p-3 bg-green-50 rounded-lg border border-green-200">
                                         <CheckCircle className="h-5 w-5 text-green-600" />
@@ -239,11 +238,11 @@ export default function VerificationPage() {
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Additional Notes (Optional)
+                                {t('additionalNotes')}
                             </label>
                             <textarea
                                 rows={3}
-                                placeholder="Any additional information about your business..."
+                                placeholder={t('additionalPlaceholder')}
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                         </div>
@@ -253,7 +252,7 @@ export default function VerificationPage() {
                             disabled={uploadedFiles.length === 0 || status === 'pending'}
                             className="w-full px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Submit for Verification
+                            {t('submitVerification')}
                         </button>
                     </div>
                 )}
@@ -261,24 +260,24 @@ export default function VerificationPage() {
 
             {/* FAQ */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">Frequently Asked Questions</h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-4">{t('faq')}</h3>
                 <div className="space-y-4">
                     <div>
-                        <h4 className="font-semibold text-gray-900 mb-1">How long does verification take?</h4>
+                        <h4 className="font-semibold text-gray-900 mb-1">{t('faqTimeTitle')}</h4>
                         <p className="text-sm text-gray-600">
-                            Email verification is instant. Document verification takes 2-3 business days.
+                            {t('faqTimeAnswer')}
                         </p>
                     </div>
                     <div>
-                        <h4 className="font-semibold text-gray-900 mb-1">What if my verification is rejected?</h4>
+                        <h4 className="font-semibold text-gray-900 mb-1">{t('faqRejectedTitle')}</h4>
                         <p className="text-sm text-gray-600">
-                            You can resubmit with different documents. We'll provide feedback on why it was rejected.
+                            {t('faqRejectedAnswer')}
                         </p>
                     </div>
                     <div>
-                        <h4 className="font-semibold text-gray-900 mb-1">Is verification required?</h4>
+                        <h4 className="font-semibold text-gray-900 mb-1">{t('faqRequiredTitle')}</h4>
                         <p className="text-sm text-gray-600">
-                            No, but verified businesses get more trust and visibility on our platform.
+                            {t('faqRequiredAnswer')}
                         </p>
                     </div>
                 </div>

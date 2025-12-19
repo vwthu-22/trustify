@@ -108,17 +108,16 @@ export default function SettingsPage() {
     };
 
     const tabs = [
-        { id: 'profile', name: 'Profile', icon: User },
-        { id: 'company', name: 'Company', icon: Building2 },
-        // { id: 'notifications', name: 'Notifications', icon: Bell },
-        { id: 'security', name: 'Security', icon: Lock }
+        { id: 'profile', nameKey: 'profile', icon: User },
+        { id: 'company', nameKey: 'companyInfo', icon: Building2 },
+        { id: 'security', nameKey: 'security', icon: Lock }
     ];
 
     if (isLoading) {
         return (
             <div className="flex items-center justify-center py-12">
                 <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-                <span className="ml-2 text-gray-600">Loading settings...</span>
+                <span className="ml-2 text-gray-600">{t('loadingSettings')}</span>
             </div>
         );
     }
@@ -127,8 +126,8 @@ export default function SettingsPage() {
         <div className="space-y-8">
             {/* Header */}
             <div>
-                <h2 className="text-2xl font-bold text-gray-900">Account Settings</h2>
-                <p className="text-gray-500 mt-1">Manage your account preferences and settings</p>
+                <h2 className="text-2xl font-bold text-gray-900">{t('title')}</h2>
+                <p className="text-gray-500 mt-1">{t('subtitle')}</p>
             </div>
 
             {/* Save Success Banner */}
@@ -136,7 +135,7 @@ export default function SettingsPage() {
                 <div className="bg-green-50 border border-green-200 rounded-xl p-4">
                     <div className="flex items-center gap-2 text-green-700">
                         <CheckCircle className="h-5 w-5" />
-                        <span className="font-medium">Settings saved successfully!</span>
+                        <span className="font-medium">{t('saved')}</span>
                     </div>
                 </div>
             )}
@@ -157,7 +156,7 @@ export default function SettingsPage() {
                                         }`}
                                 >
                                     <Icon className="h-5 w-5" />
-                                    <span className="font-medium">{tab.name}</span>
+                                    <span className="font-medium">{t(tab.nameKey)}</span>
                                 </button>
                             );
                         })}
@@ -171,24 +170,24 @@ export default function SettingsPage() {
                         {activeTab === 'profile' && (
                             <div className="space-y-6">
                                 <div>
-                                    <h3 className="text-lg font-bold text-gray-900 mb-4">Profile Information</h3>
+                                    <h3 className="text-lg font-bold text-gray-900 mb-4">{t('profileInfo')}</h3>
                                     <div className="space-y-4">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Full Name
+                                                {t('fullName')}
                                             </label>
                                             <input
                                                 type="text"
                                                 value={profileData.name}
                                                 onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
                                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                placeholder="Enter your name"
+                                                placeholder={t('enterName')}
                                             />
                                         </div>
 
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Email Address
+                                                {t('email')}
                                             </label>
                                             <input
                                                 type="email"
@@ -197,32 +196,32 @@ export default function SettingsPage() {
                                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
                                                 disabled
                                             />
-                                            <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+                                            <p className="text-xs text-gray-500 mt-1">{t('emailCannotChange')}</p>
                                         </div>
 
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Phone Number
+                                                {t('phone')}
                                             </label>
                                             <input
                                                 type="tel"
                                                 value={profileData.phone}
                                                 onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
                                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                placeholder="Enter phone number"
+                                                placeholder={t('enterPhone')}
                                             />
                                         </div>
 
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Position
+                                                {t('position')}
                                             </label>
                                             <input
                                                 type="text"
                                                 value={profileData.position}
                                                 onChange={(e) => setProfileData({ ...profileData, position: e.target.value })}
                                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                placeholder="e.g. CEO, Manager"
+                                                placeholder={t('enterPosition')}
                                             />
                                         </div>
                                     </div>
@@ -234,57 +233,57 @@ export default function SettingsPage() {
                         {activeTab === 'company' && (
                             <div className="space-y-6">
                                 <div>
-                                    <h3 className="text-lg font-bold text-gray-900 mb-4">Company Information</h3>
+                                    <h3 className="text-lg font-bold text-gray-900 mb-4">{t('companyInformation')}</h3>
                                     <div className="space-y-4">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Company Name
+                                                {t('companyName')}
                                             </label>
                                             <input
                                                 type="text"
                                                 value={companyData.name}
                                                 onChange={(e) => setCompanyData({ ...companyData, name: e.target.value })}
                                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                placeholder="Enter company name"
+                                                placeholder={t('enterCompanyName')}
                                             />
                                         </div>
 
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Detail
+                                                {t('detail')}
                                             </label>
                                             <input
                                                 type="text"
                                                 value={companyData.detail}
                                                 onChange={(e) => setCompanyData({ ...companyData, detail: e.target.value })}
                                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                placeholder="Enter detail"
+                                                placeholder={t('enterDetail')}
                                             />
                                         </div>
 
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Business Address
+                                                {t('address')}
                                             </label>
                                             <textarea
                                                 rows={3}
                                                 value={companyData.address}
                                                 onChange={(e) => setCompanyData({ ...companyData, address: e.target.value })}
                                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                placeholder="Enter business address"
+                                                placeholder={t('enterAddress')}
                                             />
                                         </div>
 
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Website
+                                                {t('website')}
                                             </label>
                                             <input
                                                 type="url"
                                                 value={companyData.website}
                                                 onChange={(e) => setCompanyData({ ...companyData, website: e.target.value })}
                                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                placeholder="https://yourcompany.com"
+                                                placeholder={t('enterWebsite')}
                                             />
                                         </div>
 
@@ -428,25 +427,25 @@ export default function SettingsPage() {
                             <div className="space-y-6">
 
                                 <div className="pt-6 border-t border-gray-200">
-                                    <h3 className="text-lg font-bold text-gray-900 mb-4">Two-Factor Authentication</h3>
+                                    <h3 className="text-lg font-bold text-gray-900 mb-4">{t('twoFactorAuth')}</h3>
                                     <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
                                         <p className="text-sm text-gray-700 mb-4">
-                                            Add an extra layer of security to your account by enabling two-factor authentication.
+                                            {t('twoFactorDesc')}
                                         </p>
                                         <button className="px-6 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors">
-                                            Enable 2FA
+                                            {t('enable2FA')}
                                         </button>
                                     </div>
                                 </div>
 
                                 <div className="pt-6 border-t border-gray-200">
-                                    <h3 className="text-lg font-bold text-gray-900 mb-4">Danger Zone</h3>
+                                    <h3 className="text-lg font-bold text-gray-900 mb-4">{t('dangerZone')}</h3>
                                     <div className="p-4 bg-red-50 rounded-lg border border-red-200">
                                         <p className="text-sm text-red-700 mb-4">
-                                            Once you delete your account, there is no going back. Please be certain.
+                                            {t('dangerZoneDesc')}
                                         </p>
                                         <button className="px-6 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors">
-                                            Delete Account
+                                            {t('deleteAccount')}
                                         </button>
                                     </div>
                                 </div>
@@ -463,12 +462,12 @@ export default function SettingsPage() {
                                 {saving ? (
                                     <>
                                         <Loader2 className="h-4 w-4 animate-spin" />
-                                        Saving...
+                                        {t('saving')}
                                     </>
                                 ) : (
                                     <>
                                         <Save className="h-4 w-4" />
-                                        Save Changes
+                                        {t('saveChanges')}
                                     </>
                                 )}
                             </button>
