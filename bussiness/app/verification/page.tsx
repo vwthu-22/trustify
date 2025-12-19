@@ -39,10 +39,10 @@ export default function VerificationPage() {
     return (
         <div className="space-y-8">
             {/* Header */}
-            <div>
+            {/* <div>
                 <h2 className="text-2xl font-bold text-gray-900">{t('title')}</h2>
                 <p className="text-gray-500 mt-1">{t('subtitle')}</p>
-            </div>
+            </div> */}
 
             {/* Status Banner */}
             {status === 'verified' && (

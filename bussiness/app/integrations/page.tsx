@@ -110,10 +110,10 @@ export default function IntegrationsPage() {
     return (
         <div className="space-y-8">
             {/* Header */}
-            <div>
+            {/* <div>
                 <h2 className="text-2xl font-bold text-gray-900">{t('title')}</h2>
                 <p className="text-gray-500 mt-1">{t('subtitle')}</p>
-            </div>
+            </div> */}
 
             {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

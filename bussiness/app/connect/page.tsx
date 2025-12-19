@@ -30,12 +30,7 @@ export default function ConnectPage() {
 
     return (
         <div className="space-y-8">
-            {/* Header */}
-            <div>
-                <h2 className="text-2xl font-bold text-gray-900">{t('title')}</h2>
-                <p className="text-gray-500 mt-1">{t('subtitle')}</p>
-            </div>
-
+            
             {/* Website URL Input */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h3 className="text-lg font-bold text-gray-900 mb-4">{t('websiteInfo')}</h3>

@@ -112,7 +112,7 @@ export default function BusinessReviewDashboard() {
     const renderAllReviewsPage = () => (
         <div className="space-y-6">
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="bg-white rounded-lg shadow p-6">
                     <div className="flex items-center justify-between">
                         <div>
@@ -146,7 +146,7 @@ export default function BusinessReviewDashboard() {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
 
             {/* Filter Bar */}
             <div className="bg-white rounded-lg shadow p-4">
