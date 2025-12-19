@@ -99,7 +99,8 @@ function CheckoutContent() {
             const data = await response.json();
             console.log('VNPay create payment response:', data);
 
-            if (data.status === 'SUCCESS' && data.paymentUrl) {
+            // Check for success - API may return 'OK' or 'SUCCESS'
+            if ((data.status === 'SUCCESS' || data.status === 'OK') && data.paymentUrl) {
                 // Store txnRef for later verification
                 localStorage.setItem('vnpay_txnRef', data.txnRef);
                 localStorage.setItem('vnpay_planId', selectedPlan.id.toString());
@@ -179,8 +180,8 @@ function CheckoutContent() {
                                                 type="button"
                                                 onClick={() => setSelectedBankCode(bank.code)}
                                                 className={`p-4 border-2 rounded-lg text-left transition-all ${selectedBankCode === bank.code
-                                                        ? 'border-blue-600 bg-blue-50'
-                                                        : 'border-gray-200 hover:border-gray-300'
+                                                    ? 'border-blue-600 bg-blue-50'
+                                                    : 'border-gray-200 hover:border-gray-300'
                                                     }`}
                                             >
                                                 <div className="flex items-center gap-3">
