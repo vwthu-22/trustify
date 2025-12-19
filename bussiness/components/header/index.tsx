@@ -6,6 +6,7 @@ import {
 
 import { usePathname, useRouter } from 'next/navigation';
 import { useCompanyStore } from '@/store/useCompanyStore';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 // Đồng bộ menuItems với sidebar
 const getPageTitle = (pathname: string): string => {
@@ -93,6 +94,9 @@ export default function Header() {
             </h1>
 
             <div className="flex items-center gap-3">
+                {/* Language Switcher */}
+                <LanguageSwitcher />
+
                 {/* Help Center Button */}
                 <div ref={helpDropdownRef} className="relative">
                     <button

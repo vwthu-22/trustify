@@ -8,6 +8,7 @@ import {
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useFeatureAccess } from '@/hooks/useFeatureAccess';
+import { useTranslations } from 'next-intl';
 
 interface MenuItem {
     href: string;
@@ -24,6 +25,7 @@ export default function Sidebar() {
     const router = useRouter();
     const [expandedItems, setExpandedItems] = useState<string[]>(['/reviews', '/analytics']);
     const { hasFeature, planName, loading } = useFeatureAccess();
+    const t = useTranslations('sidebar');
 
     const menuItems: MenuItem[] = [
         {
