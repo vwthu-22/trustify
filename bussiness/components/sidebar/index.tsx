@@ -254,16 +254,16 @@ export default function Sidebar() {
                     >
                         <div className="flex items-center gap-2 mb-2">
                             <Crown className="w-5 h-5 text-yellow-400" />
-                            <span className="text-sm font-semibold text-white">Upgrade to PRO</span>
+                            <span className="text-sm font-semibold text-white">{t('upgradeToPro')}</span>
                         </div>
                         <p className="text-xs text-white/70">
-                            Unlock analytics & advanced features
+                            {t('unlockFeatures')}
                         </p>
                     </Link>
                 )}
                 <div className="mb-3">
                     <p className="text-sm text-white/80">
-                        Your plan: <span className="font-semibold text-white">{planName}</span>
+                        {t('yourPlan')} <span className="font-semibold text-white">{planName}</span>
                     </p>
                 </div>
             </div>

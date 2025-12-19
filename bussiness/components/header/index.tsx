@@ -7,36 +7,39 @@ import {
 import { usePathname, useRouter } from 'next/navigation';
 import { useCompanyStore } from '@/store/useCompanyStore';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
-
-// Đồng bộ menuItems với sidebar
-const getPageTitle = (pathname: string): string => {
-    const routes: { [key: string]: string } = {
-        '/': 'Performance Dashboard',
-        '/reviews': 'Reviews - All Reviews',
-        '/reviews/pending': 'Reviews - Pending Response',
-        '/reviews/replied': 'Reviews - Replied',
-        '/analytics': 'Analytics - Overview',
-        '/analytics/sentiment': 'Analytics - Sentiment Analysis',
-        '/analytics/topics': 'Analytics - Topics Analysis',
-        '/analytics/branches': 'Analytics - Branch Comparison',
-        '/invitations': 'Get Reviews - Overview',
-        '/invitations/send': 'Get Reviews - Send Invitations',
-        '/invitations/campaigns': 'Get Reviews - Campaigns',
-        '/invitations/templates': 'Get Reviews - Email Templates',
-        '/integrations': 'Integrations & API',
-        '/verification': 'Business Verification',
-        '/branches': 'Manage Branches',
-        '/subscription': 'Subscription Plans',
-        '/settings': 'Account Settings',
-        '/connect': 'Connect Website'
-    };
-
-    return routes[pathname] || 'Dashboard';
-};
+import { useTranslations } from 'next-intl';
 
 export default function Header() {
     const pathname = usePathname();
     const router = useRouter();
+    const t = useTranslations('header');
+
+    // Đồng bộ menuItems với sidebar
+    const getPageTitle = (path: string): string => {
+        const routes: { [key: string]: string } = {
+            '/': t('pageDashboard'),
+            '/reviews': t('pageReviewsAll'),
+            '/reviews/pending': t('pageReviewsPending'),
+            '/reviews/replied': t('pageReviewsReplied'),
+            '/analytics': t('pageAnalyticsOverview'),
+            '/analytics/sentiment': t('pageAnalyticsSentiment'),
+            '/analytics/topics': t('pageAnalyticsTopics'),
+            '/analytics/branches': t('pageAnalyticsBranches'),
+            '/invitations': t('pageInvitations'),
+            '/invitations/send': t('pageInvitationsSend'),
+            '/invitations/campaigns': t('pageInvitationsCampaigns'),
+            '/invitations/templates': t('pageInvitationsTemplates'),
+            '/integrations': t('pageIntegrations'),
+            '/verification': t('pageVerification'),
+            '/branches': t('pageBranches'),
+            '/subscription': t('pageSubscription'),
+            '/settings': t('pageSettings'),
+            '/connect': t('pageConnect')
+        };
+
+        return routes[path] || t('pageDashboard');
+    };
+
     const pageTitle = getPageTitle(pathname);
 
     const { company, fetchCompanyProfile, logout } = useCompanyStore();
@@ -100,7 +103,7 @@ export default function Header() {
                     <button
                         onClick={() => setShowHelpDropdown(!showHelpDropdown)}
                         className="relative p-2 bg-blue-100 hover:bg-blue-200 rounded-full transition"
-                        title="Help Center"
+                        title={t('helpCenter')}
                     >
                         <Info className="w-5 h-5 text-blue-600" />
                     </button>
@@ -109,7 +112,7 @@ export default function Header() {
                     {showHelpDropdown && (
                         <div className="absolute right-0 top-12 w-72 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
                             <div className="p-4 border-b border-gray-200">
-                                <h3 className="font-bold text-gray-900">Help Center</h3>
+                                <h3 className="font-bold text-gray-900">{t('helpCenter')}</h3>
                             </div>
                             <div className="p-2">
                                 <a href="#" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-lg">
@@ -117,8 +120,8 @@ export default function Header() {
                                         <Info className="w-4 h-4 text-blue-600" />
                                     </div>
                                     <div>
-                                        <p className="font-medium text-gray-900 text-sm">Documentation</p>
-                                        <p className="text-xs text-gray-600">Learn how to use Trustify</p>
+                                        <p className="font-medium text-gray-900 text-sm">{t('documentation')}</p>
+                                        <p className="text-xs text-gray-600">{t('documentationDesc')}</p>
                                     </div>
                                 </a>
                                 <a href="#" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-lg">
@@ -126,8 +129,8 @@ export default function Header() {
                                         <Mail className="w-4 h-4 text-green-600" />
                                     </div>
                                     <div>
-                                        <p className="font-medium text-gray-900 text-sm">Video Tutorials</p>
-                                        <p className="text-xs text-gray-600">Watch step-by-step guides</p>
+                                        <p className="font-medium text-gray-900 text-sm">{t('videoTutorials')}</p>
+                                        <p className="text-xs text-gray-600">{t('videoTutorialsDesc')}</p>
                                     </div>
                                 </a>
                                 <a href="#" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-lg">
@@ -135,8 +138,8 @@ export default function Header() {
                                         <Star className="w-4 h-4 text-purple-600" />
                                     </div>
                                     <div>
-                                        <p className="font-medium text-gray-900 text-sm">FAQ</p>
-                                        <p className="text-xs text-gray-600">Common questions answered</p>
+                                        <p className="font-medium text-gray-900 text-sm">{t('faq')}</p>
+                                        <p className="text-xs text-gray-600">{t('faqDesc')}</p>
                                     </div>
                                 </a>
                             </div>
@@ -148,7 +151,7 @@ export default function Header() {
                 <button
                     onClick={() => setShowSupportModal(!showSupportModal)}
                     className="relative p-2 bg-blue-100 hover:bg-blue-200 rounded-full transition"
-                    title="Contact Support"
+                    title={t('contactSupport')}
                 >
                     <Mail className="w-5 h-5 text-blue-600" />
                     {unreadMessages > 0 && (
@@ -163,7 +166,7 @@ export default function Header() {
                     <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex items-center justify-center z-50">
                         <div className="bg-white rounded-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
                             <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-                                <h3 className="text-xl font-bold text-gray-900">Contact Support</h3>
+                                <h3 className="text-xl font-bold text-gray-900">{t('contactSupport')}</h3>
                                 <button
                                     onClick={() => setShowSupportModal(false)}
                                     className="text-gray-500 hover:text-gray-700"
@@ -177,25 +180,25 @@ export default function Header() {
                                     {/* Support Type Selection */}
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Type of Request
+                                            {t('typeOfRequest')}
                                         </label>
                                         <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                            <option value="question">General Question</option>
-                                            <option value="technical">Technical Issue</option>
-                                            <option value="complaint">Complaint</option>
-                                            <option value="feature">Feature Request</option>
-                                            <option value="billing">Billing Issue</option>
+                                            <option value="question">{t('generalQuestion')}</option>
+                                            <option value="technical">{t('technicalIssue')}</option>
+                                            <option value="complaint">{t('complaint')}</option>
+                                            <option value="feature">{t('featureRequest')}</option>
+                                            <option value="billing">{t('billingIssue')}</option>
                                         </select>
                                     </div>
 
                                     {/* Subject */}
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Subject
+                                            {t('subject')}
                                         </label>
                                         <input
                                             type="text"
-                                            placeholder="Brief description of your issue"
+                                            placeholder={t('subjectPlaceholder')}
                                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                         />
                                     </div>
@@ -203,11 +206,11 @@ export default function Header() {
                                     {/* Message */}
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Message
+                                            {t('message')}
                                         </label>
                                         <textarea
                                             rows={6}
-                                            placeholder="Please describe your issue in detail..."
+                                            placeholder={t('messagePlaceholder')}
                                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                         />
                                     </div>
@@ -215,20 +218,20 @@ export default function Header() {
                                     {/* Priority */}
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Priority
+                                            {t('priority')}
                                         </label>
                                         <div className="flex gap-4">
                                             <label className="flex items-center gap-2">
                                                 <input type="radio" name="priority" value="low" defaultChecked className="w-4 h-4" />
-                                                <span className="text-sm text-gray-700">Low</span>
+                                                <span className="text-sm text-gray-700">{t('low')}</span>
                                             </label>
                                             <label className="flex items-center gap-2">
                                                 <input type="radio" name="priority" value="medium" className="w-4 h-4" />
-                                                <span className="text-sm text-gray-700">Medium</span>
+                                                <span className="text-sm text-gray-700">{t('medium')}</span>
                                             </label>
                                             <label className="flex items-center gap-2">
                                                 <input type="radio" name="priority" value="high" className="w-4 h-4" />
-                                                <span className="text-sm text-gray-700">High</span>
+                                                <span className="text-sm text-gray-700">{t('high')}</span>
                                             </label>
                                         </div>
                                     </div>
@@ -236,12 +239,12 @@ export default function Header() {
                                     {/* Response Time Info */}
                                     <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
                                         <p className="text-sm text-blue-900">
-                                            <strong>Expected Response Time:</strong>
+                                            <strong>{t('expectedResponse')}</strong>
                                         </p>
                                         <ul className="text-sm text-blue-800 mt-2 space-y-1">
-                                            <li>• Free Plan: Within 48 hours</li>
-                                            <li>• Pro Plan: Within 24 hours</li>
-                                            <li>• Premium Plan: Within 4 hours (Priority Support)</li>
+                                            <li>• {t('freePlanResponse')}</li>
+                                            <li>• {t('proPlanResponse')}</li>
+                                            <li>• {t('premiumPlanResponse')}</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -252,16 +255,16 @@ export default function Header() {
                                     onClick={() => setShowSupportModal(false)}
                                     className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                                 >
-                                    Cancel
+                                    {t('cancel')}
                                 </button>
                                 <button
                                     onClick={() => {
-                                        alert('Support request sent! We will respond within 24 hours.');
+                                        alert(t('messageSent'));
                                         setShowSupportModal(false);
                                     }}
                                     className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                                 >
-                                    Send Message
+                                    {t('sendMessage')}
                                 </button>
                             </div>
                         </div>
@@ -273,7 +276,7 @@ export default function Header() {
                     <button
                         onClick={() => setShowCompanyDropdown(!showCompanyDropdown)}
                         className="relative p-2 bg-blue-100 hover:bg-blue-200 rounded-full transition"
-                        title="Company Account"
+                        title={t('companyAccount')}
                     >
                         <User className="w-5 h-5 text-blue-600" />
                     </button>
@@ -289,12 +292,12 @@ export default function Header() {
                                         company?.plan === 'Pro' ? 'bg-blue-100 text-blue-700' :
                                             'bg-green-100 text-green-700'
                                         }`}>
-                                        {company?.plan || 'Free'} Plan
+                                        {company?.plan || 'Free'} {t('plan')}
                                     </span>
                                     {company?.verified && (
                                         <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full flex items-center gap-1">
                                             <ShieldCheck className="w-3 h-3" />
-                                            Verified
+                                            {t('verified')}
                                         </span>
                                     )}
                                 </div>
@@ -302,22 +305,22 @@ export default function Header() {
                             <div className="p-2">
                                 <a href="/settings" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-lg">
                                     <Settings className="w-4 h-4 text-gray-600" />
-                                    <span className="text-sm text-gray-700">Company Settings</span>
+                                    <span className="text-sm text-gray-700">{t('companySettings')}</span>
                                 </a>
                                 <a href="/subscription" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-lg">
                                     <Crown className="w-4 h-4 text-gray-600" />
-                                    <span className="text-sm text-gray-700">Upgrade Plan</span>
+                                    <span className="text-sm text-gray-700">{t('upgradePlan')}</span>
                                 </a>
                                 <a href="/verification" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-lg">
                                     <ShieldCheck className="w-4 h-4 text-gray-600" />
-                                    <span className="text-sm text-gray-700">Verification Status</span>
+                                    <span className="text-sm text-gray-700">{t('verificationStatus')}</span>
                                 </a>
                                 <hr className="my-2" />
                                 <button
                                     onClick={handleLogout}
                                     className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 rounded-lg text-red-600"
                                 >
-                                    <span className="text-sm font-medium">Sign Out</span>
+                                    <span className="text-sm font-medium">{t('signOut')}</span>
                                 </button>
                             </div>
                         </div>

@@ -253,7 +253,7 @@ export default function ReviewsPage() {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
                     <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
                         <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-                            <h2 className="text-xl font-bold text-gray-900">💬 Reply to Review</h2>
+                            <h2 className="text-xl font-bold text-gray-900"> Reply to Review</h2>
                             <button
                                 onClick={() => setSelectedReview(null)}
                                 className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -272,7 +272,7 @@ export default function ReviewsPage() {
                             <div className="p-4 bg-green-50 rounded-lg border border-green-200">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Sparkles className="h-5 w-5 text-green-600" />
-                                    <p className="text-sm font-medium text-green-700">💡 AI Suggested Reply:</p>
+                                    <p className="text-sm font-medium text-green-700"> AI Suggested Reply:</p>
                                 </div>
                                 <p className="text-sm text-gray-700 whitespace-pre-line mb-3">
                                     {generateAISuggestion(selectedReview)}
@@ -281,14 +281,14 @@ export default function ReviewsPage() {
                                     onClick={() => setReplyText(generateAISuggestion(selectedReview))}
                                     className="px-3 py-1.5 text-sm border border-green-600 text-green-600 rounded-lg hover:bg-green-50 transition-colors"
                                 >
-                                    📋 Use this suggestion
+                                     Use this suggestion
                                 </button>
                             </div>
 
                             {/* Reply Input */}
                             <div>
                                 <label className="text-sm font-medium text-gray-700 mb-2 block">
-                                    ✍️ Your Response:
+                                    Your Response:
                                 </label>
                                 <textarea
                                     placeholder="Write your response here..."
@@ -308,7 +308,7 @@ export default function ReviewsPage() {
                                     Cancel
                                 </button>
                                 <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                                    ✅ Send Response
+                                    Send Response
                                 </button>
                             </div>
                         </div>
