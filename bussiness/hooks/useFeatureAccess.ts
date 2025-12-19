@@ -21,7 +21,7 @@ interface CompanyProfile {
 // Map your routes to the exact feature names from backend
 export const ROUTE_FEATURES: Record<string, string> = {
     '/analytics': 'Advanced Analytics',
-    '/widgets': 'Custom Widgets',
+    
     '/integrations': 'Integrations',
     '/invitations': 'Team Invitations',
     '/manage': 'Review Management'

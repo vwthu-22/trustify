@@ -71,16 +71,6 @@ export default function Sidebar() {
             ]
         },
         {
-            href: '/widgets',
-            label: t('widgets'),
-            icon: Share2,
-            title: 'Share & Promote',
-            children: [
-                { href: '/widgets', label: 'TrustBox Widgets', icon: Code, title: 'TrustBox' },
-                { href: '/widgets/custom', label: 'Custom widgets', icon: Code, title: 'Custom Widgets', requiredFeature: 'Custom Widgets' }
-            ]
-        },
-        {
             href: '/integrations',
             label: t('integrations'),
             icon: Puzzle,

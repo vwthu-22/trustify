@@ -16,6 +16,3 @@ export type { SubscriptionPlan, CompanySubscription, Invoice } from './useSubscr
 
 export { useSettingsStore } from './useSettingsStore';
 export type { CompanySettings, TeamMember } from './useSettingsStore';
-
-export { useWidgetStore } from './useWidgetStore';
-export type { Widget, WidgetSettings, Integration, ApiKey } from './useWidgetStore';

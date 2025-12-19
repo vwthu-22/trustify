@@ -112,20 +112,7 @@ export default function SettingsPage() {
     
     // ... rest of component
 }
-```
 
-## 9. `/widgets/custom/page.tsx`
-```tsx
-import { useProtectedRoute } from '@/hooks/useFeatureAccess';
-
-export default function CustomWidgetsPage() {
-    const { isAllowed, loading } = useProtectedRoute('Custom Widgets');
-    
-    if (loading) return <LoadingSpinner />;
-    if (!isAllowed) return null;
-    
-    // ... rest of component
-}
 ```
 
 ---
@@ -153,6 +140,5 @@ function LoadingSpinner() {
 | `/invitations/*` | Team Invitations |
 | `/manage` | Review Management |
 | `/settings` | Advanced Settings |
-| `/widgets/custom` | Custom Widgets |
 
 **Total**: 9 pages need protection ✅

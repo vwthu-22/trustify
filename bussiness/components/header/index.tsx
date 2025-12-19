@@ -23,8 +23,6 @@ const getPageTitle = (pathname: string): string => {
         '/invitations/send': 'Get Reviews - Send Invitations',
         '/invitations/campaigns': 'Get Reviews - Campaigns',
         '/invitations/templates': 'Get Reviews - Email Templates',
-        '/widgets': 'Share & Promote - TrustBox Widgets',
-        '/widgets/custom': 'Share & Promote - Custom Widgets',
         '/integrations': 'Integrations & API',
         '/verification': 'Business Verification',
         '/branches': 'Manage Branches',

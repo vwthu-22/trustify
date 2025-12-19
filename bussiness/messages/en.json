@@ -24,7 +24,6 @@
         "dashboard": "Dashboard",
         "reviews": "Reviews",
         "analytics": "Analytics",
-        "widgets": "Widgets",
         "subscription": "Subscription",
         "settings": "Settings",
         "logout": "Logout",
@@ -165,14 +164,5 @@
         "positive": "Positive",
         "neutral": "Neutral",
         "negative": "Negative"
-    },
-    "widgets": {
-        "title": "Widgets",
-        "createWidget": "Create Widget",
-        "myWidgets": "My Widgets",
-        "widgetCode": "Widget Code",
-        "copyCode": "Copy Code",
-        "copied": "Copied!",
-        "preview": "Preview"
     }
 }

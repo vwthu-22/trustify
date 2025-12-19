@@ -64,7 +64,6 @@ const mockPlans: SubscriptionPlan[] = [
             'Up to 50 reviews/month',
             'Basic analytics',
             'Email support (48h)',
-            'TrustBox widget'
         ],
         limits: {
             reviewsPerMonth: 50,
@@ -83,7 +82,6 @@ const mockPlans: SubscriptionPlan[] = [
             'Up to 500 reviews/month',
             'Advanced analytics',
             'Email support (24h)',
-            'Custom widgets',
             'API access',
             'Multiple team members'
         ],

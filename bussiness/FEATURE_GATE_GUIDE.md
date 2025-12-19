@@ -236,7 +236,6 @@ Backend needs to:
 | Email Notifications | ✅ | ✅ | ✅ |
 | Basic Widgets | ✅ | ✅ | ✅ |
 | Advanced Analytics | ❌ | ✅ | ✅ |
-| Custom Widgets | ❌ | ✅ | ✅ |
 | Integrations | ❌ | ✅ | ✅ |
 | Team Invitations | ❌ | ✅ | ✅ |
 | Review Management | ❌ | ✅ | ✅ |

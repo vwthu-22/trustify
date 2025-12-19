@@ -24,7 +24,6 @@
         "dashboard": "Tổng quan",
         "reviews": "Đánh giá",
         "analytics": "Phân tích",
-        "widgets": "Widget",
         "subscription": "Gói dịch vụ",
         "settings": "Cài đặt",
         "logout": "Đăng xuất",
@@ -165,14 +164,5 @@
         "positive": "Tích cực",
         "neutral": "Trung lập",
         "negative": "Tiêu cực"
-    },
-    "widgets": {
-        "title": "Widget",
-        "createWidget": "Tạo Widget",
-        "myWidgets": "Widget của tôi",
-        "widgetCode": "Mã Widget",
-        "copyCode": "Sao chép mã",
-        "copied": "Đã sao chép!",
-        "preview": "Xem trước"
     }
 }
