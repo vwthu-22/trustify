@@ -99,14 +99,14 @@ function CheckoutContent() {
                     className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
                 >
                     <ArrowLeft className="w-5 h-5" />
-                    Back to plans
+                    {t('backToPlans')}
                 </button>
 
                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
                     {/* Left Column - Order Summary */}
                     <div className="lg:col-span-3">
                         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <h2 className="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
+                            <h2 className="text-xl font-bold text-gray-900 mb-6">{t('orderSummary')}</h2>
 
                             {/* Plan Details */}
                             <div className="flex items-start gap-4 pb-6 border-b border-gray-200">
@@ -117,7 +117,7 @@ function CheckoutContent() {
                                     <h3 className="font-semibold text-gray-900 text-lg">{selectedPlan.name} Plan</h3>
                                     <p className="text-sm text-gray-600">{selectedPlan.description || 'Premium subscription plan'}</p>
                                     <p className="text-sm text-gray-500 mt-1">
-                                        Billing: {billingPeriod === 'month' ? 'Monthly' : 'Yearly'}
+                                        {t('billingPeriod')}: {billingPeriod === 'month' ? t('monthly') : t('yearly')}
                                     </p>
                                 </div>
                                 <div className="text-right">
@@ -131,7 +131,7 @@ function CheckoutContent() {
                             {/* Features */}
                             {selectedPlan.features && selectedPlan.features.length > 0 && (
                                 <div className="py-6 border-b border-gray-200">
-                                    <h4 className="font-semibold text-gray-900 mb-4">Included Features</h4>
+                                    <h4 className="font-semibold text-gray-900 mb-4">{t('includedFeatures')}</h4>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                         {selectedPlan.features.map((feature) => (
                                             <div key={feature.id} className="flex items-start gap-2">
@@ -146,23 +146,23 @@ function CheckoutContent() {
                             {/* Price Breakdown */}
                             <div className="py-6 space-y-3">
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-gray-600">Subtotal</span>
+                                    <span className="text-gray-600">{t('subtotal')}</span>
                                     <span className="font-medium text-gray-900">{formatPrice(selectedPlan.price)}</span>
                                 </div>
                                 {billingPeriod === 'year' && (
                                     <>
                                         <div className="flex justify-between text-sm">
-                                            <span className="text-gray-600">Yearly discount (17%)</span>
+                                            <span className="text-gray-600">{t('discount')}</span>
                                             <span className="font-medium text-green-600">-{formatPrice(savings)}</span>
                                         </div>
                                         <div className="flex justify-between text-sm">
-                                            <span className="text-gray-600">Billing period</span>
+                                            <span className="text-gray-600">{t('billingPeriod')}</span>
                                             <span className="font-medium text-gray-900">×10 months</span>
                                         </div>
                                     </>
                                 )}
                                 <div className="pt-3 border-t border-gray-200 flex justify-between">
-                                    <span className="font-bold text-gray-900 text-lg">Total</span>
+                                    <span className="font-bold text-gray-900 text-lg">{t('total')}</span>
                                     <span className="font-bold text-2xl text-gray-900">{formatPrice(finalPrice)}</span>
                                 </div>
                             </div>
@@ -185,7 +185,7 @@ function CheckoutContent() {
                             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6 flex items-center gap-2">
                                 <Lock className="w-4 h-4 text-blue-600" />
                                 <p className="text-xs text-blue-900">
-                                    Secure payment via VNPay
+                                    {t('securePayment')}
                                 </p>
                             </div>
 
@@ -207,10 +207,10 @@ function CheckoutContent() {
                                         className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                                     />
                                     <span className="text-sm text-gray-700">
-                                        I agree to the{' '}
-                                        <a href="/terms" className="text-blue-600 hover:underline">Terms</a>
-                                        {' '}and{' '}
-                                        <a href="/privacy" className="text-blue-600 hover:underline">Privacy Policy</a>
+                                        {t('agreeTerms')}{' '}
+                                        <a href="/terms" className="text-blue-600 hover:underline">{t('terms')}</a>
+                                        {' '}{t('and')}{' '}
+                                        <a href="/privacy" className="text-blue-600 hover:underline">{t('privacyPolicy')}</a>
                                     </span>
                                 </label>
                             </div>
@@ -224,26 +224,26 @@ function CheckoutContent() {
                                 {isCreating ? (
                                     <>
                                         <Loader2 className="w-5 h-5 animate-spin" />
-                                        Redirecting...
+                                        {t('processing')}
                                     </>
                                 ) : (
                                     <>
-                                        Pay {formatPrice(finalPrice)}
+                                        {t('payWith')} {formatPrice(finalPrice)}
                                     </>
                                 )}
                             </button>
 
                             {/* Info */}
                             <p className="text-xs text-gray-500 text-center mt-4">
-                                You'll be redirected to VNPay to complete payment
+                                {t('redirectInfo')}
                             </p>
 
                             {/* Money Back */}
                             <div className="mt-6 p-3 bg-green-50 border border-green-200 rounded-lg flex items-start gap-2">
                                 <Shield className="w-4 h-4 text-green-600 mt-0.5" />
                                 <div>
-                                    <p className="font-semibold text-green-900 text-xs">30-Day Money Back</p>
-                                    <p className="text-xs text-green-700">Full refund if not satisfied</p>
+                                    <p className="font-semibold text-green-900 text-xs">{t('moneyBack')}</p>
+                                    <p className="text-xs text-green-700">{t('moneyBackDesc')}</p>
                                 </div>
                             </div>
                         </div>

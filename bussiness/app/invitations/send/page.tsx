@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Mail, Upload, Eye, Send, X, CheckCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 const emailTemplates = [
     {
@@ -50,6 +51,7 @@ Sincerely,
 ];
 
 export default function SendInvitationsPage() {
+    const t = useTranslations('invitations');
     const [activeTab, setActiveTab] = useState<'single' | 'bulk' | 'auto'>('single');
     const [formData, setFormData] = useState({
         email: '',
@@ -88,41 +90,38 @@ export default function SendInvitationsPage() {
         <div className="space-y-8">
             {/* Header */}
             <div>
-                <h2 className="text-2xl font-bold text-gray-900">Send Review Invitations</h2>
-                <p className="text-gray-500 mt-1">Invite customers to leave reviews</p>
+                <h2 className="text-2xl font-bold text-gray-900">{t('title')}</h2>
+                <p className="text-gray-500 mt-1">{t('subtitle')}</p>
             </div>
 
             {/* Tabs */}
             <div className="flex gap-2 border-b border-gray-200">
                 <button
                     onClick={() => setActiveTab('single')}
-                    className={`px-6 py-3 font-medium transition-colors ${
-                        activeTab === 'single'
-                            ? 'text-green-600 border-b-2 border-green-600'
-                            : 'text-gray-600 hover:text-gray-900'
-                    }`}
+                    className={`px-6 py-3 font-medium transition-colors ${activeTab === 'single'
+                        ? 'text-green-600 border-b-2 border-green-600'
+                        : 'text-gray-600 hover:text-gray-900'
+                        }`}
                 >
-                    Send Single
+                    {t('sendSingle')}
                 </button>
                 <button
                     onClick={() => setActiveTab('bulk')}
-                    className={`px-6 py-3 font-medium transition-colors ${
-                        activeTab === 'bulk'
-                            ? 'text-green-600 border-b-2 border-green-600'
-                            : 'text-gray-600 hover:text-gray-900'
-                    }`}
+                    className={`px-6 py-3 font-medium transition-colors ${activeTab === 'bulk'
+                        ? 'text-green-600 border-b-2 border-green-600'
+                        : 'text-gray-600 hover:text-gray-900'
+                        }`}
                 >
-                    Bulk Send
+                    {t('bulkSend')}
                 </button>
                 <button
                     onClick={() => setActiveTab('auto')}
-                    className={`px-6 py-3 font-medium transition-colors ${
-                        activeTab === 'auto'
-                            ? 'text-green-600 border-b-2 border-green-600'
-                            : 'text-gray-600 hover:text-gray-900'
-                    }`}
+                    className={`px-6 py-3 font-medium transition-colors ${activeTab === 'auto'
+                        ? 'text-green-600 border-b-2 border-green-600'
+                        : 'text-gray-600 hover:text-gray-900'
+                        }`}
                 >
-                    Auto Send
+                    {t('autoSend')}
                 </button>
             </div>
 
@@ -131,7 +130,7 @@ export default function SendInvitationsPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Form */}
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                        <h3 className="text-lg font-bold text-gray-900 mb-6">Customer Information</h3>
+                        <h3 className="text-lg font-bold text-gray-900 mb-6">{t('customerInfo')}</h3>
                         <div className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">

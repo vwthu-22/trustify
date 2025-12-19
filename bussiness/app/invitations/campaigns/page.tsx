@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Plus, Play, Pause, Trash2, Eye, Calendar, Users, Mail, CheckCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface Campaign {
     id: number;
@@ -58,13 +59,14 @@ const mockCampaigns: Campaign[] = [
 ];
 
 export default function CampaignsPage() {
+    const t = useTranslations('campaigns');
     const [campaigns, setCampaigns] = useState<Campaign[]>(mockCampaigns);
     const [showNewCampaign, setShowNewCampaign] = useState(false);
 
     const toggleCampaignStatus = (id: number) => {
-        setCampaigns(campaigns.map(c => 
-            c.id === id 
-                ? { ...c, status: c.status === 'active' ? 'paused' : 'active' } 
+        setCampaigns(campaigns.map(c =>
+            c.id === id
+                ? { ...c, status: c.status === 'active' ? 'paused' : 'active' }
                 : c
         ));
     };
@@ -88,15 +90,15 @@ export default function CampaignsPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-900">Review Campaigns</h2>
-                    <p className="text-gray-500 mt-1">Manage your review collection campaigns</p>
+                    <h2 className="text-2xl font-bold text-gray-900">{t('title')}</h2>
+                    <p className="text-gray-500 mt-1">{t('subtitle')}</p>
                 </div>
                 <button
                     onClick={() => setShowNewCampaign(true)}
                     className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors"
                 >
                     <Plus className="h-5 w-5" />
-                    New Campaign
+                    {t('newCampaign')}
                 </button>
             </div>
 
@@ -108,7 +110,7 @@ export default function CampaignsPage() {
                             <Users className="h-6 w-6 text-blue-600" />
                         </div>
                         <div>
-                            <p className="text-sm text-gray-600">Total Campaigns</p>
+                            <p className="text-sm text-gray-600">{t('totalCampaigns')}</p>
                             <p className="text-2xl font-bold text-gray-900">{campaigns.length}</p>
                         </div>
                     </div>
@@ -120,7 +122,7 @@ export default function CampaignsPage() {
                             <Play className="h-6 w-6 text-green-600" />
                         </div>
                         <div>
-                            <p className="text-sm text-gray-600">Active</p>
+                            <p className="text-sm text-gray-600">{t('active')}</p>
                             <p className="text-2xl font-bold text-gray-900">
                                 {campaigns.filter(c => c.status === 'active').length}
                             </p>
@@ -134,7 +136,7 @@ export default function CampaignsPage() {
                             <Mail className="h-6 w-6 text-purple-600" />
                         </div>
                         <div>
-                            <p className="text-sm text-gray-600">Total Sent</p>
+                            <p className="text-sm text-gray-600">{t('totalSent')}</p>
                             <p className="text-2xl font-bold text-gray-900">
                                 {campaigns.reduce((sum, c) => sum + c.sent, 0)}
                             </p>
@@ -148,7 +150,7 @@ export default function CampaignsPage() {
                             <CheckCircle className="h-6 w-6 text-orange-600" />
                         </div>
                         <div>
-                            <p className="text-sm text-gray-600">Total Responses</p>
+                            <p className="text-sm text-gray-600">{t('totalResponses')}</p>
                             <p className="text-2xl font-bold text-gray-900">
                                 {campaigns.reduce((sum, c) => sum + c.responses, 0)}
                             </p>
@@ -206,7 +208,7 @@ export default function CampaignsPage() {
                         <div className="space-y-3">
                             <div>
                                 <div className="flex items-center justify-between text-sm mb-2">
-                                    <span className="font-medium text-gray-700">Invitations Sent</span>
+                                    <span className="font-medium text-gray-700">{t('invitationsSent')}</span>
                                     <span className="text-gray-600">{campaign.sent} / {campaign.total}</span>
                                 </div>
                                 <div className="w-full bg-gray-200 rounded-full h-2.5">
@@ -219,7 +221,7 @@ export default function CampaignsPage() {
 
                             <div>
                                 <div className="flex items-center justify-between text-sm mb-2">
-                                    <span className="font-medium text-gray-700">Response Rate</span>
+                                    <span className="font-medium text-gray-700">{t('responseRate')}</span>
                                     <span className="text-gray-600">
                                         {campaign.responses} ({Math.round((campaign.responses / campaign.sent) * 100)}%)
                                     </span>
@@ -237,17 +239,17 @@ export default function CampaignsPage() {
                         <div className="grid grid-cols-3 gap-4 mt-4 pt-4 border-t border-gray-200">
                             <div className="text-center">
                                 <p className="text-2xl font-bold text-gray-900">{campaign.sent}</p>
-                                <p className="text-xs text-gray-600">Sent</p>
+                                <p className="text-xs text-gray-600">{t('sent')}</p>
                             </div>
                             <div className="text-center">
                                 <p className="text-2xl font-bold text-green-600">{campaign.responses}</p>
-                                <p className="text-xs text-gray-600">Responses</p>
+                                <p className="text-xs text-gray-600">{t('responses')}</p>
                             </div>
                             <div className="text-center">
                                 <p className="text-2xl font-bold text-blue-600">
                                     {Math.round((campaign.responses / campaign.sent) * 100)}%
                                 </p>
-                                <p className="text-xs text-gray-600">Rate</p>
+                                <p className="text-xs text-gray-600">{t('rate')}</p>
                             </div>
                         </div>
                     </div>
@@ -259,7 +261,7 @@ export default function CampaignsPage() {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
                     <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
                         <div className="p-6 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
-                            <h3 className="text-xl font-bold text-gray-900">Create New Campaign</h3>
+                            <h3 className="text-xl font-bold text-gray-900">{t('createCampaign')}</h3>
                             <button
                                 onClick={() => setShowNewCampaign(false)}
                                 className="text-gray-400 hover:text-gray-600 transition-colors"

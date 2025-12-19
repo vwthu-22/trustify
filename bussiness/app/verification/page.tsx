@@ -2,10 +2,12 @@
 
 import { useState } from 'react';
 import { ShieldCheck, Upload, Mail, FileText, CheckCircle, AlertCircle, Clock } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 type VerificationStatus = 'not-started' | 'pending' | 'verified' | 'rejected';
 
 export default function VerificationPage() {
+    const t = useTranslations('verification');
     const [verificationMethod, setVerificationMethod] = useState<'email' | 'document'>('email');
     const [status, setStatus] = useState<VerificationStatus>('not-started');
     const [companyEmail, setCompanyEmail] = useState('');
@@ -38,8 +40,8 @@ export default function VerificationPage() {
         <div className="space-y-8">
             {/* Header */}
             <div>
-                <h2 className="text-2xl font-bold text-gray-900">Business Verification</h2>
-                <p className="text-gray-500 mt-1">Verify your business to build trust with customers</p>
+                <h2 className="text-2xl font-bold text-gray-900">{t('title')}</h2>
+                <p className="text-gray-500 mt-1">{t('subtitle')}</p>
             </div>
 
             {/* Status Banner */}
@@ -48,8 +50,8 @@ export default function VerificationPage() {
                     <div className="flex items-center gap-3">
                         <CheckCircle className="h-8 w-8 text-green-600" />
                         <div>
-                            <h3 className="text-lg font-bold text-green-900">Business Verified!</h3>
-                            <p className="text-green-700">Your business has been successfully verified</p>
+                            <h3 className="text-lg font-bold text-green-900">{t('verified')}</h3>
+                            <p className="text-green-700">{t('verifiedDesc')}</p>
                         </div>
                     </div>
                 </div>
@@ -60,8 +62,8 @@ export default function VerificationPage() {
                     <div className="flex items-center gap-3">
                         <Clock className="h-8 w-8 text-yellow-600" />
                         <div>
-                            <h3 className="text-lg font-bold text-yellow-900">Verification Pending</h3>
-                            <p className="text-yellow-700">We are reviewing your submission. This usually takes 2-3 business days.</p>
+                            <h3 className="text-lg font-bold text-yellow-900">{t('pending')}</h3>
+                            <p className="text-yellow-700">{t('pendingDesc')}</p>
                         </div>
                     </div>
                 </div>
@@ -72,8 +74,8 @@ export default function VerificationPage() {
                     <div className="flex items-center gap-3">
                         <AlertCircle className="h-8 w-8 text-red-600" />
                         <div>
-                            <h3 className="text-lg font-bold text-red-900">Verification Rejected</h3>
-                            <p className="text-red-700">Please review the requirements and submit again with valid documents.</p>
+                            <h3 className="text-lg font-bold text-red-900">{t('rejected')}</h3>
+                            <p className="text-red-700">{t('rejectedDesc')}</p>
                         </div>
                     </div>
                 </div>
@@ -81,7 +83,7 @@ export default function VerificationPage() {
 
             {/* Benefits */}
             <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl border border-blue-200 p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">Why Verify Your Business?</h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-4">{t('whyVerify')}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="flex items-start gap-3">
                         <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
@@ -122,8 +124,8 @@ export default function VerificationPage() {
                     <button
                         onClick={() => setVerificationMethod('email')}
                         className={`p-6 border-2 rounded-xl transition-all text-left ${verificationMethod === 'email'
-                                ? 'border-blue-500 bg-blue-50'
-                                : 'border-gray-200 hover:border-gray-300'
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-gray-200 hover:border-gray-300'
                             }`}
                     >
                         <Mail className="h-8 w-8 text-blue-600 mb-3" />
@@ -135,8 +137,8 @@ export default function VerificationPage() {
                     <button
                         onClick={() => setVerificationMethod('document')}
                         className={`p-6 border-2 rounded-xl transition-all text-left ${verificationMethod === 'document'
-                                ? 'border-blue-500 bg-blue-50'
-                                : 'border-gray-200 hover:border-gray-300'
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-gray-200 hover:border-gray-300'
                             }`}
                     >
                         <FileText className="h-8 w-8 text-blue-600 mb-3" />

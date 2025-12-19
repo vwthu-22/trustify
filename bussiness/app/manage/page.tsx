@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Search, Star, MapPin, Package, MessageSquare, Eye, X, Sparkles } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface Review {
     id: string;
@@ -64,6 +65,7 @@ const mockReviews: Review[] = [
 ];
 
 export default function ReviewsPage() {
+    const t = useTranslations('manage');
     const [selectedReview, setSelectedReview] = useState<Review | null>(null);
     const [replyText, setReplyText] = useState('');
     const [filterRating, setFilterRating] = useState('all');
@@ -128,21 +130,19 @@ export default function ReviewsPage() {
             <div className="flex gap-2 border-b border-gray-200 bg-white px-6 pt-4 rounded-t-xl">
                 <button
                     onClick={() => setActiveTab('all')}
-                    className={`px-4 py-2 font-medium transition-colors ${
-                        activeTab === 'all'
-                            ? 'text-green-600 border-b-2 border-green-600'
-                            : 'text-gray-600 hover:text-gray-900'
-                    }`}
+                    className={`px-4 py-2 font-medium transition-colors ${activeTab === 'all'
+                        ? 'text-green-600 border-b-2 border-green-600'
+                        : 'text-gray-600 hover:text-gray-900'
+                        }`}
                 >
                     All Reviews
                 </button>
                 <button
                     onClick={() => setActiveTab('pending')}
-                    className={`px-4 py-2 font-medium transition-colors flex items-center gap-2 ${
-                        activeTab === 'pending'
-                            ? 'text-green-600 border-b-2 border-green-600'
-                            : 'text-gray-600 hover:text-gray-900'
-                    }`}
+                    className={`px-4 py-2 font-medium transition-colors flex items-center gap-2 ${activeTab === 'pending'
+                        ? 'text-green-600 border-b-2 border-green-600'
+                        : 'text-gray-600 hover:text-gray-900'
+                        }`}
                 >
                     Pending Response
                     <span className="px-2 py-0.5 text-xs font-semibold bg-red-100 text-red-700 rounded-full">
@@ -151,11 +151,10 @@ export default function ReviewsPage() {
                 </button>
                 <button
                     onClick={() => setActiveTab('replied')}
-                    className={`px-4 py-2 font-medium transition-colors ${
-                        activeTab === 'replied'
-                            ? 'text-green-600 border-b-2 border-green-600'
-                            : 'text-gray-600 hover:text-gray-900'
-                    }`}
+                    className={`px-4 py-2 font-medium transition-colors ${activeTab === 'replied'
+                        ? 'text-green-600 border-b-2 border-green-600'
+                        : 'text-gray-600 hover:text-gray-900'
+                        }`}
                 >
                     Replied
                 </button>
@@ -174,9 +173,8 @@ export default function ReviewsPage() {
                                             {[...Array(5)].map((_, i) => (
                                                 <Star
                                                     key={i}
-                                                    className={`h-5 w-5 ${
-                                                        i < review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
-                                                    }`}
+                                                    className={`h-5 w-5 ${i < review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
+                                                        }`}
                                                 />
                                             ))}
                                         </div>
@@ -210,23 +208,21 @@ export default function ReviewsPage() {
                                 {review.topics.map((topic, index) => (
                                     <span
                                         key={index}
-                                        className={`px-3 py-1 text-xs font-medium rounded-full ${
-                                            topic.sentiment === 'positive'
-                                                ? 'bg-green-100 text-green-700'
-                                                : 'bg-red-100 text-red-700'
-                                        }`}
+                                        className={`px-3 py-1 text-xs font-medium rounded-full ${topic.sentiment === 'positive'
+                                            ? 'bg-green-100 text-green-700'
+                                            : 'bg-red-100 text-red-700'
+                                            }`}
                                     >
                                         {topic.name} ({topic.sentiment === 'positive' ? '+' : '-'})
                                     </span>
                                 ))}
                                 <span
-                                    className={`px-3 py-1 text-xs font-medium rounded-full ${
-                                        review.sentiment === 'positive'
-                                            ? 'bg-green-100 text-green-700'
-                                            : review.sentiment === 'neutral'
+                                    className={`px-3 py-1 text-xs font-medium rounded-full ${review.sentiment === 'positive'
+                                        ? 'bg-green-100 text-green-700'
+                                        : review.sentiment === 'neutral'
                                             ? 'bg-gray-100 text-gray-700'
                                             : 'bg-red-100 text-red-700'
-                                    }`}
+                                        }`}
                                 >
                                     {review.sentiment === 'positive' ? '😊' : review.sentiment === 'neutral' ? '😐' : '😞'}{' '}
                                     {review.sentiment.charAt(0).toUpperCase() + review.sentiment.slice(1)}

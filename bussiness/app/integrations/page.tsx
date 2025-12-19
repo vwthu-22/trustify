@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Puzzle, Code, Zap, CheckCircle, ExternalLink, Lock } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface Integration {
     id: string;
@@ -89,6 +90,7 @@ const integrations: Integration[] = [
 ];
 
 export default function IntegrationsPage() {
+    const t = useTranslations('integrations');
     const [selectedCategory, setSelectedCategory] = useState<string>('all');
     const [showApiDocs, setShowApiDocs] = useState(false);
 
@@ -109,8 +111,8 @@ export default function IntegrationsPage() {
         <div className="space-y-8">
             {/* Header */}
             <div>
-                <h2 className="text-2xl font-bold text-gray-900">Integrations & API</h2>
-                <p className="text-gray-500 mt-1">Connect Trustify with your favorite tools</p>
+                <h2 className="text-2xl font-bold text-gray-900">{t('title')}</h2>
+                <p className="text-gray-500 mt-1">{t('subtitle')}</p>
             </div>
 
             {/* Stats */}
@@ -121,7 +123,7 @@ export default function IntegrationsPage() {
                             <Puzzle className="h-6 w-6 text-blue-600" />
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-gray-600">Available</p>
+                            <p className="text-sm font-medium text-gray-600">{t('available')}</p>
                             <p className="text-2xl font-bold text-gray-900">{integrations.length}</p>
                         </div>
                     </div>
@@ -132,7 +134,7 @@ export default function IntegrationsPage() {
                             <CheckCircle className="h-6 w-6 text-green-600" />
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-gray-600">Connected</p>
+                            <p className="text-sm font-medium text-gray-600">{t('connected')}</p>
                             <p className="text-2xl font-bold text-gray-900">
                                 {integrations.filter(i => i.isConnected).length}
                             </p>
@@ -145,7 +147,7 @@ export default function IntegrationsPage() {
                             <Zap className="h-6 w-6 text-purple-600" />
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-gray-600">PRO Only</p>
+                            <p className="text-sm font-medium text-gray-600">{t('proOnly')}</p>
                             <p className="text-2xl font-bold text-gray-900">
                                 {integrations.filter(i => i.isPro).length}
                             </p>
@@ -191,7 +193,7 @@ export default function IntegrationsPage() {
                         {integration.isConnected ? (
                             <div className="flex items-center gap-2 text-green-600 text-sm font-medium">
                                 <CheckCircle className="h-4 w-4" />
-                                Connected
+                                {t('connected')}
                             </div>
                         ) : (
                             <button
@@ -201,7 +203,7 @@ export default function IntegrationsPage() {
                                     : 'bg-blue-600 text-white hover:bg-blue-700'
                                     }`}
                             >
-                                {integration.isPro ? 'Upgrade to Connect' : 'Connect'}
+                                {integration.isPro ? t('upgradeToConnect') : t('connect')}
                             </button>
                         )}
                     </div>
@@ -212,15 +214,15 @@ export default function IntegrationsPage() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <div className="flex items-center justify-between mb-6">
                     <div>
-                        <h3 className="text-lg font-bold text-gray-900">API Documentation</h3>
-                        <p className="text-sm text-gray-600 mt-1">Build custom integrations with our REST API</p>
+                        <h3 className="text-lg font-bold text-gray-900">{t('apiDocumentation')}</h3>
+                        <p className="text-sm text-gray-600 mt-1">{t('buildCustom')}</p>
                     </div>
                     <button
                         onClick={() => setShowApiDocs(!showApiDocs)}
                         className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
                     >
                         <Code className="h-4 w-4" />
-                        View API Docs
+                        {t('viewApiDocs')}
                     </button>
                 </div>
 
@@ -255,7 +257,7 @@ export default function IntegrationsPage() {
                             className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
                         >
                             <ExternalLink className="h-4 w-4" />
-                            View Full Documentation
+                            {t('viewFullDocs')}
                         </a>
                     </div>
                 )}
@@ -268,12 +270,12 @@ export default function IntegrationsPage() {
                         <Lock className="h-8 w-8" />
                     </div>
                     <div className="flex-1">
-                        <h3 className="text-xl font-bold mb-2">Unlock Premium Integrations</h3>
+                        <h3 className="text-xl font-bold mb-2">{t('unlockPremium')}</h3>
                         <p className="text-white/90 mb-4">
                             Upgrade to PRO to access Salesforce, HubSpot, Zapier and more
                         </p>
                         <button className="px-6 py-3 bg-white text-purple-600 font-bold rounded-lg hover:bg-gray-100 transition-colors">
-                            Upgrade to PRO
+                            {t('upgradeToPro')}
                         </button>
                     </div>
                 </div>

@@ -98,8 +98,8 @@ function VNPayReturnContent() {
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="bg-white rounded-xl shadow-lg p-8 text-center max-w-md">
                     <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
-                    <h2 className="text-xl font-bold text-gray-900 mb-2">Verifying Payment</h2>
-                    <p className="text-gray-600">Please wait while we confirm your payment with the server...</p>
+                    <h2 className="text-xl font-bold text-gray-900 mb-2">{t('verifying')}</h2>
+                    <p className="text-gray-600">{t('verifyingDesc')}</p>
                 </div>
             </div>
         );
@@ -114,21 +114,21 @@ function VNPayReturnContent() {
                         <Clock className="w-12 h-12 text-yellow-600" />
                     </div>
 
-                    <h1 className="text-2xl font-bold text-gray-900 mb-3">Payment Processing</h1>
+                    <h1 className="text-2xl font-bold text-gray-900 mb-3">{t('processing')}</h1>
                     <p className="text-gray-600 mb-6">
-                        Your payment is being processed. This usually takes a few seconds.
+                        {t('processingDesc')}
                     </p>
 
                     {txnRef && (
                         <div className="bg-gray-50 rounded-lg p-4 mb-6 text-left">
-                            <p className="text-sm text-gray-600">Transaction ID</p>
+                            <p className="text-sm text-gray-600">{t('transactionId')}</p>
                             <p className="font-mono text-sm text-gray-900 break-all">{txnRef}</p>
                         </div>
                     )}
 
                     <div className="flex items-center justify-center gap-2 text-sm text-gray-500 mb-6">
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>Checking status... ({pollCount}/5)</span>
+                        <span>{t('checkingStatus')} ({pollCount}/5)</span>
                     </div>
 
                     {error && (
@@ -143,13 +143,13 @@ function VNPayReturnContent() {
                             className="flex-1 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
                         >
                             <RefreshCw className="w-5 h-5" />
-                            Check Again
+                            {t('checkAgain')}
                         </button>
                         <button
                             onClick={() => router.push('/subscription')}
                             className="flex-1 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
                         >
-                            View Subscription
+                            {t('viewSubscription')}
                         </button>
                     </div>
                 </div>
@@ -166,18 +166,18 @@ function VNPayReturnContent() {
                         <CheckCircle className="w-12 h-12 text-green-600" />
                     </div>
 
-                    <h1 className="text-3xl font-bold text-gray-900 mb-3">Payment Successful!</h1>
-                    <p className="text-gray-600 mb-6">Your subscription has been activated.</p>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-3">{t('success')}</h1>
+                    <p className="text-gray-600 mb-6">{t('successDesc')}</p>
 
                     {currentPayment && (
                         <div className="bg-gray-50 rounded-xl p-4 mb-6 text-left">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <p className="text-sm text-gray-600">Transaction ID</p>
+                                    <p className="text-sm text-gray-600">{t('transactionId')}</p>
                                     <p className="font-semibold text-gray-900 text-sm break-all">{currentPayment.txnRef}</p>
                                 </div>
                                 <div>
-                                    <p className="text-sm text-gray-600">Amount</p>
+                                    <p className="text-sm text-gray-600">{t('amount')}</p>
                                     <p className="font-semibold text-gray-900">
                                         {formatPrice(currentPayment.amount || 0)}
                                     </p>
@@ -188,7 +188,7 @@ function VNPayReturnContent() {
 
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-left">
                         <p className="text-sm text-blue-900">
-                            <strong>Your subscription is now active!</strong> All premium features are available in your dashboard.
+                            {t('subscriptionActive')}
                         </p>
                     </div>
 
@@ -196,7 +196,7 @@ function VNPayReturnContent() {
                         onClick={() => router.push('/')}
                         className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
                     >
-                        Go to Dashboard
+                        {t('goToDashboard')}
                         <ArrowRight className="w-5 h-5" />
                     </button>
                 </div>
@@ -212,19 +212,19 @@ function VNPayReturnContent() {
                     <XCircle className="w-12 h-12 text-red-600" />
                 </div>
 
-                <h1 className="text-3xl font-bold text-gray-900 mb-3">Payment Failed</h1>
-                <p className="text-gray-600 mb-6">{error || 'Something went wrong with your payment'}</p>
+                <h1 className="text-3xl font-bold text-gray-900 mb-3">{t('failed')}</h1>
+                <p className="text-gray-600 mb-6">{error || t('failedDesc')}</p>
 
                 {txnRef && (
                     <div className="bg-gray-50 rounded-lg p-4 mb-6 text-left">
-                        <p className="text-sm text-gray-600">Transaction ID</p>
+                        <p className="text-sm text-gray-600">{t('transactionId')}</p>
                         <p className="font-mono text-sm text-gray-900 break-all">{txnRef}</p>
                     </div>
                 )}
 
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-left">
                     <p className="text-sm text-red-900">
-                        Your payment could not be processed. No charges have been made to your account.
+                        {t('failedDesc')}
                     </p>
                 </div>
 
@@ -234,13 +234,13 @@ function VNPayReturnContent() {
                         className="flex-1 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
                     >
                         <RefreshCw className="w-5 h-5" />
-                        Try Again
+                        {t('tryAgain')}
                     </button>
                     <button
                         onClick={() => router.push('/dashboard')}
                         className="flex-1 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
                     >
-                        Back to Dashboard
+                        {t('goToDashboard')}
                     </button>
                 </div>
             </div>

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { TrendingUp, TrendingDown, Star, MessageSquare, Users, Clock } from 'lucide-react';
 import { useProtectedRoute } from '@/hooks/useFeatureAccess';
+import { useTranslations } from 'next-intl';
 
 const kpiData = [
     { title: 'Avg Rating', value: '4.5', change: '+0.3', trend: 'up', icon: Star, color: 'text-yellow-500', bgColor: 'bg-yellow-50' },
@@ -34,6 +35,7 @@ const topPerformers = [
 
 export default function AnalyticsOverviewPage() {
     const { isAllowed, loading } = useProtectedRoute('Advanced Analytics');
+    const t = useTranslations('analytics');
     const [timeRange, setTimeRange] = useState('30');
 
     if (loading) {
@@ -51,18 +53,18 @@ export default function AnalyticsOverviewPage() {
             {/* Time Range Filter */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-900">Analytics Overview</h2>
-                    <p className="text-gray-500 mt-1">Comprehensive performance metrics</p>
+                    <h2 className="text-2xl font-bold text-gray-900">{t('title')}</h2>
+                    <p className="text-gray-500 mt-1">{t('subtitle')}</p>
                 </div>
                 <select
                     value={timeRange}
                     onChange={(e) => setTimeRange(e.target.value)}
                     className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                    <option value="7">Last 7 days</option>
-                    <option value="30">Last 30 days</option>
-                    <option value="90">Last 90 days</option>
-                    <option value="365">Last year</option>
+                    <option value="7">{t('last7Days')}</option>
+                    <option value="30">{t('last30Days')}</option>
+                    <option value="90">{t('last90Days')}</option>
+                    <option value="365">{t('lastYear')}</option>
                 </select>
             </div>
 
@@ -100,7 +102,7 @@ export default function AnalyticsOverviewPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Monthly Trend */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <h3 className="text-lg font-bold text-gray-900 mb-6">Monthly Trends</h3>
+                    <h3 className="text-lg font-bold text-gray-900 mb-6">{t('monthlyTrends')}</h3>
                     <div className="space-y-4">
                         <div className="flex items-end justify-between gap-2 h-48">
                             {monthlyData.map((data, index) => (
@@ -118,15 +120,15 @@ export default function AnalyticsOverviewPage() {
                         <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-200">
                             <div className="text-center">
                                 <p className="text-2xl font-bold text-blue-600">1,434</p>
-                                <p className="text-xs text-gray-600">Total Reviews</p>
+                                <p className="text-xs text-gray-600">{t('totalReviews')}</p>
                             </div>
                             <div className="text-center">
                                 <p className="text-2xl font-bold text-green-600">4.5</p>
-                                <p className="text-xs text-gray-600">Avg Rating</p>
+                                <p className="text-xs text-gray-600">{t('avgRating')}</p>
                             </div>
                             <div className="text-center">
                                 <p className="text-2xl font-bold text-purple-600">+24%</p>
-                                <p className="text-xs text-gray-600">Growth</p>
+                                <p className="text-xs text-gray-600">{t('growth')}</p>
                             </div>
                         </div>
                     </div>
@@ -134,7 +136,7 @@ export default function AnalyticsOverviewPage() {
 
                 {/* Sentiment Distribution */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <h3 className="text-lg font-bold text-gray-900 mb-6">Sentiment Distribution</h3>
+                    <h3 className="text-lg font-bold text-gray-900 mb-6">{t('sentimentDistribution')}</h3>
                     <div className="space-y-4">
                         {sentimentData.map((item, index) => (
                             <div key={index} className="space-y-2">
@@ -158,11 +160,11 @@ export default function AnalyticsOverviewPage() {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="text-center p-4 bg-green-50 rounded-lg">
                                 <p className="text-3xl font-bold text-green-600">85%</p>
-                                <p className="text-sm text-gray-600 mt-1">Satisfaction Score</p>
+                                <p className="text-sm text-gray-600 mt-1">{t('satisfactionScore')}</p>
                             </div>
                             <div className="text-center p-4 bg-blue-50 rounded-lg">
                                 <p className="text-3xl font-bold text-blue-600">92%</p>
-                                <p className="text-sm text-gray-600 mt-1">Recommendation Rate</p>
+                                <p className="text-sm text-gray-600 mt-1">{t('recommendationRate')}</p>
                             </div>
                         </div>
                     </div>
@@ -171,7 +173,7 @@ export default function AnalyticsOverviewPage() {
 
             {/* Top Performers */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-6">Top Performing Branches</h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-6">{t('topPerformingBranches')}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {topPerformers.map((branch, index) => (
                         <div key={index} className="p-6 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">

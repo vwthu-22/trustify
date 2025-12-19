@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import { Globe, Code, CheckCircle, Copy, ExternalLink, AlertCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function ConnectPage() {
+    const t = useTranslations('connect');
     const [websiteUrl, setWebsiteUrl] = useState('');
     const [verificationMethod, setVerificationMethod] = useState<'meta' | 'file' | 'dns'>('meta');
     const [isVerified, setIsVerified] = useState(false);
@@ -30,17 +32,17 @@ export default function ConnectPage() {
         <div className="space-y-8">
             {/* Header */}
             <div>
-                <h2 className="text-2xl font-bold text-gray-900">Connect Your Website</h2>
-                <p className="text-gray-500 mt-1">Verify ownership to start collecting reviews</p>
+                <h2 className="text-2xl font-bold text-gray-900">{t('title')}</h2>
+                <p className="text-gray-500 mt-1">{t('subtitle')}</p>
             </div>
 
             {/* Website URL Input */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">Website Information</h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-4">{t('websiteInfo')}</h3>
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Website URL <span className="text-red-500">*</span>
+                            {t('websiteUrl')} <span className="text-red-500">*</span>
                         </label>
                         <div className="flex gap-2">
                             <div className="flex-1 relative">
@@ -60,44 +62,44 @@ export default function ConnectPage() {
 
             {/* Verification Methods */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">Verification Method</h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-4">{t('verificationMethod')}</h3>
 
                 {/* Method Selection */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <button
                         onClick={() => setVerificationMethod('meta')}
                         className={`p-4 border-2 rounded-lg transition-all ${verificationMethod === 'meta'
-                                ? 'border-blue-500 bg-blue-50'
-                                : 'border-gray-200 hover:border-gray-300'
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-gray-200 hover:border-gray-300'
                             }`}
                     >
                         <Code className="h-6 w-6 mb-2 text-blue-600" />
-                        <p className="font-medium text-gray-900">HTML Meta Tag</p>
-                        <p className="text-xs text-gray-600 mt-1">Add tag to your website</p>
+                        <p className="font-medium text-gray-900">{t('htmlMetaTag')}</p>
+                        <p className="text-xs text-gray-600 mt-1">{t('addTagToWebsite')}</p>
                     </button>
 
                     <button
                         onClick={() => setVerificationMethod('file')}
                         className={`p-4 border-2 rounded-lg transition-all ${verificationMethod === 'file'
-                                ? 'border-blue-500 bg-blue-50'
-                                : 'border-gray-200 hover:border-gray-300'
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-gray-200 hover:border-gray-300'
                             }`}
                     >
                         <Globe className="h-6 w-6 mb-2 text-blue-600" />
-                        <p className="font-medium text-gray-900">HTML File Upload</p>
-                        <p className="text-xs text-gray-600 mt-1">Upload file to root</p>
+                        <p className="font-medium text-gray-900">{t('htmlFileUpload')}</p>
+                        <p className="text-xs text-gray-600 mt-1">{t('uploadFileToRoot')}</p>
                     </button>
 
                     <button
                         onClick={() => setVerificationMethod('dns')}
                         className={`p-4 border-2 rounded-lg transition-all ${verificationMethod === 'dns'
-                                ? 'border-blue-500 bg-blue-50'
-                                : 'border-gray-200 hover:border-gray-300'
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-gray-200 hover:border-gray-300'
                             }`}
                     >
                         <AlertCircle className="h-6 w-6 mb-2 text-blue-600" />
-                        <p className="font-medium text-gray-900">DNS Record</p>
-                        <p className="text-xs text-gray-600 mt-1">Add TXT record to DNS</p>
+                        <p className="font-medium text-gray-900">{t('dnsRecord')}</p>
+                        <p className="text-xs text-gray-600 mt-1">{t('addTxtRecord')}</p>
                     </button>
                 </div>
 
@@ -106,7 +108,7 @@ export default function ConnectPage() {
                     {verificationMethod === 'meta' && (
                         <div className="p-4 bg-gray-50 rounded-lg">
                             <p className="text-sm font-medium text-gray-900 mb-3">
-                                Step 1: Copy this meta tag
+                                {t('step1CopyMeta')}
                             </p>
                             <div className="flex items-center gap-2 mb-4">
                                 <code className="flex-1 px-4 py-2 bg-white border border-gray-300 rounded text-sm overflow-x-auto">
@@ -117,7 +119,7 @@ export default function ConnectPage() {
                                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
                                 >
                                     {copied ? <CheckCircle className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                                    {copied ? 'Copied!' : 'Copy'}
+                                    {copied ? t('copied') : t('copy')}
                                 </button>
                             </div>
                             <p className="text-sm text-gray-700 mb-2">
@@ -185,7 +187,7 @@ export default function ConnectPage() {
                     {isVerified ? (
                         <div className="flex items-center gap-2 px-4 py-3 bg-green-50 text-green-700 rounded-lg">
                             <CheckCircle className="h-5 w-5" />
-                            <span className="font-medium">Website verified successfully!</span>
+                            <span className="font-medium">{t('websiteVerified')}</span>
                         </div>
                     ) : (
                         <button
@@ -193,7 +195,7 @@ export default function ConnectPage() {
                             disabled={!websiteUrl}
                             className="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Verify Website
+                            {t('verifyWebsite')}
                         </button>
                     )}
                 </div>
@@ -201,7 +203,7 @@ export default function ConnectPage() {
 
             {/* Benefits */}
             <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl border border-blue-200 p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">After Verification</h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-4">{t('afterVerification')}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="flex items-start gap-3">
                         <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
