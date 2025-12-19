@@ -65,7 +65,7 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Star Distribution */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <h2 className="text-xl font-bold text-gray-900 mb-6">⭐ {t('starDistribution')}</h2>
+                    <h2 className="text-xl font-bold text-gray-900 mb-6">{t('starDistribution')}</h2>
                     <div className="space-y-4">
                         {starDistribution.map((item) => (
                             <div key={item.stars} className="space-y-2">
@@ -89,7 +89,7 @@ export default function DashboardPage() {
 
                 {/* Review Trend */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <h2 className="text-xl font-bold text-gray-900 mb-6">📈 {t('reviewTrends')}</h2>
+                    <h2 className="text-xl font-bold text-gray-900 mb-6">{t('reviewTrends')}</h2>
                     <div className="space-y-4">
                         <div className="grid grid-cols-3 gap-4">
                             <div className="text-center p-4 bg-green-50 rounded-lg">
@@ -129,7 +129,7 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Positive Topics */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <h2 className="text-xl font-bold text-gray-900 mb-6">🎯 {t('topPositiveTopics')}</h2>
+                    <h2 className="text-xl font-bold text-gray-900 mb-6">{t('topPositiveTopics')}</h2>
                     <div className="space-y-4">
                         {topicsPositive.map((item, index) => (
                             <div key={index}>
@@ -148,7 +148,7 @@ export default function DashboardPage() {
 
                 {/* Negative Topics */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <h2 className="text-xl font-bold text-gray-900 mb-6">⚠️ {t('topicsNeedImprovement')}</h2>
+                    <h2 className="text-xl font-bold text-gray-900 mb-6">{t('topicsNeedImprovement')}</h2>
                     <div className="space-y-4">
                         {topicsNegative.map((item, index) => (
                             <div key={index}>
@@ -168,7 +168,7 @@ export default function DashboardPage() {
 
             {/* Recent Reviews */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6">📋 {t('recentNeedResponse')}</h2>
+                <h2 className="text-xl font-bold text-gray-900 mb-6">{t('recentNeedResponse')}</h2>
                 <div className="space-y-4">
                     {recentReviews.map((review) => (
                         <div key={review.id} className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
