@@ -116,7 +116,7 @@ export default function BusinessReviewDashboard() {
                 <div className="bg-white rounded-lg shadow p-6">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-sm text-gray-600">Total Reviews</p>
+                            <p className="text-sm text-gray-600">{t('totalReviews')}</p>
                             <p className="text-2xl font-bold text-gray-900">{localStats.totalReviews}</p>
                         </div>
                     </div>
@@ -124,7 +124,7 @@ export default function BusinessReviewDashboard() {
                 <div className="bg-white rounded-lg shadow p-6">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-sm text-gray-600">Average Rating</p>
+                            <p className="text-sm text-gray-600">{t('averageRating')}</p>
                             <p className="text-2xl font-bold text-gray-900">{localStats.avgRating}</p>
                             <div className="flex mt-1">{renderStars(Math.round(parseFloat(String(localStats.avgRating))))}</div>
                         </div>
@@ -133,7 +133,7 @@ export default function BusinessReviewDashboard() {
                 <div className="bg-white rounded-lg shadow p-6">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-sm text-gray-600">Pending</p>
+                            <p className="text-sm text-gray-600">{t('pending')}</p>
                             <p className="text-2xl font-bold text-orange-600">{localStats.pendingReviews}</p>
                         </div>
                     </div>
@@ -141,7 +141,7 @@ export default function BusinessReviewDashboard() {
                 <div className="bg-white rounded-lg shadow p-6">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-sm text-gray-600">Replied</p>
+                            <p className="text-sm text-gray-600">{t('replied')}</p>
                             <p className="text-2xl font-bold text-green-600">{localStats.repliedReviews}</p>
                         </div>
                     </div>
@@ -156,31 +156,31 @@ export default function BusinessReviewDashboard() {
                         onClick={() => setSelectedFilter('all')}
                         className={`px-4 py-2 rounded-lg transition ${selectedFilter === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                     >
-                        All
+                        {t('all')}
                     </button>
                     <button
                         onClick={() => setSelectedFilter('pending')}
                         className={`px-4 py-2 rounded-lg transition ${selectedFilter === 'pending' ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                     >
-                        Pending
+                        {t('pending')}
                     </button>
                     <button
                         onClick={() => setSelectedFilter('replied')}
                         className={`px-4 py-2 rounded-lg transition ${selectedFilter === 'replied' ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                     >
-                        Replied
+                        {t('replied')}
                     </button>
                     <button
                         onClick={() => setSelectedFilter('positive')}
                         className={`px-4 py-2 rounded-lg transition ${selectedFilter === 'positive' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                     >
-                        Positive (4-5★)
+                        {t('positiveFilter')}
                     </button>
                     <button
                         onClick={() => setSelectedFilter('negative')}
                         className={`px-4 py-2 rounded-lg transition ${selectedFilter === 'negative' ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                     >
-                        Negative (1-2★)
+                        {t('negativeFilter')}
                     </button>
                 </div>
             </div>
@@ -189,7 +189,7 @@ export default function BusinessReviewDashboard() {
             {isLoading && (
                 <div className="flex items-center justify-center py-12">
                     <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-                    <span className="ml-2 text-gray-600">Loading reviews...</span>
+                    <span className="ml-2 text-gray-600">{t('loadingReviews')}</span>
                 </div>
             )}
 
@@ -198,7 +198,7 @@ export default function BusinessReviewDashboard() {
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
                     <AlertCircle className="text-red-600 mt-1 shrink-0" size={20} />
                     <div>
-                        <h3 className="font-semibold text-red-900 mb-1">Error loading reviews</h3>
+                        <h3 className="font-semibold text-red-900 mb-1">{t('errorLoading')}</h3>
                         <p className="text-sm text-red-700">{error}</p>
                     </div>
                 </div>
@@ -208,11 +208,11 @@ export default function BusinessReviewDashboard() {
             {!isLoading && !error && filteredReviews.length === 0 && (
                 <div className="bg-white rounded-lg shadow p-12 text-center">
                     <MessageSquare className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No reviews found</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('noReviewsFound')}</h3>
                     <p className="text-gray-600">
                         {selectedFilter === 'all'
-                            ? "You don't have any reviews yet."
-                            : `No reviews match the "${selectedFilter}" filter.`}
+                            ? t('noReviewsYet')
+                            : t('noMatchFilter')}
                     </p>
                 </div>
             )}
@@ -249,12 +249,12 @@ export default function BusinessReviewDashboard() {
                                 {review.status === 'pending' ? (
                                     <span className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm flex items-center gap-1">
                                         <Clock size={14} />
-                                        Pending
+                                        {t('pending')}
                                     </span>
                                 ) : (
                                     <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm flex items-center gap-1">
                                         <CheckCircle size={14} />
-                                        Replied
+                                        {t('replied')}
                                     </span>
                                 )}
                             </div>
@@ -267,7 +267,7 @@ export default function BusinessReviewDashboard() {
                                 <div className="flex items-start gap-3">
                                     <MessageSquare size={16} className="text-blue-500 mt-1" />
                                     <div className="flex-1">
-                                        <p className="text-sm font-semibold text-gray-900 mb-1">Your reply</p>
+                                        <p className="text-sm font-semibold text-gray-900 mb-1">{t('yourReply')}</p>
                                         <p className="text-sm text-gray-700">{review.reply}</p>
                                         {review.replyDate && (
                                             <p className="text-xs text-gray-500 mt-2">{formatDate(review.replyDate)}</p>
@@ -277,11 +277,11 @@ export default function BusinessReviewDashboard() {
                             </div>
                         ) : (
                             <div className="bg-gray-50 rounded-lg p-4 mt-4">
-                                <label className="block text-sm font-semibold text-gray-900 mb-2">Reply to this review</label>
+                                <label className="block text-sm font-semibold text-gray-900 mb-2">{t('replyToReview')}</label>
                                 <textarea
                                     className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     rows={3}
-                                    placeholder="Write your reply..."
+                                    placeholder={t('writeReply')}
                                     value={replyText[review.id] || ''}
                                     onChange={(e) => setReplyText(prev => ({ ...prev, [review.id]: e.target.value }))}
                                 />
@@ -290,7 +290,7 @@ export default function BusinessReviewDashboard() {
                                     disabled={isLoading || !replyText[review.id]?.trim()}
                                     className="mt-3 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    {isLoading ? 'Sending...' : 'Send Reply'}
+                                    {isLoading ? t('sending') : t('sendReply')}
                                 </button>
                             </div>
                         )}
@@ -306,17 +306,17 @@ export default function BusinessReviewDashboard() {
                         disabled={apiPage === 0}
                         className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                     >
-                        Previous
+                        {t('previous')}
                     </button>
                     <span className="px-4 py-2 text-gray-600">
-                        Page {apiPage + 1} of {totalPages}
+                        {t('page')} {apiPage + 1} {t('of')} {totalPages}
                     </span>
                     <button
                         onClick={() => handlePageChange(apiPage + 1)}
                         disabled={apiPage >= totalPages - 1}
                         className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                     >
-                        Next
+                        {t('next')}
                     </button>
                 </div>
             )}
@@ -328,15 +328,15 @@ export default function BusinessReviewDashboard() {
             <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 flex items-start gap-3">
                 <AlertCircle className="text-orange-600 mt-1 shrink-0" size={20} />
                 <div>
-                    <h3 className="font-semibold text-orange-900 mb-1">You have {localStats.pendingReviews} reviews pending reply</h3>
-                    <p className="text-sm text-orange-700">Replying quickly helps increase credibility and improve customer experience.</p>
+                    <h3 className="font-semibold text-orange-900 mb-1">{t('pendingReply', { count: localStats.pendingReviews })}</h3>
+                    <p className="text-sm text-orange-700">{t('replyQuickly')}</p>
                 </div>
             </div>
 
             {isLoading && (
                 <div className="flex items-center justify-center py-12">
                     <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-                    <span className="ml-2 text-gray-600">Loading reviews...</span>
+                    <span className="ml-2 text-gray-600">{t('loadingReviews')}</span>
                 </div>
             )}
 
@@ -371,11 +371,11 @@ export default function BusinessReviewDashboard() {
                         <p className="text-gray-700 mb-4">{review.comment}</p>
 
                         <div className="bg-gray-50 rounded-lg p-4">
-                            <label className="block text-sm font-semibold text-gray-900 mb-2">Your reply</label>
+                            <label className="block text-sm font-semibold text-gray-900 mb-2">{t('yourReply')}</label>
                             <textarea
                                 className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 rows={4}
-                                placeholder="Enter your reply..."
+                                placeholder={t('enterReply')}
                                 value={replyText[review.id] || ''}
                                 onChange={(e) => setReplyText(prev => ({ ...prev, [review.id]: e.target.value }))}
                             />
@@ -385,7 +385,7 @@ export default function BusinessReviewDashboard() {
                                     disabled={isLoading || !replyText[review.id]?.trim()}
                                     className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition disabled:opacity-50"
                                 >
-                                    {isLoading ? 'Sending...' : 'Send reply'}
+                                    {isLoading ? t('sending') : t('sendReply')}
                                 </button>
                             </div>
                         </div>
@@ -395,8 +395,8 @@ export default function BusinessReviewDashboard() {
                 {!isLoading && reviews.filter(r => r.status === 'pending').length === 0 && (
                     <div className="bg-white rounded-lg shadow p-12 text-center">
                         <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">All caught up!</h3>
-                        <p className="text-gray-600">You have replied to all reviews.</p>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('allCaughtUp')}</h3>
+                        <p className="text-gray-600">{t('repliedAll')}</p>
                     </div>
                 )}
             </div>
@@ -408,12 +408,12 @@ export default function BusinessReviewDashboard() {
             <div className="bg-white rounded-lg shadow p-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                     <TrendingUp className="text-blue-500" />
-                    Sentiment Analysis
+                    {t('sentimentAnalysis')}
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <div className="flex items-center justify-between mb-2">
-                            <span className="text-gray-700">Positive reviews (4-5★)</span>
+                            <span className="text-gray-700">{t('positiveReviews')}</span>
                             <span className="font-bold text-green-600">
                                 {sentimentData.positive} ({reviews.length > 0 ? ((sentimentData.positive / reviews.length) * 100).toFixed(0) : 0}%)
                             </span>
@@ -427,7 +427,7 @@ export default function BusinessReviewDashboard() {
                     </div>
                     <div>
                         <div className="flex items-center justify-between mb-2">
-                            <span className="text-gray-700">Negative reviews (1-2★)</span>
+                            <span className="text-gray-700">{t('negativeReviews')}</span>
                             <span className="font-bold text-red-600">
                                 {sentimentData.negative} ({reviews.length > 0 ? ((sentimentData.negative / reviews.length) * 100).toFixed(0) : 0}%)
                             </span>
@@ -443,7 +443,7 @@ export default function BusinessReviewDashboard() {
             </div>
 
             <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Rating Distribution</h2>
+                <h2 className="text-xl font-bold text-gray-900 mb-6">{t('ratingDistribution')}</h2>
                 <div className="space-y-4">
                     {[5, 4, 3, 2, 1].map((rating) => {
                         const count = stats?.ratingDistribution?.[rating] || reviews.filter(r => r.rating === rating).length;
@@ -464,7 +464,7 @@ export default function BusinessReviewDashboard() {
                                         />
                                     </div>
                                 </div>
-                                <span className="text-sm text-gray-600 w-20 text-right">{count} reviews</span>
+                                <span className="text-sm text-gray-600 w-20 text-right">{count} {t('reviews')}</span>
                             </div>
                         );
                     })}
@@ -477,8 +477,8 @@ export default function BusinessReviewDashboard() {
         <div className="min-h-screen bg-gray-100 rounded-md" >
             <div className="bg-linear-to-r from-blue-600 to-blue-800 text-white p-6 rounded-md">
                 <div className="max-w-7xl mx-auto">
-                    <h1 className="text-3xl font-bold mb-2">Review Management</h1>
-                    <p className="text-blue-100">Customer review management and analysis system</p>
+                    <h1 className="text-3xl font-bold mb-2">{t('title')}</h1>
+                    <p className="text-blue-100">{t('subtitle')}</p>
                 </div>
             </div>
 
@@ -493,7 +493,7 @@ export default function BusinessReviewDashboard() {
                                 }`}
                         >
                             <Star size={18} />
-                            All Reviews
+                            {t('allReviews')}
                         </button>
                         <button
                             onClick={() => setCurrentPage('pending')}
@@ -503,7 +503,7 @@ export default function BusinessReviewDashboard() {
                                 }`}
                         >
                             <Clock size={18} />
-                            Pending
+                            {t('pending')}
                             {localStats.pendingReviews > 0 && (
                                 <span className="bg-orange-500 text-white text-xs px-2 py-1 rounded-full">
                                     {localStats.pendingReviews}
@@ -518,7 +518,7 @@ export default function BusinessReviewDashboard() {
                                 }`}
                         >
                             <TrendingUp size={18} />
-                            Analytics
+                            {t('analytics')}
                         </button>
                     </nav>
                 </div>

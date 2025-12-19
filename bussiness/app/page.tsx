@@ -1,6 +1,7 @@
 'use client';
 
 import { Star, MessageSquare, TrendingUp, Clock, Package, MapPin } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 const kpiData = [
     { title: 'Average Rating', value: '4.5', change: '+0.3', icon: Star, color: 'text-yellow-500', bgColor: 'bg-yellow-50' },
@@ -36,6 +37,7 @@ const topicsNegative = [
 ];
 
 export default function DashboardPage() {
+    const t = useTranslations('dashboard');
     return (
         <div className="space-y-8">
             {/* KPI Cards */}
@@ -63,7 +65,7 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Star Distribution */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <h2 className="text-xl font-bold text-gray-900 mb-6">⭐ Star Distribution</h2>
+                    <h2 className="text-xl font-bold text-gray-900 mb-6">⭐ {t('starDistribution')}</h2>
                     <div className="space-y-4">
                         {starDistribution.map((item) => (
                             <div key={item.stars} className="space-y-2">
@@ -87,24 +89,24 @@ export default function DashboardPage() {
 
                 {/* Review Trend */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <h2 className="text-xl font-bold text-gray-900 mb-6">📈 Review Trends</h2>
+                    <h2 className="text-xl font-bold text-gray-900 mb-6">📈 {t('reviewTrends')}</h2>
                     <div className="space-y-4">
                         <div className="grid grid-cols-3 gap-4">
                             <div className="text-center p-4 bg-green-50 rounded-lg">
                                 <p className="text-2xl font-bold text-green-600">+15%</p>
-                                <p className="text-sm text-gray-600 mt-1">This Month</p>
+                                <p className="text-sm text-gray-600 mt-1">{t('thisMonth')}</p>
                             </div>
                             <div className="text-center p-4 bg-blue-50 rounded-lg">
                                 <p className="text-2xl font-bold text-blue-600">289</p>
-                                <p className="text-sm text-gray-600 mt-1">Last Month</p>
+                                <p className="text-sm text-gray-600 mt-1">{t('lastMonth')}</p>
                             </div>
                             <div className="text-center p-4 bg-purple-50 rounded-lg">
                                 <p className="text-2xl font-bold text-purple-600">4.5</p>
-                                <p className="text-sm text-gray-600 mt-1">Avg Rating</p>
+                                <p className="text-sm text-gray-600 mt-1">{t('averageRating')}</p>
                             </div>
                         </div>
                         <div className="pt-4">
-                            <p className="text-sm text-gray-600 mb-2">Monthly Progress</p>
+                            <p className="text-sm text-gray-600 mb-2">{t('monthlyProgress')}</p>
                             <div className="flex items-end gap-2 h-32">
                                 {[60, 70, 65, 80, 85, 90].map((height, i) => (
                                     <div key={i} className="flex-1 bg-blue-500 rounded-t hover:bg-blue-600 transition-colors" style={{ height: `${height}%` }}></div>
@@ -127,7 +129,7 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Positive Topics */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <h2 className="text-xl font-bold text-gray-900 mb-6">🎯 Top Positive Topics</h2>
+                    <h2 className="text-xl font-bold text-gray-900 mb-6">🎯 {t('topPositiveTopics')}</h2>
                     <div className="space-y-4">
                         {topicsPositive.map((item, index) => (
                             <div key={index}>
@@ -146,7 +148,7 @@ export default function DashboardPage() {
 
                 {/* Negative Topics */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <h2 className="text-xl font-bold text-gray-900 mb-6">⚠️ Topics Need Improvement</h2>
+                    <h2 className="text-xl font-bold text-gray-900 mb-6">⚠️ {t('topicsNeedImprovement')}</h2>
                     <div className="space-y-4">
                         {topicsNegative.map((item, index) => (
                             <div key={index}>
@@ -166,7 +168,7 @@ export default function DashboardPage() {
 
             {/* Recent Reviews */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6">📋 Recent Reviews (Need Response)</h2>
+                <h2 className="text-xl font-bold text-gray-900 mb-6">📋 {t('recentNeedResponse')}</h2>
                 <div className="space-y-4">
                     {recentReviews.map((review) => (
                         <div key={review.id} className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
@@ -186,14 +188,13 @@ export default function DashboardPage() {
                                         <span>{review.branch}</span>
                                     </div>
                                     <p className="text-gray-700 mb-3">{review.text}</p>
-                                    <span className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${
-                                        review.sentiment === 'positive' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
-                                    }`}>
-                                        {review.sentiment === 'positive' ? '😊 Positive' : '😐 Neutral'}
+                                    <span className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${review.sentiment === 'positive' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
+                                        }`}>
+                                        {review.sentiment === 'positive' ? 'Positive' : 'Neutral'}
                                     </span>
                                 </div>
                                 <button className="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors">
-                                    Reply
+                                    {t('reply')}
                                 </button>
                             </div>
                         </div>
