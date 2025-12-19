@@ -97,7 +97,7 @@ export default function AboutReviews() {
                 </div>
 
                 {/* Recent Reviews */}
-                <div>
+                {/* <div>
                     <div className="flex items-center justify-between mb-6 sm:mb-8">
                         <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
                             Recent Reviews
@@ -120,7 +120,6 @@ export default function AboutReviews() {
                         </div>
                     </div>
 
-                    {/* Loading State */}
                     {isLoading ? (
                         <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-4 lg:grid lg:grid-cols-4 lg:overflow-visible">
                             {[1, 2, 3, 4].map((i) => (
@@ -145,7 +144,7 @@ export default function AboutReviews() {
                             <p className="text-gray-600">No reviews found yet.</p>
                         </div>
                     ) : (
-                        /* Reviews Grid - Scrollable on mobile */
+                       
                         <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-4 snap-x snap-mandatory lg:grid lg:grid-cols-4 lg:overflow-visible scrollbar-hide">
                             {displayedReviews.map((review, index) => (
                                 <Link
@@ -188,7 +187,7 @@ export default function AboutReviews() {
                             ))}
                         </div>
                     )}
-                </div>
+                </div> */}
             </div>
         </div>
     );

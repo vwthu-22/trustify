@@ -49,7 +49,7 @@ export default function Home() {
         <Suggest />
         <Bank />
         <Travel />
-        {/* <RecentReview /> */}
+        <RecentReview />
       </div>
     </div>
   );

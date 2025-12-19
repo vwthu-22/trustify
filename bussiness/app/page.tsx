@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { Star, MessageSquare, TrendingUp, Clock, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useReviewStore } from '@/store/useReviewStore';
+import { getBarColor, getIndividualStarColor } from '@/utils/ratingColors';
 
 export default function DashboardPage() {
     const t = useTranslations('dashboard');
@@ -131,9 +132,7 @@ export default function DashboardPage() {
                                     </div>
                                     <div className="w-full bg-gray-200 rounded-full h-3">
                                         <div
-                                            className={`h-3 rounded-full transition-all ${item.stars >= 4 ? 'bg-green-600' :
-                                                    item.stars === 3 ? 'bg-yellow-500' : 'bg-red-500'
-                                                }`}
+                                            className={`h-3 rounded-full transition-all ${getBarColor(item.stars)}`}
                                             style={{ width: `${item.percentage}%` }}
                                         ></div>
                                     </div>
@@ -161,10 +160,7 @@ export default function DashboardPage() {
                                                     {[...Array(5)].map((_, i) => (
                                                         <Star
                                                             key={i}
-                                                            className={`h-4 w-4 ${i < review.rating
-                                                                    ? 'fill-yellow-400 text-yellow-400'
-                                                                    : 'text-gray-300'
-                                                                }`}
+                                                            className={`h-4 w-4 ${getIndividualStarColor(i, review.rating)}`}
                                                         />
                                                     ))}
                                                 </div>
@@ -175,8 +171,8 @@ export default function DashboardPage() {
                                             </p>
                                         </div>
                                         <span className={`px-2 py-1 text-xs rounded-full ${review.status === 'replied'
-                                                ? 'bg-green-100 text-green-700'
-                                                : 'bg-yellow-100 text-yellow-700'
+                                            ? 'bg-green-100 text-green-700'
+                                            : 'bg-yellow-100 text-yellow-700'
                                             }`}>
                                             {review.status === 'replied' ? t('replied') || 'Replied' : t('pending') || 'Pending'}
                                         </span>
