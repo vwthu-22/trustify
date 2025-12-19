@@ -28,7 +28,12 @@
         "subscription": "Gói dịch vụ",
         "settings": "Cài đặt",
         "logout": "Đăng xuất",
-        "company": "Công ty"
+        "company": "Công ty",
+        "connect": "Kết nối",
+        "getReviews": "Nhận đánh giá",
+        "integrations": "Tích hợp",
+        "manageReviews": "Quản lý đánh giá",
+        "verification": "Xác minh"
     },
     "dashboard": {
         "title": "Tổng quan",

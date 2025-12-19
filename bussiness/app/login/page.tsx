@@ -3,8 +3,10 @@
 import React, { useState } from 'react';
 import { Check, X, Mail, ArrowLeft, ExternalLink } from 'lucide-react';
 import { useCompanyStore } from '@/store/useCompanyStore';
+import { useTranslations } from 'next-intl';
 
 export default function LoginPage() {
+    const t = useTranslations('login');
     const { sendMagicLink, isLoading, error: storeError, magicLinkSent, resetMagicLinkState, clearError } = useCompanyStore();
 
     const [email, setEmail] = useState('');

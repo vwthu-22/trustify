@@ -4,8 +4,10 @@ import { Star, MessageSquare, Clock, TrendingUp, AlertCircle, CheckCircle, Filte
 import { useReviewStore } from '@/store/useReviewStore';
 import { useCompanyStore } from '@/store/useCompanyStore';
 import { getIndividualStarColor, getStarFillColor, getBarColor, STAR_FILL_COLORS } from '@/utils/ratingColors';
+import { useTranslations } from 'next-intl';
 
 export default function BusinessReviewDashboard() {
+    const t = useTranslations('reviews');
     const [currentPage, setCurrentPage] = useState('all-reviews');
     const [selectedFilter, setSelectedFilter] = useState('all');
     const [replyText, setReplyText] = useState<{ [key: number]: string }>({});

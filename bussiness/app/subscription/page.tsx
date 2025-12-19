@@ -4,11 +4,13 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Crown, Check, Zap, Shield, Loader2, Star } from 'lucide-react';
 import usePlanStore from '@/store/usePlanStore';
+import { useTranslations } from 'next-intl';
 
 export default function SubscriptionPage() {
     const router = useRouter();
     const { plans, isLoading, error, fetchPlans } = usePlanStore();
     const [billingPeriod, setBillingPeriod] = useState<'month' | 'year'>('month');
+    const t = useTranslations('subscription');
 
     // Fetch plans on mount
     useEffect(() => {
@@ -80,14 +82,14 @@ export default function SubscriptionPage() {
         <div className="space-y-8">
             {/* Header */}
             <div className="text-center">
-                <h2 className="text-3xl font-bold text-gray-900">Choose Your Plan</h2>
-                <p className="text-gray-500 mt-2">Select the perfect plan for your business needs</p>
+                <h2 className="text-3xl font-bold text-gray-900">{t('choosePlan')}</h2>
+                <p className="text-gray-500 mt-2">{t('selectPlan')}</p>
             </div>
 
             {/* Billing Toggle */}
             <div className="flex items-center justify-center gap-4">
                 <span className={`font-medium ${billingPeriod === 'month' ? 'text-gray-900' : 'text-gray-500'}`}>
-                    Monthly
+                    {t('monthly')}
                 </span>
                 <button
                     onClick={() => setBillingPeriod(billingPeriod === 'month' ? 'year' : 'month')}
@@ -100,11 +102,11 @@ export default function SubscriptionPage() {
                     />
                 </button>
                 <span className={`font-medium ${billingPeriod === 'year' ? 'text-gray-900' : 'text-gray-500'}`}>
-                    Yearly
+                    {t('yearly')}
                 </span>
                 {billingPeriod === 'year' && (
                     <span className="px-3 py-1 bg-green-100 text-green-700 text-sm font-semibold rounded-full">
-                        Save 17%
+                        {t('savePercent')}
                     </span>
                 )}
             </div>
@@ -150,7 +152,7 @@ export default function SubscriptionPage() {
                                 {isRecommended && (
                                     <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                                         <span className="px-4 py-1 bg-green-600 text-white text-sm font-bold rounded-full shadow-lg whitespace-nowrap">
-                                            Recommended
+                                            {t('recommended')}
                                         </span>
                                     </div>
                                 )}
@@ -158,7 +160,7 @@ export default function SubscriptionPage() {
                                 {isCurrentPlan && (
                                     <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                                         <span className="px-4 py-1 bg-blue-600 text-white text-sm font-bold rounded-full shadow-lg whitespace-nowrap">
-                                            Current Plan
+                                            {t('currentPlan')}
                                         </span>
                                     </div>
                                 )}
@@ -192,7 +194,7 @@ export default function SubscriptionPage() {
                                                 : 'bg-gray-900 text-white hover:bg-gray-800'
                                         }`}
                                 >
-                                    {isCurrentPlan ? 'Current Plan' : plan.price === 0 ? 'Get Started Free' : 'Upgrade Now'}
+                                    {isCurrentPlan ? t('currentPlan') : plan.price === 0 ? t('getStartedFree') : t('upgradeNow')}
                                 </button>
 
                                 {/* Features list - grows to fill space */}
@@ -217,7 +219,7 @@ export default function SubscriptionPage() {
             {/* No Plans */}
             {!isLoading && !error && plans.length === 0 && (
                 <div className="text-center py-12 bg-gray-50 rounded-xl">
-                    <p className="text-gray-600">No subscription plans available at the moment.</p>
+                    <p className="text-gray-600">{t('noPlans')}</p>
                 </div>
             )}
         </div>

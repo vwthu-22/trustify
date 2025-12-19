@@ -6,8 +6,10 @@ import { Check, ArrowLeft, Shield, Lock, Loader2, AlertCircle } from 'lucide-rea
 import usePlanStore, { Plan } from '@/store/usePlanStore';
 import { useCompanyStore } from '@/store/useCompanyStore';
 import usePaymentStore from '@/store/usePaymentStore';
+import { useTranslations } from 'next-intl';
 
 function CheckoutContent() {
+    const t = useTranslations('checkout');
     const router = useRouter();
     const searchParams = useSearchParams();
     const planId = searchParams.get('plan');

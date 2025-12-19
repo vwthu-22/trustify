@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react';
 import { User, Building2, Mail, Phone, Lock, Bell, Globe, Save, CheckCircle, Loader2 } from 'lucide-react';
 import { useCompanyStore } from '@/store/useCompanyStore';
 import { companyApi } from '@/lib/api';
+import { useTranslations } from 'next-intl';
 
 export default function SettingsPage() {
+    const t = useTranslations('settings');
     const [saved, setSaved] = useState(false);
     const [saving, setSaving] = useState(false);
     const [activeTab, setActiveTab] = useState<'profile' | 'company' | 'security'>('profile');

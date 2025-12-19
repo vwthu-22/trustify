@@ -9,7 +9,7 @@ type Locale = 'en' | 'vi';
 
 const languages: { code: Locale; name: string; flag: string }[] = [
     { code: 'vi', name: 'Tiếng Việt', flag: '🇻🇳' },
-    { code: 'en', name: 'English', flag: '🇬🇧' },
+    { code: 'en', name: 'English', flag: 'EN' },
 ];
 
 export default function LanguageSwitcher() {

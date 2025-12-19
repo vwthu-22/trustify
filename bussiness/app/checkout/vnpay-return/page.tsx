@@ -4,8 +4,10 @@ import { useEffect, useState, Suspense, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircle, XCircle, Loader2, ArrowRight, RefreshCw, Clock } from 'lucide-react';
 import usePaymentStore from '@/store/usePaymentStore';
+import { useTranslations } from 'next-intl';
 
 function VNPayReturnContent() {
+    const t = useTranslations('payment');
     const router = useRouter();
     const searchParams = useSearchParams();
 

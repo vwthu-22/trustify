@@ -30,25 +30,25 @@ export default function Sidebar() {
     const menuItems: MenuItem[] = [
         {
             href: '/',
-            label: 'Dashboard',
+            label: t('dashboard'),
             icon: Home,
             title: 'Performance Dashboard'
         },
         {
             href: '/connect',
-            label: 'Connect',
+            label: t('connect'),
             icon: Share2,
             title: 'Connect website'
         },
         {
             href: '/reviews',
-            label: 'Reviews',
+            label: t('reviews'),
             icon: MessageSquare,
             title: 'Manage Reviews'
         },
         {
             href: '/analytics',
-            label: 'Analytics',
+            label: t('analytics'),
             icon: BarChart3,
             title: 'Analytics Dashboard',
             requiredFeature: 'Advanced Analytics',
@@ -60,7 +60,7 @@ export default function Sidebar() {
         },
         {
             href: '/invitations',
-            label: 'Get reviews',
+            label: t('getReviews'),
             icon: Send,
             title: 'Review Invitations',
             requiredFeature: 'Team Invitations',
@@ -72,7 +72,7 @@ export default function Sidebar() {
         },
         {
             href: '/widgets',
-            label: 'Share & promote',
+            label: t('widgets'),
             icon: Share2,
             title: 'Share & Promote',
             children: [
@@ -82,34 +82,34 @@ export default function Sidebar() {
         },
         {
             href: '/integrations',
-            label: 'Integrations',
+            label: t('integrations'),
             icon: Puzzle,
             title: 'Integrations & API',
             requiredFeature: 'Integrations'
         },
         {
             href: '/manage',
-            label: 'Manage Reviews',
+            label: t('manageReviews'),
             icon: Settings,
             title: 'Review Management',
             requiredFeature: 'Review Management'
         },
         {
             href: '/verification',
-            label: 'Verification',
+            label: t('verification'),
             icon: ShieldCheck,
             title: 'Business Verification',
             badge: 'Verify'
         },
         {
             href: '/subscription',
-            label: 'Subscription',
+            label: t('subscription'),
             icon: Crown,
             title: 'Subscription Plans'
         },
         {
             href: '/settings',
-            label: 'Settings',
+            label: t('settings'),
             icon: Settings,
             title: 'Account Settings'
         }
