@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { TrendingUp, TrendingDown, Star, MessageSquare, Users, Clock } from 'lucide-react';
-import { useProtectedRoute } from '@/hooks/useFeatureAccess';
 import { useTranslations } from 'next-intl';
 
 const kpiData = [
@@ -34,19 +33,8 @@ const topPerformers = [
 ];
 
 export default function AnalyticsOverviewPage() {
-    const { isAllowed, loading } = useProtectedRoute('Advanced Analytics');
     const t = useTranslations('analytics');
     const [timeRange, setTimeRange] = useState('30');
-
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center h-96">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            </div>
-        );
-    }
-
-    if (!isAllowed) return null; // Will redirect to subscription
 
     return (
         <div className="space-y-8">
