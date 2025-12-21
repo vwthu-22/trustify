@@ -85,8 +85,7 @@ export default function Sidebar() {
             href: '/verification',
             label: t('verification'),
             icon: ShieldCheck,
-            title: t('titleVerification'),
-            badge: 'Verify'
+            title: t('titleVerification')
         },
         {
             href: '/subscription',
@@ -182,7 +181,7 @@ export default function Sidebar() {
         );
     };
 
-    
+
 
     return (
         // bg-[#0f1c2d]
