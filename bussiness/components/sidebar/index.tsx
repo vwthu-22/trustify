@@ -53,8 +53,7 @@ export default function Sidebar() {
 
             children: [
                 { href: '/analytics', label: t('labelOverview'), icon: TrendingUp, title: t('titleOverview') },
-                { href: '/analytics/sentiment', label: t('labelSentiment'), icon: BarChart3, title: t('titleSentiment') },
-                { href: '/analytics/branches', label: t('labelBranches'), icon: Building2, title: t('titleBranches') }
+                { href: '/analytics/sentiment', label: t('labelSentiment'), icon: BarChart3, title: t('titleSentiment') }
             ]
         },
         {
