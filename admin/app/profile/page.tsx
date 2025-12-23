@@ -133,7 +133,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Activity Log */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      {/* <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="p-6 border-b border-gray-200">
           <h3 className="text-lg font-bold text-gray-900">{t('recentActivity')}</h3>
         </div>
@@ -153,7 +153,7 @@ export default function ProfilePage() {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }

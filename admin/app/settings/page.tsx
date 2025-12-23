@@ -77,7 +77,7 @@ export default function SettingsPage() {
                     <h1 className="text-2xl font-bold text-gray-900">{t('title')}</h1>
                     <p className="text-gray-500 mt-1">{t('subtitle')}</p>
                 </div>
-                <button
+                {/* <button
                     onClick={handleSave}
                     disabled={isSaving}
                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 transition-colors flex items-center gap-2"
@@ -93,19 +93,19 @@ export default function SettingsPage() {
                             {tCommon('save')}
                         </>
                     )}
-                </button>
+                </button> */}
             </div>
 
             {/* Success Message */}
-            {showSuccess && (
+            {/* {showSuccess && (
                 <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-center gap-2">
                     <CheckCircle className="w-5 h-5" />
                     {t('saved')}
                 </div>
-            )}
+            )} */}
 
             {/* Notifications */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            {/* <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div className="p-6 border-b border-gray-200 flex items-center gap-3">
                     <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                         <Bell className="w-5 h-5 text-blue-600" />
@@ -163,7 +163,7 @@ export default function SettingsPage() {
                         />
                     </div>
                 </div>
-            </div>
+            </div> */}
 
             {/* Appearance */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -206,7 +206,7 @@ export default function SettingsPage() {
             </div>
 
             {/* Security */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            {/* <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div className="p-6 border-b border-gray-200 flex items-center gap-3">
                     <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
                         <Shield className="w-5 h-5 text-red-600" />
@@ -256,7 +256,7 @@ export default function SettingsPage() {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
 
             {/* Danger Zone */}
             <div className="bg-white rounded-xl shadow-sm border border-red-200 overflow-hidden">

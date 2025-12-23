@@ -426,7 +426,7 @@ export default function SettingsPage() {
                         {activeTab === 'security' && (
                             <div className="space-y-6">
 
-                                <div className="pt-6 border-t border-gray-200">
+                                {/* <div className="pt-6 border-t border-gray-200">
                                     <h3 className="text-lg font-bold text-gray-900 mb-4">{t('twoFactorAuth')}</h3>
                                     <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
                                         <p className="text-sm text-gray-700 mb-4">
@@ -436,7 +436,7 @@ export default function SettingsPage() {
                                             {t('enable2FA')}
                                         </button>
                                     </div>
-                                </div>
+                                </div> */}
 
                                 <div className="pt-6 border-t border-gray-200">
                                     <h3 className="text-lg font-bold text-gray-900 mb-4">{t('dangerZone')}</h3>
@@ -453,7 +453,7 @@ export default function SettingsPage() {
                         )}
 
                         {/* Save Button */}
-                        <div className="mt-6 pt-6 border-t border-gray-200">
+                        {/* <div className="mt-6 pt-6 border-t border-gray-200">
                             <button
                                 onClick={handleSave}
                                 disabled={saving}
@@ -471,7 +471,7 @@ export default function SettingsPage() {
                                     </>
                                 )}
                             </button>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>
