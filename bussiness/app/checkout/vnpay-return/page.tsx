@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, Suspense, useCallback } from 'react';
+import { useEffect, useState, Suspense, useCallback, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircle, XCircle, Loader2, ArrowRight, RefreshCw, Clock } from 'lucide-react';
 import usePaymentStore from '@/store/usePaymentStore';
@@ -11,80 +11,101 @@ function VNPayReturnContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    // Store
-    const { getPaymentDetail, currentPayment, isLoading, clearCurrentPayment } = usePaymentStore();
+    // ✅ Lấy store functions và state riêng biệt
+    const getPaymentDetail = usePaymentStore(state => state.getPaymentDetail);
+    const clearCurrentPayment = usePaymentStore(state => state.clearCurrentPayment);
+    const currentPayment = usePaymentStore(state => state.currentPayment);
+    const isLoading = usePaymentStore(state => state.isLoading);
 
     // Local state
     const [status, setStatus] = useState<'loading' | 'success' | 'failed' | 'pending'>('loading');
     const [error, setError] = useState<string | null>(null);
     const [pollCount, setPollCount] = useState(0);
 
-    // Get txnRef from URL (VNPay gửi về) hoặc localStorage
+    // ✅ Refs để chặn duplicate calls
+    const hasFetched = useRef(false);
+    const isPolling = useRef(false);
+
+    // Get txnRef
     const vnp_TxnRef = searchParams.get('vnp_TxnRef');
     const storedTxnRef = typeof window !== 'undefined' ? localStorage.getItem('vnpay_txnRef') : null;
     const txnRef = vnp_TxnRef || storedTxnRef;
 
-    // Verify payment status with backend
-    const verifyPayment = useCallback(async () => {
+    // ✅ Verify payment function
+    const verifyPayment = useCallback(async (isManualRefresh = false) => {
         if (!txnRef) {
             setError('Transaction reference not found');
             setStatus('failed');
             return;
         }
 
-        // Gọi store action để lấy payment detail
-        const detail = await getPaymentDetail(txnRef);
+        if (isPolling.current && !isManualRefresh) {
+            return;
+        }
 
-        if (detail) {
-            switch (detail.status) {
-                case 'SUCCESS':
-                    setStatus('success');
-                    // Clear localStorage
-                    clearCurrentPayment();
-                    break;
-                case 'FAILED':
-                    setStatus('failed');
-                    setError('Payment was not successful');
-                    break;
-                case 'PENDING':
-                default:
-                    setStatus('pending');
-                    break;
+        isPolling.current = true;
+
+        try {
+            const detail = await getPaymentDetail(txnRef);
+
+            if (detail) {
+                switch (detail.status) {
+                    case 'SUCCESS':
+                        setStatus('success');
+                        clearCurrentPayment();
+                        break;
+                    case 'FAILED':
+                        setStatus('failed');
+                        setError('Payment was not successful');
+                        break;
+                    case 'PENDING':
+                    default:
+                        setStatus('pending');
+                        break;
+                }
+            } else {
+                setStatus('pending');
             }
-        } else {
-            // Nếu chưa có data, có thể IPN chưa xử lý xong
-            setStatus('pending');
+        } finally {
+            isPolling.current = false;
         }
     }, [txnRef, getPaymentDetail, clearCurrentPayment]);
 
-    // Initial verification
+    // ✅ Initial fetch - CHỈ 1 LẦN
     useEffect(() => {
-        verifyPayment();
-    }, [verifyPayment]);
+        if (txnRef && !hasFetched.current) {
+            hasFetched.current = true;
+            verifyPayment();
+        }
+    }, [txnRef]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    // Poll for status updates (nếu PENDING)
+    // ✅ Polling với kiểm soát
     useEffect(() => {
-        if (status === 'pending' && pollCount < 5) {
-            const timer = setTimeout(async () => {
+        let timer: NodeJS.Timeout;
+
+        if (status === 'pending' && pollCount < 5 && hasFetched.current) {
+            timer = setTimeout(() => {
                 console.log(`Polling attempt ${pollCount + 1}/5...`);
-                await verifyPayment();
+                verifyPayment();
                 setPollCount(prev => prev + 1);
-            }, 2000); // Poll mỗi 2 giây
-
-            return () => clearTimeout(timer);
+            }, 3000);
         }
 
-        // Nếu poll 5 lần vẫn pending, có thể có vấn đề
         if (status === 'pending' && pollCount >= 5) {
-            setError('Payment verification is taking longer than expected. Please check your payment history.');
+            setError('Payment verification is taking longer than expected.');
         }
-    }, [status, pollCount, verifyPayment]);
+
+        return () => {
+            if (timer) clearTimeout(timer);
+        };
+    }, [status, pollCount]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Manual refresh
     const handleRefresh = async () => {
         setPollCount(0);
         setStatus('loading');
-        await verifyPayment();
+        isPolling.current = false;
+        await verifyPayment(true);
     };
 
     // Format price
@@ -105,7 +126,7 @@ function VNPayReturnContent() {
         );
     }
 
-    // Pending state - đang chờ IPN xử lý
+    // Pending state
     if (status === 'pending') {
         return (
             <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-gray-50 flex items-center justify-center p-4">
@@ -115,9 +136,7 @@ function VNPayReturnContent() {
                     </div>
 
                     <h1 className="text-2xl font-bold text-gray-900 mb-3">{t('processing')}</h1>
-                    <p className="text-gray-600 mb-6">
-                        {t('processingDesc')}
-                    </p>
+                    <p className="text-gray-600 mb-6">{t('processingDesc')}</p>
 
                     {txnRef && (
                         <div className="bg-gray-50 rounded-lg p-4 mb-6 text-left">
@@ -187,9 +206,7 @@ function VNPayReturnContent() {
                     )}
 
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-left">
-                        <p className="text-sm text-blue-900">
-                            {t('subscriptionActive')}
-                        </p>
+                        <p className="text-sm text-blue-900">{t('subscriptionActive')}</p>
                     </div>
 
                     <button
@@ -221,12 +238,6 @@ function VNPayReturnContent() {
                         <p className="font-mono text-sm text-gray-900 break-all">{txnRef}</p>
                     </div>
                 )}
-
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-left">
-                    <p className="text-sm text-red-900">
-                        {t('failedDesc')}
-                    </p>
-                </div>
 
                 <div className="flex flex-col sm:flex-row gap-3">
                     <button
