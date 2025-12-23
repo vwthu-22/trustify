@@ -2,10 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import { Check, Plus, X, Edit2, Trash2, Loader2, DollarSign, Calendar, ToggleLeft, ToggleRight, Download, CreditCard, LayoutGrid, List } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import usePlanFeatureStore, { Plan, Feature, CreatePlanData, CreateFeatureData } from '@/store/usePlanFeatureStore'
 import usePaymentStore, { PaymentTransaction } from '@/store/usePaymentStore'
 
 export default function BillingPage() {
+    const t = useTranslations('billing')
+    const tCommon = useTranslations('common')
+
     const {
         plans,
         features,
@@ -210,12 +214,12 @@ export default function BillingPage() {
     const getStatusDisplay = (status: string) => {
         switch (status) {
             case 'SUCCESS':
-                return { label: 'Paid', className: 'bg-green-100 text-green-700' }
+                return { label: t('transactions.paid'), className: 'bg-green-100 text-green-700' }
             case 'FAILED':
-                return { label: 'Failed', className: 'bg-red-100 text-red-700' }
+                return { label: t('transactions.failed'), className: 'bg-red-100 text-red-700' }
             case 'PENDING':
             default:
-                return { label: 'Pending', className: 'bg-yellow-100 text-yellow-700' }
+                return { label: t('transactions.pending'), className: 'bg-yellow-100 text-yellow-700' }
         }
     }
 
@@ -336,35 +340,36 @@ export default function BillingPage() {
                             {/* Transactions Table */}
                             <div className="lg:col-span-2">
                                 <div className="flex justify-between items-center mb-4">
-                                    <h2 className="text-lg font-bold text-gray-900">Recent Transactions</h2>
+                                    <h2 className="text-lg font-bold text-gray-900">{t('transactions.title')}</h2>
                                     <button className="text-sm text-blue-600 hover:underline flex items-center gap-1">
                                         <Download className="w-4 h-4" />
-                                        Export
+                                        {t('transactions.export')}
                                     </button>
                                 </div>
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-left text-sm">
                                         <thead className="bg-gray-50 text-gray-600 font-medium">
                                             <tr>
-                                                <th className="px-4 py-3 rounded-l-lg">TXN Ref</th>
-                                                <th className="px-4 py-3">Plan / Bank</th>
-                                                <th className="px-4 py-3">Amount</th>
-                                                <th className="px-4 py-3">Status</th>
-                                                <th className="px-4 py-3 rounded-r-lg text-right">Date</th>
+                                                <th className="px-4 py-3 rounded-l-lg">{t('transactions.txnRef')}</th>
+                                                <th className="px-4 py-3">{t('transactions.company')}</th>
+                                                <th className="px-4 py-3">{t('transactions.planBank')}</th>
+                                                <th className="px-4 py-3">{t('transactions.amount')}</th>
+                                                <th className="px-4 py-3">{t('transactions.status')}</th>
+                                                <th className="px-4 py-3 rounded-r-lg text-right">{t('transactions.date')}</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-100">
                                             {isLoadingTransactions && transactions.length === 0 ? (
                                                 <tr>
-                                                    <td colSpan={5} className="px-4 py-8 text-center">
+                                                    <td colSpan={6} className="px-4 py-8 text-center">
                                                         <Loader2 className="w-6 h-6 animate-spin mx-auto text-gray-400" />
-                                                        <p className="text-sm text-gray-500 mt-2">Loading transactions...</p>
+                                                        <p className="text-sm text-gray-500 mt-2">{t('transactions.loading')}</p>
                                                     </td>
                                                 </tr>
                                             ) : transactions.length === 0 ? (
                                                 <tr>
-                                                    <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
-                                                        No transactions found
+                                                    <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
+                                                        {t('transactions.noTransactions')}
                                                     </td>
                                                 </tr>
                                             ) : (
@@ -377,6 +382,9 @@ export default function BillingPage() {
                                                                 {trx.vnpTransactionNo && (
                                                                     <div className="text-xs text-gray-400">VNPay: {trx.vnpTransactionNo}</div>
                                                                 )}
+                                                            </td>
+                                                            <td className="px-4 py-3 text-gray-600">
+                                                                <div className="font-medium">{trx.companyName || `Company #${trx.companyId}`}</div>
                                                             </td>
                                                             <td className="px-4 py-3 text-gray-600">
                                                                 <div>{getPlanName(trx.planId)}</div>
@@ -398,7 +406,7 @@ export default function BillingPage() {
                                     {transactions.length > 10 && (
                                         <div className="text-center py-3 border-t border-gray-100">
                                             <button className="text-sm text-blue-600 hover:underline">
-                                                View all {transactions.length} transactions →
+                                                {t('transactions.viewAll', { count: transactions.length })}
                                             </button>
                                         </div>
                                     )}
@@ -407,7 +415,7 @@ export default function BillingPage() {
 
                             {/* Plans Summary */}
                             <div className="space-y-4">
-                                <h2 className="text-lg font-bold text-gray-900">Plans</h2>
+                                <h2 className="text-lg font-bold text-gray-900">{t('tabs.plans')}</h2>
                                 {isLoading && plans.length === 0 ? (
                                     <div className="animate-pulse space-y-3">
                                         {[1, 2, 3].map((i) => (

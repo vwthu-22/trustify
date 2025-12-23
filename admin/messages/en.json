@@ -199,14 +199,18 @@
         "transactions": {
             "title": "Recent Transactions",
             "export": "Export",
-            "invoiceId": "Invoice ID",
+            "txnRef": "TXN Ref",
             "company": "Company",
+            "planBank": "Plan / Bank",
             "amount": "Amount",
             "status": "Status",
             "date": "Date",
             "paid": "Paid",
             "pending": "Pending",
-            "failed": "Failed"
+            "failed": "Failed",
+            "loading": "Loading transactions...",
+            "noTransactions": "No transactions found",
+            "viewAll": "View all {count} transactions →"
         },
         "plans": {
             "noPlan": "No plans yet",

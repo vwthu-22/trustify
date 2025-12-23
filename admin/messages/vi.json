@@ -199,14 +199,18 @@
     "transactions": {
       "title": "Giao dịch gần đây",
       "export": "Xuất",
-      "invoiceId": "Mã hóa đơn",
+      "txnRef": "Mã giao dịch",
       "company": "Doanh nghiệp",
+      "planBank": "Gói / Ngân hàng",
       "amount": "Số tiền",
       "status": "Trạng thái",
       "date": "Ngày",
       "paid": "Đã thanh toán",
       "pending": "Đang chờ",
-      "failed": "Thất bại"
+      "failed": "Thất bại",
+      "loading": "Đang tải giao dịch...",
+      "noTransactions": "Không tìm thấy giao dịch",
+      "viewAll": "Xem tất cả {count} giao dịch →"
     },
     "plans": {
       "noPlan": "Chưa có gói nào",
