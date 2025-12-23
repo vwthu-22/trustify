@@ -1,13 +1,59 @@
 'use client'
 
+import { useEffect } from 'react'
 import StatCard from '@/components/Startcard'
 import PaymentsChart from '@/components/PaymentsChart'
 import ProfitChart from '@/components/ProfitChart'
 import { Eye, DollarSign, Package, Users } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import useCompanyManagementStore from '@/store/useCompanyManagementStore'
+import useUserManagementStore from '@/store/useUserManagementStore'
+import usePaymentStore from '@/store/usePaymentStore'
 
 export default function DashboardPage() {
   const t = useTranslations('dashboard')
+
+  // Fetch data from stores
+  const { companies, totalCompanies, fetchCompanies } = useCompanyManagementStore()
+  const { users, totalUsers, fetchUsers } = useUserManagementStore()
+  const { transactions, fetchAllTransactions } = usePaymentStore()
+
+  // Fetch data on mount
+  useEffect(() => {
+    fetchCompanies(0, 100) // Fetch up to 100 companies
+    fetchUsers(0, 100)     // Fetch up to 100 users
+    fetchAllTransactions() // Fetch all transactions
+  }, [fetchCompanies, fetchUsers, fetchAllTransactions])
+
+  // Calculate total revenue from successful transactions
+  const totalRevenue = transactions
+    .filter(t => t.status === 'SUCCESS')
+    .reduce((sum, t) => sum + t.amount, 0)
+
+  // Format number to K/M format
+  const formatNumber = (num: number): string => {
+    if (num >= 1000000) {
+      return (num / 1000000).toFixed(1) + 'M'
+    }
+    if (num >= 1000) {
+      return (num / 1000).toFixed(1) + 'K'
+    }
+    return num.toString()
+  }
+
+  // Format currency (VND)
+  const formatCurrency = (amount: number): string => {
+    if (amount >= 1000000) {
+      return (amount / 1000000).toFixed(1) + 'M ₫'
+    }
+    if (amount >= 1000) {
+      return (amount / 1000).toFixed(0) + 'K ₫'
+    }
+    return amount.toLocaleString('vi-VN') + ' ₫'
+  }
+
+  // Calculate total reviews (placeholder - you may need a reviews API)
+  const totalReviews = companies.reduce((sum, c: any) => sum + (c.reviewCount || 0), 0)
 
   return (
     <>
@@ -21,34 +67,34 @@ export default function DashboardPage() {
         <StatCard
           icon={<Eye className="w-6 h-6" />}
           iconBgColor="bg-green-500"
-          value="3.5K"
-          label={t('totalViews')}
-          change={0.43}
+          value={formatNumber(totalReviews || 0)}
+          label={t('totalReviews')}
+          change={0}
           isPositive={true}
         />
         <StatCard
           icon={<DollarSign className="w-6 h-6" />}
           iconBgColor="bg-orange-500"
-          value="$4.2K"
+          value={formatCurrency(totalRevenue)}
           label={t('totalRevenue')}
-          change={4.35}
+          change={0}
           isPositive={true}
         />
         <StatCard
           icon={<Package className="w-6 h-6" />}
           iconBgColor="bg-purple-600"
-          value="3.5K"
+          value={formatNumber(totalCompanies || companies.length)}
           label={t('totalCompanies')}
-          change={2.59}
+          change={0}
           isPositive={true}
         />
         <StatCard
           icon={<Users className="w-6 h-6" />}
           iconBgColor="bg-cyan-500"
-          value="3.5K"
+          value={formatNumber(totalUsers || users.length)}
           label={t('totalUsers')}
-          change={-0.95}
-          isPositive={false}
+          change={0}
+          isPositive={true}
         />
       </div>
 
