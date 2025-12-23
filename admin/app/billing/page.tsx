@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Check, Plus, X, Edit2, Trash2, Loader2, DollarSign, Calendar, ToggleLeft, ToggleRight, Download, CreditCard, LayoutGrid, List } from 'lucide-react'
+import { Check, Plus, X, Edit2, Trash2, Loader2, DollarSign, Calendar, ToggleLeft, ToggleRight, Download, CreditCard, LayoutGrid, List, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import usePlanFeatureStore, { Plan, Feature, CreatePlanData, CreateFeatureData } from '@/store/usePlanFeatureStore'
 import usePaymentStore, { PaymentTransaction } from '@/store/usePaymentStore'
@@ -58,6 +58,15 @@ export default function BillingPage() {
         isLoading: isLoadingTransactions,
         fetchAllTransactions,
     } = usePaymentStore()
+
+    // Pagination state for transactions
+    const [transactionPage, setTransactionPage] = useState(0)
+    const transactionsPerPage = 5
+    const totalTransactionPages = Math.ceil(transactions.length / transactionsPerPage)
+    const paginatedTransactions = transactions.slice(
+        transactionPage * transactionsPerPage,
+        (transactionPage + 1) * transactionsPerPage
+    )
 
     // Fetch data on mount
     useEffect(() => {
@@ -373,7 +382,7 @@ export default function BillingPage() {
                                                     </td>
                                                 </tr>
                                             ) : (
-                                                transactions.slice(0, 10).map((trx) => {
+                                                paginatedTransactions.map((trx) => {
                                                     const statusDisplay = getStatusDisplay(trx.status)
                                                     return (
                                                         <tr key={trx.id} className="hover:bg-gray-50 transition-colors">
@@ -403,11 +412,36 @@ export default function BillingPage() {
                                             )}
                                         </tbody>
                                     </table>
-                                    {transactions.length > 10 && (
-                                        <div className="text-center py-3 border-t border-gray-100">
-                                            <button className="text-sm text-blue-600 hover:underline">
-                                                {t('transactions.viewAll', { count: transactions.length })}
-                                            </button>
+
+                                    {/* Pagination */}
+                                    {transactions.length > 0 && (
+                                        <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
+                                            <div className="text-sm text-gray-500">
+                                                {t('transactions.showing')} {transactionPage * transactionsPerPage + 1} {t('transactions.to')}{' '}
+                                                {Math.min((transactionPage + 1) * transactionsPerPage, transactions.length)} {t('transactions.of')}{' '}
+                                                {transactions.length}
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    onClick={() => setTransactionPage(prev => Math.max(0, prev - 1))}
+                                                    disabled={transactionPage === 0}
+                                                    className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                                                >
+                                                    <ChevronLeft className="w-4 h-4" />
+                                                    {t('transactions.previous')}
+                                                </button>
+                                                <div className="text-sm text-gray-600">
+                                                    {transactionPage + 1} / {totalTransactionPages || 1}
+                                                </div>
+                                                <button
+                                                    onClick={() => setTransactionPage(prev => Math.min(totalTransactionPages - 1, prev + 1))}
+                                                    disabled={transactionPage >= totalTransactionPages - 1}
+                                                    className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                                                >
+                                                    {t('transactions.next')}
+                                                    <ChevronRight className="w-4 h-4" />
+                                                </button>
+                                            </div>
                                         </div>
                                     )}
                                 </div>

@@ -210,7 +210,12 @@
             "failed": "Failed",
             "loading": "Loading transactions...",
             "noTransactions": "No transactions found",
-            "viewAll": "View all {count} transactions →"
+            "viewAll": "View all {count} transactions →",
+            "showing": "Showing",
+            "to": "to",
+            "of": "of",
+            "previous": "Previous",
+            "next": "Next"
         },
         "plans": {
             "noPlan": "No plans yet",

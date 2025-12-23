@@ -210,7 +210,12 @@
       "failed": "Thất bại",
       "loading": "Đang tải giao dịch...",
       "noTransactions": "Không tìm thấy giao dịch",
-      "viewAll": "Xem tất cả {count} giao dịch →"
+      "viewAll": "Xem tất cả {count} giao dịch →",
+      "showing": "Hiển thị",
+      "to": "đến",
+      "of": "trong số",
+      "previous": "Trước",
+      "next": "Sau"
     },
     "plans": {
       "noPlan": "Chưa có gói nào",
