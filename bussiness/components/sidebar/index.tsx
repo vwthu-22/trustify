@@ -69,12 +69,12 @@ export default function Sidebar() {
                 { href: '/invitations/templates', label: t('labelTemplates'), icon: Mail, title: t('titleTemplates') }
             ]
         },
-        {
-            href: '/integrations',
-            label: t('integrations'),
-            icon: Puzzle,
-            title: t('titleIntegrations')
-        },
+        // {
+        //     href: '/integrations',
+        //     label: t('integrations'),
+        //     icon: Puzzle,
+        //     title: t('titleIntegrations')
+        // },
         {
             href: '/manage',
             label: t('manageReviews'),

@@ -259,7 +259,7 @@ export default function VerificationPage() {
             </div>
 
             {/* FAQ */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            {/* <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h3 className="text-lg font-bold text-gray-900 mb-4">{t('faq')}</h3>
                 <div className="space-y-4">
                     <div>
@@ -281,7 +281,7 @@ export default function VerificationPage() {
                         </p>
                     </div>
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 }
