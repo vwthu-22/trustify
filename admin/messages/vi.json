@@ -59,7 +59,31 @@
     "totalUsers": "Tổng người dùng",
     "totalCompanies": "Tổng doanh nghiệp",
     "totalReviews": "Tổng đánh giá",
-    "pendingReports": "Báo cáo chờ xử lý"
+    "pendingReports": "Báo cáo chờ xử lý",
+    "successfulTransactions": "giao dịch thành công",
+    "registered": "Đã đăng ký",
+    "activeUsers": "Người dùng hoạt động",
+    "paymentsChart": {
+      "title": "Tổng quan thanh toán",
+      "success": "Thành công",
+      "total": "Tổng",
+      "paid": "Đã thanh toán",
+      "pending": "Đang chờ"
+    },
+    "profitChart": {
+      "title": "Tuần này",
+      "success": "Thành công",
+      "failed": "Thất bại",
+      "days": {
+        "mon": "T2",
+        "tue": "T3",
+        "wed": "T4",
+        "thu": "T5",
+        "fri": "T6",
+        "sat": "T7",
+        "sun": "CN"
+      }
+    }
   },
   "users": {
     "title": "Quản lý người dùng",

@@ -59,7 +59,31 @@
         "totalUsers": "Total Users",
         "totalCompanies": "Total Companies",
         "totalReviews": "Total Reviews",
-        "pendingReports": "Pending Reports"
+        "pendingReports": "Pending Reports",
+        "successfulTransactions": "successful transactions",
+        "registered": "Registered",
+        "activeUsers": "Active users",
+        "paymentsChart": {
+            "title": "Payments Overview",
+            "success": "Success",
+            "total": "Total",
+            "paid": "Paid",
+            "pending": "Pending"
+        },
+        "profitChart": {
+            "title": "This Week",
+            "success": "Success",
+            "failed": "Failed",
+            "days": {
+                "mon": "Mon",
+                "tue": "Tue",
+                "wed": "Wed",
+                "thu": "Thu",
+                "fri": "Fri",
+                "sat": "Sat",
+                "sun": "Sun"
+            }
+        }
     },
     "users": {
         "title": "User Management",

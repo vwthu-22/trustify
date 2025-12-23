@@ -61,15 +61,15 @@ export default function PaymentsChart() {
   return (
     <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-gray-900">Payments Overview</h2>
+        <h2 className="text-xl font-bold text-gray-900">{t('paymentsChart.title')}</h2>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-indigo-500"></div>
-            <span className="text-sm text-gray-600">Thành công</span>
+            <span className="text-sm text-gray-600">{t('paymentsChart.success')}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-cyan-500"></div>
-            <span className="text-sm text-gray-600">Tổng</span>
+            <span className="text-sm text-gray-600">{t('paymentsChart.total')}</span>
           </div>
         </div>
       </div>
@@ -96,7 +96,7 @@ export default function PaymentsChart() {
           <Area
             type="monotone"
             dataKey="success"
-            name="Thành công"
+            name={t('paymentsChart.success')}
             stroke="#6366F1"
             fillOpacity={1}
             fill="url(#colorSuccess)"
@@ -105,7 +105,7 @@ export default function PaymentsChart() {
           <Area
             type="monotone"
             dataKey="total"
-            name="Tổng"
+            name={t('paymentsChart.total')}
             stroke="#06B6D4"
             fillOpacity={1}
             fill="url(#colorTotal)"
@@ -116,12 +116,12 @@ export default function PaymentsChart() {
 
       <div className="flex items-center justify-around mt-6 pt-6 border-t border-gray-100">
         <div className="text-center">
-          <p className="text-sm text-gray-500 mb-1">Đã thanh toán</p>
+          <p className="text-sm text-gray-500 mb-1">{t('paymentsChart.paid')}</p>
           <p className="text-2xl font-bold text-green-600">{formatCurrency(totalSuccess)}</p>
         </div>
         <div className="h-12 w-px bg-gray-200"></div>
         <div className="text-center">
-          <p className="text-sm text-gray-500 mb-1">Đang chờ</p>
+          <p className="text-sm text-gray-500 mb-1">{t('paymentsChart.pending')}</p>
           <p className="text-2xl font-bold text-yellow-600">{formatCurrency(totalPending)}</p>
         </div>
       </div>

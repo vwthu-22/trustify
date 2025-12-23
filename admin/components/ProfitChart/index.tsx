@@ -3,13 +3,24 @@
 import { useMemo } from 'react'
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import usePaymentStore from '@/store/usePaymentStore'
+import { useTranslations } from 'next-intl'
 
 export default function ProfitChart() {
+  const t = useTranslations('dashboard')
   const { transactions } = usePaymentStore()
 
   // Process transactions into daily data for the last 7 days
   const chartData = useMemo(() => {
-    const days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
+    // Get translated day names
+    const days = [
+      t('profitChart.days.sun'),
+      t('profitChart.days.mon'),
+      t('profitChart.days.tue'),
+      t('profitChart.days.wed'),
+      t('profitChart.days.thu'),
+      t('profitChart.days.fri'),
+      t('profitChart.days.sat'),
+    ]
     const dailyData: { [key: number]: { success: number; failed: number } } = {}
 
     // Initialize all days
@@ -44,7 +55,7 @@ export default function ProfitChart() {
       success: Math.round(dailyData[dayIndex].success / 1000),
       failed: Math.round(dailyData[dayIndex].failed / 1000),
     }))
-  }, [transactions])
+  }, [transactions, t])
 
   // Calculate week totals
   const weekSuccess = transactions
@@ -68,7 +79,7 @@ export default function ProfitChart() {
     <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Tuần này</h2>
+          <h2 className="text-xl font-bold text-gray-900">{t('profitChart.title')}</h2>
           <p className="text-2xl font-bold text-green-600 mt-1">{formatCurrency(weekSuccess)}</p>
         </div>
       </div>
@@ -76,11 +87,11 @@ export default function ProfitChart() {
       <div className="flex items-center gap-4 mb-6">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-indigo-600"></div>
-          <span className="text-sm text-gray-600">Thành công</span>
+          <span className="text-sm text-gray-600">{t('profitChart.success')}</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-red-400"></div>
-          <span className="text-sm text-gray-600">Thất bại</span>
+          <span className="text-sm text-gray-600">{t('profitChart.failed')}</span>
         </div>
       </div>
 
@@ -92,8 +103,8 @@ export default function ProfitChart() {
             formatter={(value: number) => [`${value}K ₫`, '']}
             cursor={{ fill: 'rgba(0,0,0,0.05)' }}
           />
-          <Bar dataKey="success" name="Thành công" fill="#6366F1" radius={[4, 4, 0, 0]} />
-          <Bar dataKey="failed" name="Thất bại" fill="#F87171" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="success" name={t('profitChart.success')} fill="#6366F1" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="failed" name={t('profitChart.failed')} fill="#F87171" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

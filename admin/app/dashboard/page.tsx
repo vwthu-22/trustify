@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import StatCard from '@/components/Startcard'
 import PaymentsChart from '@/components/PaymentsChart'
 import ProfitChart from '@/components/ProfitChart'
-import { Eye, DollarSign, Package, Users } from 'lucide-react'
+import { DollarSign, Building2, Users } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import useCompanyManagementStore from '@/store/useCompanyManagementStore'
 import useUserManagementStore from '@/store/useUserManagementStore'
@@ -20,9 +20,9 @@ export default function DashboardPage() {
 
   // Fetch data on mount
   useEffect(() => {
-    fetchCompanies(0, 100) // Fetch up to 100 companies
-    fetchUsers(0, 100)     // Fetch up to 100 users
-    fetchAllTransactions() // Fetch all transactions
+    fetchCompanies(0, 100)
+    fetchUsers(0, 100)
+    fetchAllTransactions()
   }, [fetchCompanies, fetchUsers, fetchAllTransactions])
 
   // Calculate total revenue from successful transactions
@@ -30,19 +30,14 @@ export default function DashboardPage() {
     .filter(t => t.status === 'SUCCESS')
     .reduce((sum, t) => sum + t.amount, 0)
 
-  // Format number to K/M format
-  const formatNumber = (num: number): string => {
-    if (num >= 1000000) {
-      return (num / 1000000).toFixed(1) + 'M'
-    }
-    if (num >= 1000) {
-      return (num / 1000).toFixed(1) + 'K'
-    }
-    return num.toString()
-  }
+  // Count transactions
+  const successCount = transactions.filter(t => t.status === 'SUCCESS').length
 
   // Format currency (VND)
   const formatCurrency = (amount: number): string => {
+    if (amount >= 1000000000) {
+      return (amount / 1000000000).toFixed(1) + ' tỷ'
+    }
     if (amount >= 1000000) {
       return (amount / 1000000).toFixed(1) + 'M ₫'
     }
@@ -52,9 +47,6 @@ export default function DashboardPage() {
     return amount.toLocaleString('vi-VN') + ' ₫'
   }
 
-  // Calculate total reviews (placeholder - you may need a reviews API)
-  const totalReviews = companies.reduce((sum, c: any) => sum + (c.reviewCount || 0), 0)
-
   return (
     <>
       <div className="mb-8">
@@ -62,39 +54,28 @@ export default function DashboardPage() {
         <p className="text-gray-500 mt-1">{t('subtitle')}</p>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <StatCard
-          icon={<Eye className="w-6 h-6" />}
-          iconBgColor="bg-green-500"
-          value={formatNumber(totalReviews || 0)}
-          label={t('totalReviews')}
-          change={0}
-          isPositive={true}
-        />
+      {/* Stats Grid - 3 cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <StatCard
           icon={<DollarSign className="w-6 h-6" />}
-          iconBgColor="bg-orange-500"
+          iconBgColor="bg-green-500"
           value={formatCurrency(totalRevenue)}
           label={t('totalRevenue')}
-          change={0}
-          isPositive={true}
+          subtitle={`${successCount} ${t('successfulTransactions')}`}
         />
         <StatCard
-          icon={<Package className="w-6 h-6" />}
+          icon={<Building2 className="w-6 h-6" />}
           iconBgColor="bg-purple-600"
-          value={formatNumber(totalCompanies || companies.length)}
+          value={(totalCompanies || companies.length).toString()}
           label={t('totalCompanies')}
-          change={0}
-          isPositive={true}
+          subtitle={t('registered')}
         />
         <StatCard
           icon={<Users className="w-6 h-6" />}
           iconBgColor="bg-cyan-500"
-          value={formatNumber(totalUsers || users.length)}
+          value={(totalUsers || users.length).toString()}
           label={t('totalUsers')}
-          change={0}
-          isPositive={true}
+          subtitle={t('activeUsers')}
         />
       </div>
 
