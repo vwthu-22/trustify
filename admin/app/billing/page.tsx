@@ -3,15 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Check, Plus, X, Edit2, Trash2, Loader2, DollarSign, Calendar, ToggleLeft, ToggleRight, Download, CreditCard, LayoutGrid, List } from 'lucide-react'
 import usePlanFeatureStore, { Plan, Feature, CreatePlanData, CreateFeatureData } from '@/store/usePlanFeatureStore'
-
-// Mock transactions data - replace with API when available
-const mockTransactions = [
-    { id: 'TRX-001', company: 'Tech Solutions Ltd.', plan: 'Pro Plan', amount: 49.00, date: '2024-01-25', status: 'Paid' },
-    { id: 'TRX-002', company: 'Global Logistics', plan: 'Enterprise', amount: 199.00, date: '2024-01-24', status: 'Paid' },
-    { id: 'TRX-003', company: 'Elite Fitness', plan: 'Pro Plan', amount: 49.00, date: '2024-01-23', status: 'Failed' },
-    { id: 'TRX-004', company: 'Sunrise Cafe', plan: 'Pro Plan', amount: 49.00, date: '2024-01-22', status: 'Paid' },
-    { id: 'TRX-005', company: 'Digital Agency', plan: 'Enterprise', amount: 199.00, date: '2024-01-21', status: 'Pending' },
-]
+import usePaymentStore, { PaymentTransaction } from '@/store/usePaymentStore'
 
 export default function BillingPage() {
     const {
@@ -56,11 +48,19 @@ export default function BillingPage() {
     })
     const [selectedPlanIds, setSelectedPlanIds] = useState<number[]>([])
 
+    // Payment store
+    const {
+        transactions,
+        isLoading: isLoadingTransactions,
+        fetchAllTransactions,
+    } = usePaymentStore()
+
     // Fetch data on mount
     useEffect(() => {
         fetchPlans()
         fetchFeatures()
-    }, [fetchPlans, fetchFeatures])
+        fetchAllTransactions()
+    }, [fetchPlans, fetchFeatures, fetchAllTransactions])
 
     // Reset plan form
     const resetForm = () => {
@@ -185,10 +185,50 @@ export default function BillingPage() {
         return price === 0 ? 'Free' : `$${price.toFixed(2)}`
     }
 
-    // Calculate stats
-    const totalRevenue = mockTransactions.filter(t => t.status === 'Paid').reduce((sum, t) => sum + t.amount, 0)
+    // Format amount (VND to display)
+    const formatAmount = (amount: number) => {
+        return new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND'
+        }).format(amount)
+    }
+
+    // Format date
+    const formatDate = (dateString: string) => {
+        if (!dateString) return '-'
+        const date = new Date(dateString)
+        return date.toLocaleDateString('vi-VN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        })
+    }
+
+    // Get status display
+    const getStatusDisplay = (status: string) => {
+        switch (status) {
+            case 'SUCCESS':
+                return { label: 'Paid', className: 'bg-green-100 text-green-700' }
+            case 'FAILED':
+                return { label: 'Failed', className: 'bg-red-100 text-red-700' }
+            case 'PENDING':
+            default:
+                return { label: 'Pending', className: 'bg-yellow-100 text-yellow-700' }
+        }
+    }
+
+    // Get plan name by ID
+    const getPlanName = (planId: number) => {
+        const plan = plans.find(p => p.id === planId)
+        return plan?.name || `Plan #${planId}`
+    }
+
+    // Calculate stats from real transactions
+    const totalRevenue = transactions.filter(t => t.status === 'SUCCESS').reduce((sum, t) => sum + t.amount, 0)
     const activePlans = plans.filter(p => p.active).length
-    const paidTransactions = mockTransactions.filter(t => t.status === 'Paid').length
+    const paidTransactions = transactions.filter(t => t.status === 'SUCCESS').length
 
     return (
         <div className="space-y-6">
@@ -216,7 +256,7 @@ export default function BillingPage() {
                         </div>
                         <div>
                             <p className="text-sm text-gray-500">Total Revenue</p>
-                            <p className="text-xl font-bold text-gray-900">${totalRevenue.toFixed(2)}</p>
+                            <p className="text-xl font-bold text-gray-900">{formatAmount(totalRevenue)}</p>
                         </div>
                     </div>
                 </div>
@@ -306,35 +346,62 @@ export default function BillingPage() {
                                     <table className="w-full text-left text-sm">
                                         <thead className="bg-gray-50 text-gray-600 font-medium">
                                             <tr>
-                                                <th className="px-4 py-3 rounded-l-lg">Invoice ID</th>
-                                                <th className="px-4 py-3">Company</th>
+                                                <th className="px-4 py-3 rounded-l-lg">TXN Ref</th>
+                                                <th className="px-4 py-3">Plan / Bank</th>
                                                 <th className="px-4 py-3">Amount</th>
                                                 <th className="px-4 py-3">Status</th>
                                                 <th className="px-4 py-3 rounded-r-lg text-right">Date</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-100">
-                                            {mockTransactions.map((trx) => (
-                                                <tr key={trx.id} className="hover:bg-gray-50 transition-colors">
-                                                    <td className="px-4 py-3 font-medium text-gray-900">{trx.id}</td>
-                                                    <td className="px-4 py-3 text-gray-600">
-                                                        <div>{trx.company}</div>
-                                                        <div className="text-xs text-gray-400">{trx.plan}</div>
+                                            {isLoadingTransactions && transactions.length === 0 ? (
+                                                <tr>
+                                                    <td colSpan={5} className="px-4 py-8 text-center">
+                                                        <Loader2 className="w-6 h-6 animate-spin mx-auto text-gray-400" />
+                                                        <p className="text-sm text-gray-500 mt-2">Loading transactions...</p>
                                                     </td>
-                                                    <td className="px-4 py-3 font-medium text-gray-900">${trx.amount.toFixed(2)}</td>
-                                                    <td className="px-4 py-3">
-                                                        <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                            ${trx.status === 'Paid' ? 'bg-green-100 text-green-700' :
-                                                                trx.status === 'Failed' ? 'bg-red-100 text-red-700' :
-                                                                    'bg-yellow-100 text-yellow-700'}`}>
-                                                            {trx.status}
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-4 py-3 text-right text-gray-500">{trx.date}</td>
                                                 </tr>
-                                            ))}
+                                            ) : transactions.length === 0 ? (
+                                                <tr>
+                                                    <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
+                                                        No transactions found
+                                                    </td>
+                                                </tr>
+                                            ) : (
+                                                transactions.slice(0, 10).map((trx) => {
+                                                    const statusDisplay = getStatusDisplay(trx.status)
+                                                    return (
+                                                        <tr key={trx.id} className="hover:bg-gray-50 transition-colors">
+                                                            <td className="px-4 py-3 font-medium text-gray-900">
+                                                                <div className="font-mono text-xs">{trx.txnRef}</div>
+                                                                {trx.vnpTransactionNo && (
+                                                                    <div className="text-xs text-gray-400">VNPay: {trx.vnpTransactionNo}</div>
+                                                                )}
+                                                            </td>
+                                                            <td className="px-4 py-3 text-gray-600">
+                                                                <div>{getPlanName(trx.planId)}</div>
+                                                                <div className="text-xs text-gray-400">{trx.bankCode || 'N/A'}</div>
+                                                            </td>
+                                                            <td className="px-4 py-3 font-medium text-gray-900">{formatAmount(trx.amount)}</td>
+                                                            <td className="px-4 py-3">
+                                                                <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${statusDisplay.className}`}>
+                                                                    {statusDisplay.label}
+                                                                </span>
+                                                            </td>
+                                                            <td className="px-4 py-3 text-right text-gray-500 text-sm">{formatDate(trx.createdAt)}</td>
+                                                        </tr>
+                                                    )
+                                                })
+                                            )}
                                         </tbody>
                                     </table>
+                                    {transactions.length > 10 && (
+                                        <div className="text-center py-3 border-t border-gray-100">
+                                            <button className="text-sm text-blue-600 hover:underline">
+                                                View all {transactions.length} transactions →
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
