@@ -92,9 +92,9 @@ export default function AIReviewAnalysisPage() {
 
     const getPriorityLabel = (priority: string) => {
         switch (priority.toLowerCase()) {
-            case 'high': return 'Ưu tiên cao';
-            case 'medium': return 'Ưu tiên trung bình';
-            case 'low': return 'Ưu tiên thấp';
+            case 'high': return t('priorityHigh');
+            case 'medium': return t('priorityMedium');
+            case 'low': return t('priorityLow');
             default: return priority;
         }
     };
@@ -114,10 +114,10 @@ export default function AIReviewAnalysisPage() {
                 <div>
                     <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                         <Brain className="w-7 h-7 text-purple-600" />
-                        AI Review Analysis
+                        {t('aiTitle')}
                     </h2>
                     <p className="text-gray-500 mt-1">
-                        Phân tích đánh giá thông minh và đề xuất cải thiện từ AI
+                        {t('aiSubtitle')}
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -127,11 +127,11 @@ export default function AIReviewAnalysisPage() {
                         onChange={(e) => setDateRange(e.target.value)}
                         className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     >
-                        <option value="7">7 ngày</option>
-                        <option value="30">30 ngày</option>
-                        <option value="90">90 ngày</option>
-                        <option value="180">6 tháng</option>
-                        <option value="365">1 năm</option>
+                        <option value="7">{t('days7')}</option>
+                        <option value="30">{t('days30')}</option>
+                        <option value="90">{t('days90')}</option>
+                        <option value="180">{t('months6')}</option>
+                        <option value="365">{t('year1')}</option>
                     </select>
 
                     {/* Max Reviews */}
@@ -140,10 +140,10 @@ export default function AIReviewAnalysisPage() {
                         onChange={(e) => setMaxReviews(Number(e.target.value))}
                         className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     >
-                        <option value="10">10 đánh giá</option>
-                        <option value="25">25 đánh giá</option>
-                        <option value="50">50 đánh giá</option>
-                        <option value="100">100 đánh giá</option>
+                        <option value="10">{t('reviewsCount', { count: 10 })}</option>
+                        <option value="25">{t('reviewsCount', { count: 25 })}</option>
+                        <option value="50">{t('reviewsCount', { count: 50 })}</option>
+                        <option value="100">{t('reviewsCount', { count: 100 })}</option>
                     </select>
 
                     <button
@@ -154,12 +154,12 @@ export default function AIReviewAnalysisPage() {
                         {isLoading ? (
                             <>
                                 <RefreshCw className="w-5 h-5 animate-spin" />
-                                Đang phân tích...
+                                {t('analyzing')}
                             </>
                         ) : (
                             <>
                                 <Sparkles className="w-5 h-5" />
-                                Phân tích với AI
+                                {t('analyzeWithAI')}
                             </>
                         )}
                     </button>
@@ -171,7 +171,7 @@ export default function AIReviewAnalysisPage() {
                 <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
                     <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
                     <div className="flex-1">
-                        <p className="text-red-800 font-medium">Lỗi phân tích</p>
+                        <p className="text-red-800 font-medium">{t('analysisError')}</p>
                         <p className="text-red-600 text-sm mt-1">{error}</p>
                     </div>
                     <button onClick={clearError} className="text-red-500 hover:text-red-700">
@@ -185,11 +185,11 @@ export default function AIReviewAnalysisPage() {
                 <div className="flex items-center gap-4 text-sm text-gray-600 bg-gray-50 px-4 py-2 rounded-lg">
                     <div className="flex items-center gap-2">
                         <Clock className="w-4 h-4" />
-                        <span>Phân tích lần cuối: {formatDate(lastAnalyzedAt)}</span>
+                        <span>{t('lastAnalyzed')}: {formatDate(lastAnalyzedAt)}</span>
                     </div>
                     {analysisResult.cached && (
                         <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs">
-                            Đã cache
+                            {t('cached')}
                         </span>
                     )}
                     <button
@@ -198,7 +198,7 @@ export default function AIReviewAnalysisPage() {
                         className="flex items-center gap-1 text-purple-600 hover:text-purple-700 font-medium"
                     >
                         <RefreshCw className="w-3 h-3" />
-                        Làm mới
+                        {t('refresh')}
                     </button>
                 </div>
             )}
@@ -212,8 +212,8 @@ export default function AIReviewAnalysisPage() {
                             <Brain className="w-8 h-8 text-purple-600 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
                         </div>
                         <div className="text-center">
-                            <p className="text-lg font-semibold text-gray-900">AI đang phân tích đánh giá...</p>
-                            <p className="text-gray-500 mt-1">Quá trình này có thể mất vài giây</p>
+                            <p className="text-lg font-semibold text-gray-900">{t('aiAnalyzing')}</p>
+                            <p className="text-gray-500 mt-1">{t('analysisNote')}</p>
                         </div>
                     </div>
                 </div>
@@ -223,8 +223,8 @@ export default function AIReviewAnalysisPage() {
             {!company?.id && !isLoading && (
                 <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 text-center">
                     <AlertTriangle className="w-12 h-12 text-yellow-500 mx-auto mb-3" />
-                    <h3 className="text-lg font-semibold text-yellow-900">Chưa có thông tin công ty</h3>
-                    <p className="text-yellow-700 mt-2">Vui lòng đăng nhập để sử dụng tính năng phân tích AI</p>
+                    <h3 className="text-lg font-semibold text-yellow-900">{t('noCompany')}</h3>
+                    <p className="text-yellow-700 mt-2">{t('pleaseLogin')}</p>
                 </div>
             )}
 
@@ -236,10 +236,9 @@ export default function AIReviewAnalysisPage() {
                             <Sparkles className="w-10 h-10 text-purple-600" />
                         </div>
                         <div>
-                            <h3 className="text-xl font-bold text-gray-900">Bắt đầu phân tích AI</h3>
+                            <h3 className="text-xl font-bold text-gray-900">{t('startAnalysis')}</h3>
                             <p className="text-gray-600 mt-2 max-w-md">
-                                Nhấn nút "Phân tích với AI" để AI đọc và phân tích tất cả đánh giá của khách hàng,
-                                sau đó đưa ra những đề xuất cải thiện cụ thể cho doanh nghiệp của bạn.
+                                {t('startAnalysisDesc')}
                             </p>
                         </div>
                     </div>
@@ -256,7 +255,7 @@ export default function AIReviewAnalysisPage() {
                                 <Brain className="w-6 h-6" />
                             </div>
                             <div>
-                                <h3 className="text-lg font-bold mb-2">Tóm tắt từ AI</h3>
+                                <h3 className="text-lg font-bold mb-2">{t('aiSummary')}</h3>
                                 <p className="text-white/90 leading-relaxed">{analysisResult.aiSummary}</p>
                             </div>
                         </div>
@@ -266,25 +265,25 @@ export default function AIReviewAnalysisPage() {
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center">
                             <p className="text-4xl font-bold text-purple-600">{analysisResult.overallScore}</p>
-                            <p className="text-sm text-gray-600 mt-1">Điểm tổng thể</p>
+                            <p className="text-sm text-gray-600 mt-1">{t('overallScore')}</p>
                         </div>
                         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center">
                             <p className="text-4xl font-bold text-blue-600">{analysisResult.reviewsAnalyzed}</p>
-                            <p className="text-sm text-gray-600 mt-1">Đánh giá phân tích</p>
+                            <p className="text-sm text-gray-600 mt-1">{t('reviewsAnalyzed')}</p>
                         </div>
                         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center">
                             <p className="text-4xl font-bold text-green-600">{analysisResult.strengths?.length || 0}</p>
-                            <p className="text-sm text-gray-600 mt-1">Điểm mạnh</p>
+                            <p className="text-sm text-gray-600 mt-1">{t('strengths')}</p>
                         </div>
                         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center">
                             <p className="text-4xl font-bold text-orange-600">{analysisResult.suggestions?.length || 0}</p>
-                            <p className="text-sm text-gray-600 mt-1">Đề xuất cải thiện</p>
+                            <p className="text-sm text-gray-600 mt-1">{t('suggestions')}</p>
                         </div>
                     </div>
 
                     {/* Sentiment Distribution */}
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                        <h3 className="text-lg font-bold text-gray-900 mb-4">Phân bố cảm xúc</h3>
+                        <h3 className="text-lg font-bold text-gray-900 mb-4">{t('sentimentDistribution')}</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-4">
                                 {/* Positive */}
@@ -292,7 +291,7 @@ export default function AIReviewAnalysisPage() {
                                     <div className="flex items-center justify-between text-sm">
                                         <div className="flex items-center gap-2">
                                             <ThumbsUp className="w-4 h-4 text-green-600" />
-                                            <span className="font-medium text-gray-700">Tích cực</span>
+                                            <span className="font-medium text-gray-700">{t('positive')}</span>
                                         </div>
                                         <span className="font-bold text-green-600">
                                             {analysisResult.sentimentSummary?.positivePercent || 0}%
@@ -311,7 +310,7 @@ export default function AIReviewAnalysisPage() {
                                     <div className="flex items-center justify-between text-sm">
                                         <div className="flex items-center gap-2">
                                             <Minus className="w-4 h-4 text-gray-500" />
-                                            <span className="font-medium text-gray-700">Trung lập</span>
+                                            <span className="font-medium text-gray-700">{t('neutral')}</span>
                                         </div>
                                         <span className="font-bold text-gray-600">
                                             {analysisResult.sentimentSummary?.neutralPercent || 0}%
@@ -330,7 +329,7 @@ export default function AIReviewAnalysisPage() {
                                     <div className="flex items-center justify-between text-sm">
                                         <div className="flex items-center gap-2">
                                             <ThumbsDown className="w-4 h-4 text-red-500" />
-                                            <span className="font-medium text-gray-700">Tiêu cực</span>
+                                            <span className="font-medium text-gray-700">{t('negative')}</span>
                                         </div>
                                         <span className="font-bold text-red-600">
                                             {analysisResult.sentimentSummary?.negativePercent || 0}%
@@ -346,7 +345,7 @@ export default function AIReviewAnalysisPage() {
                             </div>
                             <div className="flex items-center justify-center">
                                 <div className="text-center p-6 bg-gray-50 rounded-xl">
-                                    <p className="text-sm text-gray-600 mb-2">Cảm xúc tổng thể</p>
+                                    <p className="text-sm text-gray-600 mb-2">{t('overallSentiment')}</p>
                                     <p className="text-2xl font-bold text-gray-900">
                                         {analysisResult.sentimentSummary?.overallSentiment || 'N/A'}
                                     </p>
@@ -360,7 +359,7 @@ export default function AIReviewAnalysisPage() {
                         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                             <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
                                 <Target className="w-5 h-5 text-orange-500" />
-                                Đề xuất cải thiện từ AI ({analysisResult.suggestions.length})
+                                {t('suggestionsFromAI')} ({analysisResult.suggestions.length})
                             </h3>
                             <div className="space-y-4">
                                 {analysisResult.suggestions.map((item, index) => (
@@ -386,7 +385,7 @@ export default function AIReviewAnalysisPage() {
                                             <div className="flex items-center gap-3">
                                                 {item.expectedImpact && (
                                                     <span className="text-xs text-gray-500 hidden sm:block">
-                                                        Tác động: {item.expectedImpact}
+                                                        {t('impact')}: {item.expectedImpact}
                                                     </span>
                                                 )}
                                                 {expandedImprovement === index ? (
@@ -420,7 +419,7 @@ export default function AIReviewAnalysisPage() {
                             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                 <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                                     <TrendingUp className="w-5 h-5 text-green-500" />
-                                    Điểm mạnh ({analysisResult.strengths.length})
+                                    {t('strengths')} ({analysisResult.strengths.length})
                                 </h3>
                                 <div className="space-y-3">
                                     {analysisResult.strengths.map((strength, index) => (
@@ -430,11 +429,11 @@ export default function AIReviewAnalysisPage() {
                                                 <span className="text-lg font-bold text-green-600">{strength.score}%</span>
                                             </div>
                                             <p className="text-sm text-green-800 mb-2">{strength.description}</p>
-                                            <p className="text-xs text-green-600">{strength.mentionCount} lượt đề cập</p>
+                                            <p className="text-xs text-green-600">{strength.mentionCount} {t('mentions')}</p>
                                             {strength.sampleReviews && strength.sampleReviews.length > 0 && (
                                                 <div className="mt-3 pt-3 border-t border-green-200">
                                                     <p className="text-xs text-green-700 mb-1 flex items-center gap-1">
-                                                        <Quote className="w-3 h-3" /> Mẫu đánh giá:
+                                                        <Quote className="w-3 h-3" /> {t('sampleReview')}:
                                                     </p>
                                                     <p className="text-xs text-green-800 italic">
                                                         "{strength.sampleReviews[0]}"
@@ -452,7 +451,7 @@ export default function AIReviewAnalysisPage() {
                             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                 <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                                     <TrendingDown className="w-5 h-5 text-red-500" />
-                                    Điểm yếu ({analysisResult.weaknesses.length})
+                                    {t('weaknesses')} ({analysisResult.weaknesses.length})
                                 </h3>
                                 <div className="space-y-3">
                                     {analysisResult.weaknesses.map((weakness, index) => (
@@ -462,11 +461,11 @@ export default function AIReviewAnalysisPage() {
                                                 <span className="text-lg font-bold text-red-600">{weakness.score}%</span>
                                             </div>
                                             <p className="text-sm text-red-800 mb-2">{weakness.description}</p>
-                                            <p className="text-xs text-red-600">{weakness.mentionCount} lượt đề cập</p>
+                                            <p className="text-xs text-red-600">{weakness.mentionCount} {t('mentions')}</p>
                                             {weakness.sampleReviews && weakness.sampleReviews.length > 0 && (
                                                 <div className="mt-3 pt-3 border-t border-red-200">
                                                     <p className="text-xs text-red-700 mb-1 flex items-center gap-1">
-                                                        <Quote className="w-3 h-3" /> Mẫu đánh giá:
+                                                        <Quote className="w-3 h-3" /> {t('sampleReview')}:
                                                     </p>
                                                     <p className="text-xs text-red-800 italic">
                                                         "{weakness.sampleReviews[0]}"
@@ -483,7 +482,7 @@ export default function AIReviewAnalysisPage() {
                     {/* Top Keywords */}
                     {analysisResult.topKeywords && analysisResult.topKeywords.length > 0 && (
                         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <h3 className="text-lg font-bold text-gray-900 mb-4">Từ khóa phổ biến</h3>
+                            <h3 className="text-lg font-bold text-gray-900 mb-4">{t('popularKeywords')}</h3>
                             <div className="flex flex-wrap gap-2">
                                 {analysisResult.topKeywords.map((keyword, index) => (
                                     <span
@@ -500,15 +499,15 @@ export default function AIReviewAnalysisPage() {
                     {/* Trends */}
                     {analysisResult.trends && analysisResult.trends.length > 0 && (
                         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <h3 className="text-lg font-bold text-gray-900 mb-4">Xu hướng theo thời gian</h3>
+                            <h3 className="text-lg font-bold text-gray-900 mb-4">{t('timeTrends')}</h3>
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm">
                                     <thead>
                                         <tr className="border-b border-gray-200">
-                                            <th className="text-left py-3 px-4 font-semibold text-gray-700">Thời kỳ</th>
-                                            <th className="text-center py-3 px-4 font-semibold text-gray-700">Đánh giá TB</th>
-                                            <th className="text-center py-3 px-4 font-semibold text-gray-700">Số lượng</th>
-                                            <th className="text-center py-3 px-4 font-semibold text-gray-700">Cảm xúc</th>
+                                            <th className="text-left py-3 px-4 font-semibold text-gray-700">{t('period')}</th>
+                                            <th className="text-center py-3 px-4 font-semibold text-gray-700">{t('avgReview')}</th>
+                                            <th className="text-center py-3 px-4 font-semibold text-gray-700">{t('quantity')}</th>
+                                            <th className="text-center py-3 px-4 font-semibold text-gray-700">{t('sentiment')}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
