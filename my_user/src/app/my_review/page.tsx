@@ -7,6 +7,7 @@ import useAuthStore from '@/stores/userAuthStore/user';
 import useReviewStore from '@/stores/reviewStore/review';
 import { getStarFillColor, STAR_FILL_COLORS } from '@/utils/ratingColors';
 import { useTranslations } from 'next-intl';
+import EditReviewModal from '../components/EditReviewModal';
 
 export default function MyReviewPage() {
   const router = useRouter();
@@ -15,6 +16,18 @@ export default function MyReviewPage() {
   const t = useTranslations('myReviews');
   const tReview = useTranslations('review');
   const tProfile = useTranslations('profile');
+
+  // Edit modal state
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingReview, setEditingReview] = useState<{
+    id: number;
+    title: string;
+    description: string;
+    rating: number;
+    expDate: string;
+    companyName?: string;
+    userEmail?: string;
+  } | null>(null);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -33,6 +46,28 @@ export default function MyReviewPage() {
   const handlePageChange = (newPage: number) => {
     if (user?.email && newPage >= 0 && newPage < totalPages) {
       fetchReviewsByEmail(user.email, newPage, 10);
+    }
+  };
+
+  // Handle edit review
+  const handleEditReview = (review: any) => {
+    setEditingReview({
+      id: review.id,
+      title: review.title,
+      description: review.description,
+      rating: review.rating,
+      expDate: review.expDate,
+      companyName: review.companyName,
+      userEmail: user?.email || review.userEmail,
+    });
+    setIsEditModalOpen(true);
+  };
+
+  // Handle update success
+  const handleUpdateSuccess = () => {
+    // Refresh reviews after successful update
+    if (user?.email) {
+      fetchReviewsByEmail(user.email, currentPage, 10);
     }
   };
 
@@ -121,7 +156,7 @@ export default function MyReviewPage() {
       </div>
 
       {/* Reviews Section */}
-      <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
+      <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8 mx-20">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">{t('title')}</h2>
 
         {/* Loading State */}
@@ -223,10 +258,7 @@ export default function MyReviewPage() {
                     {/* Actions */}
                     <div className="flex items-center gap-3 pt-3 sm:pt-4 border-t border-gray-200">
                       <button
-                        onClick={() => {
-                          // TODO: Implement edit functionality
-                          console.log('Edit review:', review.id);
-                        }}
+                        onClick={() => handleEditReview(review)}
                         className="flex items-center gap-1.5 text-blue-600 hover:text-blue-700 text-xs sm:text-sm font-medium transition"
                       >
                         <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -273,6 +305,17 @@ export default function MyReviewPage() {
           </div>
         )}
       </div>
+
+      {/* Edit Review Modal */}
+      <EditReviewModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setEditingReview(null);
+        }}
+        onUpdateSuccess={handleUpdateSuccess}
+        review={editingReview}
+      />
     </div>
   );
 }

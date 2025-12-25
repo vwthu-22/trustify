@@ -34,6 +34,16 @@ interface CompanyRatingData {
     reviewCount: number;
 }
 
+interface UpdateReviewData {
+    id: number;
+    title: string;
+    description: string;
+    email: string;
+    companyName: string;
+    rating: number;
+    expDate: string;
+}
+
 interface ReviewState {
     isLoading: boolean;
     error: string | null;
@@ -49,6 +59,7 @@ interface ReviewState {
 
     // Actions
     createReview: (reviewData: ReviewData) => Promise<boolean>;
+    updateReview: (reviewId: number, reviewData: UpdateReviewData) => Promise<boolean>;
     fetchReviewsByCompany: (companyId: string, page?: number, size?: number) => Promise<void>;
     fetchAllReviewsByCompany: (companyId: string) => Promise<void>; // for rating breakdown
     fetchHighRatedReviews: () => Promise<void>; // for recent 5-star reviews
@@ -138,6 +149,96 @@ const useReviewStore = create<ReviewState>()(
                     console.error('Error:', error);
 
                     let errorMessage = 'Failed to submit review';
+
+                    if (error instanceof TypeError && error.message.includes('fetch')) {
+                        errorMessage = 'Network error. Please check your connection and try again.';
+                    } else if (error instanceof Error) {
+                        errorMessage = error.message;
+                    }
+
+                    set({
+                        error: errorMessage,
+                        isLoading: false,
+                    });
+                    return false;
+                }
+            },
+
+            // Update an existing review
+            updateReview: async (reviewId: number, reviewData: UpdateReviewData) => {
+                console.log('=== Update Review Start ===');
+                console.log('Review ID:', reviewId);
+                console.log('Review Data:', reviewData);
+
+                set({ isLoading: true, error: null, successMessage: null });
+
+                try {
+                    const url = `${API_BASE_URL}/api/review/${reviewId}`;
+                    console.log('Updating at:', url);
+
+                    const response = await fetch(url, {
+                        method: 'PUT',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'ngrok-skip-browser-warning': 'true',
+                            'bypass-tunnel-reminder': 'true',
+                        },
+                        body: JSON.stringify(reviewData),
+                    });
+
+                    console.log('Response Status:', response.status);
+                    console.log('Response Content-Type:', response.headers.get('content-type'));
+
+                    if (!response.ok) {
+                        let errorMessage = 'Failed to update review';
+                        try {
+                            const errorData = await response.json();
+                            console.error('Response Error (JSON):', errorData);
+                            errorMessage = errorData.message || errorData.error || errorMessage;
+                        } catch {
+                            const errorText = await response.text();
+                            console.error('Response Error (Text):', errorText);
+                            errorMessage = errorText || errorMessage;
+                        }
+                        throw new Error(errorMessage);
+                    }
+
+                    // Handle both JSON and plain text responses
+                    const contentType = response.headers.get('content-type');
+                    let data;
+
+                    if (contentType && contentType.includes('application/json')) {
+                        data = await response.json();
+                        console.log('Response Data (JSON):', data);
+                    } else {
+                        data = await response.text();
+                        console.log('Response Data (Text):', data);
+                    }
+
+                    console.log('=== Update Review Success ===');
+
+                    // Update the review in myReviews array
+                    set((state) => ({
+                        isLoading: false,
+                        successMessage: 'Review updated successfully!',
+                        myReviews: state.myReviews.map((review) =>
+                            review.id === reviewId
+                                ? { ...review, ...reviewData }
+                                : review
+                        ),
+                        reviews: state.reviews.map((review) =>
+                            review.id === reviewId
+                                ? { ...review, ...reviewData }
+                                : review
+                        ),
+                    }));
+                    return true;
+                } catch (error) {
+                    console.error('=== Update Review Error ===');
+                    console.error('Error:', error);
+
+                    let errorMessage = 'Failed to update review';
 
                     if (error instanceof TypeError && error.message.includes('fetch')) {
                         errorMessage = 'Network error. Please check your connection and try again.';
@@ -462,4 +563,5 @@ const useReviewStore = create<ReviewState>()(
 );
 
 export default useReviewStore;
-export type { Review, ReviewData };
+export type { Review, ReviewData, UpdateReviewData };
+

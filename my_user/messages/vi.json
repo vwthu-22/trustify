@@ -159,7 +159,9 @@
         "oldest": "Cũ nhất",
         "highestRated": "Đánh giá cao nhất",
         "lowestRated": "Đánh giá thấp nhất",
-        "reviews": "đánh giá"
+        "reviews": "đánh giá",
+        "saveChanges": "Lưu thay đổi",
+        "updating": "Đang cập nhật..."
     },
     "categoryPage": {
         "bestIn": "Tốt nhất trong",
@@ -397,7 +399,10 @@
         "genuineExperience": "dựa trên trải nghiệm thực tế",
         "noIncentive": "và bạn không nhận được bất kỳ ưu đãi nào để viết nó.",
         "submitting": "Đang gửi...",
-        "submitReview": "Gửi đánh giá"
+        "submitReview": "Gửi đánh giá",
+        "cancel": "Hủy",
+        "rating": "Đánh giá",
+        "updating": "Đang cập nhật..."
     },
     "thankYou": {
         "thanksForReview": "Cảm ơn bạn đã đánh giá!",

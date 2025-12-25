@@ -159,7 +159,9 @@
         "oldest": "Oldest",
         "highestRated": "Highest rated",
         "lowestRated": "Lowest rated",
-        "reviews": "reviews"
+        "reviews": "reviews",
+        "saveChanges": "Save Changes",
+        "updating": "Updating..."
     },
     "categoryPage": {
         "bestIn": "Best in",
@@ -397,7 +399,10 @@
         "genuineExperience": "based on a genuine experience",
         "noIncentive": "and you haven't received an incentive to write it.",
         "submitting": "Submitting...",
-        "submitReview": "Submit review"
+        "submitReview": "Submit review",
+        "cancel": "Cancel",
+        "rating": "Rating",
+        "updating": "Updating..."
     },
     "thankYou": {
         "thanksForReview": "Thanks for your review!",
