@@ -156,7 +156,7 @@ export default function MyReviewPage() {
       </div>
 
       {/* Reviews Section */}
-      <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8 mx-60">
+      <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">{t('title')}</h2>
 
         {/* Loading State */}
@@ -194,7 +194,7 @@ export default function MyReviewPage() {
             </Link>
           </div>
         ) : (
-          <div className="mx-20">
+          <div className="mx-60">
             {/* Review Cards */}
             <div className="space-y-4 sm:space-y-6">
               {myReviews.map((review: any) => (
