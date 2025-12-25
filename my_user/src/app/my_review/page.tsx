@@ -223,7 +223,7 @@ export default function MyReviewPage() {
                     <div className="flex items-center gap-3 pt-3 sm:pt-4 border-t border-gray-200">
                       <button
                         onClick={() => handleEditReview(review)}
-                        className="flex items-center gap-1.5 text-blue-600 hover:text-blue-700 text-xs sm:text-sm font-medium transition"
+                        className="flex items-center gap-1.5 text-gray-600 hover:text-blue-700 text-xs sm:text-sm font-medium transition"
                       >
                         <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                         {tReview('editReview')}
@@ -233,7 +233,7 @@ export default function MyReviewPage() {
                           // TODO: Implement delete functionality
                           console.log('Delete review:', review.id);
                         }}
-                        className="flex items-center gap-1.5 text-red-600 hover:text-red-700 text-xs sm:text-sm font-medium transition"
+                        className="flex items-center gap-1.5 text-gray-600 hover:text-red-700 text-xs sm:text-sm font-medium transition"
                       >
                         <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                         {tReview('deleteReview')}

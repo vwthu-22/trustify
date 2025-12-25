@@ -307,6 +307,7 @@ const useReviewStore = create<ReviewState>()(
                         userName: review.userName || review.nameUser || review.user?.name,
                         userEmail: review.userEmail || review.user?.email,
                         companyName: review.companyName || review.nameCompany || review.company?.name,
+                        companyId: review.companyId || review.company?.id,
                     }));
 
                     set({
@@ -438,6 +439,7 @@ const useReviewStore = create<ReviewState>()(
                         userName: review.userName || review.nameUser || review.user?.name,
                         userEmail: review.userEmail || review.user?.email,
                         companyName: review.companyName || review.nameCompany || review.company?.name,
+                        companyId: review.companyId || review.company?.id,
                     }));
 
                     set({

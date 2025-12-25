@@ -301,7 +301,7 @@ export default function CompanyReviewPage() {
                                     </div>
                                     <Link
                                         href={`/category/${getIndustrySlug(currentCompany.industry || '')}`}
-                                        className="text-blue-600 hover:underline text-sm sm:text-base"
+                                        className="text-black hover:underline text-sm sm:text-base"
                                     >
                                         {currentCompany.industry || 'Company'}
                                     </Link>
@@ -334,7 +334,7 @@ export default function CompanyReviewPage() {
                         </div>
 
                         {/* Info Banner */}
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 flex items-start gap-2 sm:gap-3">
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 flex justify-center text-center items-start gap-2 sm:gap-3">
                             <Star className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                             <p className="text-xs sm:text-sm text-gray-700">{t('noIncentives')}</p>
                         </div>
@@ -601,7 +601,7 @@ export default function CompanyReviewPage() {
                                                 <div className="flex items-center gap-3 pt-3 sm:pt-4 mt-3 sm:mt-4 border-t border-gray-200">
                                                     <button
                                                         onClick={() => handleEditReview(review)}
-                                                        className="flex items-center gap-1.5 text-blue-600 hover:text-blue-700 text-xs sm:text-sm font-medium transition"
+                                                        className="flex items-center gap-1.5 text-gray-600 hover:text-blue-700 text-xs sm:text-sm font-medium transition"
                                                     >
                                                         <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                                         {tReview('editReview')}
