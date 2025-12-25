@@ -69,12 +69,7 @@ export default function Sidebar() {
         //     icon: Puzzle,
         //     title: t('titleIntegrations')
         // },
-        {
-            href: '/manage',
-            label: t('manageReviews'),
-            icon: Settings,
-            title: t('titleManage')
-        },
+        
         {
             href: '/verification',
             label: t('verification'),
