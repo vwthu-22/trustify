@@ -117,13 +117,7 @@ export default function EditReviewModal({
                             </button>
                         </div>
                     )}
-
-                    {successMessage && (
-                        <div className="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
-                            {successMessage}
-                        </div>
-                    )}
-
+                    
                     <form onSubmit={handleSubmit}>
                         {/* Rating */}
                         <div className="mb-5">

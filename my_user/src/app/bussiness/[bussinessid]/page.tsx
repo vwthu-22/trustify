@@ -5,8 +5,10 @@ import { CheckCircle, ExternalLink, Star, MessageCircle, Info, MapPin, Phone, Ma
 import Link from 'next/link';
 import WriteReviewModal from '../../cmt/page';
 import ThankYouModal from '../../thankyou/page';
+import EditReviewModal from '../../components/EditReviewModal';
 import useCompanyStore from '@/stores/companyStore/company';
 import useReviewStore from '@/stores/reviewStore/review';
+import useAuthStore from '@/stores/userAuthStore/user';
 import { getStarColor, getBarColor, getRatingLabel, STAR_COLORS } from '@/utils/ratingColors';
 import { useTranslations } from 'next-intl';
 
@@ -28,6 +30,7 @@ export default function CompanyReviewPage() {
         currentPage,
         totalPages
     } = useReviewStore();
+    const { user } = useAuthStore();
 
     // Helper function to convert industry name to category slug
     const getIndustrySlug = (industry: string) => {
@@ -51,6 +54,47 @@ export default function CompanyReviewPage() {
     const [isThankYouModalOpen, setIsThankYouModalOpen] = useState(false);
     const [reviewData, setReviewData] = useState(null);
 
+    // Edit modal state
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [editingReview, setEditingReview] = useState<{
+        id: number;
+        title: string;
+        description: string;
+        rating: number;
+        expDate: string;
+        companyName?: string;
+        userEmail?: string;
+    } | null>(null);
+
+    // Check if review belongs to current user
+    const isOwnReview = (review: any) => {
+        if (!user?.email) return false;
+        return review.userEmail?.toLowerCase() === user.email.toLowerCase();
+    };
+
+    // Handle edit review
+    const handleEditReview = (review: any) => {
+        setEditingReview({
+            id: review.id,
+            title: review.title,
+            description: review.description,
+            rating: review.rating,
+            expDate: review.expDate,
+            companyName: currentCompany?.name || review.companyName,
+            userEmail: user?.email || review.userEmail,
+        });
+        setIsEditModalOpen(true);
+    };
+
+    // Handle update success
+    const handleUpdateSuccess = () => {
+        // Refresh reviews after successful update
+        if (businessId) {
+            fetchReviewsByCompany(businessId, currentReviewPage, 10);
+            fetchAllReviewsByCompany(businessId);
+        }
+    };
+
     useEffect(() => {
         if (businessId) {
             fetchCompanyById(businessId);
@@ -71,12 +115,21 @@ export default function CompanyReviewPage() {
         : reviews;
 
     // Search reviews by keyword
-    const searchedReviews = searchKeyword
+    const searchedReviewsUnsorted = searchKeyword
         ? filteredReviews.filter(review =>
             review.title.toLowerCase().includes(searchKeyword.toLowerCase()) ||
             review.description.toLowerCase().includes(searchKeyword.toLowerCase())
         )
         : filteredReviews;
+
+    // Sort reviews: user's own reviews first, then others
+    const searchedReviews = [...searchedReviewsUnsorted].sort((a, b) => {
+        const aIsOwn = isOwnReview(a);
+        const bIsOwn = isOwnReview(b);
+        if (aIsOwn && !bIsOwn) return -1; // a comes first
+        if (!aIsOwn && bIsOwn) return 1;  // b comes first
+        return 0; // keep original order
+    });
 
     const loadMoreReviews = () => {
         if (currentReviewPage < totalPages - 1) {
@@ -542,6 +595,19 @@ export default function CompanyReviewPage() {
                                                     <span className="font-medium">{t('experienceDate')}:</span> {experienceDate}
                                                 </p>
                                             )}
+
+                                            {/* Edit Button - Only show for own reviews */}
+                                            {isOwnReview(review) && (
+                                                <div className="flex items-center gap-3 pt-3 sm:pt-4 mt-3 sm:mt-4 border-t border-gray-200">
+                                                    <button
+                                                        onClick={() => handleEditReview(review)}
+                                                        className="flex items-center gap-1.5 text-blue-600 hover:text-blue-700 text-xs sm:text-sm font-medium transition"
+                                                    >
+                                                        <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                                        {tReview('editReview')}
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
                                     );
                                 })
@@ -592,6 +658,17 @@ export default function CompanyReviewPage() {
                     reviewData={reviewData}
                 />
             )}
+
+            {/* Edit Review Modal */}
+            <EditReviewModal
+                isOpen={isEditModalOpen}
+                onClose={() => {
+                    setIsEditModalOpen(false);
+                    setEditingReview(null);
+                }}
+                onUpdateSuccess={handleUpdateSuccess}
+                review={editingReview}
+            />
         </div>
     );
 }
