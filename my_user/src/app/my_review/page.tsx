@@ -157,43 +157,7 @@ export default function MyReviewPage() {
 
       {/* Reviews Section */}
       <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">{t('title')}</h2>
-
-        {/* Loading State */}
-        {isLoading ? (
-          <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white border border-gray-200 rounded-lg p-6 animate-pulse">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
-                  <div className="flex-1">
-                    <div className="h-4 bg-gray-200 rounded w-1/3 mb-2"></div>
-                    <div className="h-3 bg-gray-200 rounded w-1/4"></div>
-                  </div>
-                </div>
-                <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
-                <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-              </div>
-            ))}
-          </div>
-        ) : error ? (
-          <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg">
-            {error}
-          </div>
-        ) : myReviews.length === 0 ? (
-          <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
-            <Star className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('noReviews')}</h3>
-            <p className="text-gray-600 mb-4">{t('noReviewsDesc')}</p>
-            <Link
-              href="/write-review"
-              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
-            >
-              <Star className="w-4 h-4" />
-              {t('writeFirst')}
-            </Link>
-          </div>
-        ) : (
+  
           <div className="mx-60">
             {/* Review Cards */}
             <div className="space-y-4 sm:space-y-6">
@@ -303,7 +267,7 @@ export default function MyReviewPage() {
               </div>
             )}
           </div>
-        )}
+      
       </div>
 
       {/* Edit Review Modal */}
