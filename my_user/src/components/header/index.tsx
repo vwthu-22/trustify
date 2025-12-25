@@ -264,7 +264,7 @@ export default function Header() {
                 </div>
 
                 {/* Mobile Notification Dropdown */}
-                {showNotifications && (
+                {/* {showNotifications && (
                     <div className="lg:hidden bg-white text-gray-900 border-t border-gray-200 max-h-80 overflow-y-auto notification-dropdown">
                         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-gray-50">
                             <h3 className="font-semibold">Notifications</h3>
@@ -292,7 +292,7 @@ export default function Header() {
                             ))
                         )}
                     </div>
-                )}
+                )} */}
 
                 {/* Mobile Menu */}
                 {showMobileMenu && (

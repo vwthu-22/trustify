@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import {
     Home, MessageSquare, Send, Share2, BarChart3, Puzzle, Settings,
     ChevronDown, ChevronRight, Mail, ShieldCheck,
-    Building2, Crown, TrendingUp
+    Building2, Crown
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -49,12 +49,7 @@ export default function Sidebar() {
             href: '/analytics',
             label: t('analytics'),
             icon: BarChart3,
-            title: t('titleAnalytics'),
-
-            children: [
-                { href: '/analytics', label: t('labelOverview'), icon: TrendingUp, title: t('titleOverview') },
-                { href: '/analytics/sentiment', label: t('labelSentiment'), icon: BarChart3, title: t('titleSentiment') }
-            ]
+            title: t('titleAnalytics')
         },
         {
             href: '/invitations',
