@@ -156,7 +156,7 @@ export default function MyReviewPage() {
       </div>
 
       {/* Reviews Section */}
-      <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8 mx-40">
+      <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8 mx-60">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">{t('title')}</h2>
 
         {/* Loading State */}
