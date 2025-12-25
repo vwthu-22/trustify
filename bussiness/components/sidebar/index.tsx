@@ -52,16 +52,16 @@ export default function Sidebar() {
             title: t('titleAnalytics')
         },
         {
-            href: '/invitations',
-            label: t('getReviews'),
+            href: '/send',
+            label: t('labelSendInvitations'),
+            icon: Mail,
+            title: t('titleSendInvitations')
+        },
+        {
+            href: '/campaigns',
+            label: t('labelCampaigns'),
             icon: Send,
-            title: t('titleInvitations'),
-
-            children: [
-                { href: '/invitations/send', label: t('labelSendInvitations'), icon: Mail, title: t('titleSendInvitations') },
-                { href: '/invitations/campaigns', label: t('labelCampaigns'), icon: Send, title: t('titleCampaigns') },
-                { href: '/invitations/templates', label: t('labelTemplates'), icon: Mail, title: t('titleTemplates') }
-            ]
+            title: t('titleCampaigns')
         },
         // {
         //     href: '/integrations',
@@ -69,7 +69,7 @@ export default function Sidebar() {
         //     icon: Puzzle,
         //     title: t('titleIntegrations')
         // },
-        
+
         {
             href: '/verification',
             label: t('verification'),
