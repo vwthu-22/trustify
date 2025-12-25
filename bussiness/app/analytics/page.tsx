@@ -18,117 +18,56 @@ import {
     Brain,
     Target,
     ChevronDown,
-    ChevronUp
+    ChevronUp,
+    AlertTriangle,
+    Quote
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-
-// Mock data - This will be replaced with actual API calls
-const mockAnalysisResult = {
-    summary: "Dựa trên phân tích 156 đánh giá gần đây, công ty của bạn đang hoạt động tốt với điểm đánh giá trung bình 4.2/5. Khách hàng đặc biệt hài lòng với chất lượng sản phẩm và dịch vụ khách hàng. Tuy nhiên, có một số điểm cần cải thiện liên quan đến thời gian giao hàng và quy trình đổi trả.",
-    overallSentiment: {
-        positive: 65,
-        neutral: 22,
-        negative: 13,
-        totalReviews: 156,
-        averageRating: 4.2
-    },
-    improvements: [
-        {
-            id: 1,
-            priority: 'high',
-            category: 'Giao hàng',
-            issue: 'Thời gian giao hàng chậm',
-            description: '23% khách hàng phàn nàn về việc giao hàng chậm so với thời gian cam kết, đặc biệt vào các dịp lễ.',
-            suggestion: 'Cân nhắc mở rộng đội ngũ vận chuyển hoặc hợp tác với nhiều đơn vị giao hàng hơn. Cập nhật thời gian giao hàng dự kiến chính xác hơn cho khách hàng.',
-            impactScore: 85,
-            mentionCount: 36
-        },
-        {
-            id: 2,
-            priority: 'medium',
-            category: 'Chính sách đổi trả',
-            issue: 'Quy trình đổi trả phức tạp',
-            description: '15% khách hàng gặp khó khăn khi đổi trả sản phẩm, cảm thấy quy trình rườm rà.',
-            suggestion: 'Đơn giản hóa quy trình đổi trả, cho phép khách hàng tạo yêu cầu đổi trả online và in nhãn giao hàng tự động.',
-            impactScore: 70,
-            mentionCount: 23
-        },
-        {
-            id: 3,
-            priority: 'low',
-            category: 'Giao tiếp',
-            issue: 'Thiếu thông báo cập nhật đơn hàng',
-            description: '8% khách hàng mong muốn nhận nhiều thông báo hơn về tình trạng đơn hàng.',
-            suggestion: 'Tích hợp hệ thống thông báo tự động qua SMS/Zalo/Email cho các mốc quan trọng của đơn hàng.',
-            impactScore: 45,
-            mentionCount: 12
-        }
-    ],
-    strengths: [
-        {
-            category: 'Chất lượng sản phẩm',
-            description: 'Khách hàng đánh giá rất cao chất lượng sản phẩm, đặc biệt là độ bền và thiết kế.',
-            mentionCount: 89,
-            sentimentScore: 92
-        },
-        {
-            category: 'Dịch vụ khách hàng',
-            description: 'Đội ngũ hỗ trợ được khen ngợi về thái độ nhiệt tình và giải quyết vấn đề nhanh chóng.',
-            mentionCount: 67,
-            sentimentScore: 88
-        },
-        {
-            category: 'Đóng gói',
-            description: 'Sản phẩm được đóng gói cẩn thận, đảm bảo an toàn trong quá trình vận chuyển.',
-            mentionCount: 45,
-            sentimentScore: 85
-        }
-    ],
-    keywords: {
-        positive: ['chất lượng tốt', 'đẹp', 'nhanh nhẹn', 'nhiệt tình', 'đáng tiền', 'uy tín'],
-        negative: ['chậm', 'đổi trả khó', 'đợi lâu', 'không liên lạc được'],
-        trending: ['giao hàng', 'sản phẩm', 'dịch vụ', 'hỗ trợ', 'giá cả']
-    },
-    analyzedAt: new Date().toISOString(),
-    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days cache
-};
+import { useAIAnalysisStore } from '@/store/useAIAnalysisStore';
+import { useCompanyStore } from '@/store/useCompanyStore';
 
 export default function AIReviewAnalysisPage() {
     const t = useTranslations('analytics');
-    const [isAnalyzing, setIsAnalyzing] = useState(false);
-    const [analysisResult, setAnalysisResult] = useState<typeof mockAnalysisResult | null>(null);
+    const { company } = useCompanyStore();
+    const {
+        isLoading,
+        error,
+        analysisResult,
+        lastAnalyzedAt,
+        analyzeReviews,
+        clearError
+    } = useAIAnalysisStore();
+
     const [expandedImprovement, setExpandedImprovement] = useState<number | null>(null);
-    const [lastAnalyzedTime, setLastAnalyzedTime] = useState<string | null>(null);
+    const [expandedStrength, setExpandedStrength] = useState<number | null>(null);
+    const [expandedWeakness, setExpandedWeakness] = useState<number | null>(null);
+    const [dateRange, setDateRange] = useState('30');
+    const [maxReviews, setMaxReviews] = useState(50);
 
-    // Simulate fetching cached analysis on mount
-    useEffect(() => {
-        // Check for cached analysis
-        const cachedData = localStorage.getItem('ai_analysis_cache');
-        if (cachedData) {
-            try {
-                const parsed = JSON.parse(cachedData);
-                setAnalysisResult(parsed);
-                setLastAnalyzedTime(parsed.analyzedAt);
-            } catch {
-                // Invalid cache
-            }
+    const handleAnalyze = async (forceRefresh: boolean = false) => {
+        if (!company?.id) {
+            console.error('Company ID not found');
+            return;
         }
-    }, []);
 
-    const handleAnalyze = async () => {
-        setIsAnalyzing(true);
+        await analyzeReviews({
+            companyId: Number(company.id),
+            maxReviews: maxReviews,
+            dateRange: getDateRangeString(dateRange),
+            includeReplies: true,
+            forceRefresh: forceRefresh,
+        });
+    };
 
-        // TODO: Replace with actual API call
-        // API: POST /api/ai/analyze-reviews
-        // Request body: { companyId: "...", timeRange: "30" }
-        // Response: AIAnalysisResult
-
-        await new Promise(resolve => setTimeout(resolve, 3000)); // Simulate API call
-
-        setAnalysisResult(mockAnalysisResult);
-        setLastAnalyzedTime(new Date().toISOString());
-        localStorage.setItem('ai_analysis_cache', JSON.stringify(mockAnalysisResult));
-        setIsAnalyzing(false);
+    const getDateRangeString = (days: string): string => {
+        switch (days) {
+            case '7': return '7 days';
+            case '30': return '30 days';
+            case '90': return '90 days';
+            case '180': return '6 months';
+            case '365': return '1 year';
+            default: return '30 days';
+        }
     };
 
     const formatDate = (dateString: string) => {
@@ -143,7 +82,7 @@ export default function AIReviewAnalysisPage() {
     };
 
     const getPriorityColor = (priority: string) => {
-        switch (priority) {
+        switch (priority.toLowerCase()) {
             case 'high': return 'bg-red-100 text-red-700 border-red-200';
             case 'medium': return 'bg-yellow-100 text-yellow-700 border-yellow-200';
             case 'low': return 'bg-blue-100 text-blue-700 border-blue-200';
@@ -152,11 +91,19 @@ export default function AIReviewAnalysisPage() {
     };
 
     const getPriorityLabel = (priority: string) => {
-        switch (priority) {
+        switch (priority.toLowerCase()) {
             case 'high': return 'Ưu tiên cao';
             case 'medium': return 'Ưu tiên trung bình';
             case 'low': return 'Ưu tiên thấp';
             default: return priority;
+        }
+    };
+
+    const getSentimentColor = (sentiment: string) => {
+        switch (sentiment.toLowerCase()) {
+            case 'positive': return 'text-green-600 bg-green-100';
+            case 'negative': return 'text-red-600 bg-red-100';
+            default: return 'text-gray-600 bg-gray-100';
         }
     };
 
@@ -173,36 +120,91 @@ export default function AIReviewAnalysisPage() {
                         Phân tích đánh giá thông minh và đề xuất cải thiện từ AI
                     </p>
                 </div>
-                <button
-                    onClick={handleAnalyze}
-                    disabled={isAnalyzing}
-                    className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    {isAnalyzing ? (
-                        <>
-                            <RefreshCw className="w-5 h-5 animate-spin" />
-                            Đang phân tích...
-                        </>
-                    ) : (
-                        <>
-                            <Sparkles className="w-5 h-5" />
-                            Phân tích với AI
-                        </>
-                    )}
-                </button>
+                <div className="flex items-center gap-3">
+                    {/* Date Range Selector */}
+                    <select
+                        value={dateRange}
+                        onChange={(e) => setDateRange(e.target.value)}
+                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    >
+                        <option value="7">7 ngày</option>
+                        <option value="30">30 ngày</option>
+                        <option value="90">90 ngày</option>
+                        <option value="180">6 tháng</option>
+                        <option value="365">1 năm</option>
+                    </select>
+
+                    {/* Max Reviews */}
+                    <select
+                        value={maxReviews}
+                        onChange={(e) => setMaxReviews(Number(e.target.value))}
+                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    >
+                        <option value="10">10 đánh giá</option>
+                        <option value="25">25 đánh giá</option>
+                        <option value="50">50 đánh giá</option>
+                        <option value="100">100 đánh giá</option>
+                    </select>
+
+                    <button
+                        onClick={() => handleAnalyze(false)}
+                        disabled={isLoading || !company?.id}
+                        className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {isLoading ? (
+                            <>
+                                <RefreshCw className="w-5 h-5 animate-spin" />
+                                Đang phân tích...
+                            </>
+                        ) : (
+                            <>
+                                <Sparkles className="w-5 h-5" />
+                                Phân tích với AI
+                            </>
+                        )}
+                    </button>
+                </div>
             </div>
 
+            {/* Error Message */}
+            {error && (
+                <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+                    <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                        <p className="text-red-800 font-medium">Lỗi phân tích</p>
+                        <p className="text-red-600 text-sm mt-1">{error}</p>
+                    </div>
+                    <button onClick={clearError} className="text-red-500 hover:text-red-700">
+                        ✕
+                    </button>
+                </div>
+            )}
+
             {/* Analysis Status */}
-            {lastAnalyzedTime && (
-                <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 px-4 py-2 rounded-lg w-fit">
-                    <Clock className="w-4 h-4" />
-                    <span>Phân tích lần cuối: {formatDate(lastAnalyzedTime)}</span>
-                    <CheckCircle2 className="w-4 h-4 text-green-500" />
+            {lastAnalyzedAt && analysisResult && (
+                <div className="flex items-center gap-4 text-sm text-gray-600 bg-gray-50 px-4 py-2 rounded-lg">
+                    <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4" />
+                        <span>Phân tích lần cuối: {formatDate(lastAnalyzedAt)}</span>
+                    </div>
+                    {analysisResult.cached && (
+                        <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs">
+                            Đã cache
+                        </span>
+                    )}
+                    <button
+                        onClick={() => handleAnalyze(true)}
+                        disabled={isLoading}
+                        className="flex items-center gap-1 text-purple-600 hover:text-purple-700 font-medium"
+                    >
+                        <RefreshCw className="w-3 h-3" />
+                        Làm mới
+                    </button>
                 </div>
             )}
 
             {/* Loading State */}
-            {isAnalyzing && (
+            {isLoading && (
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12">
                     <div className="flex flex-col items-center justify-center gap-4">
                         <div className="relative">
@@ -217,8 +219,17 @@ export default function AIReviewAnalysisPage() {
                 </div>
             )}
 
+            {/* No Company */}
+            {!company?.id && !isLoading && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 text-center">
+                    <AlertTriangle className="w-12 h-12 text-yellow-500 mx-auto mb-3" />
+                    <h3 className="text-lg font-semibold text-yellow-900">Chưa có thông tin công ty</h3>
+                    <p className="text-yellow-700 mt-2">Vui lòng đăng nhập để sử dụng tính năng phân tích AI</p>
+                </div>
+            )}
+
             {/* No Analysis Yet */}
-            {!isAnalyzing && !analysisResult && (
+            {!isLoading && !analysisResult && company?.id && (
                 <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl border border-purple-200 p-12">
                     <div className="flex flex-col items-center justify-center gap-4 text-center">
                         <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center">
@@ -236,7 +247,7 @@ export default function AIReviewAnalysisPage() {
             )}
 
             {/* Analysis Results */}
-            {!isAnalyzing && analysisResult && (
+            {!isLoading && analysisResult && (
                 <div className="space-y-6">
                     {/* AI Summary */}
                     <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl p-6 text-white">
@@ -246,37 +257,35 @@ export default function AIReviewAnalysisPage() {
                             </div>
                             <div>
                                 <h3 className="text-lg font-bold mb-2">Tóm tắt từ AI</h3>
-                                <p className="text-white/90 leading-relaxed">{analysisResult.summary}</p>
+                                <p className="text-white/90 leading-relaxed">{analysisResult.aiSummary}</p>
                             </div>
                         </div>
                     </div>
 
-                    {/* Sentiment Overview */}
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        {/* Overall Stats */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                                <Star className="w-5 h-5 text-yellow-500" />
-                                Tổng quan
-                            </h3>
-                            <div className="space-y-4">
-                                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                                    <p className="text-4xl font-bold text-gray-900">
-                                        {analysisResult.overallSentiment.averageRating}
-                                        <span className="text-lg text-gray-500">/5</span>
-                                    </p>
-                                    <p className="text-sm text-gray-600 mt-1">Điểm đánh giá trung bình</p>
-                                </div>
-                                <div className="flex items-center justify-center gap-2 text-gray-600">
-                                    <MessageSquare className="w-4 h-4" />
-                                    <span>{analysisResult.overallSentiment.totalReviews} đánh giá được phân tích</span>
-                                </div>
-                            </div>
+                    {/* Overview Stats */}
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center">
+                            <p className="text-4xl font-bold text-purple-600">{analysisResult.overallScore}</p>
+                            <p className="text-sm text-gray-600 mt-1">Điểm tổng thể</p>
                         </div>
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center">
+                            <p className="text-4xl font-bold text-blue-600">{analysisResult.reviewsAnalyzed}</p>
+                            <p className="text-sm text-gray-600 mt-1">Đánh giá phân tích</p>
+                        </div>
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center">
+                            <p className="text-4xl font-bold text-green-600">{analysisResult.strengths?.length || 0}</p>
+                            <p className="text-sm text-gray-600 mt-1">Điểm mạnh</p>
+                        </div>
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center">
+                            <p className="text-4xl font-bold text-orange-600">{analysisResult.suggestions?.length || 0}</p>
+                            <p className="text-sm text-gray-600 mt-1">Đề xuất cải thiện</p>
+                        </div>
+                    </div>
 
-                        {/* Sentiment Distribution */}
-                        <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <h3 className="text-lg font-bold text-gray-900 mb-4">Phân bố cảm xúc</h3>
+                    {/* Sentiment Distribution */}
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <h3 className="text-lg font-bold text-gray-900 mb-4">Phân bố cảm xúc</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-4">
                                 {/* Positive */}
                                 <div className="space-y-2">
@@ -285,12 +294,14 @@ export default function AIReviewAnalysisPage() {
                                             <ThumbsUp className="w-4 h-4 text-green-600" />
                                             <span className="font-medium text-gray-700">Tích cực</span>
                                         </div>
-                                        <span className="font-bold text-green-600">{analysisResult.overallSentiment.positive}%</span>
+                                        <span className="font-bold text-green-600">
+                                            {analysisResult.sentimentSummary?.positivePercent || 0}%
+                                        </span>
                                     </div>
                                     <div className="w-full bg-gray-200 rounded-full h-4">
                                         <div
                                             className="bg-green-500 h-4 rounded-full transition-all"
-                                            style={{ width: `${analysisResult.overallSentiment.positive}%` }}
+                                            style={{ width: `${analysisResult.sentimentSummary?.positivePercent || 0}%` }}
                                         ></div>
                                     </div>
                                 </div>
@@ -302,12 +313,14 @@ export default function AIReviewAnalysisPage() {
                                             <Minus className="w-4 h-4 text-gray-500" />
                                             <span className="font-medium text-gray-700">Trung lập</span>
                                         </div>
-                                        <span className="font-bold text-gray-600">{analysisResult.overallSentiment.neutral}%</span>
+                                        <span className="font-bold text-gray-600">
+                                            {analysisResult.sentimentSummary?.neutralPercent || 0}%
+                                        </span>
                                     </div>
                                     <div className="w-full bg-gray-200 rounded-full h-4">
                                         <div
                                             className="bg-gray-400 h-4 rounded-full transition-all"
-                                            style={{ width: `${analysisResult.overallSentiment.neutral}%` }}
+                                            style={{ width: `${analysisResult.sentimentSummary?.neutralPercent || 0}%` }}
                                         ></div>
                                     </div>
                                 </div>
@@ -319,150 +332,208 @@ export default function AIReviewAnalysisPage() {
                                             <ThumbsDown className="w-4 h-4 text-red-500" />
                                             <span className="font-medium text-gray-700">Tiêu cực</span>
                                         </div>
-                                        <span className="font-bold text-red-600">{analysisResult.overallSentiment.negative}%</span>
+                                        <span className="font-bold text-red-600">
+                                            {analysisResult.sentimentSummary?.negativePercent || 0}%
+                                        </span>
                                     </div>
                                     <div className="w-full bg-gray-200 rounded-full h-4">
                                         <div
                                             className="bg-red-500 h-4 rounded-full transition-all"
-                                            style={{ width: `${analysisResult.overallSentiment.negative}%` }}
+                                            style={{ width: `${analysisResult.sentimentSummary?.negativePercent || 0}%` }}
                                         ></div>
                                     </div>
                                 </div>
                             </div>
+                            <div className="flex items-center justify-center">
+                                <div className="text-center p-6 bg-gray-50 rounded-xl">
+                                    <p className="text-sm text-gray-600 mb-2">Cảm xúc tổng thể</p>
+                                    <p className="text-2xl font-bold text-gray-900">
+                                        {analysisResult.sentimentSummary?.overallSentiment || 'N/A'}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Improvement Suggestions */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                        <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-                            <Target className="w-5 h-5 text-orange-500" />
-                            Đề xuất cải thiện từ AI
-                        </h3>
-                        <div className="space-y-4">
-                            {analysisResult.improvements.map((item) => (
-                                <div
-                                    key={item.id}
-                                    className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow"
-                                >
-                                    <button
-                                        onClick={() => setExpandedImprovement(
-                                            expandedImprovement === item.id ? null : item.id
-                                        )}
-                                        className="w-full p-4 flex items-center justify-between text-left hover:bg-gray-50 transition"
+                    {/* Suggestions */}
+                    {analysisResult.suggestions && analysisResult.suggestions.length > 0 && (
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                                <Target className="w-5 h-5 text-orange-500" />
+                                Đề xuất cải thiện từ AI ({analysisResult.suggestions.length})
+                            </h3>
+                            <div className="space-y-4">
+                                {analysisResult.suggestions.map((item, index) => (
+                                    <div
+                                        key={index}
+                                        className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow"
                                     >
-                                        <div className="flex items-center gap-4">
-                                            <div className={`px-3 py-1 rounded-full text-xs font-semibold border ${getPriorityColor(item.priority)}`}>
-                                                {getPriorityLabel(item.priority)}
+                                        <button
+                                            onClick={() => setExpandedImprovement(
+                                                expandedImprovement === index ? null : index
+                                            )}
+                                            className="w-full p-4 flex items-center justify-between text-left hover:bg-gray-50 transition"
+                                        >
+                                            <div className="flex items-center gap-4">
+                                                <div className={`px-3 py-1 rounded-full text-xs font-semibold border ${getPriorityColor(item.priority)}`}>
+                                                    {getPriorityLabel(item.priority)}
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-semibold text-gray-900">{item.title}</h4>
+                                                    <p className="text-sm text-gray-500">{item.category}</p>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <h4 className="font-semibold text-gray-900">{item.issue}</h4>
-                                                <p className="text-sm text-gray-500">{item.category} • {item.mentionCount} lượt đề cập</p>
+                                            <div className="flex items-center gap-3">
+                                                {item.expectedImpact && (
+                                                    <span className="text-xs text-gray-500 hidden sm:block">
+                                                        Tác động: {item.expectedImpact}
+                                                    </span>
+                                                )}
+                                                {expandedImprovement === index ? (
+                                                    <ChevronUp className="w-5 h-5 text-gray-400" />
+                                                ) : (
+                                                    <ChevronDown className="w-5 h-5 text-gray-400" />
+                                                )}
                                             </div>
-                                        </div>
-                                        <div className="flex items-center gap-3">
-                                            <div className="text-right hidden sm:block">
-                                                <p className="text-sm text-gray-500">Impact Score</p>
-                                                <p className="font-bold text-gray-900">{item.impactScore}%</p>
+                                        </button>
+
+                                        {expandedImprovement === index && (
+                                            <div className="px-4 pb-4 space-y-3 border-t border-gray-100 pt-4">
+                                                <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+                                                    <p className="text-sm text-green-800 flex items-start gap-2">
+                                                        <Lightbulb className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                                                        <span>{item.description}</span>
+                                                    </p>
+                                                </div>
                                             </div>
-                                            {expandedImprovement === item.id ? (
-                                                <ChevronUp className="w-5 h-5 text-gray-400" />
-                                            ) : (
-                                                <ChevronDown className="w-5 h-5 text-gray-400" />
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Strengths & Weaknesses */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {/* Strengths */}
+                        {analysisResult.strengths && analysisResult.strengths.length > 0 && (
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                                    <TrendingUp className="w-5 h-5 text-green-500" />
+                                    Điểm mạnh ({analysisResult.strengths.length})
+                                </h3>
+                                <div className="space-y-3">
+                                    {analysisResult.strengths.map((strength, index) => (
+                                        <div key={index} className="p-4 bg-green-50 rounded-xl border border-green-200">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <h4 className="font-semibold text-green-900">{strength.category}</h4>
+                                                <span className="text-lg font-bold text-green-600">{strength.score}%</span>
+                                            </div>
+                                            <p className="text-sm text-green-800 mb-2">{strength.description}</p>
+                                            <p className="text-xs text-green-600">{strength.mentionCount} lượt đề cập</p>
+                                            {strength.sampleReviews && strength.sampleReviews.length > 0 && (
+                                                <div className="mt-3 pt-3 border-t border-green-200">
+                                                    <p className="text-xs text-green-700 mb-1 flex items-center gap-1">
+                                                        <Quote className="w-3 h-3" /> Mẫu đánh giá:
+                                                    </p>
+                                                    <p className="text-xs text-green-800 italic">
+                                                        "{strength.sampleReviews[0]}"
+                                                    </p>
+                                                </div>
                                             )}
                                         </div>
-                                    </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
-                                    {expandedImprovement === item.id && (
-                                        <div className="px-4 pb-4 space-y-4 border-t border-gray-100 pt-4">
-                                            <div className="bg-gray-50 rounded-lg p-4">
-                                                <p className="text-sm text-gray-600 flex items-start gap-2">
-                                                    <AlertCircle className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
-                                                    {item.description}
-                                                </p>
+                        {/* Weaknesses */}
+                        {analysisResult.weaknesses && analysisResult.weaknesses.length > 0 && (
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                                    <TrendingDown className="w-5 h-5 text-red-500" />
+                                    Điểm yếu ({analysisResult.weaknesses.length})
+                                </h3>
+                                <div className="space-y-3">
+                                    {analysisResult.weaknesses.map((weakness, index) => (
+                                        <div key={index} className="p-4 bg-red-50 rounded-xl border border-red-200">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <h4 className="font-semibold text-red-900">{weakness.category}</h4>
+                                                <span className="text-lg font-bold text-red-600">{weakness.score}%</span>
                                             </div>
-                                            <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-                                                <p className="text-sm text-green-800 flex items-start gap-2">
-                                                    <Lightbulb className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                                                    <span>
-                                                        <strong className="text-green-900">Đề xuất: </strong>
-                                                        {item.suggestion}
-                                                    </span>
-                                                </p>
-                                            </div>
+                                            <p className="text-sm text-red-800 mb-2">{weakness.description}</p>
+                                            <p className="text-xs text-red-600">{weakness.mentionCount} lượt đề cập</p>
+                                            {weakness.sampleReviews && weakness.sampleReviews.length > 0 && (
+                                                <div className="mt-3 pt-3 border-t border-red-200">
+                                                    <p className="text-xs text-red-700 mb-1 flex items-center gap-1">
+                                                        <Quote className="w-3 h-3" /> Mẫu đánh giá:
+                                                    </p>
+                                                    <p className="text-xs text-red-800 italic">
+                                                        "{weakness.sampleReviews[0]}"
+                                                    </p>
+                                                </div>
+                                            )}
                                         </div>
-                                    )}
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
+                            </div>
+                        )}
                     </div>
 
-                    {/* Strengths */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                        <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-                            <TrendingUp className="w-5 h-5 text-green-500" />
-                            Điểm mạnh của doanh nghiệp
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            {analysisResult.strengths.map((strength, index) => (
-                                <div key={index} className="p-4 bg-green-50 rounded-xl border border-green-200">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h4 className="font-semibold text-green-900">{strength.category}</h4>
-                                        <span className="text-lg font-bold text-green-600">{strength.sentimentScore}%</span>
-                                    </div>
-                                    <p className="text-sm text-green-800 mb-3">{strength.description}</p>
-                                    <p className="text-xs text-green-600">{strength.mentionCount} lượt đề cập</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Keywords */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {/* Positive Keywords */}
+                    {/* Top Keywords */}
+                    {analysisResult.topKeywords && analysisResult.topKeywords.length > 0 && (
                         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <h3 className="text-md font-bold text-gray-900 mb-4 flex items-center gap-2">
-                                <ThumbsUp className="w-4 h-4 text-green-600" />
-                                Từ khóa tích cực
-                            </h3>
+                            <h3 className="text-lg font-bold text-gray-900 mb-4">Từ khóa phổ biến</h3>
                             <div className="flex flex-wrap gap-2">
-                                {analysisResult.keywords.positive.map((keyword, index) => (
-                                    <span key={index} className="px-3 py-1.5 bg-green-100 text-green-700 text-sm rounded-full">
-                                        {keyword}
+                                {analysisResult.topKeywords.map((keyword, index) => (
+                                    <span
+                                        key={index}
+                                        className={`px-3 py-1.5 rounded-full text-sm font-medium ${getSentimentColor(keyword.sentiment)}`}
+                                    >
+                                        {keyword.keyword} ({keyword.count})
                                     </span>
                                 ))}
                             </div>
                         </div>
+                    )}
 
-                        {/* Negative Keywords */}
+                    {/* Trends */}
+                    {analysisResult.trends && analysisResult.trends.length > 0 && (
                         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <h3 className="text-md font-bold text-gray-900 mb-4 flex items-center gap-2">
-                                <ThumbsDown className="w-4 h-4 text-red-500" />
-                                Từ khóa tiêu cực
-                            </h3>
-                            <div className="flex flex-wrap gap-2">
-                                {analysisResult.keywords.negative.map((keyword, index) => (
-                                    <span key={index} className="px-3 py-1.5 bg-red-100 text-red-700 text-sm rounded-full">
-                                        {keyword}
-                                    </span>
-                                ))}
+                            <h3 className="text-lg font-bold text-gray-900 mb-4">Xu hướng theo thời gian</h3>
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-sm">
+                                    <thead>
+                                        <tr className="border-b border-gray-200">
+                                            <th className="text-left py-3 px-4 font-semibold text-gray-700">Thời kỳ</th>
+                                            <th className="text-center py-3 px-4 font-semibold text-gray-700">Đánh giá TB</th>
+                                            <th className="text-center py-3 px-4 font-semibold text-gray-700">Số lượng</th>
+                                            <th className="text-center py-3 px-4 font-semibold text-gray-700">Cảm xúc</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {analysisResult.trends.map((trend, index) => (
+                                            <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
+                                                <td className="py-3 px-4 font-medium text-gray-900">{trend.period}</td>
+                                                <td className="py-3 px-4 text-center">
+                                                    <span className="flex items-center justify-center gap-1">
+                                                        <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                                                        {trend.averageRating.toFixed(1)}
+                                                    </span>
+                                                </td>
+                                                <td className="py-3 px-4 text-center text-gray-600">{trend.reviewCount}</td>
+                                                <td className="py-3 px-4 text-center">
+                                                    <span className={`px-2 py-1 rounded-full text-xs ${getSentimentColor(trend.sentiment)}`}>
+                                                        {trend.sentiment}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
-
-                        {/* Trending Keywords */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <h3 className="text-md font-bold text-gray-900 mb-4 flex items-center gap-2">
-                                <TrendingUp className="w-4 h-4 text-blue-500" />
-                                Từ khóa phổ biến
-                            </h3>
-                            <div className="flex flex-wrap gap-2">
-                                {analysisResult.keywords.trending.map((keyword, index) => (
-                                    <span key={index} className="px-3 py-1.5 bg-blue-100 text-blue-700 text-sm rounded-full">
-                                        {keyword}
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
+                    )}
                 </div>
             )}
         </div>
