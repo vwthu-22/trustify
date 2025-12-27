@@ -116,7 +116,7 @@ export default function AIReviewAnalysisPage() {
 
     const getSentimentColor = (sentiment: string) => {
         switch (sentiment.toLowerCase()) {
-            case 'positive': return 'text-green-600 bg-green-100';
+            case 'positive': return 'text-[#5aa5df] bg-blue-100';
             case 'negative': return 'text-red-600 bg-red-100';
             default: return 'text-gray-600 bg-gray-100';
         }
@@ -305,16 +305,16 @@ export default function AIReviewAnalysisPage() {
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between text-sm">
                                         <div className="flex items-center gap-2">
-                                            <ThumbsUp className="w-4 h-4 text-green-600" />
+                                            <ThumbsUp className="w-4 h-4 text-[#5aa5df]" />
                                             <span className="font-medium text-gray-700">{t('positive')}</span>
                                         </div>
-                                        <span className="font-bold text-green-600">
+                                        <span className="font-bold text-[#5aa5df]">
                                             {analysisResult.sentimentSummary?.positivePercent || 0}%
                                         </span>
                                     </div>
                                     <div className="w-full bg-gray-200 rounded-full h-4">
                                         <div
-                                            className="bg-green-500 h-4 rounded-full transition-all"
+                                            className="bg-[#5aa5df] h-4 rounded-full transition-all"
                                             style={{ width: `${analysisResult.sentimentSummary?.positivePercent || 0}%` }}
                                         ></div>
                                     </div>
@@ -598,8 +598,8 @@ export default function AIReviewAnalysisPage() {
                                             <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
                                                 <td className="py-3 px-4 font-medium text-gray-900">{trend.period}</td>
                                                 <td className="py-3 px-4 text-center">
-                                                    <span className="flex items-center justify-center gap-1">
-                                                        <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                                                    <span className={`flex items-center justify-center gap-1 ${getStarFillColor(trend.averageRating)}`}>
+                                                        <Star className="w-4 h-4" />
                                                         {trend.averageRating.toFixed(1)}
                                                     </span>
                                                 </td>
