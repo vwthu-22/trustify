@@ -224,7 +224,8 @@
         "previous": "Trước",
         "next": "Tiếp",
         "page": "Trang",
-        "of": "trong"
+        "of": "trong",
+        "results": "kết quả"
     },
     "categories": {
         "title": "Duyệt danh mục",

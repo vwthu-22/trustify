@@ -109,12 +109,13 @@ export default function CompanyReviewPage() {
         }
     }, [businessId, fetchAllReviewsByCompany]);
 
-    // Filter reviews by selected stars
+    // FIXED: Filter and search on ALL reviews, not just current page
+    // Step 1: Filter by star rating from ALL reviews
     const filteredReviews = selectedFilters.length > 0
-        ? reviews.filter(review => selectedFilters.includes(review.rating))
-        : reviews;
+        ? allReviews.filter(review => selectedFilters.includes(review.rating))
+        : allReviews;
 
-    // Search reviews by keyword
+    // Step 2: Search by keyword
     const searchedReviewsUnsorted = searchKeyword
         ? filteredReviews.filter(review =>
             review.title.toLowerCase().includes(searchKeyword.toLowerCase()) ||
@@ -122,24 +123,53 @@ export default function CompanyReviewPage() {
         )
         : filteredReviews;
 
-    // Sort reviews: user's own reviews first, then others
-    const searchedReviews = [...searchedReviewsUnsorted].sort((a, b) => {
+    // Step 3: Sort reviews - user's own reviews first
+    const allFilteredReviews = [...searchedReviewsUnsorted].sort((a, b) => {
         const aIsOwn = isOwnReview(a);
         const bIsOwn = isOwnReview(b);
-        if (aIsOwn && !bIsOwn) return -1; // a comes first
-        if (!aIsOwn && bIsOwn) return 1;  // b comes first
-        return 0; // keep original order
+        if (aIsOwn && !bIsOwn) return -1;
+        if (!aIsOwn && bIsOwn) return 1;
+        return 0;
     });
 
+    // Step 4: Local pagination for filtered results
+    const REVIEWS_PER_PAGE = 10;
+    const [filteredPage, setFilteredPage] = useState(0);
+    const filteredTotalPages = Math.ceil(allFilteredReviews.length / REVIEWS_PER_PAGE);
+    const searchedReviews = allFilteredReviews.slice(
+        filteredPage * REVIEWS_PER_PAGE,
+        (filteredPage + 1) * REVIEWS_PER_PAGE
+    );
+
+    // Reset to page 0 when filters or search change
+    useEffect(() => {
+        setFilteredPage(0);
+    }, [selectedFilters, searchKeyword]);
+
+    // Determine if we're using filtered mode (any filter or search active)
+    const isFilterMode = selectedFilters.length > 0 || searchKeyword.length > 0;
+
     const loadMoreReviews = () => {
-        if (currentReviewPage < totalPages - 1) {
-            setCurrentReviewPage(prev => prev + 1);
+        if (isFilterMode) {
+            if (filteredPage < filteredTotalPages - 1) {
+                setFilteredPage(prev => prev + 1);
+            }
+        } else {
+            if (currentReviewPage < totalPages - 1) {
+                setCurrentReviewPage(prev => prev + 1);
+            }
         }
     };
 
     const loadPreviousReviews = () => {
-        if (currentReviewPage > 0) {
-            setCurrentReviewPage(prev => prev - 1);
+        if (isFilterMode) {
+            if (filteredPage > 0) {
+                setFilteredPage(prev => prev - 1);
+            }
+        } else {
+            if (currentReviewPage > 0) {
+                setCurrentReviewPage(prev => prev - 1);
+            }
         }
     };
 
@@ -520,35 +550,6 @@ export default function CompanyReviewPage() {
                                 className="w-full pl-9 sm:pl-12 pr-3 sm:pr-4 py-2 sm:py-3 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
                             />
                         </div>
-
-                        {/* Filter Buttons */}
-                        {/* <div className="flex gap-3 mb-6">
-                            <button className="flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-full hover:bg-gray-50 transition">
-                                <Filter className="w-4 h-4" />
-                                <span className="font-medium">More filters</span>
-                            </button>
-                            <button className="flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-full hover:bg-gray-50 transition">
-                                <span className="font-medium">Most recent</span>
-                                <ChevronDown className="w-4 h-4" />
-                            </button>
-                        </div> */}
-
-                        {/* Top Mentions */}
-                        {/* <div className="mb-8">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Top mentions</h3>
-                            <div className="flex flex-wrap gap-2">
-                                {topMentions.map((mention) => (
-                                    <button
-                                        key={mention}
-                                        className="px-5 py-2.5 border border-gray-300 rounded-full hover:bg-gray-50 transition text-sm"
-                                    >
-                                        {mention}
-                                    </button>
-                                ))}
-                            </div>
-                        </div> */}
-
-                        {/* Reviews List */}
                         <div className="space-y-4 sm:space-y-6">
                             {reviewsLoading ? (
                                 <div className="text-center py-6 sm:py-8">
@@ -615,22 +616,27 @@ export default function CompanyReviewPage() {
                         </div>
 
                         {/* Pagination Controls */}
-                        {!reviewsLoading && totalPages > 1 && (
+                        {!reviewsLoading && ((isFilterMode && filteredTotalPages > 1) || (!isFilterMode && totalPages > 1)) && (
                             <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-between gap-3">
                                 <button
                                     onClick={loadPreviousReviews}
-                                    disabled={currentReviewPage === 0}
+                                    disabled={isFilterMode ? filteredPage === 0 : currentReviewPage === 0}
                                     className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 border border-gray-300 rounded-full hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base w-full sm:w-auto justify-center"
                                 >
                                     <ChevronLeft className="w-4 h-4" />
                                     {t('previous')}
                                 </button>
                                 <div className="text-xs sm:text-sm text-gray-600 order-first sm:order-none">
-                                    {t('page')} {currentReviewPage + 1} {t('of')} {totalPages}
+                                    {t('page')} {isFilterMode ? filteredPage + 1 : currentReviewPage + 1} {t('of')} {isFilterMode ? filteredTotalPages : totalPages}
+                                    {isFilterMode && (
+                                        <span className="ml-2 text-blue-600">
+                                            ({allFilteredReviews.length} {t('results')})
+                                        </span>
+                                    )}
                                 </div>
                                 <button
                                     onClick={loadMoreReviews}
-                                    disabled={currentReviewPage >= totalPages - 1}
+                                    disabled={isFilterMode ? filteredPage >= filteredTotalPages - 1 : currentReviewPage >= totalPages - 1}
                                     className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 border border-gray-300 rounded-full hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base w-full sm:w-auto justify-center"
                                 >
                                     {t('next')}

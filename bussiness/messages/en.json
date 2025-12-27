@@ -323,7 +323,15 @@
         "backToEmail": "Change Email",
         "loginSuccess": "Login successful!",
         "invalidCode": "Invalid verification code",
-        "codeExpired": "Code expired. Please request a new one."
+        "codeExpired": "Code expired. Please request a new one.",
+        "errorSendMagicLink": "Unable to send magic link",
+        "errorServerError": "Server error. Please try again later.",
+        "errorEmailNotFound": "Email does not exist in the system.",
+        "errorEmailRequired": "Please enter your email address.",
+        "errorInvalidEmail": "Invalid email address.",
+        "errorTooManyRequests": "Too many requests. Please try again later.",
+        "errorConnection": "Connection error. Please check your network and try again.",
+        "errorDefault": "Unable to send magic link. Please try again."
     },
     "analytics": {
         "title": "Analytics Overview",

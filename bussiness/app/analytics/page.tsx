@@ -19,12 +19,17 @@ import {
     Target,
     ChevronDown,
     ChevronUp,
+    ChevronLeft,
+    ChevronRight,
     AlertTriangle,
     Quote
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useAIAnalysisStore } from '@/store/useAIAnalysisStore';
 import { useCompanyStore } from '@/store/useCompanyStore';
+import { getStarFillColor } from '@/utils/ratingColors';
+
+const ITEMS_PER_PAGE = 3;
 
 export default function AIReviewAnalysisPage() {
     const t = useTranslations('analytics');
@@ -43,6 +48,16 @@ export default function AIReviewAnalysisPage() {
     const [expandedWeakness, setExpandedWeakness] = useState<number | null>(null);
     const [dateRange, setDateRange] = useState('30');
     const [maxReviews, setMaxReviews] = useState(50);
+
+    // Pagination states
+    const [strengthsPage, setStrengthsPage] = useState(1);
+    const [weaknessesPage, setWeaknessesPage] = useState(1);
+
+    // Reset pagination when analysis result changes
+    useEffect(() => {
+        setStrengthsPage(1);
+        setWeaknessesPage(1);
+    }, [analysisResult]);
 
     const handleAnalyze = async (forceRefresh: boolean = false) => {
         if (!company?.id) {
@@ -415,68 +430,136 @@ export default function AIReviewAnalysisPage() {
                     {/* Strengths & Weaknesses */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         {/* Strengths */}
-                        {analysisResult.strengths && analysisResult.strengths.length > 0 && (
-                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                                    <TrendingUp className="w-5 h-5 text-green-500" />
-                                    {t('strengths')} ({analysisResult.strengths.length})
-                                </h3>
-                                <div className="space-y-3">
-                                    {analysisResult.strengths.map((strength, index) => (
-                                        <div key={index} className="p-4 bg-green-50 rounded-xl border border-green-200">
-                                            <div className="flex items-center justify-between mb-2">
-                                                <h4 className="font-semibold text-green-900">{strength.category}</h4>
-                                                <span className="text-lg font-bold text-green-600">{strength.score}%</span>
+                        {analysisResult.strengths && analysisResult.strengths.length > 0 && (() => {
+                            const totalStrengthPages = Math.ceil(analysisResult.strengths.length / ITEMS_PER_PAGE);
+                            const paginatedStrengths = analysisResult.strengths.slice(
+                                (strengthsPage - 1) * ITEMS_PER_PAGE,
+                                strengthsPage * ITEMS_PER_PAGE
+                            );
+
+                            return (
+                                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                                            <TrendingUp className="w-5 h-5 text-[#5aa5df]" />
+                                            {t('strengths')} ({analysisResult.strengths.length})
+                                        </h3>
+                                        {totalStrengthPages > 1 && (
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    onClick={() => setStrengthsPage(prev => Math.max(1, prev - 1))}
+                                                    disabled={strengthsPage === 1}
+                                                    className="p-1 rounded-lg hover:bg-blue-100 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                                                >
+                                                    <ChevronLeft className="w-5 h-5 text-[#5aa5df]" />
+                                                </button>
+                                                <span className="text-sm text-gray-600 min-w-[60px] text-center">
+                                                    {strengthsPage} / {totalStrengthPages}
+                                                </span>
+                                                <button
+                                                    onClick={() => setStrengthsPage(prev => Math.min(totalStrengthPages, prev + 1))}
+                                                    disabled={strengthsPage === totalStrengthPages}
+                                                    className="p-1 rounded-lg hover:bg-blue-100 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                                                >
+                                                    <ChevronRight className="w-5 h-5 text-[#5aa5df]" />
+                                                </button>
                                             </div>
-                                            <p className="text-sm text-green-800 mb-2">{strength.description}</p>
-                                            <p className="text-xs text-green-600">{strength.mentionCount} {t('mentions')}</p>
-                                            {strength.sampleReviews && strength.sampleReviews.length > 0 && (
-                                                <div className="mt-3 pt-3 border-t border-green-200">
-                                                    <p className="text-xs text-green-700 mb-1 flex items-center gap-1">
-                                                        <Quote className="w-3 h-3" /> {t('sampleReview')}:
-                                                    </p>
-                                                    <p className="text-xs text-green-800 italic">
-                                                        "{strength.sampleReviews[0]}"
-                                                    </p>
+                                        )}
+                                    </div>
+                                    <div className="space-y-3">
+                                        {paginatedStrengths.map((strength, index) => (
+                                            <div key={index} className="p-4 bg-blue-50 rounded-xl border border-blue-200">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <h4 className="font-semibold text-blue-900">{strength.category}</h4>
+                                                    <span className={`text-lg font-bold flex items-center gap-1 ${getStarFillColor(strength.score)}`}>
+                                                        <Star className="w-4 h-4" />
+                                                        {strength.score}
+                                                    </span>
                                                 </div>
-                                            )}
-                                        </div>
-                                    ))}
+                                                <p className="text-sm text-blue-800 mb-2">{strength.description}</p>
+                                                <p className="text-xs text-[#5aa5df]">{strength.mentionCount} {t('mentions')}</p>
+                                                {strength.sampleReviews && strength.sampleReviews.length > 0 && (
+                                                    <div className="mt-3 pt-3 border-t border-blue-200">
+                                                        <p className="text-xs text-blue-700 mb-1 flex items-center gap-1">
+                                                            <Quote className="w-3 h-3" /> {t('sampleReview')}:
+                                                        </p>
+                                                        <p className="text-xs text-blue-800 italic">
+                                                            "{strength.sampleReviews[0]}"
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            );
+                        })()}
 
                         {/* Weaknesses */}
-                        {analysisResult.weaknesses && analysisResult.weaknesses.length > 0 && (
-                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                                    <TrendingDown className="w-5 h-5 text-red-500" />
-                                    {t('weaknesses')} ({analysisResult.weaknesses.length})
-                                </h3>
-                                <div className="space-y-3">
-                                    {analysisResult.weaknesses.map((weakness, index) => (
-                                        <div key={index} className="p-4 bg-red-50 rounded-xl border border-red-200">
-                                            <div className="flex items-center justify-between mb-2">
-                                                <h4 className="font-semibold text-red-900">{weakness.category}</h4>
-                                                <span className="text-lg font-bold text-red-600">{weakness.score}%</span>
+                        {analysisResult.weaknesses && analysisResult.weaknesses.length > 0 && (() => {
+                            const totalWeaknessPages = Math.ceil(analysisResult.weaknesses.length / ITEMS_PER_PAGE);
+                            const paginatedWeaknesses = analysisResult.weaknesses.slice(
+                                (weaknessesPage - 1) * ITEMS_PER_PAGE,
+                                weaknessesPage * ITEMS_PER_PAGE
+                            );
+
+                            return (
+                                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                                            <TrendingDown className="w-5 h-5 text-red-500" />
+                                            {t('weaknesses')} ({analysisResult.weaknesses.length})
+                                        </h3>
+                                        {totalWeaknessPages > 1 && (
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    onClick={() => setWeaknessesPage(prev => Math.max(1, prev - 1))}
+                                                    disabled={weaknessesPage === 1}
+                                                    className="p-1 rounded-lg hover:bg-red-100 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                                                >
+                                                    <ChevronLeft className="w-5 h-5 text-red-600" />
+                                                </button>
+                                                <span className="text-sm text-gray-600 min-w-[60px] text-center">
+                                                    {weaknessesPage} / {totalWeaknessPages}
+                                                </span>
+                                                <button
+                                                    onClick={() => setWeaknessesPage(prev => Math.min(totalWeaknessPages, prev + 1))}
+                                                    disabled={weaknessesPage === totalWeaknessPages}
+                                                    className="p-1 rounded-lg hover:bg-red-100 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                                                >
+                                                    <ChevronRight className="w-5 h-5 text-red-600" />
+                                                </button>
                                             </div>
-                                            <p className="text-sm text-red-800 mb-2">{weakness.description}</p>
-                                            <p className="text-xs text-red-600">{weakness.mentionCount} {t('mentions')}</p>
-                                            {weakness.sampleReviews && weakness.sampleReviews.length > 0 && (
-                                                <div className="mt-3 pt-3 border-t border-red-200">
-                                                    <p className="text-xs text-red-700 mb-1 flex items-center gap-1">
-                                                        <Quote className="w-3 h-3" /> {t('sampleReview')}:
-                                                    </p>
-                                                    <p className="text-xs text-red-800 italic">
-                                                        "{weakness.sampleReviews[0]}"
-                                                    </p>
+                                        )}
+                                    </div>
+                                    <div className="space-y-3">
+                                        {paginatedWeaknesses.map((weakness, index) => (
+                                            <div key={index} className="p-4 bg-red-50 rounded-xl border border-red-200">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <h4 className="font-semibold text-red-900">{weakness.category}</h4>
+                                                    <span className={`text-lg font-bold flex items-center gap-1 ${getStarFillColor(weakness.score)}`}>
+                                                        <Star className="w-4 h-4" />
+                                                        {weakness.score}
+                                                    </span>
                                                 </div>
-                                            )}
-                                        </div>
-                                    ))}
+                                                <p className="text-sm text-red-800 mb-2">{weakness.description}</p>
+                                                <p className="text-xs text-red-600">{weakness.mentionCount} {t('mentions')}</p>
+                                                {weakness.sampleReviews && weakness.sampleReviews.length > 0 && (
+                                                    <div className="mt-3 pt-3 border-t border-red-200">
+                                                        <p className="text-xs text-red-700 mb-1 flex items-center gap-1">
+                                                            <Quote className="w-3 h-3" /> {t('sampleReview')}:
+                                                        </p>
+                                                        <p className="text-xs text-red-800 italic">
+                                                            "{weakness.sampleReviews[0]}"
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            );
+                        })()}
                     </div>
 
                     {/* Top Keywords */}

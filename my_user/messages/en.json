@@ -224,7 +224,8 @@
         "previous": "Previous",
         "next": "Next",
         "page": "Page",
-        "of": "of"
+        "of": "of",
+        "results": "results"
     },
     "categories": {
         "title": "Browse Categories",

@@ -323,7 +323,15 @@
         "backToEmail": "Đổi email",
         "loginSuccess": "Đăng nhập thành công!",
         "invalidCode": "Mã xác minh không hợp lệ",
-        "codeExpired": "Mã đã hết hạn. Vui lòng yêu cầu mã mới."
+        "codeExpired": "Mã đã hết hạn. Vui lòng yêu cầu mã mới.",
+        "errorSendMagicLink": "Không thể gửi magic link",
+        "errorServerError": "Lỗi máy chủ. Vui lòng thử lại sau.",
+        "errorEmailNotFound": "Email không tồn tại trong hệ thống.",
+        "errorEmailRequired": "Vui lòng nhập địa chỉ email.",
+        "errorInvalidEmail": "Email không hợp lệ.",
+        "errorTooManyRequests": "Bạn đã gửi quá nhiều yêu cầu. Vui lòng thử lại sau.",
+        "errorConnection": "Lỗi kết nối. Vui lòng kiểm tra mạng và thử lại.",
+        "errorDefault": "Không thể gửi magic link. Vui lòng thử lại."
     },
     "analytics": {
         "title": "Tổng quan phân tích",

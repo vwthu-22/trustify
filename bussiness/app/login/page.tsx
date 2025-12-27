@@ -10,22 +10,47 @@ export default function LoginPage() {
     const { sendMagicLink, isLoading, error: storeError, magicLinkSent, resetMagicLinkState, clearError } = useCompanyStore();
 
     const [email, setEmail] = useState('');
+    const [localError, setLocalError] = useState('');
+
+    // Email validation regex
+    const isValidEmail = (email: string) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
 
     const handleSendMagicLink = async (e: React.FormEvent) => {
         e.preventDefault();
         clearError();
+        setLocalError('');
+
+        // Frontend validation
+        if (!email || email.trim() === '') {
+            setLocalError(t('errorEmailRequired'));
+            return;
+        }
+
+        if (!isValidEmail(email)) {
+            setLocalError(t('errorInvalidEmail'));
+            return;
+        }
+
         await sendMagicLink(email);
     };
 
     const handleBackToEmail = () => {
         resetMagicLinkState();
         clearError();
+        setLocalError('');
     };
 
     const handleResendLink = async () => {
         clearError();
+        setLocalError('');
         await sendMagicLink(email);
     };
+
+    // Combined error - show local error first, then store error
+    const displayError = localError || storeError;
 
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6 lg:p-8">
@@ -131,9 +156,9 @@ export default function LoginPage() {
                                         </div>
                                     </div>
 
-                                    {storeError && (
+                                    {displayError && (
                                         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-                                            {storeError}
+                                            {displayError}
                                         </div>
                                     )}
 
@@ -200,9 +225,9 @@ export default function LoginPage() {
                                         Link expires in 15 minutes and can only be used once.
                                     </p>
 
-                                    {storeError && (
+                                    {displayError && (
                                         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-                                            {storeError}
+                                            {displayError}
                                         </div>
                                     )}
 

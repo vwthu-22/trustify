@@ -160,8 +160,33 @@ export const useCompanyStore = create<CompanyStore>()(
                     });
 
                     if (!response.ok) {
-                        const errorText = await response.text();
-                        throw new Error(errorText || 'Failed to send magic link');
+                        let errorMessage = 'Không thể gửi magic link';
+                        try {
+                            const errorData = await response.json();
+                            console.error('Magic link error (JSON):', errorData);
+                            // Extract user-friendly message from various formats
+                            if (errorData.message && !errorData.message.includes('Internal Server Error')) {
+                                errorMessage = errorData.message;
+                            } else if (response.status === 500) {
+                                errorMessage = 'Lỗi máy chủ. Vui lòng thử lại sau.';
+                            } else if (response.status === 404) {
+                                errorMessage = 'Email không tồn tại trong hệ thống.';
+                            } else if (response.status === 400) {
+                                errorMessage = 'Email không hợp lệ.';
+                            } else if (response.status === 429) {
+                                errorMessage = 'Bạn đã gửi quá nhiều yêu cầu. Vui lòng thử lại sau.';
+                            }
+                        } catch {
+                            const errorText = await response.text();
+                            console.error('Magic link error (Text):', errorText);
+                            // Don't show raw JSON to user
+                            if (errorText.startsWith('{') || errorText.includes('Internal Server Error')) {
+                                errorMessage = 'Lỗi máy chủ. Vui lòng thử lại sau.';
+                            } else if (errorText && errorText.length < 100) {
+                                errorMessage = errorText;
+                            }
+                        }
+                        throw new Error(errorMessage);
                     }
 
                     const result = await response.text();
@@ -171,8 +196,19 @@ export const useCompanyStore = create<CompanyStore>()(
                     return true;
                 } catch (error) {
                     console.error('Send magic link error:', error);
+                    let userMessage = 'Không thể gửi magic link. Vui lòng thử lại.';
+
+                    if (error instanceof Error) {
+                        // Check if it's already a user-friendly message
+                        if (!error.message.includes('{') && !error.message.includes('fetch')) {
+                            userMessage = error.message;
+                        } else if (error.message.includes('fetch')) {
+                            userMessage = 'Lỗi kết nối. Vui lòng kiểm tra mạng và thử lại.';
+                        }
+                    }
+
                     set({
-                        error: error instanceof Error ? error.message : 'Failed to send magic link',
+                        error: userMessage,
                         isLoading: false,
                         magicLinkSent: false,
                     });
