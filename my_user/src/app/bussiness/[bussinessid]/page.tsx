@@ -304,46 +304,46 @@ export default function CompanyReviewPage() {
 
     return (
         <div className="min-h-screen bg-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8  mx-20">
                 {/* First Grid - Company Info and Rating Sidebar */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mt-16 sm:mt-20">
                     {/* Left Column */}
                     <div className="lg:col-span-2">
                         {/* Company Header */}
-                        <div className="mb-6 sm:mb-8">
-                            <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6 mb-4 sm:mb-6">
-                                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white border border-gray-200 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                        <div className="mb-4 sm:mb-6">
+                            <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4 mb-3 sm:mb-4">
+                                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white border border-gray-200 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
                                     {currentCompany.logo ? (
                                         <img src={currentCompany.logo} alt={currentCompany.name} className="w-full h-full object-contain" />
                                     ) : (
-                                        <span className="text-sm sm:text-lg font-bold text-gray-800">{currentCompany.name?.substring(0, 7).toUpperCase() || 'COMPANY'}</span>
+                                        <span className="text-xs sm:text-sm font-bold text-gray-800">{currentCompany.name?.substring(0, 7).toUpperCase() || 'COMPANY'}</span>
                                     )}
                                 </div>
                                 <div className="flex-1">
-                                    <div className="flex flex-wrap items-center gap-2 mb-2">
-                                        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">{currentCompany.name}</h1>
+                                    <div className="flex flex-wrap items-center gap-2 mb-1">
+                                        <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">{currentCompany.name}</h1>
                                         {currentCompany.claimed && (
-                                            <span className="flex items-center gap-1 px-2 sm:px-3 py-0.5 sm:py-1 border border-gray-300 rounded-full text-xs sm:text-sm">
-                                                <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+                                            <span className="flex items-center gap-1 px-2 py-0.5 border border-gray-300 rounded-full text-xs">
+                                                <CheckCircle className="w-3 h-3" />
                                                 {t('claimed')}
                                             </span>
                                         )}
                                     </div>
                                     <Link
                                         href={`/category/${getIndustrySlug(currentCompany.industry || '')}`}
-                                        className="text-black hover:underline text-sm sm:text-base"
+                                        className="text-black hover:underline text-xs sm:text-sm"
                                     >
                                         {currentCompany.industry || 'Company'}
                                     </Link>
                                 </div>
                             </div>
 
-                            <div className="flex flex-wrap gap-2 sm:gap-3">
+                            <div className="flex flex-wrap gap-2">
                                 <button
                                     onClick={() => setIsWriteModalOpen(true)}
-                                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4 py-2 rounded-full transition flex items-center gap-2 text-sm sm:text-base"
+                                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-full transition flex items-center gap-1.5 text-xs sm:text-sm"
                                 >
-                                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                     </svg>
                                     <span className="hidden sm:inline">{tHeader('writeReview')}</span>
@@ -354,11 +354,11 @@ export default function CompanyReviewPage() {
                                     href={`https://${currentCompany.website}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="border border-gray-300 hover:bg-gray-50 px-3 sm:px-4 py-2 rounded-full transition flex items-center gap-2 text-sm sm:text-base"
+                                    className="border border-gray-300 hover:bg-gray-50 px-3 py-1.5 rounded-full transition flex items-center gap-1.5 text-xs sm:text-sm"
                                 >
                                     <span className="hidden sm:inline">{t('visitWebsite')}</span>
                                     <span className="sm:hidden">{t('website')}</span>
-                                    <ExternalLink className="w-4 h-4" />
+                                    <ExternalLink className="w-3.5 h-3.5" />
                                 </a>
                             </div>
                         </div>
@@ -370,49 +370,49 @@ export default function CompanyReviewPage() {
                         </div>
 
                         {/* Company Details */}
-                        <div className="mb-6 sm:mb-8 pb-6 sm:pb-8 border-b border-gray-200">
-                            <div className="flex flex-wrap items-center gap-2 mb-3 sm:mb-4">
-                                <h3 className="text-xl sm:text-2xl font-bold text-gray-900">{t('companyDetails')}</h3>
-                                <span className="flex items-center gap-1 text-xs sm:text-sm text-gray-600">
-                                    <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+                        <div className="mb-4 sm:mb-6 pb-4 sm:pb-6 border-b border-gray-200">
+                            <div className="flex flex-wrap items-center gap-2 mb-2 sm:mb-3">
+                                <h3 className="text-base sm:text-lg font-bold text-gray-900">{t('companyDetails')}</h3>
+                                <span className="flex items-center gap-1 text-xs text-gray-600">
+                                    <CheckCircle className="w-3 h-3 text-green-600" />
                                     {t('activeSubscription')}
                                 </span>
                             </div>
-                            <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6">
-                                <h4 className="font-bold text-base sm:text-lg mb-2">{t('about')} {currentCompany.name}</h4>
-                                <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">{t('writtenByCompany')}</p>
-                                <p className="text-sm sm:text-base text-gray-700 leading-relaxed mb-4">
+                            <div className="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 mb-3 sm:mb-4">
+                                <h4 className="font-bold text-sm sm:text-base mb-1.5">{t('about')} {currentCompany.name}</h4>
+                                <p className="text-xs text-gray-500 mb-2 sm:mb-3">{t('writtenByCompany')}</p>
+                                <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">
                                     {currentCompany.description || t('noDescription')}
                                 </p>
                             </div>
                         </div>
 
                         {/* Contact Info */}
-                        <div className="mb-6 sm:mb-8">
-                            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">{t('contactInfo')}</h3>
-                            <div className="space-y-2 sm:space-y-3">
+                        <div className="mb-4 sm:mb-6">
+                            <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-2 sm:mb-3">{t('contactInfo')}</h3>
+                            <div className="space-y-1.5 sm:space-y-2">
                                 {currentCompany.address && (
-                                    <div className="flex items-start gap-2 sm:gap-3 text-gray-700">
-                                        <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 mt-0.5" />
-                                        <span className="text-sm sm:text-base">{currentCompany.address}</span>
+                                    <div className="flex items-start gap-2 text-gray-700">
+                                        <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0 mt-0.5" />
+                                        <span className="text-xs sm:text-sm">{currentCompany.address}</span>
                                     </div>
                                 )}
                                 {currentCompany.phone && (
-                                    <div className="flex items-center gap-2 sm:gap-3">
-                                        <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
-                                        <a href={`tel:${currentCompany.phone}`} className="text-gray-900 hover:text-blue-600 text-sm sm:text-base">{currentCompany.phone}</a>
+                                    <div className="flex items-center gap-2">
+                                        <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-700" />
+                                        <a href={`tel:${currentCompany.phone}`} className="text-gray-900 hover:text-blue-600 text-xs sm:text-sm">{currentCompany.phone}</a>
                                     </div>
                                 )}
                                 {currentCompany.email && (
-                                    <div className="flex items-center gap-2 sm:gap-3">
-                                        <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
-                                        <a href={`mailto:${currentCompany.email}`} className="text-gray-900 hover:text-blue-600 text-sm sm:text-base break-all">{currentCompany.email}</a>
+                                    <div className="flex items-center gap-2">
+                                        <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-700" />
+                                        <a href={`mailto:${currentCompany.email}`} className="text-gray-900 hover:text-blue-600 text-xs sm:text-sm break-all">{currentCompany.email}</a>
                                     </div>
                                 )}
                                 {currentCompany.website && (
-                                    <div className="flex items-center gap-2 sm:gap-3">
-                                        <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
-                                        <Link href={`https://${currentCompany.website}`} target="_blank" rel="noopener noreferrer" className="text-gray-900 underline hover:text-blue-600 text-sm sm:text-base break-all">{currentCompany.website}</Link>
+                                    <div className="flex items-center gap-2">
+                                        <Globe className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-700" />
+                                        <Link href={`https://${currentCompany.website}`} target="_blank" rel="noopener noreferrer" className="text-gray-900 underline hover:text-blue-600 text-xs sm:text-sm break-all">{currentCompany.website}</Link>
                                     </div>
                                 )}
                             </div>
@@ -421,28 +421,28 @@ export default function CompanyReviewPage() {
 
                     {/* Right Sidebar - Hidden on mobile, shown at bottom for mobile */}
                     <div className="lg:col-span-1 order-first lg:order-last">
-                        <div className="lg:sticky lg:top-20 space-y-4 sm:space-y-6">
+                        <div className="lg:sticky lg:top-20 space-y-3 sm:space-y-4">
                             {/* Rating Card */}
-                            <div className="bg-white border border-gray-200 shadow-md rounded-lg p-4 sm:p-6">
-                                <div className="flex items-baseline gap-2 mb-2">
-                                    <span className="text-4xl sm:text-5xl font-bold">{actualRating.toFixed(1)}</span>
+                            <div className="bg-white border border-gray-200 shadow-md rounded-lg p-3 sm:p-4">
+                                <div className="flex items-baseline gap-2 mb-1">
+                                    <span className="text-3xl sm:text-4xl font-bold">{actualRating.toFixed(1)}</span>
                                 </div>
-                                <div className="flex items-center gap-2 mb-3 sm:mb-4">
-                                    <span className="font-semibold text-sm sm:text-base">
+                                <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                                    <span className="font-semibold text-xs sm:text-sm">
                                         {getRatingLabel(actualRating)}
                                     </span>
                                 </div>
-                                <div className="flex mb-3 sm:mb-4">{renderStars(actualRating, 'w-4 h-4 sm:w-5 sm:h-5')}</div>
-                                <p className="text-xs sm:text-sm text-gray-600 mb-4 sm:mb-6">{actualReviewCount.toLocaleString()} {tReview('reviews')}</p>
+                                <div className="flex mb-2 sm:mb-3">{renderStars(actualRating, 'w-3.5 h-3.5 sm:w-4 sm:h-4')}</div>
+                                <p className="text-xs text-gray-600 mb-3 sm:mb-4">{actualReviewCount.toLocaleString()} {tReview('reviews')}</p>
 
                                 {/* Rating Breakdown */}
-                                <div className="space-y-2 mb-4 sm:mb-6">
+                                <div className="space-y-1.5 mb-3 sm:mb-4">
                                     {ratingFilters.map((item) => (
-                                        <div key={item.stars} className="flex items-center gap-2 sm:gap-3">
-                                            <span className="text-xs sm:text-sm w-10 sm:w-12">{item.stars}-star</span>
-                                            <div className="flex-1 bg-gray-200 rounded-full h-1.5 sm:h-2">
+                                        <div key={item.stars} className="flex items-center gap-2">
+                                            <span className="text-xs w-9 sm:w-10">{item.stars}-star</span>
+                                            <div className="flex-1 bg-gray-200 rounded-full h-1.5">
                                                 <div
-                                                    className={`h-1.5 sm:h-2 rounded-full ${getBarColor(item.stars)}`}
+                                                    className={`h-1.5 rounded-full ${getBarColor(item.stars)}`}
                                                     style={{ width: `${item.percentage}%` }}
                                                 ></div>
                                             </div>
@@ -450,19 +450,19 @@ export default function CompanyReviewPage() {
                                     ))}
                                 </div>
 
-                                <Link href="#" className="text-xs sm:text-sm text-gray-600 hover:underline">{t('howTrustScore')}</Link>
+                                <Link href="#" className="text-xs text-gray-600 hover:underline">{t('howTrustScore')}</Link>
                             </div>
 
                             {/* Reply Stats */}
                             {replyStats.negativeTotal > 0 && (
-                                <div className="bg-white border border-gray-200 shadow-md rounded-lg p-4 sm:p-6 hidden lg:block">
-                                    <div className="flex items-start gap-2 sm:gap-3">
-                                        <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0 mt-1" />
+                                <div className="bg-white border border-gray-200 shadow-md rounded-lg p-3 sm:p-4 hidden lg:block">
+                                    <div className="flex items-start gap-2">
+                                        <MessageCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-600 flex-shrink-0 mt-0.5" />
                                         <div>
-                                            <p className="font-semibold text-sm sm:text-base mb-1">
+                                            <p className="font-semibold text-xs sm:text-sm mb-0.5">
                                                 {replyStats.replyPercentage}% {t('repliedToNegative')}
                                             </p>
-                                            <p className="text-xs sm:text-sm text-gray-600">
+                                            <p className="text-xs text-gray-600">
                                                 {replyStats.negativeReplied} / {replyStats.negativeTotal} negative reviews replied
                                             </p>
                                         </div>
@@ -480,21 +480,21 @@ export default function CompanyReviewPage() {
                 </div>
 
                 {/* Second Grid - Reviews Section */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mt-10 sm:mt-20">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 mt-8 sm:mt-12">
                     {/* Left Sidebar - Filters */}
                     <div className="lg:col-span-1">
                         {/* Rating Header */}
-                        <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-                            <svg className="w-6 h-6 sm:w-8 sm:h-8 text-[#5aa5df]" fill="currentColor" viewBox="0 0 24 24">
+                        <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                            <svg className="w-5 h-5 sm:w-6 sm:h-6 text-[#5aa5df]" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                             </svg>
-                            <span className="text-3xl sm:text-4xl font-bold">{actualRating.toFixed(1)}</span>
+                            <span className="text-2xl sm:text-3xl font-bold">{actualRating.toFixed(1)}</span>
                         </div>
 
                         {/* All Reviews */}
-                        <div className="mb-4 sm:mb-6">
-                            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{t('allReviews')}</h2>
-                            <div className="flex items-center gap-2 text-gray-600 text-sm sm:text-base">
+                        <div className="mb-3 sm:mb-4">
+                            <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-1">{t('allReviews')}</h2>
+                            <div className="flex items-center gap-2 text-gray-600 text-xs sm:text-sm">
                                 <span>{actualReviewCount.toLocaleString()} {t('total')}</span>
                                 <span>•</span>
                                 <button onClick={() => setIsWriteModalOpen(true)} className="text-blue-600 hover:underline">{tHeader('writeReview')}</button>
@@ -502,13 +502,13 @@ export default function CompanyReviewPage() {
                         </div>
 
                         {/* Star Filters */}
-                        <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6">
-                            <div className="space-y-2 sm:space-y-3">
+                        <div className="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 mb-3 sm:mb-4">
+                            <div className="space-y-1.5 sm:space-y-2">
                                 {ratingFilters.map((filter) => (
-                                    <label key={filter.stars} className="flex items-center gap-2 sm:gap-3 cursor-pointer">
+                                    <label key={filter.stars} className="flex items-center gap-2 cursor-pointer">
                                         <input
                                             type="checkbox"
-                                            className="w-4 h-4 sm:w-5 sm:h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                            className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                             checked={selectedFilters.includes(filter.stars)}
                                             onChange={() => {
                                                 setSelectedFilters(prev =>
@@ -518,47 +518,47 @@ export default function CompanyReviewPage() {
                                                 );
                                             }}
                                         />
-                                        <span className="text-xs sm:text-sm font-medium w-10 sm:w-12">{filter.stars}-star</span>
-                                        <div className="flex-1 bg-gray-200 rounded-full h-1.5 sm:h-2">
+                                        <span className="text-xs font-medium w-9 sm:w-10">{filter.stars}-star</span>
+                                        <div className="flex-1 bg-gray-200 rounded-full h-1.5">
                                             <div
-                                                className={`h-1.5 sm:h-2 rounded-full ${getBarColor(filter.stars)}`}
+                                                className={`h-1.5 rounded-full ${getBarColor(filter.stars)}`}
                                                 style={{ width: `${filter.percentage}%` }}
                                             ></div>
                                         </div>
-                                        <span className="text-xs sm:text-sm text-gray-600 w-10 sm:w-12 text-right">{filter.percentage}%</span>
+                                        <span className="text-xs text-gray-600 w-8 sm:w-10 text-right">{filter.percentage}%</span>
                                     </label>
                                 ))}
                             </div>
                         </div>
 
-                        <Link href="#" className="hidden sm:flex items-center gap-2 text-xs sm:text-sm text-gray-900 hover:underline">
+                        <Link href="#" className="hidden sm:flex items-center gap-1.5 text-xs text-gray-900 hover:underline">
                             How Trustify labels reviews
-                            <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4" />
+                            <ExternalLink className="w-3 h-3" />
                         </Link>
                     </div>
 
                     {/* Right Content - Reviews */}
                     <div className="lg:col-span-2">
                         {/* Search Bar */}
-                        <div className="relative mb-4 sm:mb-6">
-                            <Search className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2" />
+                        <div className="relative mb-3 sm:mb-4">
+                            <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
                             <input
                                 type="text"
                                 placeholder={t('searchByKeyword')}
                                 value={searchKeyword}
                                 onChange={(e) => setSearchKeyword(e.target.value)}
-                                className="w-full pl-9 sm:pl-12 pr-3 sm:pr-4 py-2 sm:py-3 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                                className="w-full pl-8 sm:pl-9 pr-3 py-1.5 sm:py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm"
                             />
                         </div>
-                        <div className="space-y-4 sm:space-y-6">
+                        <div className="space-y-3 sm:space-y-4">
                             {reviewsLoading ? (
-                                <div className="text-center py-6 sm:py-8">
-                                    <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                                    <p className="text-gray-600 text-sm sm:text-base">{t('loadingReviews')}</p>
+                                <div className="text-center py-4 sm:py-6">
+                                    <div className="animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                                    <p className="text-gray-600 text-xs sm:text-sm">{t('loadingReviews')}</p>
                                 </div>
                             ) : searchedReviews.length === 0 ? (
-                                <div className="text-center py-6 sm:py-8">
-                                    <p className="text-gray-600 text-sm sm:text-base">
+                                <div className="text-center py-4 sm:py-6">
+                                    <p className="text-gray-600 text-xs sm:text-sm">
                                         {reviews.length === 0 ? t('noReviewsBeFirst') : t('noReviewsMatch')}
                                     </p>
                                 </div>
@@ -569,42 +569,42 @@ export default function CompanyReviewPage() {
                                     const experienceDate = review.expDate ? new Date(review.expDate).toLocaleDateString() : '';
 
                                     return (
-                                        <div key={review.id} className="border p-3 sm:p-4 border-gray-200 rounded-lg sm:rounded-md">
+                                        <div key={review.id} className="border p-2.5 sm:p-3 border-gray-200 rounded-lg">
                                             {/* Review Header */}
-                                            <div className="flex items-start justify-between mb-3 sm:mb-4">
-                                                <div className="flex items-start gap-2 sm:gap-4">
-                                                    <div className="w-10 h-10 sm:w-14 sm:h-14 bg-pink-500 text-white rounded-full flex items-center justify-center font-bold text-base sm:text-xl flex-shrink-0">
+                                            <div className="flex items-start justify-between mb-2 sm:mb-3">
+                                                <div className="flex items-start gap-2 sm:gap-3">
+                                                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-pink-500 text-white rounded-full flex items-center justify-center font-bold text-sm sm:text-base flex-shrink-0">
                                                         {userInitial}
                                                     </div>
                                                     <div className="min-w-0">
-                                                        <h4 className="font-semibold text-gray-900 text-sm sm:text-lg truncate">{userName}</h4>
-                                                        <p className="text-xs sm:text-sm text-gray-500 truncate">{review.userEmail || 'User'}</p>
+                                                        <h4 className="font-semibold text-gray-900 text-xs sm:text-sm truncate">{userName}</h4>
+                                                        <p className="text-xs text-gray-500 truncate">{review.userEmail || 'User'}</p>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             {/* Rating */}
-                                            <div className="flex mb-3 sm:mb-4">{renderStars(review.rating, 'w-4 h-4 sm:w-5 sm:h-5')}</div>
+                                            <div className="flex mb-2 sm:mb-3">{renderStars(review.rating, 'w-3.5 h-3.5 sm:w-4 sm:h-4')}</div>
 
                                             {/* Review Content */}
-                                            <h5 className="font-semibold text-gray-900 text-base sm:text-lg mb-2 sm:mb-3">{review.title}</h5>
-                                            <p className="text-gray-700 text-sm sm:text-base leading-relaxed whitespace-pre-line">{review.description}</p>
+                                            <h5 className="font-semibold text-gray-900 text-sm sm:text-base mb-1.5 sm:mb-2">{review.title}</h5>
+                                            <p className="text-gray-700 text-xs sm:text-sm leading-relaxed whitespace-pre-line">{review.description}</p>
 
                                             {/* Experience Date */}
                                             {experienceDate && (
-                                                <p className="text-xs sm:text-sm text-gray-500 mt-3 sm:mt-4">
+                                                <p className="text-xs text-gray-500 mt-2 sm:mt-3">
                                                     <span className="font-medium">{t('experienceDate')}:</span> {experienceDate}
                                                 </p>
                                             )}
 
                                             {/* Edit Button - Only show for own reviews */}
                                             {isOwnReview(review) && (
-                                                <div className="flex items-center gap-3 pt-3 sm:pt-4 mt-3 sm:mt-4 border-t border-gray-200">
+                                                <div className="flex items-center gap-2 pt-2 sm:pt-3 mt-2 sm:mt-3 border-t border-gray-200">
                                                     <button
                                                         onClick={() => handleEditReview(review)}
-                                                        className="flex items-center gap-1.5 text-gray-600 hover:text-blue-700 text-xs sm:text-sm font-medium transition"
+                                                        className="flex items-center gap-1 text-gray-600 hover:text-blue-700 text-xs font-medium transition"
                                                     >
-                                                        <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                                        <Pencil className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                                                         {tReview('editReview')}
                                                     </button>
                                                 </div>
@@ -617,19 +617,19 @@ export default function CompanyReviewPage() {
 
                         {/* Pagination Controls */}
                         {!reviewsLoading && ((isFilterMode && filteredTotalPages > 1) || (!isFilterMode && totalPages > 1)) && (
-                            <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+                            <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row items-center justify-between gap-2">
                                 <button
                                     onClick={loadPreviousReviews}
                                     disabled={isFilterMode ? filteredPage === 0 : currentReviewPage === 0}
-                                    className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 border border-gray-300 rounded-full hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base w-full sm:w-auto justify-center"
+                                    className="flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 border border-gray-300 rounded-full hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm w-full sm:w-auto justify-center"
                                 >
-                                    <ChevronLeft className="w-4 h-4" />
+                                    <ChevronLeft className="w-3.5 h-3.5" />
                                     {t('previous')}
                                 </button>
-                                <div className="text-xs sm:text-sm text-gray-600 order-first sm:order-none">
+                                <div className="text-xs text-gray-600 order-first sm:order-none">
                                     {t('page')} {isFilterMode ? filteredPage + 1 : currentReviewPage + 1} {t('of')} {isFilterMode ? filteredTotalPages : totalPages}
                                     {isFilterMode && (
-                                        <span className="ml-2 text-blue-600">
+                                        <span className="ml-1.5 text-blue-600">
                                             ({allFilteredReviews.length} {t('results')})
                                         </span>
                                     )}
@@ -637,10 +637,10 @@ export default function CompanyReviewPage() {
                                 <button
                                     onClick={loadMoreReviews}
                                     disabled={isFilterMode ? filteredPage >= filteredTotalPages - 1 : currentReviewPage >= totalPages - 1}
-                                    className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 border border-gray-300 rounded-full hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base w-full sm:w-auto justify-center"
+                                    className="flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 border border-gray-300 rounded-full hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm w-full sm:w-auto justify-center"
                                 >
                                     {t('next')}
-                                    <ChevronRight className="w-4 h-4" />
+                                    <ChevronRight className="w-3.5 h-3.5" />
                                 </button>
                             </div>
                         )}

@@ -287,7 +287,7 @@ export default function AIReviewAnalysisPage() {
                             <p className="text-sm text-gray-600 mt-1">{t('reviewsAnalyzed')}</p>
                         </div>
                         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center">
-                            <p className="text-4xl font-bold text-green-600">{analysisResult.strengths?.length || 0}</p>
+                            <p className="text-4xl font-bold text-[#5aa5df]">{analysisResult.strengths?.length || 0}</p>
                             <p className="text-sm text-gray-600 mt-1">{t('strengths')}</p>
                         </div>
                         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center">
