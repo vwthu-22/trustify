@@ -82,12 +82,12 @@ export default function Travel() {
                                     href={`/bussiness/${company.id}`}
                                     className="bg-white rounded-xl border border-gray-300 p-2.5 sm:p-3 hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-pointer"
                                 >
-                                    <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white border border-gray-200 rounded-lg flex items-center justify-center mb-1.5 overflow-hidden">
+                                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center mb-1.5 overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600">
                                         {company.logo ? (
-                                            <img src={company.logo} alt={company.name} className="w-full h-full object-contain" />
+                                            <img src={company.logo} alt={company.name} className="w-full h-full object-cover" />
                                         ) : (
-                                            <span className="text-xs sm:text-sm font-bold text-gray-800">
-                                                {company.name.substring(0, 7).toUpperCase()}
+                                            <span className="text-lg sm:text-xl font-bold text-white">
+                                                {company.name.charAt(0).toUpperCase()}
                                             </span>
                                         )}
                                     </div>

@@ -82,11 +82,11 @@ export default function WriteReviewPage() {
                                             onClick={() => handleCompanyClick(company.id)}
                                             className="w-full flex items-center gap-4 p-4 bg-gray-50 hover:bg-green-50 rounded-xl transition text-left group"
                                         >
-                                            <div className="w-12 h-12 bg-white border border-gray-200 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
+                                            <div className="w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0 bg-gradient-to-br from-blue-500 to-blue-600">
                                                 {company.logo ? (
-                                                    <img src={company.logo} alt={company.name} className="w-full h-full object-contain" />
+                                                    <img src={company.logo} alt={company.name} className="w-full h-full object-cover" />
                                                 ) : (
-                                                    <Building2 className="w-6 h-6 text-gray-400" />
+                                                    <span className="text-lg font-bold text-white">{company.name.charAt(0).toUpperCase()}</span>
                                                 )}
                                             </div>
                                             <div className="flex-1 min-w-0">

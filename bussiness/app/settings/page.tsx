@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { User, Building2, Mail, Phone, Lock, Bell, Globe, Save, CheckCircle, Loader2, Camera } from 'lucide-react';
+import { Building2, CheckCircle, Loader2, Camera, Save } from 'lucide-react';
 import { useCompanyStore } from '@/store/useCompanyStore';
 import { companyApi } from '@/lib/api';
 import { useTranslations } from 'next-intl';
@@ -10,7 +10,6 @@ export default function SettingsPage() {
     const t = useTranslations('settings');
     const [saved, setSaved] = useState(false);
     const [saving, setSaving] = useState(false);
-    const [activeTab, setActiveTab] = useState<'profile' | 'security'>('profile');
 
     const { company, fetchCompanyProfile, updateCompany, isLoading } = useCompanyStore();
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -33,15 +32,6 @@ export default function SettingsPage() {
         website: '',
         industry: '',
         size: ''
-    });
-
-    const [notifications, setNotifications] = useState({
-        emailNewReview: true,
-        emailWeeklyReport: true,
-        emailMonthlyReport: false,
-        pushNewReview: true,
-        pushLowRating: true,
-        pushMilestone: true
     });
 
     // Fetch company profile on mount
@@ -136,11 +126,6 @@ export default function SettingsPage() {
         }
     };
 
-    const tabs = [
-        { id: 'profile', nameKey: 'profileAndCompany', icon: Building2 },
-        { id: 'security', nameKey: 'security', icon: Lock }
-    ];
-
     if (isLoading) {
         return (
             <div className="flex items-center justify-center py-12">
@@ -151,7 +136,7 @@ export default function SettingsPage() {
     }
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-6">
             {/* Header */}
             <div>
                 <h2 className="text-2xl font-bold text-gray-900">{t('title')}</h2>
@@ -168,210 +153,167 @@ export default function SettingsPage() {
                 </div>
             )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                {/* Sidebar Tabs */}
-                <div className="lg:col-span-1">
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2">
-                        {tabs.map((tab) => {
-                            const Icon = tab.icon;
-                            return (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => setActiveTab(tab.id as any)}
-                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeTab === tab.id
-                                        ? 'bg-blue-50 text-blue-700'
-                                        : 'text-gray-700 hover:bg-gray-50'
-                                        }`}
-                                >
-                                    <Icon className="h-5 w-5" />
-                                    <span className="font-medium">{t(tab.nameKey)}</span>
-                                </button>
-                            );
-                        })}
-                    </div>
-                </div>
-
-                {/* Content Area */}
-                <div className="lg:col-span-3">
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-
-                        <div className="space-y-6">
-                            {/* Avatar/Logo Upload */}
-                            <div className="flex items-center gap-6 pb-6 border-b border-gray-200">
-                                <div className="relative group">
-                                    <div
-                                        onClick={handleAvatarClick}
-                                        className="w-20 h-20 rounded-full flex items-center justify-center text-white text-2xl font-bold cursor-pointer overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition"
-                                    >
-                                        {avatarPreview ? (
-                                            <img
-                                                src={avatarPreview}
-                                                alt="Logo"
-                                                className="w-full h-full object-cover"
-                                            />
-                                        ) : (
-                                            profileData.name?.charAt(0).toUpperCase() || 'C'
-                                        )}
-                                    </div>
-                                    {/* Camera overlay */}
-                                    <div
-                                        onClick={handleAvatarClick}
-                                        className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition cursor-pointer"
-                                    >
-                                        <Camera className="w-6 h-6 text-white" />
-                                    </div>
-                                    {/* Hidden file input */}
-                                    <input
-                                        ref={fileInputRef}
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={handleAvatarChange}
-                                        className="hidden"
+            {/* Profile Section */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div className="space-y-6">
+                    {/* Avatar/Logo Upload */}
+                    <div className="flex items-center gap-6 pb-6 border-b border-gray-200">
+                        <div className="relative group">
+                            <div
+                                onClick={handleAvatarClick}
+                                className="w-20 h-20 rounded-full flex items-center justify-center text-white text-2xl font-bold cursor-pointer overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition"
+                            >
+                                {avatarPreview ? (
+                                    <img
+                                        src={avatarPreview}
+                                        alt="Logo"
+                                        className="w-full h-full object-cover"
                                     />
-                                </div>
-                                <div>
-                                    <h4 className="font-medium text-gray-900">{t('companyLogo') || 'Company Logo'}</h4>
-                                    <p className="text-sm text-gray-500">{t('clickToUpload') || 'Click to upload a new logo'}</p>
-                                    <p className="text-xs text-gray-400 mt-1">{t('maxFileSize') || 'Max file size: 5MB'}</p>
-                                </div>
+                                ) : (
+                                    profileData.name?.charAt(0).toUpperCase() || 'C'
+                                )}
+                            </div>
+                            {/* Camera overlay */}
+                            <div
+                                onClick={handleAvatarClick}
+                                className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition cursor-pointer"
+                            >
+                                <Camera className="w-6 h-6 text-white" />
+                            </div>
+                            {/* Hidden file input */}
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/*"
+                                onChange={handleAvatarChange}
+                                className="hidden"
+                            />
+                        </div>
+                        <div>
+                            <h4 className="font-medium text-gray-900">{t('companyLogo')}</h4>
+                            <p className="text-sm text-gray-500">{t('clickToUpload')}</p>
+                            <p className="text-xs text-gray-400 mt-1">{t('maxFileSize')}</p>
+                        </div>
+                    </div>
+
+                    {/* Profile Info */}
+                    <div>
+                        <h3 className="text-lg font-bold text-gray-900 mb-4">{t('profileInfo')}</h3>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    {t('fullName')}
+                                </label>
+                                <input
+                                    type="text"
+                                    value={profileData.name}
+                                    onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder={t('enterName')}
+                                />
                             </div>
 
-                            {/* Profile Section */}
                             <div>
-                                <h3 className="text-lg font-bold text-gray-900 mb-4">{t('profileInfo')}</h3>
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            {t('fullName')}
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={profileData.name}
-                                            onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            placeholder={t('enterName')}
-                                        />
-                                    </div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    {t('email')}
+                                </label>
+                                <input
+                                    type="email"
+                                    value={profileData.email}
+                                    onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
+                                    disabled
+                                />
+                                <p className="text-xs text-gray-500 mt-1">{t('emailCannotChange')}</p>
+                            </div>
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            {t('email')}
-                                        </label>
-                                        <input
-                                            type="email"
-                                            value={profileData.email}
-                                            onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
-                                            disabled
-                                        />
-                                        <p className="text-xs text-gray-500 mt-1">{t('emailCannotChange')}</p>
-                                    </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    {t('phone')}
+                                </label>
+                                <input
+                                    type="tel"
+                                    value={profileData.phone}
+                                    onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder={t('enterPhone')}
+                                />
+                            </div>
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            {t('phone')}
-                                        </label>
-                                        <input
-                                            type="tel"
-                                            value={profileData.phone}
-                                            onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            placeholder={t('enterPhone')}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            {t('detail')}
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={companyData.detail}
-                                            onChange={(e) => setCompanyData({ ...companyData, detail: e.target.value })}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            placeholder={t('enterDetail')}
-                                        />
-                                    </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    {t('detail')}
+                                </label>
+                                <input
+                                    type="text"
+                                    value={companyData.detail}
+                                    onChange={(e) => setCompanyData({ ...companyData, detail: e.target.value })}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder={t('enterDetail')}
+                                />
+                            </div>
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            {t('address')}
-                                        </label>
-                                        <textarea
-                                            rows={3}
-                                            value={companyData.address}
-                                            onChange={(e) => setCompanyData({ ...companyData, address: e.target.value })}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            placeholder={t('enterAddress')}
-                                        />
-                                    </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    {t('address')}
+                                </label>
+                                <textarea
+                                    rows={3}
+                                    value={companyData.address}
+                                    onChange={(e) => setCompanyData({ ...companyData, address: e.target.value })}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder={t('enterAddress')}
+                                />
+                            </div>
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            {t('website')}
-                                        </label>
-                                        <input
-                                            type="url"
-                                            value={companyData.website}
-                                            onChange={(e) => setCompanyData({ ...companyData, website: e.target.value })}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            placeholder={t('enterWebsite')}
-                                        />
-                                    </div>
-                                </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    {t('website')}
+                                </label>
+                                <input
+                                    type="url"
+                                    value={companyData.website}
+                                    onChange={(e) => setCompanyData({ ...companyData, website: e.target.value })}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder={t('enterWebsite')}
+                                />
                             </div>
                         </div>
-
-                        {/* Security Tab */}
-                        {activeTab === 'security' && (
-                            <div className="space-y-6">
-
-                                {/* <div className="pt-6 border-t border-gray-200">
-                                    <h3 className="text-lg font-bold text-gray-900 mb-4">{t('twoFactorAuth')}</h3>
-                                    <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                                        <p className="text-sm text-gray-700 mb-4">
-                                            {t('twoFactorDesc')}
-                                        </p>
-                                        <button className="px-6 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors">
-                                            {t('enable2FA')}
-                                        </button>
-                                    </div>
-                                </div> */}
-
-                                <div className="pt-6 border-t border-gray-200">
-                                    <h3 className="text-lg font-bold text-gray-900 mb-4">{t('dangerZone')}</h3>
-                                    <div className="p-4 bg-red-50 rounded-lg border border-red-200">
-                                        <p className="text-sm text-red-700 mb-4">
-                                            {t('dangerZoneDesc')}
-                                        </p>
-                                        <button className="px-6 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors">
-                                            {t('deleteAccount')}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Save Button */}
-                        {/* <div className="mt-6 pt-6 border-t border-gray-200">
-                            <button
-                                onClick={handleSave}
-                                disabled={saving}
-                                className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {saving ? (
-                                    <>
-                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                        {t('saving')}
-                                    </>
-                                ) : (
-                                    <>
-                                        <Save className="h-4 w-4" />
-                                        {t('saveChanges')}
-                                    </>
-                                )}
-                            </button>
-                        </div> */}
                     </div>
+
+                    {/* Save Button */}
+                    <div className="pt-6 border-t border-gray-200">
+                        <button
+                            onClick={handleSave}
+                            disabled={saving}
+                            className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {saving ? (
+                                <>
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    {t('saving')}
+                                </>
+                            ) : (
+                                <>
+                                    <Save className="h-4 w-4" />
+                                    {t('saveChanges')}
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Danger Zone */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h3 className="text-lg font-bold text-gray-900 mb-4">{t('dangerZone')}</h3>
+                <div className="p-4 bg-red-50 rounded-lg border border-red-200">
+                    <p className="text-sm text-red-700 mb-4">
+                        {t('dangerZoneDesc')}
+                    </p>
+                    <button className="px-6 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors">
+                        {t('deleteAccount')}
+                    </button>
                 </div>
             </div>
         </div>

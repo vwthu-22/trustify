@@ -186,10 +186,10 @@ export default function CategoryPage() {
                     {/* Logo */}
                     <div className="flex-shrink-0">
                       {company.logo ? (
-                        <img src={company.logo} alt={company.name} className="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-lg" />
+                        <img src={company.logo} alt={company.name} className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-xl" />
                       ) : (
-                        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white border border-gray-200 rounded-lg flex items-center justify-center">
-                          <span className="text-sm sm:text-lg font-bold text-gray-800">{company.name.substring(0, 7).toUpperCase()}</span>
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600">
+                          <span className="text-2xl sm:text-3xl font-bold text-white">{company.name.charAt(0).toUpperCase()}</span>
                         </div>
                       )}
                     </div>

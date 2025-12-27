@@ -126,11 +126,11 @@ export default function Search_Header() {
                                                     onClick={() => handleCompanyClick(company.id)}
                                                     className="w-full flex items-center gap-2 p-2 hover:bg-blue-50 rounded-lg transition text-left group"
                                                 >
-                                                    <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
+                                                    <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0 bg-gradient-to-br from-blue-500 to-blue-600">
                                                         {company.logo ? (
-                                                            <img src={company.logo} alt={company.name} className="w-full h-full object-contain" />
+                                                            <img src={company.logo} alt={company.name} className="w-full h-full object-cover" />
                                                         ) : (
-                                                            <Building2 className="w-4 h-4 text-gray-400" />
+                                                            <span className="text-xs font-bold text-white">{company.name.charAt(0).toUpperCase()}</span>
                                                         )}
                                                     </div>
                                                     <div className="flex-1 min-w-0">
