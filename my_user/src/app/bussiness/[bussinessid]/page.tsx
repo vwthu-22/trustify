@@ -303,8 +303,8 @@ export default function CompanyReviewPage() {
     }
 
     return (
-        <div className="min-h-screen bg-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8  mx-20">
+        <div className="min-h-screen bg-white mx-40">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
                 {/* First Grid - Company Info and Rating Sidebar */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mt-16 sm:mt-20">
                     {/* Left Column */}
@@ -460,10 +460,7 @@ export default function CompanyReviewPage() {
                                         <MessageCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-600 flex-shrink-0 mt-0.5" />
                                         <div>
                                             <p className="font-semibold text-xs sm:text-sm mb-0.5">
-                                                {replyStats.replyPercentage}% {t('repliedToNegative')}
-                                            </p>
-                                            <p className="text-xs text-gray-600">
-                                                {replyStats.negativeReplied} / {replyStats.negativeTotal} negative reviews replied
+                                                {t('repliedToNegativePrefix')} {replyStats.replyPercentage}% {t('repliedToNegativeSuffix')}
                                             </p>
                                         </div>
                                     </div>
