@@ -24,10 +24,12 @@ export interface Company {
 
 interface CompanyState {
     companies: Company[];
+    searchResults: Company[];
     bankCompanies: Company[];
     travelCompanies: Company[];
     currentCompany: Company | null;
     isLoading: boolean;
+    isSearching: boolean;
     error: string | null;
 
     // Actions
@@ -37,6 +39,7 @@ interface CompanyState {
     fetchTravelCompanies: (page?: number, size?: number) => Promise<void>;
     fetchCompanyById: (id: string) => Promise<void>;
     searchCompanies: (query: string) => Promise<void>;
+    clearSearchResults: () => void;
     fetchTopRatedCompanies: (limit?: number) => Promise<void>;
     clearError: () => void;
 }
@@ -45,10 +48,12 @@ const useCompanyStore = create<CompanyState>()(
     devtools(
         (set) => ({
             companies: [],
+            searchResults: [],
             bankCompanies: [],
             travelCompanies: [],
             currentCompany: null,
             isLoading: false,
+            isSearching: false,
             error: null,
 
             // Fetch companies with filters
@@ -320,7 +325,7 @@ const useCompanyStore = create<CompanyState>()(
                 console.log('=== Search Companies Start ===');
                 console.log('Query:', query);
 
-                set({ isLoading: true, error: null });
+                set({ isSearching: true, error: null });
 
                 try {
                     const response = await fetch(`${API_BASE_URL}/api/companies/search?q=${encodeURIComponent(query)}`, {
@@ -342,22 +347,30 @@ const useCompanyStore = create<CompanyState>()(
                     }
 
                     const data = await response.json();
-                    console.log('Response Data:', data);
+                    console.log('Search Response Data:', data);
                     console.log('=== Search Companies Success ===');
 
+                    // Get results array from response
+                    const results = data.companies || data.results || data.content || data;
+                    console.log('Search Results Count:', Array.isArray(results) ? results.length : 'not an array');
+
                     set({
-                        companies: data.companies || data.results || data,
-                        isLoading: false
+                        searchResults: Array.isArray(results) ? results : [],
+                        isSearching: false
                     });
                 } catch (error) {
                     console.error('=== Search Companies Error ===');
                     console.error('Error:', error);
                     set({
+                        searchResults: [],
                         error: error instanceof Error ? error.message : 'Search failed',
-                        isLoading: false,
+                        isSearching: false,
                     });
                 }
             },
+
+            // Clear search results
+            clearSearchResults: () => set({ searchResults: [] }),
 
             // Fetch top rated companies
             fetchTopRatedCompanies: async (limit = 10) => {

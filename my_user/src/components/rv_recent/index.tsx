@@ -45,7 +45,7 @@ export default function AboutReviews() {
         return [...Array(5)].map((_, i) => (
             <svg
                 key={i}
-                className={`w-4 h-4 sm:w-5 sm:h-5 ${i < Math.floor(rating) ? starColor : STAR_COLORS.empty}`}
+                className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${i < Math.floor(rating) ? starColor : STAR_COLORS.empty}`}
                 fill="currentColor"
                 viewBox="0 0 24 24"
             >
@@ -66,30 +66,30 @@ export default function AboutReviews() {
     };
 
     return (
-        <div className="py-8 sm:py-12 md:py-16">
-            <div className="max-w-7xl mx-auto px-0 sm:px-4 lg:px-8">
+        <div className="py-5 sm:py-8 md:py-10">
+            <div className="max-w-7xl mx-auto px-0 sm:px-3 lg:px-6">
                 {/* About Section */}
-                <div className="bg-gradient-to-br from-blue-200 to-blue-100 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 mb-10 sm:mb-16">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 items-center">
+                <div className="bg-gradient-to-br from-blue-200 to-blue-100 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 mb-6 sm:mb-10">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 items-center">
                         <div>
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">We're Trustify</h2>
-                            <p className="text-sm sm:text-base md:text-lg text-gray-800 mb-4 sm:mb-6 leading-relaxed">
+                            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">We're Trustify</h2>
+                            <p className="text-xs sm:text-sm md:text-base text-gray-800 mb-3 sm:mb-4 leading-relaxed">
                                 We're a review platform that's open to everyone. Our vision is to become the universal symbol of trust — by empowering people to shop with confidence, and helping companies improve.
                             </p>
-                            <button className="bg-gray-900 hover:bg-gray-800 text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full text-sm sm:text-base font-semibold transition">
+                            <button className="bg-gray-900 hover:bg-gray-800 text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition">
                                 What we do
                             </button>
                         </div>
-                        <div className="bg-blue-900 text-white rounded-xl sm:rounded-2xl p-6 sm:p-8 relative overflow-hidden">
-                            <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-2 sm:mb-3 relative z-10">Our new Trust Report has landed!</h3>
-                            <p className="mb-4 sm:mb-6 text-blue-50 text-sm sm:text-base relative z-10">
+                        <div className="bg-blue-900 text-white rounded-lg sm:rounded-xl p-4 sm:p-6 relative overflow-hidden">
+                            <h3 className="text-sm sm:text-base md:text-lg font-bold mb-1.5 sm:mb-2 relative z-10">Our new Trust Report has landed!</h3>
+                            <p className="mb-3 sm:mb-4 text-blue-50 text-xs sm:text-sm relative z-10">
                                 Find out which actions we've taken to protect you and promote trust on our platform.
                             </p>
-                            <button className="border-2 border-white hover:bg-white hover:text-blue-900 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm sm:text-base font-semibold transition relative z-10">
+                            <button className="border-2 border-white hover:bg-white hover:text-blue-900 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition relative z-10">
                                 Take a look
                             </button>
-                            <div className="absolute -right-4 -top-4 w-20 h-20 sm:w-32 sm:h-32 bg-blue-400 rounded-full"></div>
-                            <div className="absolute right-6 sm:right-8 top-8 sm:top-12 w-16 h-16 sm:w-24 sm:h-24 bg-white rounded-full overflow-hidden border-4 border-blue-200">
+                            <div className="absolute -right-3 -top-3 w-16 h-16 sm:w-24 sm:h-24 bg-blue-400 rounded-full"></div>
+                            <div className="absolute right-5 sm:right-6 top-6 sm:top-8 w-12 h-12 sm:w-18 sm:h-18 bg-white rounded-full overflow-hidden border-3 border-blue-200">
                                 <div className="w-full h-full bg-gray-100"></div>
                             </div>
                         </div>

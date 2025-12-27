@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Star, SlidersHorizontal, MapPin, ExternalLink } from 'lucide-react';
 import useCompanyStore from '@/stores/companyStore/company';
 import useReviewStore from '@/stores/reviewStore/review';
@@ -77,6 +77,30 @@ export default function CategoryPage() {
     ));
   };
 
+  // Sort companies based on sortBy selection
+  const sortedCompanies = useMemo(() => {
+    if (!companies || companies.length === 0) return [];
+
+    const companiesWithRatings = companies.map(company => ({
+      ...company,
+      ratingData: companyRatings[company.id] || { rating: 0, reviewCount: 0 }
+    }));
+
+    switch (sortBy) {
+      case 'highest-rated':
+        return [...companiesWithRatings].sort((a, b) => b.ratingData.rating - a.ratingData.rating);
+      case 'most-reviewed':
+        return [...companiesWithRatings].sort((a, b) => b.ratingData.reviewCount - a.ratingData.reviewCount);
+      case 'newest':
+        // Assuming newer companies have higher IDs, or sort by createdAt if available
+        return [...companiesWithRatings].sort((a, b) => Number(b.id) - Number(a.id));
+      case 'most-relevant':
+      default:
+        // Default order from API
+        return companiesWithRatings;
+    }
+  }, [companies, companyRatings, sortBy]);
+
   if (!category) return null;
 
   return (
@@ -105,7 +129,7 @@ export default function CategoryPage() {
         {/* Header with Sort */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
           <h2 className="text-base sm:text-lg font-semibold text-gray-900">
-            {t('companies')} ({isLoading ? '...' : companies.length.toLocaleString()})
+            {t('companies')} ({isLoading ? '...' : sortedCompanies.length.toLocaleString()})
           </h2>
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-600">{t('sortBy')}:</span>
@@ -114,10 +138,8 @@ export default function CategoryPage() {
               onChange={(e) => setSortBy(e.target.value)}
               className="border border-gray-300 rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 bg-white cursor-pointer text-sm"
             >
-              <option value="most-relevant">{t('mostRelevant')}</option>
               <option value="highest-rated">{t('highestRated')}</option>
               <option value="most-reviewed">{t('mostReviewed')}</option>
-              <option value="newest">{t('newest')}</option>
             </select>
           </div>
         </div>
@@ -145,14 +167,14 @@ export default function CategoryPage() {
               </div>
             ))}
           </div>
-        ) : companies.length === 0 ? (
+        ) : sortedCompanies.length === 0 ? (
           <div className="bg-white rounded-lg p-8 sm:p-12 text-center">
             <p className="text-gray-600">{t('noCompaniesInCategory')}</p>
           </div>
         ) : (
           <div className="space-y-4 sm:space-y-6">
-            {companies.map((company) => {
-              const ratingData = getCompanyRating(company.id);
+            {sortedCompanies.map((company) => {
+              const ratingData = company.ratingData;
 
               return (
                 <Link
@@ -216,7 +238,7 @@ export default function CategoryPage() {
         )}
 
         {/* Pagination */}
-        {!isLoading && companies.length > 0 && (
+        {!isLoading && sortedCompanies.length > 0 && (
           <div className="flex items-center justify-center gap-2 sm:gap-4 mt-6 sm:mt-8">
             <button
               onClick={() => setPage(Math.max(0, page - 1))}
@@ -230,7 +252,7 @@ export default function CategoryPage() {
             </span>
             <button
               onClick={() => setPage(page + 1)}
-              disabled={companies.length < 4}
+              disabled={sortedCompanies.length < 4}
               className="px-3 sm:px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition text-sm"
             >
               {t('next')}

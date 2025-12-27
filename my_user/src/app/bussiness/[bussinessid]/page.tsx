@@ -303,8 +303,8 @@ export default function CompanyReviewPage() {
     }
 
     return (
-        <div className="min-h-screen bg-white mx-40">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+        <div className="min-h-screen bg-white">
+            <div className="mx-auto px-4 sm:px-8 lg:px-20 py-4 sm:py-8">
                 {/* First Grid - Company Info and Rating Sidebar */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mt-16 sm:mt-20">
                     {/* Left Column */}
