@@ -78,8 +78,8 @@ export default function MyReviewPage() {
     return Array.from({ length: 5 }).map((_, i) => (
       <Star
         key={i}
-        size={16}
-        className={`sm:w-5 sm:h-5 ${i < Math.floor(rating) ? starColor : STAR_FILL_COLORS.empty}`}
+        size={14}
+        className={`sm:w-4 sm:h-4 ${i < Math.floor(rating) ? starColor : STAR_FILL_COLORS.empty}`}
       />
     ));
   };
@@ -109,46 +109,46 @@ export default function MyReviewPage() {
     <div className="min-h-screen bg-gray-50">
       {/* User Header */}
       <div className="bg-white border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
+        <div className="max-w-5xl mx-auto px-4 py-4 sm:py-6">
           {/* Back Button */}
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition"
+            className="inline-flex items-center gap-1.5 text-gray-600 hover:text-gray-900 mb-3 transition text-sm"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-3.5 h-3.5" />
             <span>{tProfile('backToHome')}</span>
           </Link>
 
-          <div className="flex flex-col sm:flex-row items-center sm:items-start sm:justify-between gap-6">
-            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 text-center sm:text-left">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start sm:justify-between gap-4">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-3 sm:gap-4 text-center sm:text-left">
               {/* Avatar */}
               {user.avatar ? (
                 <img
                   src={user.avatar}
                   alt={user.name}
-                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover"
+                  className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover"
                 />
               ) : (
-                <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-amber-700 to-amber-900 rounded-full flex items-center justify-center text-white text-2xl sm:text-3xl font-bold">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-amber-700 to-amber-900 rounded-full flex items-center justify-center text-white text-lg sm:text-xl font-bold">
                   {getInitials(user.name)}
                 </div>
               )}
 
               {/* User Info */}
               <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">{user.name}</h1>
-                <p className="text-gray-600 text-sm sm:text-base">{user.country || 'No country set'}</p>
+                <h1 className="text-lg sm:text-xl font-bold text-gray-900 mb-0.5">{user.name}</h1>
+                <p className="text-gray-600 text-xs sm:text-sm">{user.country || 'No country set'}</p>
               </div>
             </div>
 
             {/* Stats */}
-            <div className="flex gap-6 sm:gap-12">
+            <div className="flex gap-4 sm:gap-8">
               <div className="text-center">
-                <div className="flex items-center justify-center gap-1 sm:gap-2 text-blue-600 mb-1">
-                  <Star size={20} className="sm:w-6 sm:h-6" />
-                  <span className="text-2xl sm:text-4xl font-bold">{totalItems}</span>
+                <div className="flex items-center justify-center gap-1 text-blue-600 mb-0.5">
+                  <Star size={16} className="sm:w-5 sm:h-5" />
+                  <span className="text-xl sm:text-2xl font-bold">{totalItems}</span>
                 </div>
-                <span className="text-xs sm:text-sm text-gray-600">{tProfile('reviews')}</span>
+                <span className="text-xs text-gray-600">{tProfile('reviews')}</span>
               </div>
             </div>
           </div>
@@ -156,118 +156,118 @@ export default function MyReviewPage() {
       </div>
 
       {/* Reviews Section */}
-      <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
-  
-          <div className="mx-60">
-            {/* Review Cards */}
-            <div className="space-y-4 sm:space-y-6">
-              {myReviews.map((review: any) => (
-                <div key={review.id} className="space-y-3 sm:space-y-4">
-                  {/* Review Header */}
-                  <div>
-                    <p className="text-gray-700 text-sm sm:text-base">
-                      {t('reviewOf')}{' '}
-                      <Link
-                        href={review.companyId ? `/bussiness/${review.companyId}` : '#'}
-                        className="text-blue-600 hover:underline"
-                      >
-                        {review.companyName || t('unknownCompany')}
-                      </Link>
-                    </p>
+      <div className="max-w-5xl mx-auto px-4 py-4 sm:py-6">
+
+        <div className="mx-4 sm:mx-20 lg:mx-40">
+          {/* Review Cards */}
+          <div className="space-y-3 sm:space-y-4">
+            {myReviews.map((review: any) => (
+              <div key={review.id} className="space-y-2 sm:space-y-3">
+                {/* Review Header */}
+                <div>
+                  <p className="text-gray-700 text-xs sm:text-sm">
+                    {t('reviewOf')}{' '}
+                    <Link
+                      href={review.companyId ? `/bussiness/${review.companyId}` : '#'}
+                      className="text-blue-600 hover:underline"
+                    >
+                      {review.companyName || t('unknownCompany')}
+                    </Link>
+                  </p>
+                </div>
+
+                {/* Review Card */}
+                <div className="bg-white border border-gray-200 rounded-lg p-3 sm:p-4">
+                  {/* User Info in Review */}
+                  <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-amber-700 to-amber-900 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                      {getInitials(user.name)}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900 text-xs sm:text-sm">{user.name}</p>
+                      <p className="text-xs text-gray-600">{totalItems} {tProfile('reviews')}</p>
+                    </div>
                   </div>
 
-                  {/* Review Card */}
-                  <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6">
-                    {/* User Info in Review */}
-                    <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-amber-700 to-amber-900 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-bold">
-                        {getInitials(user.name)}
-                      </div>
-                      <div>
-                        <p className="font-semibold text-gray-900 text-sm sm:text-base">{user.name}</p>
-                        <p className="text-xs sm:text-sm text-gray-600">{totalItems} {tProfile('reviews')}</p>
-                      </div>
+                  {/* Rating and Date */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 sm:mb-3 pb-2 sm:pb-3 border-b border-gray-200 gap-1.5">
+                    <div className="flex items-center gap-1">
+                      {renderStars(review.rating)}
+                      <span className="ml-1.5 font-semibold text-gray-900 text-sm">{review.rating.toFixed(1)}</span>
                     </div>
-
-                    {/* Rating and Date */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-4 pb-3 sm:pb-4 border-b border-gray-200 gap-2">
-                      <div className="flex items-center gap-1 sm:gap-2">
-                        {renderStars(review.rating)}
-                        <span className="ml-2 font-semibold text-gray-900">{review.rating.toFixed(1)}</span>
-                      </div>
-                      <div className="text-left sm:text-right">
-                        <p className="text-gray-600 text-xs sm:text-sm">
-                          {review.createdAt && formatDate(review.createdAt)}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Review Title */}
-                    {review.title && (
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">{review.title}</h3>
-                    )}
-
-                    {/* Review Content */}
-                    <p className="text-gray-700 text-sm sm:text-base mb-3 leading-relaxed">
-                      {review.description}
-                    </p>
-
-                    {/* Experience Date */}
-                    {review.expDate && (
-                      <p className="text-xs sm:text-sm text-gray-500 mb-4">
-                        <span className="font-medium">{t('experienceDate')}:</span> {formatDate(review.expDate)}
+                    <div className="text-left sm:text-right">
+                      <p className="text-gray-600 text-xs">
+                        {review.createdAt && formatDate(review.createdAt)}
                       </p>
-                    )}
-
-                    {/* Actions */}
-                    <div className="flex items-center gap-3 pt-3 sm:pt-4 border-t border-gray-200">
-                      <button
-                        onClick={() => handleEditReview(review)}
-                        className="flex items-center gap-1.5 text-gray-600 hover:text-blue-700 text-xs sm:text-sm font-medium transition"
-                      >
-                        <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                        {tReview('editReview')}
-                      </button>
-                      <button
-                        onClick={() => {
-                          // TODO: Implement delete functionality
-                          console.log('Delete review:', review.id);
-                        }}
-                        className="flex items-center gap-1.5 text-gray-600 hover:text-red-700 text-xs sm:text-sm font-medium transition"
-                      >
-                        <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                        {tReview('deleteReview')}
-                      </button>
                     </div>
+                  </div>
+
+                  {/* Review Title */}
+                  {review.title && (
+                    <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-1.5">{review.title}</h3>
+                  )}
+
+                  {/* Review Content */}
+                  <p className="text-gray-700 text-xs sm:text-sm mb-2 leading-relaxed">
+                    {review.description}
+                  </p>
+
+                  {/* Experience Date */}
+                  {review.expDate && (
+                    <p className="text-xs text-gray-500 mb-3">
+                      <span className="font-medium">{t('experienceDate')}:</span> {formatDate(review.expDate)}
+                    </p>
+                  )}
+
+                  {/* Actions */}
+                  <div className="flex items-center gap-2 pt-2 sm:pt-3 border-t border-gray-200">
+                    <button
+                      onClick={() => handleEditReview(review)}
+                      className="flex items-center gap-1 text-gray-600 hover:text-blue-700 text-xs font-medium transition"
+                    >
+                      <Pencil className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                      {tReview('editReview')}
+                    </button>
+                    <button
+                      onClick={() => {
+                        // TODO: Implement delete functionality
+                        console.log('Delete review:', review.id);
+                      }}
+                      className="flex items-center gap-1 text-gray-600 hover:text-red-700 text-xs font-medium transition"
+                    >
+                      <Trash2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                      {tReview('deleteReview')}
+                    </button>
                   </div>
                 </div>
-              ))}
-            </div>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-2 mt-8">
-                <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 0}
-                  className="p-2 rounded-lg border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-                <span className="px-4 py-2 text-sm text-gray-700">
-                  {t('page')} {currentPage + 1} {t('of')} {totalPages}
-                </span>
-                <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage >= totalPages - 1}
-                  className="p-2 rounded-lg border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
               </div>
-            )}
+            ))}
           </div>
-      
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-6">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 0}
+                className="p-1.5 rounded-lg border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <span className="px-3 py-1.5 text-xs text-gray-700">
+                {t('page')} {currentPage + 1} {t('of')} {totalPages}
+              </span>
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage >= totalPages - 1}
+                className="p-1.5 rounded-lg border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+        </div>
+
       </div>
 
       {/* Edit Review Modal */}
