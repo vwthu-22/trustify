@@ -129,7 +129,8 @@
         "reviews": "đánh giá",
         "memberSince": "Thành viên từ",
         "needHelp": "Cần giúp đỡ?",
-        "contactSupport": "Liên hệ Hỗ trợ"
+        "contactSupport": "Liên hệ Hỗ trợ",
+        "clickAvatarToChange": "Nhấp vào ảnh đại diện để thay đổi"
     },
     "review": {
         "writeReview": "Viết đánh giá",

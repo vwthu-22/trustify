@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, Mail, MapPin, Save, ArrowLeft, Check } from 'lucide-react';
+import { User, Mail, MapPin, Save, ArrowLeft, Check, Camera } from 'lucide-react';
 import Link from 'next/link';
 import useAuthStore from '@/stores/userAuthStore/user';
 import { useTranslations } from 'next-intl';
@@ -25,6 +25,7 @@ export default function ProfilePage() {
     const router = useRouter();
     const t = useTranslations('profile');
     const tCommon = useTranslations('common');
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const {
         user,
         isAuthenticated,
@@ -38,6 +39,8 @@ export default function ProfilePage() {
 
     const [name, setName] = useState('');
     const [country, setCountry] = useState('');
+    const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+    const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
     // Redirect if not authenticated
     useEffect(() => {
@@ -51,6 +54,7 @@ export default function ProfilePage() {
         if (user) {
             setName(user.name || '');
             setCountry(user.country || '');
+            setAvatarPreview(user.avatar || null);
         }
     }, [user]);
 
@@ -70,68 +74,126 @@ export default function ProfilePage() {
         }
     }, [successMessage, clearSuccess]);
 
+    const handleAvatarClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file');
+                return;
+            }
+            // Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Image size should be less than 5MB');
+                return;
+            }
+
+            setAvatarFile(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setAvatarPreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        // TODO: Include avatarFile in the update if your API supports it
         await updateProfile(name, country);
     };
 
     if (!isAuthenticated || !user) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8 sm:py-12">
-            <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-gray-50 py-6 sm:py-8">
+            <div className="max-w-lg mx-auto px-4 sm:px-6">
                 {/* Back Button */}
                 <Link
                     href="/"
-                    className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition"
+                    className="inline-flex items-center gap-1.5 text-gray-600 hover:text-gray-900 mb-4 transition text-sm"
                 >
-                    <ArrowLeft className="w-4 h-4" />
+                    <ArrowLeft className="w-3.5 h-3.5" />
                     <span>{t('backToHome')}</span>
                 </Link>
 
                 {/* Profile Card */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                     {/* Header */}
-                    <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-8 sm:py-10">
-                        <div className="flex items-center gap-4">
-                            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/20 rounded-full flex items-center justify-center text-white text-2xl sm:text-3xl font-bold">
-                                {user.name?.charAt(0).toUpperCase() || 'U'}
+                    <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-4 sm:px-6 py-5 sm:py-6">
+                        <div className="flex items-center gap-3">
+                            {/* Avatar with upload */}
+                            <div className="relative group">
+                                <div
+                                    onClick={handleAvatarClick}
+                                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-white text-xl sm:text-2xl font-bold cursor-pointer overflow-hidden bg-white/20 hover:bg-white/30 transition"
+                                >
+                                    {avatarPreview ? (
+                                        <img
+                                            src={avatarPreview}
+                                            alt={user.name}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        user.name?.charAt(0).toUpperCase() || 'U'
+                                    )}
+                                </div>
+                                {/* Camera overlay */}
+                                <div
+                                    onClick={handleAvatarClick}
+                                    className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition cursor-pointer"
+                                >
+                                    <Camera className="w-5 h-5 text-white" />
+                                </div>
+                                {/* Hidden file input */}
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleAvatarChange}
+                                    className="hidden"
+                                />
                             </div>
                             <div className="text-white">
-                                <h1 className="text-xl sm:text-2xl font-bold">{user.name}</h1>
-                                <p className="text-blue-100 text-sm sm:text-base">{user.email}</p>
+                                <h1 className="text-base sm:text-lg font-bold">{user.name}</h1>
+                                <p className="text-blue-100 text-xs sm:text-sm">{user.email}</p>
                             </div>
                         </div>
+                        <p className="text-blue-200 text-xs mt-2">{t('clickAvatarToChange')}</p>
                     </div>
 
                     {/* Form */}
-                    <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
+                    <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
                         {/* Success Message */}
                         {successMessage && (
-                            <div className="flex items-center gap-2 bg-green-50 text-green-700 px-4 py-3 rounded-lg">
-                                <Check className="w-5 h-5" />
+                            <div className="flex items-center gap-2 bg-green-50 text-green-700 px-3 py-2 rounded-lg text-sm">
+                                <Check className="w-4 h-4" />
                                 <span>{successMessage}</span>
                             </div>
                         )}
 
                         {/* Error Message */}
                         {error && (
-                            <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg">
+                            <div className="bg-red-50 text-red-700 px-3 py-2 rounded-lg text-sm">
                                 {error}
                             </div>
                         )}
 
                         {/* Email (Read-only) */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                <div className="flex items-center gap-2">
-                                    <Mail className="w-4 h-4" />
+                            <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                                <div className="flex items-center gap-1.5">
+                                    <Mail className="w-3.5 h-3.5" />
                                     {t('email')}
                                 </div>
                             </label>
@@ -139,16 +201,16 @@ export default function ProfilePage() {
                                 type="email"
                                 value={user.email}
                                 disabled
-                                className="w-full px-4 py-3 bg-gray-100 border border-gray-200 rounded-lg text-gray-500 cursor-not-allowed"
+                                className="w-full px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-gray-500 cursor-not-allowed text-sm"
                             />
                             <p className="mt-1 text-xs text-gray-500">{t('emailCannotChange')}</p>
                         </div>
 
                         {/* Name */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                <div className="flex items-center gap-2">
-                                    <User className="w-4 h-4" />
+                            <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                                <div className="flex items-center gap-1.5">
+                                    <User className="w-3.5 h-3.5" />
                                     {t('fullName')}
                                 </div>
                             </label>
@@ -158,22 +220,22 @@ export default function ProfilePage() {
                                 onChange={(e) => setName(e.target.value)}
                                 placeholder={t('enterFullName')}
                                 required
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition text-sm"
                             />
                         </div>
 
                         {/* Country */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                <div className="flex items-center gap-2">
-                                    <MapPin className="w-4 h-4" />
+                            <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                                <div className="flex items-center gap-1.5">
+                                    <MapPin className="w-3.5 h-3.5" />
                                     {t('country')}
                                 </div>
                             </label>
                             <select
                                 value={country}
                                 onChange={(e) => setCountry(e.target.value)}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition bg-white"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition bg-white text-sm"
                             >
                                 <option value="">{t('selectCountry')}</option>
                                 {COUNTRIES.map((c) => (
@@ -183,20 +245,20 @@ export default function ProfilePage() {
                         </div>
 
                         {/* Submit Button */}
-                        <div className="pt-4">
+                        <div className="pt-2">
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-6 py-3 rounded-lg font-medium transition"
+                                className="w-full flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition"
                             >
                                 {isLoading ? (
                                     <>
-                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                                         {t('saving')}
                                     </>
                                 ) : (
                                     <>
-                                        <Save className="w-5 h-5" />
+                                        <Save className="w-4 h-4" />
                                         {t('saveChanges')}
                                     </>
                                 )}
@@ -206,7 +268,7 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Additional Info */}
-                <div className="mt-6 text-center text-sm text-gray-500">
+                <div className="mt-4 text-center text-xs text-gray-500">
                     <p>{t('needHelp')} <Link href="/support" className="text-blue-600 hover:underline">{t('contactSupport')}</Link></p>
                 </div>
             </div>

@@ -275,19 +275,50 @@ export default function Header() {
                 <div ref={companyDropdownRef} className="relative">
                     <button
                         onClick={() => setShowCompanyDropdown(!showCompanyDropdown)}
-                        className="relative p-2 bg-blue-100 hover:bg-blue-200 rounded-full transition"
+                        className="relative w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition flex items-center justify-center"
                         title={t('companyAccount')}
                     >
-                        <User className="w-5 h-5 text-blue-600" />
+                        {company?.logo ? (
+                            <img
+                                src={company.logo}
+                                alt={company.name}
+                                className="w-full h-full object-cover"
+                            />
+                        ) : company?.name ? (
+                            <span className="text-white font-bold text-sm">
+                                {company.name.charAt(0).toUpperCase()}
+                            </span>
+                        ) : (
+                            <User className="w-5 h-5 text-white" />
+                        )}
                     </button>
 
                     {/* Company Dropdown */}
                     {showCompanyDropdown && (
-                        <div className="absolute right-0 top-12 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                        <div className="absolute right-0 top-12 w-72 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
                             <div className="p-4 border-b border-gray-200">
-                                <p className="font-bold text-gray-900">{company?.name || 'Loading...'}</p>
-                                <p className="text-sm text-gray-600">{company?.email || ''}</p>
-                                <div className="mt-2 flex items-center gap-2">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0">
+                                        {company?.logo ? (
+                                            <img
+                                                src={company.logo}
+                                                alt={company.name}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : company?.name ? (
+                                            <span className="text-white font-bold text-lg">
+                                                {company.name.charAt(0).toUpperCase()}
+                                            </span>
+                                        ) : (
+                                            <User className="w-6 h-6 text-white" />
+                                        )}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="font-bold text-gray-900 truncate">{company?.name || 'Loading...'}</p>
+                                        <p className="text-sm text-gray-600 truncate">{company?.email || ''}</p>
+                                    </div>
+                                </div>
+                                <div className="mt-3 flex items-center gap-2">
                                     <span className={`px-3 py-1 text-xs font-semibold rounded-full ${company?.plan === 'Premium' ? 'bg-purple-100 text-purple-700' :
                                         company?.plan === 'Pro' ? 'bg-blue-100 text-blue-700' :
                                             'bg-green-100 text-green-700'

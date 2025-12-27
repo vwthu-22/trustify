@@ -215,6 +215,7 @@
         "subtitle": "Manage your account preferences and settings",
         "companyInfo": "Company",
         "profile": "Profile",
+        "profileAndCompany": "Profile",
         "security": "Security",
         "companyName": "Company Name",
         "description": "Description",
@@ -248,7 +249,10 @@
         "enable2FA": "Enable 2FA",
         "dangerZone": "Danger Zone",
         "dangerZoneDesc": "Once you delete your account, there is no going back. Please be certain.",
-        "deleteAccount": "Delete Account"
+        "deleteAccount": "Delete Account",
+        "companyLogo": "Company Logo",
+        "clickToUpload": "Click to upload a new logo",
+        "maxFileSize": "Max file size: 5MB"
     },
     "subscription": {
         "title": "Subscription",

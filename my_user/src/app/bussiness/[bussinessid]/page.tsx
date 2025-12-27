@@ -312,11 +312,11 @@ export default function CompanyReviewPage() {
                         {/* Company Header */}
                         <div className="mb-4 sm:mb-6">
                             <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4 mb-3 sm:mb-4">
-                                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white border border-gray-200 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600">
                                     {currentCompany.logo ? (
-                                        <img src={currentCompany.logo} alt={currentCompany.name} className="w-full h-full object-contain" />
+                                        <img src={currentCompany.logo} alt={currentCompany.name} className="w-full h-full object-cover" />
                                     ) : (
-                                        <span className="text-xs sm:text-sm font-bold text-gray-800">{currentCompany.name?.substring(0, 7).toUpperCase() || 'COMPANY'}</span>
+                                        <span className="text-xl sm:text-2xl font-bold text-white">{currentCompany.name?.charAt(0).toUpperCase() || 'C'}</span>
                                     )}
                                 </div>
                                 <div className="flex-1">

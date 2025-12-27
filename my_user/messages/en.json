@@ -129,7 +129,8 @@
         "reviews": "reviews",
         "memberSince": "Member since",
         "needHelp": "Need help?",
-        "contactSupport": "Contact Support"
+        "contactSupport": "Contact Support",
+        "clickAvatarToChange": "Click avatar to change"
     },
     "review": {
         "writeReview": "Write a review",

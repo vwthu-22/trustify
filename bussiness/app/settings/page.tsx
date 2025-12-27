@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { User, Building2, Mail, Phone, Lock, Bell, Globe, Save, CheckCircle, Loader2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { User, Building2, Mail, Phone, Lock, Bell, Globe, Save, CheckCircle, Loader2, Camera } from 'lucide-react';
 import { useCompanyStore } from '@/store/useCompanyStore';
 import { companyApi } from '@/lib/api';
 import { useTranslations } from 'next-intl';
@@ -10,9 +10,12 @@ export default function SettingsPage() {
     const t = useTranslations('settings');
     const [saved, setSaved] = useState(false);
     const [saving, setSaving] = useState(false);
-    const [activeTab, setActiveTab] = useState<'profile' | 'company' | 'security'>('profile');
+    const [activeTab, setActiveTab] = useState<'profile' | 'security'>('profile');
 
     const { company, fetchCompanyProfile, updateCompany, isLoading } = useCompanyStore();
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+    const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
     // Local state for form editing
     const [profileData, setProfileData] = useState({
@@ -65,6 +68,7 @@ export default function SettingsPage() {
                 industry: company.industry || '',
                 size: company.size || ''
             });
+            setAvatarPreview(company.logo || null);
         }
     }, [company]);
 
@@ -107,9 +111,33 @@ export default function SettingsPage() {
         }
     };
 
+    const handleAvatarClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file');
+                return;
+            }
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Image size should be less than 5MB');
+                return;
+            }
+
+            setAvatarFile(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setAvatarPreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     const tabs = [
-        { id: 'profile', nameKey: 'profile', icon: User },
-        { id: 'company', nameKey: 'companyInfo', icon: Building2 },
+        { id: 'profile', nameKey: 'profileAndCompany', icon: Building2 },
         { id: 'security', nameKey: 'security', icon: Lock }
     ];
 
@@ -166,261 +194,132 @@ export default function SettingsPage() {
                 {/* Content Area */}
                 <div className="lg:col-span-3">
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                        {/* Profile Tab */}
-                        {activeTab === 'profile' && (
-                            <div className="space-y-6">
+
+                        <div className="space-y-6">
+                            {/* Avatar/Logo Upload */}
+                            <div className="flex items-center gap-6 pb-6 border-b border-gray-200">
+                                <div className="relative group">
+                                    <div
+                                        onClick={handleAvatarClick}
+                                        className="w-20 h-20 rounded-full flex items-center justify-center text-white text-2xl font-bold cursor-pointer overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition"
+                                    >
+                                        {avatarPreview ? (
+                                            <img
+                                                src={avatarPreview}
+                                                alt="Logo"
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            profileData.name?.charAt(0).toUpperCase() || 'C'
+                                        )}
+                                    </div>
+                                    {/* Camera overlay */}
+                                    <div
+                                        onClick={handleAvatarClick}
+                                        className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition cursor-pointer"
+                                    >
+                                        <Camera className="w-6 h-6 text-white" />
+                                    </div>
+                                    {/* Hidden file input */}
+                                    <input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleAvatarChange}
+                                        className="hidden"
+                                    />
+                                </div>
                                 <div>
-                                    <h3 className="text-lg font-bold text-gray-900 mb-4">{t('profileInfo')}</h3>
-                                    <div className="space-y-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                {t('fullName')}
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={profileData.name}
-                                                onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                placeholder={t('enterName')}
-                                            />
-                                        </div>
+                                    <h4 className="font-medium text-gray-900">{t('companyLogo') || 'Company Logo'}</h4>
+                                    <p className="text-sm text-gray-500">{t('clickToUpload') || 'Click to upload a new logo'}</p>
+                                    <p className="text-xs text-gray-400 mt-1">{t('maxFileSize') || 'Max file size: 5MB'}</p>
+                                </div>
+                            </div>
 
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                {t('email')}
-                                            </label>
-                                            <input
-                                                type="email"
-                                                value={profileData.email}
-                                                onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
-                                                disabled
-                                            />
-                                            <p className="text-xs text-gray-500 mt-1">{t('emailCannotChange')}</p>
-                                        </div>
+                            {/* Profile Section */}
+                            <div>
+                                <h3 className="text-lg font-bold text-gray-900 mb-4">{t('profileInfo')}</h3>
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            {t('fullName')}
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={profileData.name}
+                                            onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            placeholder={t('enterName')}
+                                        />
+                                    </div>
 
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                {t('phone')}
-                                            </label>
-                                            <input
-                                                type="tel"
-                                                value={profileData.phone}
-                                                onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                placeholder={t('enterPhone')}
-                                            />
-                                        </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            {t('email')}
+                                        </label>
+                                        <input
+                                            type="email"
+                                            value={profileData.email}
+                                            onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
+                                            disabled
+                                        />
+                                        <p className="text-xs text-gray-500 mt-1">{t('emailCannotChange')}</p>
+                                    </div>
 
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                {t('position')}
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={profileData.position}
-                                                onChange={(e) => setProfileData({ ...profileData, position: e.target.value })}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                placeholder={t('enterPosition')}
-                                            />
-                                        </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            {t('phone')}
+                                        </label>
+                                        <input
+                                            type="tel"
+                                            value={profileData.phone}
+                                            onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            placeholder={t('enterPhone')}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            {t('detail')}
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={companyData.detail}
+                                            onChange={(e) => setCompanyData({ ...companyData, detail: e.target.value })}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            placeholder={t('enterDetail')}
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            {t('address')}
+                                        </label>
+                                        <textarea
+                                            rows={3}
+                                            value={companyData.address}
+                                            onChange={(e) => setCompanyData({ ...companyData, address: e.target.value })}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            placeholder={t('enterAddress')}
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            {t('website')}
+                                        </label>
+                                        <input
+                                            type="url"
+                                            value={companyData.website}
+                                            onChange={(e) => setCompanyData({ ...companyData, website: e.target.value })}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            placeholder={t('enterWebsite')}
+                                        />
                                     </div>
                                 </div>
                             </div>
-                        )}
-
-                        {/* Company Tab */}
-                        {activeTab === 'company' && (
-                            <div className="space-y-6">
-                                <div>
-                                    <h3 className="text-lg font-bold text-gray-900 mb-4">{t('companyInformation')}</h3>
-                                    <div className="space-y-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                {t('companyName')}
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={companyData.name}
-                                                onChange={(e) => setCompanyData({ ...companyData, name: e.target.value })}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                placeholder={t('enterCompanyName')}
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                {t('detail')}
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={companyData.detail}
-                                                onChange={(e) => setCompanyData({ ...companyData, detail: e.target.value })}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                placeholder={t('enterDetail')}
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                {t('address')}
-                                            </label>
-                                            <textarea
-                                                rows={3}
-                                                value={companyData.address}
-                                                onChange={(e) => setCompanyData({ ...companyData, address: e.target.value })}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                placeholder={t('enterAddress')}
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                {t('website')}
-                                            </label>
-                                            <input
-                                                type="url"
-                                                value={companyData.website}
-                                                onChange={(e) => setCompanyData({ ...companyData, website: e.target.value })}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                placeholder={t('enterWebsite')}
-                                            />
-                                        </div>
-
-                                        {/* <div className="grid grid-cols-2 gap-4">
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                    Industry
-                                                </label>
-                                                <select
-                                                    value={companyData.industry}
-                                                    onChange={(e) => setCompanyData({ ...companyData, industry: e.target.value })}
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                >
-                                                    <option value="">Select industry</option>
-                                                    <option value="technology">Technology</option>
-                                                    <option value="retail">Retail</option>
-                                                    <option value="food">Food & Beverage</option>
-                                                    <option value="healthcare">Healthcare</option>
-                                                    <option value="education">Education</option>
-                                                    <option value="other">Other</option>
-                                                </select>
-                                            </div>
-
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                    Company Size
-                                                </label>
-                                                <select
-                                                    value={companyData.size}
-                                                    onChange={(e) => setCompanyData({ ...companyData, size: e.target.value })}
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                >
-                                                    <option value="">Select size</option>
-                                                    <option value="1-10">1-10 employees</option>
-                                                    <option value="11-50">11-50 employees</option>
-                                                    <option value="50-100">50-100 employees</option>
-                                                    <option value="100+">100+ employees</option>
-                                                </select>
-                                            </div>
-                                        </div> */}
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Notifications Tab
-                        {activeTab === 'notifications' && (
-                            <div className="space-y-6">
-                                <div>
-                                    <h3 className="text-lg font-bold text-gray-900 mb-4">Email Notifications</h3>
-                                    <div className="space-y-3">
-                                        <label className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-                                            <div>
-                                                <p className="font-medium text-gray-900">New Review Alerts</p>
-                                                <p className="text-sm text-gray-600">Get notified when you receive a new review</p>
-                                            </div>
-                                            <input
-                                                type="checkbox"
-                                                checked={notifications.emailNewReview}
-                                                onChange={(e) => setNotifications({ ...notifications, emailNewReview: e.target.checked })}
-                                                className="w-5 h-5 text-blue-600 rounded"
-                                            />
-                                        </label>
-
-                                        <label className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-                                            <div>
-                                                <p className="font-medium text-gray-900">Weekly Summary</p>
-                                                <p className="text-sm text-gray-600">Receive a weekly summary of your reviews</p>
-                                            </div>
-                                            <input
-                                                type="checkbox"
-                                                checked={notifications.emailWeeklyReport}
-                                                onChange={(e) => setNotifications({ ...notifications, emailWeeklyReport: e.target.checked })}
-                                                className="w-5 h-5 text-blue-600 rounded"
-                                            />
-                                        </label>
-
-                                        <label className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-                                            <div>
-                                                <p className="font-medium text-gray-900">Monthly Report</p>
-                                                <p className="text-sm text-gray-600">Get a detailed monthly analytics report</p>
-                                            </div>
-                                            <input
-                                                type="checkbox"
-                                                checked={notifications.emailMonthlyReport}
-                                                onChange={(e) => setNotifications({ ...notifications, emailMonthlyReport: e.target.checked })}
-                                                className="w-5 h-5 text-blue-600 rounded"
-                                            />
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <h3 className="text-lg font-bold text-gray-900 mb-4">Push Notifications</h3>
-                                    <div className="space-y-3">
-                                        <label className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-                                            <div>
-                                                <p className="font-medium text-gray-900">New Reviews</p>
-                                                <p className="text-sm text-gray-600">Push notification for new reviews</p>
-                                            </div>
-                                            <input
-                                                type="checkbox"
-                                                checked={notifications.pushNewReview}
-                                                onChange={(e) => setNotifications({ ...notifications, pushNewReview: e.target.checked })}
-                                                className="w-5 h-5 text-blue-600 rounded"
-                                            />
-                                        </label>
-
-                                        <label className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-                                            <div>
-                                                <p className="font-medium text-gray-900">Low Rating Alert</p>
-                                                <p className="text-sm text-gray-600">Alert when receiving low ratings (1-2 stars)</p>
-                                            </div>
-                                            <input
-                                                type="checkbox"
-                                                checked={notifications.pushLowRating}
-                                                onChange={(e) => setNotifications({ ...notifications, pushLowRating: e.target.checked })}
-                                                className="w-5 h-5 text-blue-600 rounded"
-                                            />
-                                        </label>
-
-                                        <label className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-                                            <div>
-                                                <p className="font-medium text-gray-900">Milestones</p>
-                                                <p className="text-sm text-gray-600">Celebrate when you reach review milestones</p>
-                                            </div>
-                                            <input
-                                                type="checkbox"
-                                                checked={notifications.pushMilestone}
-                                                onChange={(e) => setNotifications({ ...notifications, pushMilestone: e.target.checked })}
-                                                className="w-5 h-5 text-blue-600 rounded"
-                                            />
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        )} */}
+                        </div>
 
                         {/* Security Tab */}
                         {activeTab === 'security' && (

@@ -215,6 +215,7 @@
         "subtitle": "Quản lý tùy chọn và cài đặt tài khoản của bạn",
         "companyInfo": "Công ty",
         "profile": "Hồ sơ",
+        "profileAndCompany": "Hồ sơ",
         "security": "Bảo mật",
         "companyName": "Tên công ty",
         "description": "Mô tả",
@@ -248,7 +249,10 @@
         "enable2FA": "Bật 2FA",
         "dangerZone": "Vùng nguy hiểm",
         "dangerZoneDesc": "Khi bạn xóa tài khoản, không có cách nào khôi phục. Hãy chắc chắn.",
-        "deleteAccount": "Xóa tài khoản"
+        "deleteAccount": "Xóa tài khoản",
+        "companyLogo": "Logo công ty",
+        "clickToUpload": "Nhấp để tải lên logo mới",
+        "maxFileSize": "Kích thước tối đa: 5MB"
     },
     "subscription": {
         "title": "Gói dịch vụ",
