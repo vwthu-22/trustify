@@ -45,7 +45,7 @@ export default function Home() {
       )}
 
       {/* Responsive container - mobile full width, desktop with margins */}
-      <div className='px-4 sm:px-6 lg:px-8 xl:mx-16 2xl:mx-32'>
+      <div className='px-4 sm:px-6 lg:px-32 xl:mx-16 2xl:mx-32'>
         <Suggest />
         <Bank />
         <Travel />

@@ -304,7 +304,7 @@ export default function CompanyReviewPage() {
 
     return (
         <div className="min-h-screen bg-white">
-            <div className="mx-auto px-4 sm:px-8 lg:px-40 py-4 sm:py-8">
+            <div className="mx-auto px-4 sm:px-8 lg:px-52 py-4 sm:py-8">
                 {/* First Grid - Company Info and Rating Sidebar */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mt-16 sm:mt-20">
                     {/* Left Column */}
@@ -419,8 +419,8 @@ export default function CompanyReviewPage() {
                         </div>
                     </div>
 
-                    {/* Right Sidebar - Hidden on mobile, shown at bottom for mobile */}
-                    <div className="lg:col-span-1 order-first lg:order-last">
+                    {/* Right Sidebar - Hidden on mobile */}
+                    <div className="hidden lg:block lg:col-span-1">
                         <div className="lg:sticky lg:top-20 space-y-3 sm:space-y-4">
                             {/* Rating Card */}
                             <div className="bg-white border border-gray-200 shadow-md rounded-lg p-3 sm:p-4">
