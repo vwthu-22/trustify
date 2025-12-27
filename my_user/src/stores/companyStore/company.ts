@@ -328,7 +328,8 @@ const useCompanyStore = create<CompanyState>()(
                 set({ isSearching: true, error: null });
 
                 try {
-                    const response = await fetch(`${API_BASE_URL}/api/companies/search?q=${encodeURIComponent(query)}`, {
+                    // First try the search endpoint
+                    const searchResponse = await fetch(`${API_BASE_URL}/api/companies/search?q=${encodeURIComponent(query)}`, {
                         method: 'GET',
                         credentials: 'include',
                         headers: {
@@ -338,24 +339,49 @@ const useCompanyStore = create<CompanyState>()(
                         },
                     });
 
-                    console.log('Response Status:', response.status);
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        console.error('Response Error:', errorData);
-                        throw new Error(errorData.message || errorData.error || 'Search failed');
+                    if (searchResponse.ok) {
+                        const data = await searchResponse.json();
+                        console.log('Search Response Data:', data);
+                        const results = data.companies || data.results || data.content || data;
+                        set({
+                            searchResults: Array.isArray(results) ? results : [],
+                            isSearching: false
+                        });
+                        return;
                     }
 
-                    const data = await response.json();
-                    console.log('Search Response Data:', data);
-                    console.log('=== Search Companies Success ===');
+                    // If search endpoint doesn't exist (404), fallback to fetching all and filtering
+                    console.log('Search endpoint not available, using fallback...');
 
-                    // Get results array from response
-                    const results = data.companies || data.results || data.content || data;
-                    console.log('Search Results Count:', Array.isArray(results) ? results.length : 'not an array');
+                    const fallbackResponse = await fetch(`${API_BASE_URL}/api/companies?page=0&size=100`, {
+                        method: 'GET',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'ngrok-skip-browser-warning': 'true',
+                            'bypass-tunnel-reminder': 'true',
+                        },
+                    });
+
+                    if (!fallbackResponse.ok) {
+                        throw new Error('Failed to fetch companies for search');
+                    }
+
+                    const allData = await fallbackResponse.json();
+                    const allCompanies = allData.content || allData.companies || allData;
+
+                    // Filter companies by name (case-insensitive)
+                    const queryLower = query.toLowerCase();
+                    const filteredResults = allCompanies.filter((company: any) =>
+                        company.name?.toLowerCase().includes(queryLower) ||
+                        company.industry?.toLowerCase().includes(queryLower) ||
+                        company.website?.toLowerCase().includes(queryLower)
+                    );
+
+                    console.log('Fallback Search Results:', filteredResults.length);
 
                     set({
-                        searchResults: Array.isArray(results) ? results : [],
+                        searchResults: filteredResults,
                         isSearching: false
                     });
                 } catch (error) {
