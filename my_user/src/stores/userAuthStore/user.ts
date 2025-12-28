@@ -211,10 +211,15 @@ const useAuthStore = create<AuthState>()(
           const data = await response.json();
           console.log('Image upload response:', data);
 
-          // Get the image URL from response
-          const imageUrl = data.url || data.imageUrl || data.avatarUrl || data;
+          // Get the fileName from response and construct full URL
+          const fileName = data.fileName || data.filename || data.name || data.url || data;
 
-          if (typeof imageUrl === 'string' && imageUrl) {
+          if (typeof fileName === 'string' && fileName) {
+            // Construct full image URL
+            const imageUrl = fileName.startsWith('http')
+              ? fileName
+              : `${API_BASE_URL}/api/images/${fileName}`;
+
             // Update user avatar in store
             const currentUser = get().user;
             if (currentUser) {
