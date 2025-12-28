@@ -40,6 +40,7 @@ interface CompanyStore {
     logout: () => Promise<void>;
     clearError: () => void;
     resetMagicLinkState: () => void;
+    uploadLogo: (file: File) => Promise<string | null>;
 }
 
 export const useCompanyStore = create<CompanyStore>()(
@@ -143,6 +144,53 @@ export const useCompanyStore = create<CompanyStore>()(
                         error: error instanceof Error ? error.message : 'An error occurred',
                         isLoading: false,
                     });
+                }
+            },
+
+            // Upload company logo
+            // API: POST /api/images/upload
+            uploadLogo: async (file: File) => {
+                try {
+                    const formData = new FormData();
+                    formData.append('file', file);
+
+                    const response = await fetch(`${API_BASE_URL}/api/images/upload`, {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: {
+                            'ngrok-skip-browser-warning': 'true',
+                        },
+                        body: formData,
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to upload image');
+                    }
+
+                    const data = await response.json();
+                    console.log('Image upload response:', data);
+
+                    // Get the image URL from response
+                    const imageUrl = data.url || data.imageUrl || data.logoUrl || data;
+
+                    if (typeof imageUrl === 'string' && imageUrl) {
+                        // Update company logo in store
+                        const currentCompany = get().company;
+                        if (currentCompany) {
+                            set({
+                                company: { ...currentCompany, logo: imageUrl }
+                            });
+                        }
+                        return imageUrl;
+                    }
+
+                    return null;
+                } catch (error) {
+                    console.error('Upload logo error:', error);
+                    set({
+                        error: error instanceof Error ? error.message : 'Failed to upload image',
+                    });
+                    return null;
                 }
             },
 

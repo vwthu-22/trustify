@@ -33,6 +33,7 @@ export default function ProfilePage() {
         error,
         successMessage,
         updateProfile,
+        uploadAvatar,
         clearError,
         clearSuccess
     } = useAuthStore();
@@ -103,7 +104,15 @@ export default function ProfilePage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // TODO: Include avatarFile in the update if your API supports it
+
+        // Upload avatar if a new file was selected
+        if (avatarFile) {
+            const uploadedUrl = await uploadAvatar(avatarFile);
+            if (uploadedUrl) {
+                setAvatarFile(null); // Clear file after successful upload
+            }
+        }
+
         await updateProfile(name, country);
     };
 

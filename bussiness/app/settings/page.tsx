@@ -11,7 +11,7 @@ export default function SettingsPage() {
     const [saved, setSaved] = useState(false);
     const [saving, setSaving] = useState(false);
 
-    const { company, fetchCompanyProfile, updateCompany, isLoading } = useCompanyStore();
+    const { company, fetchCompanyProfile, updateCompany, uploadLogo, isLoading } = useCompanyStore();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -65,6 +65,16 @@ export default function SettingsPage() {
     const handleSave = async () => {
         setSaving(true);
         try {
+            // Upload logo if a new file was selected
+            let logoUrl = profileData.avatar;
+            if (avatarFile) {
+                const uploadedUrl = await uploadLogo(avatarFile);
+                if (uploadedUrl) {
+                    logoUrl = uploadedUrl;
+                    setAvatarFile(null); // Clear file after successful upload
+                }
+            }
+
             // Update company profile via API
             await companyApi.updateProfile({
                 name: companyData.name,
@@ -76,6 +86,7 @@ export default function SettingsPage() {
                 industry: companyData.industry,
                 size: companyData.size,
                 taxId: companyData.detail,
+                logo: logoUrl,
             });
 
             // Update local store
@@ -89,6 +100,7 @@ export default function SettingsPage() {
                 industry: companyData.industry,
                 size: companyData.size,
                 taxId: companyData.detail,
+                logo: logoUrl,
             });
 
             setSaved(true);

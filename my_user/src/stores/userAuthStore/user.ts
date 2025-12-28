@@ -23,6 +23,7 @@ interface AuthState {
   exchangeToken: (state: string) => Promise<boolean>;
   fetchUserInfo: () => Promise<void>;
   updateProfile: (name: string, country: string) => Promise<boolean>;
+  uploadAvatar: (file: File) => Promise<string | null>;
   logout: () => Promise<void>;
   clearError: () => void;
   clearSuccess: () => void;
@@ -184,6 +185,53 @@ const useAuthStore = create<AuthState>()(
 
       clearError: () => set({ error: null }),
       clearSuccess: () => set({ successMessage: null }),
+
+      // Upload user avatar
+      // API: POST /api/images/upload
+      uploadAvatar: async (file: File) => {
+        try {
+          const formData = new FormData();
+          formData.append('file', file);
+
+          const response = await fetch(`${API_BASE_URL}/api/images/upload`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+              'ngrok-skip-browser-warning': 'true',
+            },
+            body: formData,
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to upload image');
+          }
+
+          const data = await response.json();
+          console.log('Image upload response:', data);
+
+          // Get the image URL from response
+          const imageUrl = data.url || data.imageUrl || data.avatarUrl || data;
+
+          if (typeof imageUrl === 'string' && imageUrl) {
+            // Update user avatar in store
+            const currentUser = get().user;
+            if (currentUser) {
+              set({
+                user: { ...currentUser, avatar: imageUrl }
+              });
+            }
+            return imageUrl;
+          }
+
+          return null;
+        } catch (error) {
+          console.error('Upload avatar error:', error);
+          set({
+            error: error instanceof Error ? error.message : 'Failed to upload image',
+          });
+          return null;
+        }
+      },
 
       // Update user profile
       updateProfile: async (name: string, country: string) => {

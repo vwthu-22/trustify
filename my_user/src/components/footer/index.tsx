@@ -76,12 +76,6 @@ export default function Footer() {
                                 </Link>
                             ))}
                         </div>
-
-                        <h3 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base">{t('selectCountry')}</h3>
-                        <select className="w-full sm:w-auto min-w-[150px] bg-white text-gray-900 px-3 sm:px-4 py-2 rounded border-0 focus:ring-2 focus:ring-blue-500 text-sm sm:text-base">
-                            <option>🇺🇸 {t('unitedStates')}</option>
-                            <option>🇻🇳 {t('vietnam')}</option>
-                        </select>
                     </div>
                 </div>
 
