@@ -169,10 +169,11 @@ export const useCompanyStore = create<CompanyStore>()(
                         throw new Error(`Failed to upload image: ${response.status} - ${errorText}`);
                     }
 
-                    const data = await response.json();
-                    console.log('Image upload response:', data);
+                    const responseData = await response.json();
+                    console.log('Image upload response:', responseData);
 
-                    // Get the fileName from response and construct full URL
+                    // Handle nested response: { data: { fileName, url }, success, message }
+                    const data = responseData.data || responseData;
                     const fileName = data.fileName || data.filename || data.name || data.url || data;
 
                     if (typeof fileName === 'string' && fileName) {
