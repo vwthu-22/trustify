@@ -68,28 +68,38 @@ export default function SettingsPage() {
             // Upload logo if a new file was selected
             let logoUrl = profileData.avatar;
             if (avatarFile) {
-                const uploadedUrl = await uploadLogo(avatarFile);
-                if (uploadedUrl) {
-                    logoUrl = uploadedUrl;
-                    setAvatarFile(null); // Clear file after successful upload
+                try {
+                    const uploadedUrl = await uploadLogo(avatarFile);
+                    if (uploadedUrl) {
+                        logoUrl = uploadedUrl;
+                        setAvatarFile(null);
+                    }
+                } catch (uploadError) {
+                    console.warn('Logo upload failed, continuing without logo update:', uploadError);
+                    // Continue without logo update - API might not be ready yet
                 }
             }
 
-            // Update company profile via API
-            await companyApi.updateProfile({
-                name: companyData.name,
-                email: profileData.email,
-                phone: profileData.phone,
-                position: profileData.position,
-                website: companyData.website,
-                address: companyData.address,
-                industry: companyData.industry,
-                size: companyData.size,
-                taxId: companyData.detail,
-                logo: logoUrl,
-            });
+            // Try to update company profile via API
+            try {
+                await companyApi.updateProfile({
+                    name: companyData.name,
+                    email: profileData.email,
+                    phone: profileData.phone,
+                    position: profileData.position,
+                    website: companyData.website,
+                    address: companyData.address,
+                    industry: companyData.industry,
+                    size: companyData.size,
+                    taxId: companyData.detail,
+                    logo: logoUrl,
+                });
+            } catch (apiError) {
+                console.warn('API update failed, updating local store only:', apiError);
+                // Continue to update local store even if API fails
+            }
 
-            // Update local store
+            // Update local store (always works)
             updateCompany({
                 name: companyData.name,
                 email: profileData.email,

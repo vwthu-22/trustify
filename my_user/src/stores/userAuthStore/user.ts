@@ -203,7 +203,9 @@ const useAuthStore = create<AuthState>()(
           });
 
           if (!response.ok) {
-            throw new Error('Failed to upload image');
+            const errorText = await response.text();
+            console.error('Upload failed:', response.status, errorText);
+            throw new Error(`Failed to upload image: ${response.status} - ${errorText}`);
           }
 
           const data = await response.json();
