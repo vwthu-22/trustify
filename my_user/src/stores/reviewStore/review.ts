@@ -20,6 +20,8 @@ interface Review {
     expDate: string;
     userName?: string;
     userEmail?: string;
+    userAvatar?: string; // User avatar URL
+    avatarUrl?: string; // Alternative field name for avatar
     companyName?: string;
     companyId?: string;
     createdAt?: string;
@@ -306,6 +308,7 @@ const useReviewStore = create<ReviewState>()(
                         ...review,
                         userName: review.userName || review.nameUser || review.user?.name,
                         userEmail: review.userEmail || review.user?.email,
+                        userAvatar: review.userAvatar || review.avatarUrl || review.user?.avatarUrl || review.user?.avatar,
                         companyName: review.companyName || review.nameCompany || review.company?.name,
                         companyId: review.companyId || review.company?.id,
                     }));
@@ -438,6 +441,7 @@ const useReviewStore = create<ReviewState>()(
                         ...review,
                         userName: review.userName || review.nameUser || review.user?.name,
                         userEmail: review.userEmail || review.user?.email,
+                        userAvatar: review.userAvatar || review.avatarUrl || review.user?.avatarUrl || review.user?.avatar,
                         companyName: review.companyName || review.nameCompany || review.company?.name,
                         companyId: review.companyId || review.company?.id,
                     }));
@@ -491,6 +495,7 @@ const useReviewStore = create<ReviewState>()(
                         ...review,
                         userName: review.userName || review.nameUser || review.user?.name,
                         userEmail: review.userEmail || review.user?.email,
+                        userAvatar: review.userAvatar || review.avatarUrl || review.user?.avatarUrl || review.user?.avatar,
                         companyId: review.companyId || review.company?.id || '',
                         companyName: review.companyName || review.nameCompany || review.company?.name || '',
                     }));

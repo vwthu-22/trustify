@@ -127,24 +127,90 @@ export default function SettingsPage() {
         fileInputRef.current?.click();
     };
 
-    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Compress image using canvas
+    const compressImage = (file: File, maxWidth: number = 800, quality: number = 0.8): Promise<File> => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Resize if larger than maxWidth
+                    if (width > maxWidth) {
+                        height = (height * maxWidth) / width;
+                        width = maxWidth;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    const ctx = canvas.getContext('2d');
+                    ctx?.drawImage(img, 0, 0, width, height);
+
+                    canvas.toBlob(
+                        (blob) => {
+                            if (blob) {
+                                const compressedFile = new File([blob], file.name, {
+                                    type: 'image/jpeg',
+                                    lastModified: Date.now(),
+                                });
+                                resolve(compressedFile);
+                            } else {
+                                reject(new Error('Failed to compress image'));
+                            }
+                        },
+                        'image/jpeg',
+                        quality
+                    );
+                };
+                img.onerror = reject;
+                img.src = e.target?.result as string;
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    };
+
+    const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             if (!file.type.startsWith('image/')) {
                 alert('Please select an image file');
                 return;
             }
-            if (file.size > 5 * 1024 * 1024) {
-                alert('Image size should be less than 5MB');
-                return;
+
+            // Max 1MB for backend limit
+            const maxSize = 1 * 1024 * 1024;
+
+            let processedFile = file;
+
+            // Compress if file is too large
+            if (file.size > maxSize) {
+                try {
+                    processedFile = await compressImage(file, 800, 0.7);
+                    console.log(`Compressed from ${file.size} to ${processedFile.size} bytes`);
+
+                    // If still too large after compression
+                    if (processedFile.size > maxSize) {
+                        alert('Image is too large. Please choose a smaller image (max 1MB).');
+                        return;
+                    }
+                } catch (error) {
+                    console.error('Failed to compress image:', error);
+                    alert('Failed to process image. Please try a smaller image.');
+                    return;
+                }
             }
 
-            setAvatarFile(file);
+            setAvatarFile(processedFile);
             const reader = new FileReader();
             reader.onloadend = () => {
                 setAvatarPreview(reader.result as string);
             };
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(processedFile);
         }
     };
 

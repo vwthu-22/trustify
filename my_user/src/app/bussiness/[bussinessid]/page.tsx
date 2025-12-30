@@ -570,8 +570,12 @@ export default function CompanyReviewPage() {
                                             {/* Review Header */}
                                             <div className="flex items-start justify-between mb-2 sm:mb-3">
                                                 <div className="flex items-start gap-2 sm:gap-3">
-                                                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-pink-500 text-white rounded-full flex items-center justify-center font-bold text-sm sm:text-base flex-shrink-0">
-                                                        {userInitial}
+                                                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-pink-500 text-white rounded-full flex items-center justify-center font-bold text-sm sm:text-base flex-shrink-0 overflow-hidden">
+                                                        {review.userAvatar || review.avatarUrl ? (
+                                                            <img src={review.userAvatar || review.avatarUrl} alt={userName} className="w-full h-full object-cover" />
+                                                        ) : (
+                                                            userInitial
+                                                        )}
                                                     </div>
                                                     <div className="min-w-0">
                                                         <h4 className="font-semibold text-gray-900 text-xs sm:text-sm truncate">{userName}</h4>

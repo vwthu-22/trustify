@@ -22,7 +22,7 @@ interface AuthState {
   setUser: (user: User) => void;
   exchangeToken: (state: string) => Promise<boolean>;
   fetchUserInfo: () => Promise<void>;
-  updateProfile: (name: string, country: string) => Promise<boolean>;
+  updateProfile: (name: string, country: string, avatarUrl?: string) => Promise<boolean>;
   uploadAvatar: (file: File) => Promise<string | null>;
   logout: () => Promise<void>;
   clearError: () => void;
@@ -132,6 +132,7 @@ const useAuthStore = create<AuthState>()(
             id: userData.id || userData.userId,
             name: userData.name || userData.displayName || userData.username,
             email: userData.email,
+            avatar: userData.avatarUrl || userData.avatar || '',
             country: userData.country || '',
           };
 
@@ -242,13 +243,24 @@ const useAuthStore = create<AuthState>()(
       },
 
       // Update user profile
-      updateProfile: async (name: string, country: string) => {
+      updateProfile: async (name: string, country: string, avatarUrl?: string) => {
         const { user } = get();
         if (!user) return false;
 
         set({ isLoading: true, error: null, successMessage: null });
 
         try {
+          const updateData: any = {
+            email: user.email,
+            name,
+            country,
+          };
+
+          // Include avatarUrl if provided
+          if (avatarUrl) {
+            updateData.avatarUrl = avatarUrl;
+          }
+
           const response = await fetch(`${API_BASE_URL}/api/user/me`, {
             method: 'PUT',
             credentials: 'include',
@@ -256,11 +268,7 @@ const useAuthStore = create<AuthState>()(
               'Content-Type': 'application/json',
               'ngrok-skip-browser-warning': 'true',
             },
-            body: JSON.stringify({
-              email: user.email,
-              name,
-              country,
-            }),
+            body: JSON.stringify(updateData),
           });
 
           if (response.ok) {
@@ -270,6 +278,7 @@ const useAuthStore = create<AuthState>()(
                 ...user,
                 name: data.name || name,
                 country: data.country || country,
+                avatar: data.avatarUrl || avatarUrl || user.avatar,
               },
               isLoading: false,
               successMessage: 'Profile updated successfully!',

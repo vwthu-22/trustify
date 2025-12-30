@@ -106,14 +106,17 @@ export default function ProfilePage() {
         e.preventDefault();
 
         // Upload avatar if a new file was selected
+        let avatarUrl: string | undefined;
         if (avatarFile) {
             const uploadedUrl = await uploadAvatar(avatarFile);
             if (uploadedUrl) {
+                avatarUrl = uploadedUrl;
                 setAvatarFile(null); // Clear file after successful upload
             }
         }
 
-        await updateProfile(name, country);
+        // Pass avatarUrl to updateProfile so it gets saved to backend
+        await updateProfile(name, country, avatarUrl);
     };
 
     if (!isAuthenticated || !user) {

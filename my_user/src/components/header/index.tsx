@@ -217,8 +217,12 @@ export default function Header() {
                                         onClick={() => { setShowUserMenu(!showUserMenu); setShowNotifications(false); }}
                                         className="flex items-center gap-2 hover:text-gray-300 transition"
                                     >
-                                        <div className="w-8 h-8 bg-[#6b5b4f] rounded-full flex items-center justify-center text-sm font-semibold">
-                                            {user.name?.charAt(0).toUpperCase()}
+                                        <div className="w-8 h-8 bg-[#6b5b4f] rounded-full flex items-center justify-center text-sm font-semibold overflow-hidden">
+                                            {user.avatar ? (
+                                                <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                                            ) : (
+                                                user.name?.charAt(0).toUpperCase()
+                                            )}
                                         </div>
                                         <span className="text-sm hidden xl:block">{user.name}</span>
                                         <ChevronDown className="w-4 h-4" />
@@ -252,8 +256,12 @@ export default function Header() {
                                 </button>
                             )}
                             {isAuthenticated && user && (
-                                <div className="w-8 h-8 bg-[#6b5b4f] rounded-full flex items-center justify-center text-sm font-semibold">
-                                    {user.name?.charAt(0).toUpperCase()}
+                                <div className="w-8 h-8 bg-[#6b5b4f] rounded-full flex items-center justify-center text-sm font-semibold overflow-hidden">
+                                    {user.avatar ? (
+                                        <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                        user.name?.charAt(0).toUpperCase()
+                                    )}
                                 </div>
                             )}
                             <button onClick={() => setShowMobileMenu(!showMobileMenu)} className="p-2 hover:bg-gray-700 rounded transition">
@@ -314,7 +322,13 @@ export default function Header() {
                                 {isAuthenticated && user ? (
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-3 px-4 py-2">
-                                            <div className="w-10 h-10 bg-[#6b5b4f] rounded-full flex items-center justify-center font-semibold">{user.name?.charAt(0).toUpperCase()}</div>
+                                            <div className="w-10 h-10 bg-[#6b5b4f] rounded-full flex items-center justify-center font-semibold overflow-hidden">
+                                                {user.avatar ? (
+                                                    <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    user.name?.charAt(0).toUpperCase()
+                                                )}
+                                            </div>
                                             <span className="font-medium">{user.name}</span>
                                         </div>
                                         <Link href="/my_review" onClick={() => setShowMobileMenu(false)} className="block py-3 px-4 text-gray-300 hover:bg-gray-800 rounded-lg transition">{t('myReviews')}</Link>
