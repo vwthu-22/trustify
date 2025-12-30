@@ -208,7 +208,7 @@ export const companyApi = {
     updateProfile: async (companyId: string | number, data: {
         name?: string;
         websiteUrl?: string;
-        avatarUrl?: string;
+        logoUrl?: string;
         jobTitle?: string;
         contactPhone?: string;
         industry?: string;
