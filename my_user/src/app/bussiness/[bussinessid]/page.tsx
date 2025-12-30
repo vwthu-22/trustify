@@ -561,8 +561,11 @@ export default function CompanyReviewPage() {
                                 </div>
                             ) : (
                                 searchedReviews.map((review) => {
-                                    const userName = review.userName || '';
-                                    const userInitial = userName.charAt(0).toUpperCase();
+                                    // Debug: log review data to check what fields are available
+                                    console.log('Review data:', review);
+
+                                    const userName = review.userName || review.userEmail?.split('@')[0] || 'User';
+                                    const userInitial = userName.charAt(0).toUpperCase() || 'U';
                                     const experienceDate = review.expDate ? new Date(review.expDate).toLocaleDateString() : '';
 
                                     return (
