@@ -81,22 +81,22 @@ export default function SettingsPage() {
             }
 
             // Try to update company profile via API
-            try {
-                await companyApi.updateProfile({
-                    name: companyData.name,
-                    email: profileData.email,
-                    phone: profileData.phone,
-                    position: profileData.position,
-                    website: companyData.website,
-                    address: companyData.address,
-                    industry: companyData.industry,
-                    size: companyData.size,
-                    taxId: companyData.detail,
-                    logo: logoUrl,
-                });
-            } catch (apiError) {
-                console.warn('API update failed, updating local store only:', apiError);
-                // Continue to update local store even if API fails
+            // API: PUT /api/companies/update/{id}
+            if (company?.id) {
+                try {
+                    await companyApi.updateProfile(company.id, {
+                        name: companyData.name,
+                        websiteUrl: companyData.website,
+                        avatarUrl: logoUrl,
+                        contactPhone: profileData.phone,
+                        industry: companyData.industry,
+                        workEmail: profileData.email,
+                        companySize: companyData.size,
+                    });
+                } catch (apiError) {
+                    console.warn('API update failed, updating local store only:', apiError);
+                    // Continue to update local store even if API fails
+                }
             }
 
             // Update local store (always works)

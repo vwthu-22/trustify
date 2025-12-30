@@ -250,9 +250,15 @@ const useAuthStore = create<AuthState>()(
         set({ isLoading: true, error: null, successMessage: null });
 
         try {
-          const updateData: any = {
-            email: user.email,
+          // Build request body matching API schema: {name, avatarUrl, email, country}
+          const updateData: {
+            name: string;
+            email: string;
+            country: string;
+            avatarUrl?: string;
+          } = {
             name,
+            email: user.email,
             country,
           };
 

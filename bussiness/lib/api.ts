@@ -204,8 +204,21 @@ export const companyApi = {
     },
 
     // Update company profile
-    updateProfile: async (data: any) => {
-        const response = await fetch(`${API_BASE_URL}/api/companies/my-companies`, {
+    // API: PUT /api/companies/update/{id}
+    updateProfile: async (companyId: string | number, data: {
+        name?: string;
+        websiteUrl?: string;
+        avatarUrl?: string;
+        jobTitle?: string;
+        contactPhone?: string;
+        industry?: string;
+        workEmail?: string;
+        companySize?: string;
+        foundedYear?: number;
+        country?: string;
+        annualRevenue?: string;
+    }) => {
+        const response = await fetch(`${API_BASE_URL}/api/companies/update/${companyId}`, {
             method: 'PUT',
             credentials: 'include',
             headers: {
@@ -217,7 +230,7 @@ export const companyApi = {
 
         if (!response.ok) {
             const error = await response.json().catch(() => ({ error: 'Failed to update company profile' }));
-            throw new Error(error.error || 'Failed to update company profile');
+            throw new Error(error.error || error.message || 'Failed to update company profile');
         }
 
         return response.json();
