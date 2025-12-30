@@ -510,7 +510,7 @@ export default function BusinessReviewDashboard() {
                                 </span>
                             )}
                         </button>
-                        <button
+                        {/* <button
                             onClick={() => setCurrentPage('analytics')}
                             className={`flex items-center gap-2 px-4 py-3 rounded-lg transition ${currentPage === 'analytics'
                                 ? 'bg-blue-500 text-white'
@@ -519,7 +519,7 @@ export default function BusinessReviewDashboard() {
                         >
                             <TrendingUp size={18} />
                             {t('analytics')}
-                        </button>
+                        </button> */}
                     </nav>
                 </div>
             </div>

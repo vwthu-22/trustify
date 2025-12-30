@@ -98,7 +98,7 @@ export default function CompanyReviewPage() {
     useEffect(() => {
         if (businessId) {
             fetchCompanyById(businessId);
-            fetchReviewsByCompany(businessId, currentReviewPage, 10);
+            fetchReviewsByCompany(businessId, currentReviewPage, 5);
         }
     }, [businessId, currentReviewPage, fetchCompanyById, fetchReviewsByCompany]);
 
@@ -133,7 +133,7 @@ export default function CompanyReviewPage() {
     });
 
     // Step 4: Local pagination for filtered results
-    const REVIEWS_PER_PAGE = 10;
+    const REVIEWS_PER_PAGE = 5;
     const [filteredPage, setFilteredPage] = useState(0);
     const filteredTotalPages = Math.ceil(allFilteredReviews.length / REVIEWS_PER_PAGE);
     const searchedReviews = allFilteredReviews.slice(
@@ -454,7 +454,7 @@ export default function CompanyReviewPage() {
                             </div>
 
                             {/* Reply Stats */}
-                            {replyStats.negativeTotal > 0 && (
+                            {/* {replyStats.negativeTotal > 0 && (
                                 <div className="bg-white border border-gray-200 shadow-md rounded-lg p-3 sm:p-4 hidden lg:block">
                                     <div className="flex items-start gap-2">
                                         <MessageCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-600 flex-shrink-0 mt-0.5" />
@@ -465,7 +465,7 @@ export default function CompanyReviewPage() {
                                         </div>
                                     </div>
                                 </div>
-                            )}
+                            )} */}
 
                             {/* How Company Uses - Hidden on mobile
                             <Link href="#" className="hidden lg:flex items-center gap-1 text-xs sm:text-sm text-gray-900 hover:underline">
