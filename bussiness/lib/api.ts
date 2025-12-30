@@ -345,12 +345,15 @@ export const reviewApi = {
                 'Content-Type': 'application/json',
                 'ngrok-skip-browser-warning': 'true',
             },
-            body: JSON.stringify({ reply }),
+            body: JSON.stringify({
+                id: reviewId,
+                reply
+            }),
         });
 
         if (!response.ok) {
             const error = await response.json().catch(() => ({ message: 'Failed to reply to review' }));
-            throw new Error(error.message || 'Failed to reply to review');
+            throw new Error(error.message || error.error || 'Failed to reply to review');
         }
 
         return response.json();
