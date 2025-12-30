@@ -84,7 +84,7 @@ export default function SettingsPage() {
             // API: PUT /api/companies/update/{id}
             if (company?.id) {
                 try {
-                    await companyApi.updateProfile(company.id, {
+                    const updateData = {
                         name: companyData.name,
                         websiteUrl: companyData.website,
                         avatarUrl: logoUrl,
@@ -92,7 +92,9 @@ export default function SettingsPage() {
                         industry: companyData.industry,
                         workEmail: profileData.email,
                         companySize: companyData.size,
-                    });
+                    };
+                    console.log('Sending company update:', JSON.stringify(updateData, null, 2));
+                    await companyApi.updateProfile(company.id, updateData);
                 } catch (apiError) {
                     console.warn('API update failed, updating local store only:', apiError);
                     // Continue to update local store even if API fails
