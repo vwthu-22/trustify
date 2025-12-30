@@ -403,75 +403,75 @@ export default function BusinessReviewDashboard() {
         </div>
     );
 
-    const renderAnalyticsPage = () => (
-        <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                    <TrendingUp className="text-blue-500" />
-                    {t('sentimentAnalysis')}
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <div className="flex items-center justify-between mb-2">
-                            <span className="text-gray-700">{t('positiveReviews')}</span>
-                            <span className="font-bold text-green-600">
-                                {sentimentData.positive} ({reviews.length > 0 ? ((sentimentData.positive / reviews.length) * 100).toFixed(0) : 0}%)
-                            </span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-4">
-                            <div
-                                className="bg-green-500 h-4 rounded-full transition-all"
-                                style={{ width: `${reviews.length > 0 ? (sentimentData.positive / reviews.length) * 100 : 0}%` }}
-                            />
-                        </div>
-                    </div>
-                    <div>
-                        <div className="flex items-center justify-between mb-2">
-                            <span className="text-gray-700">{t('negativeReviews')}</span>
-                            <span className="font-bold text-red-600">
-                                {sentimentData.negative} ({reviews.length > 0 ? ((sentimentData.negative / reviews.length) * 100).toFixed(0) : 0}%)
-                            </span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-4">
-                            <div
-                                className="bg-red-500 h-4 rounded-full transition-all"
-                                style={{ width: `${reviews.length > 0 ? (sentimentData.negative / reviews.length) * 100 : 0}%` }}
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
+    // const renderAnalyticsPage = () => (
+    //     <div className="space-y-6">
+    //         <div className="bg-white rounded-lg shadow p-6">
+    //             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+    //                 <TrendingUp className="text-blue-500" />
+    //                 {t('sentimentAnalysis')}
+    //             </h2>
+    //             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    //                 <div>
+    //                     <div className="flex items-center justify-between mb-2">
+    //                         <span className="text-gray-700">{t('positiveReviews')}</span>
+    //                         <span className="font-bold text-green-600">
+    //                             {sentimentData.positive} ({reviews.length > 0 ? ((sentimentData.positive / reviews.length) * 100).toFixed(0) : 0}%)
+    //                         </span>
+    //                     </div>
+    //                     <div className="w-full bg-gray-200 rounded-full h-4">
+    //                         <div
+    //                             className="bg-green-500 h-4 rounded-full transition-all"
+    //                             style={{ width: `${reviews.length > 0 ? (sentimentData.positive / reviews.length) * 100 : 0}%` }}
+    //                         />
+    //                     </div>
+    //                 </div>
+    //                 <div>
+    //                     <div className="flex items-center justify-between mb-2">
+    //                         <span className="text-gray-700">{t('negativeReviews')}</span>
+    //                         <span className="font-bold text-red-600">
+    //                             {sentimentData.negative} ({reviews.length > 0 ? ((sentimentData.negative / reviews.length) * 100).toFixed(0) : 0}%)
+    //                         </span>
+    //                     </div>
+    //                     <div className="w-full bg-gray-200 rounded-full h-4">
+    //                         <div
+    //                             className="bg-red-500 h-4 rounded-full transition-all"
+    //                             style={{ width: `${reviews.length > 0 ? (sentimentData.negative / reviews.length) * 100 : 0}%` }}
+    //                         />
+    //                     </div>
+    //                 </div>
+    //             </div>
+    //         </div>
 
-            <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6">{t('ratingDistribution')}</h2>
-                <div className="space-y-4">
-                    {[5, 4, 3, 2, 1].map((rating) => {
-                        const count = stats?.ratingDistribution?.[rating] || reviews.filter(r => r.rating === rating).length;
-                        const percentage = reviews.length > 0 ? (count / reviews.length) * 100 : 0;
-                        const barColor = getBarColor(rating);
-                        const starColor = getStarFillColor(rating);
-                        return (
-                            <div key={rating} className="flex items-center gap-4">
-                                <div className="flex items-center gap-1 w-20">
-                                    <span className="font-medium">{rating}</span>
-                                    <Star size={16} className={starColor} />
-                                </div>
-                                <div className="flex-1">
-                                    <div className="w-full bg-gray-200 rounded-full h-3">
-                                        <div
-                                            className={`${barColor} h-3 rounded-full transition-all`}
-                                            style={{ width: `${percentage}%` }}
-                                        />
-                                    </div>
-                                </div>
-                                <span className="text-sm text-gray-600 w-20 text-right">{count} {t('reviews')}</span>
-                            </div>
-                        );
-                    })}
-                </div>
-            </div>
-        </div>
-    );
+    //         <div className="bg-white rounded-lg shadow p-6">
+    //             <h2 className="text-xl font-bold text-gray-900 mb-6">{t('ratingDistribution')}</h2>
+    //             <div className="space-y-4">
+    //                 {[5, 4, 3, 2, 1].map((rating) => {
+    //                     const count = stats?.ratingDistribution?.[rating] || reviews.filter(r => r.rating === rating).length;
+    //                     const percentage = reviews.length > 0 ? (count / reviews.length) * 100 : 0;
+    //                     const barColor = getBarColor(rating);
+    //                     const starColor = getStarFillColor(rating);
+    //                     return (
+    //                         <div key={rating} className="flex items-center gap-4">
+    //                             <div className="flex items-center gap-1 w-20">
+    //                                 <span className="font-medium">{rating}</span>
+    //                                 <Star size={16} className={starColor} />
+    //                             </div>
+    //                             <div className="flex-1">
+    //                                 <div className="w-full bg-gray-200 rounded-full h-3">
+    //                                     <div
+    //                                         className={`${barColor} h-3 rounded-full transition-all`}
+    //                                         style={{ width: `${percentage}%` }}
+    //                                     />
+    //                                 </div>
+    //                             </div>
+    //                             <span className="text-sm text-gray-600 w-20 text-right">{count} {t('reviews')}</span>
+    //                         </div>
+    //                     );
+    //                 })}
+    //             </div>
+    //         </div>
+    //     </div>
+    // );
 
     return (
         <div className="min-h-screen bg-gray-100 rounded-md" >
@@ -527,7 +527,6 @@ export default function BusinessReviewDashboard() {
             <div className="max-w-7xl mx-auto p-6">
                 {currentPage === 'all-reviews' && renderAllReviewsPage()}
                 {currentPage === 'pending' && renderPendingPage()}
-                {currentPage === 'analytics' && renderAnalyticsPage()}
             </div>
         </div>
     );
