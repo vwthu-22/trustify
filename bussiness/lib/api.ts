@@ -208,7 +208,7 @@ export const companyApi = {
     updateProfile: async (companyId: string | number, data: {
         name?: string;
         websiteUrl?: string;
-        logoUrl?: string;
+        avatarUrl?: string; // Note: Backend expects avatarUrl for update, returns logoUrl in response
         jobTitle?: string;
         contactPhone?: string;
         industry?: string;

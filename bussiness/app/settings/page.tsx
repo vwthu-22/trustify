@@ -87,7 +87,7 @@ export default function SettingsPage() {
                     await companyApi.updateProfile(company.id, {
                         name: companyData.name,
                         websiteUrl: companyData.website,
-                        logoUrl: logoUrl,
+                        avatarUrl: logoUrl,
                         contactPhone: profileData.phone,
                         industry: companyData.industry,
                         workEmail: profileData.email,
