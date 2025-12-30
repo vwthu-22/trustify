@@ -336,9 +336,10 @@ export const reviewApi = {
     },
 
     // Reply to a review
+    // API: PUT /api/review/{id}
     replyToReview: async (reviewId: number, reply: string) => {
-        const response = await fetch(`${API_BASE_URL}/api/reviews/${reviewId}/reply`, {
-            method: 'POST',
+        const response = await fetch(`${API_BASE_URL}/api/review/${reviewId}`, {
+            method: 'PUT',
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
