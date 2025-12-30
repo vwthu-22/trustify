@@ -337,7 +337,7 @@ export const reviewApi = {
 
     // Reply to a review
     // API: PUT /api/review/{id}
-    replyToReview: async (reviewId: number, reply: string) => {
+    replyToReview: async (reviewId: number, data: any) => {
         const response = await fetch(`${API_BASE_URL}/api/review/${reviewId}`, {
             method: 'PUT',
             credentials: 'include',
@@ -345,10 +345,7 @@ export const reviewApi = {
                 'Content-Type': 'application/json',
                 'ngrok-skip-browser-warning': 'true',
             },
-            body: JSON.stringify({
-                id: reviewId,
-                reply
-            }),
+            body: JSON.stringify(data),
         });
 
         if (!response.ok) {

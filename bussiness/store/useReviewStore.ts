@@ -15,6 +15,11 @@ export interface Review {
     comment: string;
     createdAt: string;
     user: ReviewUser;
+    // Original review fields (needed for update)
+    title?: string;
+    description?: string;
+    email?: string;
+    expDate?: string;
     // Additional fields for UI
     status?: 'pending' | 'replied' | 'flagged';
     reply?: string;
@@ -116,6 +121,12 @@ export const useReviewStore = create<ReviewStore>((set, get) => ({
                     name: r.user?.name || r.userName || 'Anonymous',
                     avatarUrl: r.user?.avatar || r.user?.avatarUrl || '',
                 },
+                // Map original fields for update
+                title: r.title,
+                description: r.description,
+                email: r.email,
+                expDate: r.expDate,
+
                 // API returns status in uppercase like "PENDING"
                 status: r.reply ? 'replied' : (r.status?.toLowerCase() === 'pending' ? 'pending' : 'replied'),
                 reply: r.reply || r.replyContent || null,
@@ -174,7 +185,21 @@ export const useReviewStore = create<ReviewStore>((set, get) => ({
     replyToReview: async (reviewId: number, reply: string) => {
         set({ isLoading: true, error: null });
         try {
-            await reviewApi.replyToReview(reviewId, reply);
+            const review = get().reviews.find(r => r.id === reviewId);
+            if (!review) throw new Error('Review not found');
+
+            // Construct DTO data
+            const reviewData = {
+                id: review.id,
+                title: review.title,
+                description: review.description,
+                email: review.email,
+                rating: review.rating,
+                expDate: review.expDate || review.createdAt,
+                reply: reply
+            };
+
+            await reviewApi.replyToReview(reviewId, reviewData);
 
             // Update local state
             const reviews = get().reviews.map(r =>
