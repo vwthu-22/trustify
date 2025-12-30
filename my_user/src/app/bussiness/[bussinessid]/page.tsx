@@ -561,11 +561,11 @@ export default function CompanyReviewPage() {
                                 </div>
                             ) : (
                                 searchedReviews.map((review) => {
-                                    // Debug: log review data to check what fields are available
-                                    console.log('Review data:', review);
-
-                                    const userName = review.userName || review.userEmail?.split('@')[0] || 'User';
+                                    // Get user info from nested user object or direct fields
+                                    const userName = review.userName || review.user?.name || review.userEmail?.split('@')[0] || review.email?.split('@')[0] || 'User';
                                     const userInitial = userName.charAt(0).toUpperCase() || 'U';
+                                    const userAvatar = review.userAvatar || review.avatarUrl || review.user?.avatarUrl;
+                                    const userEmail = review.userEmail || review.user?.email || review.email || 'User';
                                     const experienceDate = review.expDate ? new Date(review.expDate).toLocaleDateString() : '';
 
                                     return (
@@ -574,15 +574,15 @@ export default function CompanyReviewPage() {
                                             <div className="flex items-start justify-between mb-2 sm:mb-3">
                                                 <div className="flex items-start gap-2 sm:gap-3">
                                                     <div className="w-8 h-8 sm:w-10 sm:h-10 bg-pink-500 text-white rounded-full flex items-center justify-center font-bold text-sm sm:text-base flex-shrink-0 overflow-hidden">
-                                                        {review.userAvatar || review.avatarUrl ? (
-                                                            <img src={review.userAvatar || review.avatarUrl} alt={userName} className="w-full h-full object-cover" />
+                                                        {userAvatar ? (
+                                                            <img src={userAvatar} alt={userName} className="w-full h-full object-cover" />
                                                         ) : (
                                                             userInitial
                                                         )}
                                                     </div>
                                                     <div className="min-w-0">
                                                         <h4 className="font-semibold text-gray-900 text-xs sm:text-sm truncate">{userName}</h4>
-                                                        <p className="text-xs text-gray-500 truncate">{review.userEmail || 'User'}</p>
+                                                        <p className="text-xs text-gray-500 truncate">{userEmail}</p>
                                                     </div>
                                                 </div>
                                             </div>

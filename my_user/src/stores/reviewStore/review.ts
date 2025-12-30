@@ -18,10 +18,18 @@ interface Review {
     description: string;
     rating: number;
     expDate: string;
+    email?: string; // Direct email field
     userName?: string;
     userEmail?: string;
     userAvatar?: string; // User avatar URL
     avatarUrl?: string; // Alternative field name for avatar
+    // Nested user object from backend
+    user?: {
+        id?: number;
+        name?: string;
+        email?: string;
+        avatarUrl?: string;
+    };
     companyName?: string;
     companyId?: string;
     createdAt?: string;
