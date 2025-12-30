@@ -106,7 +106,8 @@ export default function ProfilePage() {
         e.preventDefault();
 
         // Upload avatar if a new file was selected
-        let avatarUrl: string | undefined;
+        let avatarUrl = user?.avatar; // Default to existing avatar
+
         if (avatarFile) {
             const uploadedUrl = await uploadAvatar(avatarFile);
             if (uploadedUrl) {
@@ -115,7 +116,7 @@ export default function ProfilePage() {
             }
         }
 
-        // Pass avatarUrl to updateProfile so it gets saved to backend
+        // Pass avatarUrl (new or existing) to updateProfile
         await updateProfile(name, country, avatarUrl);
     };
 
