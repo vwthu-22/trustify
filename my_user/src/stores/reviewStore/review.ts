@@ -30,6 +30,12 @@ interface Review {
         email?: string;
         avatarUrl?: string;
     };
+    // Nested company object from backend
+    company?: {
+        id?: number;
+        name?: string;
+        logoUrl?: string;
+    };
     companyName?: string;
     companyId?: string;
     createdAt?: string;

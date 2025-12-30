@@ -95,8 +95,15 @@ const useCompanyStore = create<CompanyState>()(
                     console.log('Response Data:', data);
                     console.log('=== Fetch Companies Success ===');
 
+                    // Map logoUrl to logo for display
+                    const companiesList = (data.companies || data.content || data).map((c: any) => ({
+                        ...c,
+                        id: String(c.id),
+                        logo: c.logoUrl || c.logo || '',
+                    }));
+
                     set({
-                        companies: data.companies || data.content || data,
+                        companies: companiesList,
                         isLoading: false
                     });
                 } catch (error) {
@@ -184,8 +191,15 @@ const useCompanyStore = create<CompanyState>()(
                     const data = await response.json();
                     console.log('Bank Companies:', data);
 
+                    // Map logoUrl to logo for display
+                    const companies = (data.content || data.companies || data).map((c: any) => ({
+                        ...c,
+                        id: String(c.id),
+                        logo: c.logoUrl || c.logo || '',
+                    }));
+
                     set({
-                        bankCompanies: data.content || data.companies || data,
+                        bankCompanies: companies,
                         isLoading: false
                     });
                 } catch (error) {
@@ -224,8 +238,15 @@ const useCompanyStore = create<CompanyState>()(
                     const data = await response.json();
                     console.log('Travel Companies:', data);
 
+                    // Map logoUrl to logo for display
+                    const companies = (data.content || data.companies || data).map((c: any) => ({
+                        ...c,
+                        id: String(c.id),
+                        logo: c.logoUrl || c.logo || '',
+                    }));
+
                     set({
-                        travelCompanies: data.content || data.companies || data,
+                        travelCompanies: companies,
                         isLoading: false
                     });
                 } catch (error) {

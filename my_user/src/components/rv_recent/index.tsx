@@ -174,9 +174,13 @@ export default function AboutReviews() {
                                     {review.companyName && (
                                         <div className="flex items-center gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-gray-200">
                                             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-white border border-gray-200 flex items-center justify-center overflow-hidden">
-                                                <span className="text-xs font-bold text-gray-600">
-                                                    {review.companyName.substring(0, 2).toUpperCase()}
-                                                </span>
+                                                {review.company?.logoUrl ? (
+                                                    <img src={review.company.logoUrl} alt={review.companyName} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <span className="text-xs font-bold text-gray-600">
+                                                        {review.companyName.substring(0, 2).toUpperCase()}
+                                                    </span>
+                                                )}
                                             </div>
                                             <div className="min-w-0">
                                                 <h5 className="font-semibold text-gray-900 text-xs sm:text-sm truncate">{review.companyName}</h5>
