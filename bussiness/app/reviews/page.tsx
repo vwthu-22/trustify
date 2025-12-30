@@ -482,7 +482,7 @@ export default function BusinessReviewDashboard() {
                 </div>
             </div>
 
-            <div className="bg-white shadow">
+            {/* <div className="bg-white shadow">
                 <div className="max-w-7xl mx-auto">
                     <nav className="flex gap-1 p-2">
                         <button
@@ -495,7 +495,7 @@ export default function BusinessReviewDashboard() {
                             <Star size={18} />
                             {t('allReviews')}
                         </button>
-                        <button
+                         <button
                             onClick={() => setCurrentPage('pending')}
                             className={`flex items-center gap-2 px-4 py-3 rounded-lg transition ${currentPage === 'pending'
                                 ? 'bg-blue-500 text-white'
@@ -509,8 +509,8 @@ export default function BusinessReviewDashboard() {
                                     {localStats.pendingReviews}
                                 </span>
                             )}
-                        </button>
-                        {/* <button
+                        </button> 
+                         <button
                             onClick={() => setCurrentPage('analytics')}
                             className={`flex items-center gap-2 px-4 py-3 rounded-lg transition ${currentPage === 'analytics'
                                 ? 'bg-blue-500 text-white'
@@ -519,14 +519,13 @@ export default function BusinessReviewDashboard() {
                         >
                             <TrendingUp size={18} />
                             {t('analytics')}
-                        </button> */}
+                        </button> 
                     </nav>
                 </div>
-            </div>
+            </div> */}
 
             <div className="max-w-7xl mx-auto p-6">
-                {currentPage === 'all-reviews' && renderAllReviewsPage()}
-                {currentPage === 'pending' && renderPendingPage()}
+                {renderAllReviewsPage()}
             </div>
         </div>
     );

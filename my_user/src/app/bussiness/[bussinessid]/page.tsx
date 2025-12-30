@@ -548,103 +548,108 @@ export default function CompanyReviewPage() {
                             />
                         </div>
                         <div className="space-y-3 sm:space-y-4">
-                            {reviewsLoading ? (
-                                <div className="text-center py-4 sm:py-6">
-                                    <div className="animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                                    <p className="text-gray-600 text-xs sm:text-sm">{t('loadingReviews')}</p>
-                                </div>
-                            ) : searchedReviews.length === 0 ? (
-                                <div className="text-center py-4 sm:py-6">
-                                    <p className="text-gray-600 text-xs sm:text-sm">
-                                        {reviews.length === 0 ? t('noReviewsBeFirst') : t('noReviewsMatch')}
-                                    </p>
-                                </div>
-                            ) : (
-                                searchedReviews.map((review) => {
-                                    // Get user info from nested user object or direct fields
-                                    const userName = review.userName || review.user?.name || review.userEmail?.split('@')[0] || review.email?.split('@')[0] || 'User';
-                                    const userInitial = userName.charAt(0).toUpperCase() || 'U';
-                                    const userAvatar = review.userAvatar || review.avatarUrl || review.user?.avatarUrl;
-                                    const userEmail = review.userEmail || review.user?.email || review.email || 'User';
-                                    const experienceDate = review.expDate ? new Date(review.expDate).toLocaleDateString() : '';
+                            {/* Determine which reviews to show */}
+                            {(() => {
+                                const reviewsToRender = isFilterMode ? searchedReviews : reviews;
 
-                                    return (
-                                        <div key={review.id} className="border p-2.5 sm:p-3 border-gray-200 rounded-lg">
-                                            {/* Review Header */}
-                                            <div className="flex items-start justify-between mb-2 sm:mb-3">
-                                                <div className="flex items-start gap-2 sm:gap-3">
-                                                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-pink-500 text-white rounded-full flex items-center justify-center font-bold text-sm sm:text-base flex-shrink-0 overflow-hidden">
-                                                        {userAvatar ? (
-                                                            <img src={userAvatar} alt={userName} className="w-full h-full object-cover" />
-                                                        ) : (
-                                                            userInitial
-                                                        )}
-                                                    </div>
-                                                    <div className="min-w-0">
-                                                        <h4 className="font-semibold text-gray-900 text-xs sm:text-sm truncate">{userName}</h4>
-                                                        <p className="text-xs text-gray-500 truncate">{userEmail}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                return reviewsLoading ? (
+                                    <div className="text-center py-4 sm:py-6">
+                                        <div className="animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                                        <p className="text-gray-600 text-xs sm:text-sm">{t('loadingReviews')}</p>
+                                    </div>
+                                ) : reviewsToRender.length === 0 ? (
+                                    <div className="text-center py-4 sm:py-6">
+                                        <p className="text-gray-600 text-xs sm:text-sm">
+                                            {reviews.length === 0 ? t('noReviewsBeFirst') : t('noReviewsMatch')}
+                                        </p>
+                                    </div>
+                                ) : (
+                                    reviewsToRender.map((review) => {
+                                        // Get user info from nested user object or direct fields
+                                        const userName = review.userName || review.user?.name || review.userEmail?.split('@')[0] || review.email?.split('@')[0] || 'User';
+                                        const userInitial = userName.charAt(0).toUpperCase() || 'U';
+                                        const userAvatar = review.userAvatar || review.avatarUrl || review.user?.avatarUrl;
+                                        const userEmail = review.userEmail || review.user?.email || review.email || 'User';
+                                        const experienceDate = review.expDate ? new Date(review.expDate).toLocaleDateString() : '';
 
-                                            {/* Rating */}
-                                            <div className="flex mb-2 sm:mb-3">{renderStars(review.rating, 'w-3.5 h-3.5 sm:w-4 sm:h-4')}</div>
-
-                                            {/* Review Content */}
-                                            <h5 className="font-semibold text-gray-900 text-sm sm:text-base mb-1.5 sm:mb-2">{review.title}</h5>
-                                            <p className="text-gray-700 text-xs sm:text-sm leading-relaxed whitespace-pre-line">{review.description}</p>
-
-                                            {/* Experience Date */}
-                                            {experienceDate && (
-                                                <p className="text-xs text-gray-500 mt-2 sm:mt-3">
-                                                    <span className="font-medium">{t('experienceDate')}:</span> {experienceDate}
-                                                </p>
-                                            )}
-
-                                            {/* Company Reply */}
-                                            {review.reply && (
-                                                <div className="mt-3 sm:mt-4 bg-gray-50 rounded-lg p-3 sm:p-4 border-l-4 border-blue-500">
+                                        return (
+                                            <div key={review.id} className="border p-2.5 sm:p-3 border-gray-200 rounded-lg">
+                                                {/* Review Header */}
+                                                <div className="flex items-start justify-between mb-2 sm:mb-3">
                                                     <div className="flex items-start gap-2 sm:gap-3">
-                                                        <div className="mt-0.5">
-                                                            <svg className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
-                                                            </svg>
+                                                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-pink-500 text-white rounded-full flex items-center justify-center font-bold text-sm sm:text-base flex-shrink-0 overflow-hidden">
+                                                            {userAvatar ? (
+                                                                <img src={userAvatar} alt={userName} className="w-full h-full object-cover" />
+                                                            ) : (
+                                                                userInitial
+                                                            )}
                                                         </div>
-                                                        <div className="flex-1">
-                                                            <div className="flex items-center justify-between mb-1">
-                                                                <span className="font-semibold text-gray-900 text-xs sm:text-sm">
-                                                                    {review.companyName || currentCompany.name || 'Company Response'}
-                                                                </span>
-                                                                {review.replyContent && (
-                                                                    <span className="text-xs text-gray-500">
-                                                                        {new Date(review.replyContent).toLocaleDateString()}
-                                                                    </span>
-                                                                )}
-                                                            </div>
-                                                            <p className="text-gray-700 text-xs sm:text-sm leading-relaxed">
-                                                                {review.reply}
-                                                            </p>
+                                                        <div className="min-w-0">
+                                                            <h4 className="font-semibold text-gray-900 text-xs sm:text-sm truncate">{userName}</h4>
+                                                            <p className="text-xs text-gray-500 truncate">{userEmail}</p>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            )}
 
-                                            {/* Edit Button - Only show for own reviews */}
-                                            {isOwnReview(review) && (
-                                                <div className="flex items-center gap-2 pt-2 sm:pt-3 mt-2 sm:mt-3 border-t border-gray-200">
-                                                    <button
-                                                        onClick={() => handleEditReview(review)}
-                                                        className="flex items-center gap-1 text-gray-600 hover:text-blue-700 text-xs font-medium transition"
-                                                    >
-                                                        <Pencil className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                                                        {tReview('editReview')}
-                                                    </button>
-                                                </div>
-                                            )}
-                                        </div>
-                                    );
-                                })
-                            )}
+                                                {/* Rating */}
+                                                <div className="flex mb-2 sm:mb-3">{renderStars(review.rating, 'w-3.5 h-3.5 sm:w-4 sm:h-4')}</div>
+
+                                                {/* Review Content */}
+                                                <h5 className="font-semibold text-gray-900 text-sm sm:text-base mb-1.5 sm:mb-2">{review.title}</h5>
+                                                <p className="text-gray-700 text-xs sm:text-sm leading-relaxed whitespace-pre-line">{review.description}</p>
+
+                                                {/* Experience Date */}
+                                                {experienceDate && (
+                                                    <p className="text-xs text-gray-500 mt-2 sm:mt-3">
+                                                        <span className="font-medium">{t('experienceDate')}:</span> {experienceDate}
+                                                    </p>
+                                                )}
+
+                                                {/* Company Reply */}
+                                                {review.reply && (
+                                                    <div className="mt-3 sm:mt-4 bg-gray-50 rounded-lg p-3 sm:p-4 border-l-4 border-blue-500">
+                                                        <div className="flex items-start gap-2 sm:gap-3">
+                                                            <div className="mt-0.5">
+                                                                <svg className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                                                                </svg>
+                                                            </div>
+                                                            <div className="flex-1">
+                                                                <div className="flex items-center justify-between mb-1">
+                                                                    <span className="font-semibold text-gray-900 text-xs sm:text-sm">
+                                                                        {review.companyName || currentCompany.name || 'Company Response'}
+                                                                    </span>
+                                                                    {review.replyContent && (
+                                                                        <span className="text-xs text-gray-500">
+                                                                            {new Date(review.replyContent).toLocaleDateString()}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                <p className="text-gray-700 text-xs sm:text-sm leading-relaxed">
+                                                                    {review.reply}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* Edit Button - Only show for own reviews */}
+                                                {isOwnReview(review) && (
+                                                    <div className="flex items-center gap-2 pt-2 sm:pt-3 mt-2 sm:mt-3 border-t border-gray-200">
+                                                        <button
+                                                            onClick={() => handleEditReview(review)}
+                                                            className="flex items-center gap-1 text-gray-600 hover:text-blue-700 text-xs font-medium transition"
+                                                        >
+                                                            <Pencil className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                                                            {tReview('editReview')}
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })
+                                );
+                            })()}
                         </div>
 
                         {/* Pagination Controls */}
