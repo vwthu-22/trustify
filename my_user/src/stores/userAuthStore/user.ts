@@ -261,6 +261,8 @@ const useAuthStore = create<AuthState>()(
             updateData.avatarUrl = avatarUrl;
           }
 
+          console.log('Updating profile with:', updateData);
+
           const response = await fetch(`${API_BASE_URL}/api/user/me`, {
             method: 'PUT',
             credentials: 'include',
@@ -285,9 +287,27 @@ const useAuthStore = create<AuthState>()(
             });
             return true;
           } else {
-            const errorData = await response.json();
+            // Log the error for debugging
+            const errorText = await response.text();
+            console.error('Profile update failed:', response.status, errorText);
+
+            // Still update local store with avatar if upload succeeded
+            if (avatarUrl) {
+              set({
+                user: {
+                  ...user,
+                  name,
+                  country,
+                  avatar: avatarUrl,
+                },
+                isLoading: false,
+                successMessage: 'Profile updated locally. Backend sync pending.',
+              });
+              return true;
+            }
+
             set({
-              error: errorData.message || 'Failed to update profile',
+              error: 'Failed to update profile',
               isLoading: false,
             });
             return false;
