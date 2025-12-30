@@ -92,6 +92,7 @@ export default function SettingsPage() {
                         industry: companyData.industry,
                         workEmail: profileData.email,
                         companySize: companyData.size,
+                        country: company.country || 'VN', // Add country to prevent null
                     };
                     console.log('Sending company update:', JSON.stringify(updateData, null, 2));
                     await companyApi.updateProfile(company.id, updateData);
