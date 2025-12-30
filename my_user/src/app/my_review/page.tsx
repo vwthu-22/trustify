@@ -223,6 +223,27 @@ export default function MyReviewPage() {
                     </p>
                   )}
 
+                  {/* Company Reply */}
+                  {review.reply && (
+                    <div className="mt-3 mb-3 bg-gray-50 rounded-lg p-3 sm:p-4 border-l-4 border-blue-500">
+                      <div className="flex items-start gap-2 sm:gap-3">
+                        <div className="mt-0.5">
+                          <svg className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-semibold text-gray-900 text-xs sm:text-sm mb-1">
+                            {review.companyName ? `${review.companyName} replied` : 'Company Response'}
+                          </p>
+                          <p className="text-gray-700 text-xs sm:text-sm leading-relaxed">
+                            {review.reply}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Actions */}
                   <div className="flex items-center gap-2 pt-2 sm:pt-3 border-t border-gray-200">
                     <button

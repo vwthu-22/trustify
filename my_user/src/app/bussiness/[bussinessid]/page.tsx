@@ -601,6 +601,34 @@ export default function CompanyReviewPage() {
                                                 </p>
                                             )}
 
+                                            {/* Company Reply */}
+                                            {review.reply && (
+                                                <div className="mt-3 sm:mt-4 bg-gray-50 rounded-lg p-3 sm:p-4 border-l-4 border-blue-500">
+                                                    <div className="flex items-start gap-2 sm:gap-3">
+                                                        <div className="mt-0.5">
+                                                            <svg className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                                                            </svg>
+                                                        </div>
+                                                        <div className="flex-1">
+                                                            <div className="flex items-center justify-between mb-1">
+                                                                <span className="font-semibold text-gray-900 text-xs sm:text-sm">
+                                                                    {review.companyName || currentCompany.name || 'Company Response'}
+                                                                </span>
+                                                                {review.replyContent && (
+                                                                    <span className="text-xs text-gray-500">
+                                                                        {new Date(review.replyContent).toLocaleDateString()}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            <p className="text-gray-700 text-xs sm:text-sm leading-relaxed">
+                                                                {review.reply}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+
                                             {/* Edit Button - Only show for own reviews */}
                                             {isOwnReview(review) && (
                                                 <div className="flex items-center gap-2 pt-2 sm:pt-3 mt-2 sm:mt-3 border-t border-gray-200">
