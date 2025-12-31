@@ -1,17 +1,15 @@
 import { create } from 'zustand';
+import { Client, IMessage } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 
-// Message interface
+// Message interface matching backend OutgoingMessage
 export interface ChatMessage {
-    id: string;
-    content: string;
-    sender: 'admin' | 'company';
-    senderName: string;
-    senderAvatar?: string;
-    timestamp: Date;
-    read: boolean;
-    type: 'text' | 'image' | 'file';
-    fileUrl?: string;
-    fileName?: string;
+    id: number;
+    roomId: number;
+    sender: string;
+    message: string;
+    admin: boolean;
+    timestamp: string;
 }
 
 // Support Ticket interface
@@ -37,7 +35,7 @@ interface SupportChatState {
     // Connection
     isConnected: boolean;
     connectionStatus: ConnectionStatus;
-    socket: WebSocket | null;
+    stompClient: Client | null;
 
     // Tickets
     tickets: SupportTicket[];
@@ -49,11 +47,11 @@ interface SupportChatState {
     typingCompanyId: string | null;
 
     // Actions - Connection
-    connect: () => void;
+    connect: (token: string) => void;
     disconnect: () => void;
 
     // Actions - Tickets
-    fetchTickets: () => Promise<void>;
+    fetchTickets: (token: string) => Promise<void>;
     selectTicket: (ticketId: string) => void;
     createTicket: (companyId: string, subject: string) => void;
     closeTicket: (ticketId: string) => void;
@@ -68,277 +66,200 @@ interface SupportChatState {
     setConnectionStatus: (status: ConnectionStatus) => void;
 }
 
-// WebSocket server URL
-const WS_BASE_URL = process.env.NEXT_PUBLIC_WS_URL || 'wss://your-backend.com/ws/admin';
-
-// Mock tickets for demo
-const mockTickets: SupportTicket[] = [
-    {
-        id: '1',
-        companyId: 'comp-1',
-        companyName: 'Tech Solutions',
-        subject: 'Integration Issue',
-        status: 'open',
-        priority: 'high',
-        lastMessage: 'We are having trouble connecting...',
-        lastMessageTime: new Date(Date.now() - 300000), // 5 minutes ago
-        unreadCount: 2,
-        createdAt: new Date(Date.now() - 86400000),
-        messages: [
-            {
-                id: 'm1',
-                content: 'Hi, we are having trouble connecting our website to the Trustify widget. The API key seems to be invalid.',
-                sender: 'company',
-                senderName: 'Tech Solutions',
-                timestamp: new Date(Date.now() - 600000),
-                read: true,
-                type: 'text'
-            },
-            {
-                id: 'm2',
-                content: 'Hello! I can help you with that. Have you checked if your domain is whitelisted in the integration settings?',
-                sender: 'admin',
-                senderName: 'Admin Support',
-                timestamp: new Date(Date.now() - 300000),
-                read: true,
-                type: 'text'
-            }
-        ]
-    },
-    {
-        id: '2',
-        companyId: 'comp-2',
-        companyName: 'Sunrise Cafe',
-        subject: 'Billing Question',
-        status: 'open',
-        priority: 'medium',
-        lastMessage: 'Can I upgrade my plan mid-month?',
-        lastMessageTime: new Date(Date.now() - 3600000), // 1 hour ago
-        unreadCount: 0,
-        createdAt: new Date(Date.now() - 172800000),
-        messages: [
-            {
-                id: 'm3',
-                content: 'Hi! Can I upgrade my plan mid-month? Will I be charged the full price?',
-                sender: 'company',
-                senderName: 'Sunrise Cafe',
-                timestamp: new Date(Date.now() - 3600000),
-                read: true,
-                type: 'text'
-            }
-        ]
-    },
-    {
-        id: '3',
-        companyId: 'comp-3',
-        companyName: 'Green Earth',
-        subject: 'Feature Request',
-        status: 'open',
-        priority: 'low',
-        lastMessage: 'It would be great if we could...',
-        lastMessageTime: new Date(Date.now() - 86400000), // 1 day ago
-        unreadCount: 0,
-        createdAt: new Date(Date.now() - 259200000),
-        messages: [
-            {
-                id: 'm4',
-                content: 'It would be great if we could export our reviews to CSV format. Is this feature planned?',
-                sender: 'company',
-                senderName: 'Green Earth',
-                timestamp: new Date(Date.now() - 86400000),
-                read: true,
-                type: 'text'
-            }
-        ]
-    },
-    {
-        id: '4',
-        companyId: 'user-1',
-        companyName: 'John Doe',
-        subject: 'Account Access',
-        status: 'closed',
-        priority: 'medium',
-        lastMessage: 'Thank you! Issue resolved.',
-        lastMessageTime: new Date(Date.now() - 7200000), // 2 hours ago
-        unreadCount: 0,
-        createdAt: new Date(Date.now() - 345600000),
-        messages: [
-            {
-                id: 'm5',
-                content: 'I forgot my password and can\'t access my account.',
-                sender: 'company',
-                senderName: 'John Doe',
-                timestamp: new Date(Date.now() - 10800000),
-                read: true,
-                type: 'text'
-            },
-            {
-                id: 'm6',
-                content: 'I\'ve sent a password reset link to your email. Please check your inbox.',
-                sender: 'admin',
-                senderName: 'Admin Support',
-                timestamp: new Date(Date.now() - 9000000),
-                read: true,
-                type: 'text'
-            },
-            {
-                id: 'm7',
-                content: 'Thank you! Issue resolved.',
-                sender: 'company',
-                senderName: 'John Doe',
-                timestamp: new Date(Date.now() - 7200000),
-                read: true,
-                type: 'text'
-            }
-        ]
-    }
-];
+// Backend URL
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://trustify.io.vn';
+const WS_URL = `${API_BASE_URL}/ws`;
 
 export const useSupportChatStore = create<SupportChatState>((set, get) => ({
     // Initial state
     isConnected: false,
     connectionStatus: 'disconnected',
-    socket: null,
+    stompClient: null,
     tickets: [],
     selectedTicketId: null,
     isLoading: false,
     isTyping: false,
     typingCompanyId: null,
 
-    // Connect to WebSocket server
-    connect: () => {
-        const { socket, connectionStatus } = get();
+    // Connect to WebSocket server using STOMP
+    connect: (token: string) => {
+        const { stompClient, connectionStatus } = get();
 
-        if (socket || connectionStatus === 'connecting') {
+        // Prevent multiple connections
+        if (stompClient?.active || connectionStatus === 'connecting') {
             console.log('Already connected or connecting...');
             return;
         }
 
         set({ connectionStatus: 'connecting' });
-        console.log('Admin connecting to WebSocket...', WS_BASE_URL);
+        console.log('Admin connecting to WebSocket...', WS_URL);
 
-        try {
-            const ws = new WebSocket(WS_BASE_URL);
+        const client = new Client({
+            webSocketFactory: () => new SockJS(`${WS_URL}?token=${token}`),
+            connectHeaders: {
+                Authorization: `Bearer ${token}`
+            },
+            debug: (str) => {
+                console.log('STOMP Debug:', str);
+            },
+            reconnectDelay: 5000,
+            heartbeatIncoming: 4000,
+            heartbeatOutgoing: 4000,
 
-            ws.onopen = () => {
-                console.log('✅ Admin WebSocket connected');
+            onConnect: () => {
+                console.log('✅ Admin STOMP Connected');
                 set({
                     isConnected: true,
                     connectionStatus: 'connected',
-                    socket: ws
+                    stompClient: client
                 });
-            };
 
-            ws.onmessage = (event) => {
-                try {
-                    const data = JSON.parse(event.data);
-                    console.log('📨 Admin received:', data);
+                // Subscribe to all rooms for admin
+                // Admin will subscribe to each room dynamically when tickets are loaded
+                const { tickets } = get();
+                tickets.forEach(ticket => {
+                    client.subscribe(`/topic/rooms/${ticket.id}`, (message: IMessage) => {
+                        try {
+                            const data: ChatMessage = JSON.parse(message.body);
+                            console.log('📨 Admin received message:', data);
+                            get().addMessage(ticket.id, data);
+                        } catch (error) {
+                            console.error('Error parsing message:', error);
+                        }
+                    });
+                });
+            },
 
-                    switch (data.type) {
-                        case 'new_message':
-                            // New message from a company
-                            get().addMessage(data.ticketId, {
-                                id: data.id || Date.now().toString(),
-                                content: data.content,
-                                sender: 'company',
-                                senderName: data.senderName,
-                                timestamp: new Date(data.timestamp || Date.now()),
-                                read: false,
-                                type: 'text'
-                            });
-                            break;
+            onStompError: (frame) => {
+                console.error('❌ STOMP Error:', frame.headers['message']);
+                set({ connectionStatus: 'error', isConnected: false });
+            },
 
-                        case 'new_ticket':
-                            // New support ticket created
-                            const newTicket: SupportTicket = {
-                                id: data.ticketId,
-                                companyId: data.companyId,
-                                companyName: data.companyName,
-                                subject: data.subject || 'New Support Request',
-                                status: 'open',
-                                priority: 'medium',
-                                lastMessage: data.content,
-                                lastMessageTime: new Date(),
-                                unreadCount: 1,
-                                createdAt: new Date(),
-                                messages: [{
-                                    id: Date.now().toString(),
-                                    content: data.content,
-                                    sender: 'company',
-                                    senderName: data.companyName,
-                                    timestamp: new Date(),
-                                    read: false,
-                                    type: 'text'
-                                }]
-                            };
-                            set(state => ({
-                                tickets: [newTicket, ...state.tickets]
-                            }));
-                            break;
-
-                        case 'typing':
-                            set({
-                                isTyping: data.isTyping,
-                                typingCompanyId: data.companyId
-                            });
-                            break;
-
-                        default:
-                            console.log('Unknown message type:', data.type);
-                    }
-                } catch (error) {
-                    console.error('Error parsing message:', error);
-                }
-            };
-
-            ws.onclose = (event) => {
-                console.log('🔌 Admin WebSocket disconnected');
+            onDisconnect: () => {
+                console.log('🔌 STOMP Disconnected');
                 set({
                     isConnected: false,
                     connectionStatus: 'disconnected',
-                    socket: null
+                    stompClient: null
                 });
+            },
 
-                // Auto-reconnect
-                if (event.code !== 1000) {
-                    setTimeout(() => get().connect(), 5000);
-                }
-            };
+            onWebSocketClose: () => {
+                console.log('WebSocket closed');
+                set({
+                    isConnected: false,
+                    connectionStatus: 'disconnected'
+                });
+            },
 
-            ws.onerror = (error) => {
-                console.error('❌ WebSocket error:', error);
+            onWebSocketError: (event) => {
+                console.error('WebSocket error:', event);
                 set({ connectionStatus: 'error', isConnected: false });
-            };
+            }
+        });
 
-            set({ socket: ws });
-        } catch (error) {
-            console.error('Failed to connect:', error);
-            set({ connectionStatus: 'error' });
-        }
+        client.activate();
+        set({ stompClient: client });
     },
 
-    // Disconnect
+    // Disconnect from WebSocket server
     disconnect: () => {
-        const { socket } = get();
-        if (socket) {
-            socket.close(1000, 'Admin disconnecting');
-            set({ socket: null, isConnected: false, connectionStatus: 'disconnected' });
+        const { stompClient } = get();
+        if (stompClient?.active) {
+            stompClient.deactivate();
+            set({
+                stompClient: null,
+                isConnected: false,
+                connectionStatus: 'disconnected'
+            });
         }
     },
 
-    // Fetch tickets (mock for now)
-    fetchTickets: async () => {
+    // Fetch all chat rooms from API
+    fetchTickets: async (token: string) => {
         set({ isLoading: true });
 
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 500));
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/chat/rooms`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
 
-        set({
-            tickets: mockTickets,
-            isLoading: false,
-            // Select first ticket by default
-            selectedTicketId: mockTickets.length > 0 ? mockTickets[0].id : null
-        });
+            if (response.ok) {
+                const rooms = await response.json();
+
+                // Transform API response to tickets format
+                const tickets: SupportTicket[] = await Promise.all(
+                    rooms.map(async (room: any) => {
+                        // Fetch messages for each room
+                        const messagesResponse = await fetch(`${API_BASE_URL}/api/chat/rooms/${room.id}/messages`, {
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
+                        });
+
+                        let messages: ChatMessage[] = [];
+                        if (messagesResponse.ok) {
+                            const apiMessages = await messagesResponse.json();
+                            messages = apiMessages.map((msg: any) => ({
+                                id: msg.id,
+                                roomId: room.id,
+                                sender: msg.sender,
+                                message: msg.message,
+                                admin: msg.admin || false,
+                                timestamp: msg.timestamp || new Date().toISOString()
+                            }));
+                        }
+
+                        const lastMessage = messages.length > 0 ? messages[messages.length - 1] : null;
+                        const unreadCount = messages.filter(m => !m.admin).length;
+
+                        return {
+                            id: room.id.toString(),
+                            companyId: room.userBusiness?.id?.toString() || 'unknown',
+                            companyName: room.name || 'Unknown Company',
+                            subject: 'Support Request',
+                            status: 'open' as const,
+                            priority: 'medium' as const,
+                            lastMessage: lastMessage?.message || '',
+                            lastMessageTime: lastMessage ? new Date(lastMessage.timestamp) : new Date(),
+                            unreadCount,
+                            messages,
+                            createdAt: new Date(room.createdAt || Date.now())
+                        };
+                    })
+                );
+
+                set({
+                    tickets,
+                    isLoading: false,
+                    selectedTicketId: tickets.length > 0 ? tickets[0].id : null
+                });
+
+                // Subscribe to all rooms after loading
+                const { stompClient } = get();
+                if (stompClient?.active) {
+                    tickets.forEach(ticket => {
+                        stompClient.subscribe(`/topic/rooms/${ticket.id}`, (message: IMessage) => {
+                            try {
+                                const data: ChatMessage = JSON.parse(message.body);
+                                console.log('📨 Admin received message:', data);
+                                get().addMessage(ticket.id, data);
+                            } catch (error) {
+                                console.error('Error parsing message:', error);
+                            }
+                        });
+                    });
+                }
+            } else {
+                console.error('Failed to fetch rooms:', response.status);
+                set({ isLoading: false, tickets: [] });
+            }
+        } catch (error) {
+            console.error('Error fetching tickets:', error);
+            set({ isLoading: false, tickets: [] });
+        }
     },
 
     // Select a ticket
@@ -377,42 +298,32 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
         }));
     },
 
-    // Send message
+    // Send message via STOMP
     sendMessage: (content: string, ticketId?: string) => {
-        const { socket, isConnected, selectedTicketId, tickets } = get();
+        const { stompClient, isConnected, selectedTicketId, tickets } = get();
         const targetTicketId = ticketId || selectedTicketId;
 
-        if (!targetTicketId) {
-            console.error('No ticket selected');
+        if (!stompClient?.active || !isConnected || !targetTicketId) {
+            console.error('Cannot send message: Not connected or no ticket');
             return;
         }
 
         const ticket = tickets.find(t => t.id === targetTicketId);
         if (!ticket) return;
 
-        const message: ChatMessage = {
-            id: Date.now().toString(),
-            content,
-            sender: 'admin',
-            senderName: 'Admin Support',
-            timestamp: new Date(),
-            read: true,
-            type: 'text'
+        const payload = {
+            roomId: parseInt(targetTicketId),
+            message: content,
+            admin: true // Admin sending message
         };
 
-        // Add message locally
-        get().addMessage(targetTicketId, message);
+        // Send to STOMP destination
+        stompClient.publish({
+            destination: `/app/business/${targetTicketId}`,
+            body: JSON.stringify(payload)
+        });
 
-        // Send via WebSocket if connected
-        if (socket && isConnected) {
-            socket.send(JSON.stringify({
-                type: 'admin_reply',
-                ticketId: targetTicketId,
-                companyId: ticket.companyId,
-                content,
-                timestamp: message.timestamp.toISOString()
-            }));
-        }
+        console.log('📤 Admin sent message:', payload);
     },
 
     // Add message to a ticket
@@ -420,12 +331,16 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
         set(state => ({
             tickets: state.tickets.map(ticket => {
                 if (ticket.id === ticketId) {
+                    // Check if message already exists
+                    const exists = ticket.messages.some(m => m.id === message.id);
+                    if (exists) return ticket;
+
                     return {
                         ...ticket,
                         messages: [...ticket.messages, message],
-                        lastMessage: message.content,
-                        lastMessageTime: message.timestamp,
-                        unreadCount: message.sender === 'company' && !message.read
+                        lastMessage: message.message,
+                        lastMessageTime: new Date(message.timestamp),
+                        unreadCount: !message.admin
                             ? ticket.unreadCount + 1
                             : ticket.unreadCount
                     };
@@ -442,8 +357,7 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                 if (ticket.id === ticketId) {
                     return {
                         ...ticket,
-                        unreadCount: 0,
-                        messages: ticket.messages.map(m => ({ ...m, read: true }))
+                        unreadCount: 0
                     };
                 }
                 return ticket;

@@ -18,6 +18,7 @@ export default function SupportPage() {
         typingCompanyId,
         isLoading,
         connect,
+        disconnect,
         fetchTickets,
         selectTicket,
         sendMessage,
@@ -31,14 +32,28 @@ export default function SupportPage() {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
+    // Get token from localStorage
+    const getToken = () => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('admin_token') || '';
+        }
+        return '';
+    };
+
     // Initialize on mount
     useEffect(() => {
-        // For demo, use mock data. In production, uncomment connect()
-        // connect();
-        fetchTickets();
+        const token = getToken();
 
-        // Simulate connected status
-        useSupportChatStore.setState({ isConnected: true, connectionStatus: 'connected' });
+        if (token) {
+            // Connect to WebSocket
+            connect(token);
+            // Fetch all chat rooms
+            fetchTickets(token);
+        }
+
+        return () => {
+            disconnect();
+        };
     }, []);
 
     // Auto-scroll to bottom when messages change
@@ -271,28 +286,32 @@ export default function SupportPage() {
 
                         {/* Messages */}
                         <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50/50">
-                            {selectedTicket.messages.map((message) => (
-                                <div key={message.id} className={`flex gap-4 ${message.sender === 'admin' ? 'flex-row-reverse' : ''}`}>
-                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1 ${message.sender === 'admin'
+                            {selectedTicket.messages.map((message) => {
+                                const isAdmin = message.admin;
+                                const displayName = message.sender || (isAdmin ? 'Admin' : selectedTicket.companyName);
+
+                                return (
+                                    <div key={message.id} className={`flex gap-4 ${isAdmin ? 'flex-row-reverse' : ''}`}>
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1 ${isAdmin
                                             ? 'bg-blue-600'
                                             : 'bg-gradient-to-br from-blue-500 to-blue-600'
-                                        }`}>
-                                        <span className="text-xs font-bold text-white">
-                                            {message.sender === 'admin' ? 'AD' : getInitials(message.senderName)}
-                                        </span>
-                                    </div>
-                                    <div className={`p-4 rounded-2xl shadow-sm max-w-[70%] ${message.sender === 'admin'
+                                            }`}>
+                                            <span className="text-xs font-bold text-white">
+                                                {isAdmin ? 'AD' : getInitials(displayName)}
+                                            </span>
+                                        </div>
+                                        <div className={`p-4 rounded-2xl shadow-sm max-w-[70%] ${isAdmin
                                             ? 'bg-blue-600 text-white rounded-tr-none'
                                             : 'bg-white text-gray-700 rounded-tl-none border border-gray-100'
-                                        }`}>
-                                        <p className="text-sm">{message.content}</p>
-                                        <span className={`text-xs mt-2 block ${message.sender === 'admin' ? 'text-blue-100' : 'text-gray-400'
                                             }`}>
-                                            {formatMessageTime(message.timestamp)}
-                                        </span>
+                                            <p className="text-sm">{message.message}</p>
+                                            <span className={`text-xs mt-2 block ${isAdmin ? 'text-blue-100' : 'text-gray-400'}`}>
+                                                {formatMessageTime(new Date(message.timestamp))}
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
 
                             {/* Typing indicator */}
                             {isTyping && typingCompanyId === selectedTicket.companyId && (
