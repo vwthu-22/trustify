@@ -52,7 +52,7 @@ export default function SettingsPage() {
             });
             setCompanyData({
                 name: company.name || '',
-                detail: company.taxId || '',
+                detail: company.detail || '',
                 address: company.address || '',
                 website: company.website || '',
                 industry: company.industry || '',
@@ -112,7 +112,7 @@ export default function SettingsPage() {
                 address: companyData.address,
                 industry: companyData.industry,
                 size: companyData.size,
-                taxId: companyData.detail,
+                detail: companyData.detail,
                 logo: logoUrl,
             });
 

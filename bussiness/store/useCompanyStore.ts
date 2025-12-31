@@ -16,7 +16,7 @@ export interface Company {
     phone?: string;
     country?: string;
     size?: string;
-    taxId?: string;
+    detail?: string;
     position?: string;
     createdAt?: string;
 }
@@ -129,7 +129,7 @@ export const useCompanyStore = create<CompanyStore>()(
                             country: companyData.country || '',
                             // API uses companySize, not size
                             size: companyData.companySize || companyData.size || '',
-                            taxId: companyData.taxId || '',
+                            detail: companyData.taxId || companyData.detail || '',
                             position: companyData.position || '',
                             createdAt: companyData.createdAt || '',
                         };
@@ -354,7 +354,7 @@ export const useCompanyStore = create<CompanyStore>()(
                                 phone: companyData.contactPhone || companyData.phone || '',
                                 country: companyData.country || '',
                                 size: companyData.companySize || companyData.size || '',
-                                taxId: companyData.taxId || '',
+                                detail: companyData.taxId || companyData.detail || '',
                                 position: companyData.position || '',
                                 createdAt: companyData.createdAt || '',
                             };
