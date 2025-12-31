@@ -178,165 +178,136 @@ export default function SupportChatPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 rounded-md">
-            {/* Header */}
-            <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-6 rounded-t-md">
-                <div className="max-w-7xl mx-auto">
-                    <div className="flex items-center justify-between">
+        <div className="h-[calc(100vh-8rem)]">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full">
+                {/* Chat Header */}
+                <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-gray-50">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center">
+                            <ShieldCheck className="w-5 h-5 text-white" />
+                        </div>
                         <div>
-                            <h1 className="text-2xl font-bold">{t('title')}</h1>
-                            <p className="text-blue-200 mt-1">{t('subtitle')}</p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <div className="flex items-center gap-2">
-                                <div className={`w-3 h-3 rounded-full ${getConnectionStatusColor()}`}></div>
-                                <span className="text-sm">{getConnectionStatusText()}</span>
-                            </div>
-                            {connectionStatus === 'error' && (
-                                <button
-                                    onClick={handleReconnect}
-                                    className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition"
-                                    title={t('reconnect')}
-                                >
-                                    <RefreshCw className="w-4 h-4" />
-                                </button>
-                            )}
+                            <h3 className="font-semibold text-gray-900">{t('adminSupport')}</h3>
+                            <p className="text-xs text-green-600 flex items-center gap-1">
+                                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                                {t('online')}
+                            </p>
                         </div>
                     </div>
+                    <button className="p-2 hover:bg-gray-200 rounded-lg transition">
+                        <MoreVertical className="w-5 h-5 text-gray-600" />
+                    </button>
                 </div>
-            </div>
 
-            <div className="max-w-7xl mx-auto p-6">
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col" style={{ height: 'calc(100vh - 220px)' }}>
-                    {/* Chat Header */}
-                    <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-gray-50">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center">
-                                <ShieldCheck className="w-5 h-5 text-white" />
-                            </div>
-                            <div>
-                                <h3 className="font-semibold text-gray-900">{t('adminSupport')}</h3>
-                                <p className="text-xs text-green-600 flex items-center gap-1">
-                                    <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                                    {t('online')}
-                                </p>
-                            </div>
+                {/* Messages Area */}
+                <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50">
+                    {messages.length === 0 ? (
+                        <div className="text-center py-12">
+                            <ShieldCheck className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                            <h3 className="text-lg font-medium text-gray-600 mb-2">{t('startConversation')}</h3>
+                            <p className="text-sm text-gray-500">{t('sendMessageToStart')}</p>
                         </div>
-                        <button className="p-2 hover:bg-gray-200 rounded-lg transition">
-                            <MoreVertical className="w-5 h-5 text-gray-600" />
-                        </button>
-                    </div>
+                    ) : (
+                        <>
+                            {/* Group messages by date */}
+                            {messages.map((message, index) => {
+                                const showDateSeparator = index === 0 ||
+                                    formatDate(message.timestamp) !== formatDate(messages[index - 1].timestamp);
 
-                    {/* Messages Area */}
-                    <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50">
-                        {messages.length === 0 ? (
-                            <div className="text-center py-12">
-                                <ShieldCheck className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                                <h3 className="text-lg font-medium text-gray-600 mb-2">{t('startConversation')}</h3>
-                                <p className="text-sm text-gray-500">{t('sendMessageToStart')}</p>
-                            </div>
-                        ) : (
-                            <>
-                                {/* Group messages by date */}
-                                {messages.map((message, index) => {
-                                    const showDateSeparator = index === 0 ||
-                                        formatDate(message.timestamp) !== formatDate(messages[index - 1].timestamp);
+                                return (
+                                    <React.Fragment key={message.id}>
+                                        {showDateSeparator && (
+                                            <div className="flex items-center justify-center">
+                                                <span className="px-3 py-1 bg-gray-200 text-gray-600 text-xs rounded-full">
+                                                    {formatDate(message.timestamp)}
+                                                </span>
+                                            </div>
+                                        )}
 
-                                    return (
-                                        <React.Fragment key={message.id}>
-                                            {showDateSeparator && (
-                                                <div className="flex items-center justify-center">
-                                                    <span className="px-3 py-1 bg-gray-200 text-gray-600 text-xs rounded-full">
-                                                        {formatDate(message.timestamp)}
-                                                    </span>
+                                        <div className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                            <div className={`flex items-end gap-2 max-w-[70%] ${message.sender === 'user' ? 'flex-row-reverse' : ''}`}>
+                                                {/* Avatar */}
+                                                <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center ${message.sender === 'admin'
+                                                    ? 'bg-gradient-to-br from-purple-500 to-purple-600'
+                                                    : 'bg-gradient-to-br from-blue-500 to-blue-600'
+                                                    }`}>
+                                                    {message.sender === 'admin' ? (
+                                                        <ShieldCheck className="w-4 h-4 text-white" />
+                                                    ) : (
+                                                        <User className="w-4 h-4 text-white" />
+                                                    )}
                                                 </div>
-                                            )}
 
-                                            <div className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                                <div className={`flex items-end gap-2 max-w-[70%] ${message.sender === 'user' ? 'flex-row-reverse' : ''}`}>
-                                                    {/* Avatar */}
-                                                    <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center ${message.sender === 'admin'
-                                                            ? 'bg-gradient-to-br from-purple-500 to-purple-600'
-                                                            : 'bg-gradient-to-br from-blue-500 to-blue-600'
+                                                {/* Message Bubble */}
+                                                <div className={`rounded-2xl px-4 py-2.5 ${message.sender === 'user'
+                                                    ? 'bg-blue-600 text-white rounded-br-md'
+                                                    : 'bg-white text-gray-800 rounded-bl-md shadow-sm border border-gray-100'
+                                                    }`}>
+                                                    <p className="text-sm leading-relaxed">{message.content}</p>
+                                                    <p className={`text-xs mt-1 ${message.sender === 'user' ? 'text-blue-200' : 'text-gray-400'
                                                         }`}>
-                                                        {message.sender === 'admin' ? (
-                                                            <ShieldCheck className="w-4 h-4 text-white" />
-                                                        ) : (
-                                                            <User className="w-4 h-4 text-white" />
-                                                        )}
-                                                    </div>
-
-                                                    {/* Message Bubble */}
-                                                    <div className={`rounded-2xl px-4 py-2.5 ${message.sender === 'user'
-                                                            ? 'bg-blue-600 text-white rounded-br-md'
-                                                            : 'bg-white text-gray-800 rounded-bl-md shadow-sm border border-gray-100'
-                                                        }`}>
-                                                        <p className="text-sm leading-relaxed">{message.content}</p>
-                                                        <p className={`text-xs mt-1 ${message.sender === 'user' ? 'text-blue-200' : 'text-gray-400'
-                                                            }`}>
-                                                            {formatTime(message.timestamp)}
-                                                        </p>
-                                                    </div>
+                                                        {formatTime(message.timestamp)}
+                                                    </p>
                                                 </div>
                                             </div>
-                                        </React.Fragment>
-                                    );
-                                })}
-                            </>
-                        )}
-
-                        {/* Typing Indicator */}
-                        {isTyping && (
-                            <div className="flex justify-start">
-                                <div className="flex items-end gap-2">
-                                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
-                                        <ShieldCheck className="w-4 h-4 text-white" />
-                                    </div>
-                                    <div className="bg-white rounded-2xl rounded-bl-md px-4 py-3 shadow-sm border border-gray-100">
-                                        <div className="flex gap-1">
-                                            <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                                            <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                                            <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
                                         </div>
+                                    </React.Fragment>
+                                );
+                            })}
+                        </>
+                    )}
+
+                    {/* Typing Indicator */}
+                    {isTyping && (
+                        <div className="flex justify-start">
+                            <div className="flex items-end gap-2">
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
+                                    <ShieldCheck className="w-4 h-4 text-white" />
+                                </div>
+                                <div className="bg-white rounded-2xl rounded-bl-md px-4 py-3 shadow-sm border border-gray-100">
+                                    <div className="flex gap-1">
+                                        <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                                        <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                                        <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
                                     </div>
                                 </div>
                             </div>
-                        )}
-
-                        <div ref={messagesEndRef} />
-                    </div>
-
-                    {/* Input Area */}
-                    <div className="px-4 py-4 border-t border-gray-200 bg-white">
-                        <div className="flex items-center gap-3">
-                            <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition">
-                                <Paperclip className="w-5 h-5" />
-                            </button>
-                            <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition">
-                                <Smile className="w-5 h-5" />
-                            </button>
-                            <input
-                                ref={inputRef}
-                                type="text"
-                                value={newMessage}
-                                onChange={(e) => setNewMessage(e.target.value)}
-                                onKeyPress={handleKeyPress}
-                                placeholder={t('typeMessage')}
-                                className="flex-1 px-4 py-2.5 bg-gray-100 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                                disabled={!isConnected}
-                            />
-                            <button
-                                onClick={handleSendMessage}
-                                disabled={!newMessage.trim() || !isConnected}
-                                className="p-2.5 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                <Send className="w-5 h-5" />
-                            </button>
                         </div>
-                        <p className="text-xs text-gray-500 mt-2 text-center">
-                            {t('responseTime')}
-                        </p>
+                    )}
+
+                    <div ref={messagesEndRef} />
+                </div>
+
+                {/* Input Area */}
+                <div className="px-4 py-4 border-t border-gray-200 bg-white">
+                    <div className="flex items-center gap-3">
+                        <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition">
+                            <Paperclip className="w-5 h-5" />
+                        </button>
+                        <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition">
+                            <Smile className="w-5 h-5" />
+                        </button>
+                        <input
+                            ref={inputRef}
+                            type="text"
+                            value={newMessage}
+                            onChange={(e) => setNewMessage(e.target.value)}
+                            onKeyPress={handleKeyPress}
+                            placeholder={t('typeMessage')}
+                            className="flex-1 px-4 py-2.5 bg-gray-100 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                            disabled={!isConnected}
+                        />
+                        <button
+                            onClick={handleSendMessage}
+                            disabled={!newMessage.trim() || !isConnected}
+                            className="p-2.5 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <Send className="w-5 h-5" />
+                        </button>
                     </div>
+                    <p className="text-xs text-gray-500 mt-2 text-center">
+                        {t('responseTime')}
+                    </p>
                 </div>
             </div>
         </div>
