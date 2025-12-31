@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, User, ShieldCheck, Paperclip, Smile, MoreVertical, RefreshCw } from 'lucide-react';
+import { Send, User, ShieldCheck, Paperclip, Smile, MoreVertical, RefreshCw, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useCompanyStore } from '@/store/useCompanyStore';
 import { useChatStore, ChatMessage } from '@/store/useChatStore';
@@ -16,64 +16,40 @@ export default function SupportChatPage() {
         isConnected,
         connectionStatus,
         isTyping,
+        isLoading,
+        roomId,
         connect,
         disconnect,
         sendMessage,
         markMessagesAsRead,
-        addMessage
+        setRoomId
     } = useChatStore();
 
     const [newMessage, setNewMessage] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
+    // Get token from localStorage
+    const getToken = () => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('company_token') || '';
+        }
+        return '';
+    };
+
     // Connect to WebSocket when component mounts
     useEffect(() => {
-        if (company?.id) {
-            // For demo purposes, we'll simulate connection
-            // In production, uncomment the line below:
-            // connect(company.id.toString());
+        const token = getToken();
 
-            // Simulate connected status for demo
-            useChatStore.setState({ isConnected: true, connectionStatus: 'connected' });
-
-            // Add initial demo messages if empty
-            if (messages.length === 0) {
-                const demoMessages: ChatMessage[] = [
-                    {
-                        id: '1',
-                        content: 'Xin chào! Tôi có thể giúp gì cho bạn hôm nay?',
-                        sender: 'admin',
-                        senderName: 'Admin Support',
-                        timestamp: new Date(Date.now() - 3600000),
-                        read: true,
-                        type: 'text'
-                    },
-                    {
-                        id: '2',
-                        content: 'Chào bạn, tôi muốn hỏi về gói subscription Premium.',
-                        sender: 'user',
-                        senderName: company?.name || 'Company',
-                        timestamp: new Date(Date.now() - 3500000),
-                        read: true,
-                        type: 'text'
-                    },
-                    {
-                        id: '3',
-                        content: 'Vâng, gói Premium bao gồm: Không giới hạn review responses, AI sentiment analysis, Priority support 24/7, và Custom branding. Bạn có muốn biết thêm chi tiết về tính năng nào không?',
-                        sender: 'admin',
-                        senderName: 'Admin Support',
-                        timestamp: new Date(Date.now() - 3400000),
-                        read: true,
-                        type: 'text'
-                    }
-                ];
-                demoMessages.forEach(msg => addMessage(msg));
-            }
+        if (company?.id && token) {
+            // Use company ID as room ID (or get from API)
+            const chatRoomId = company.id;
+            setRoomId(chatRoomId);
+            connect(token, chatRoomId);
         }
 
         return () => {
-            // disconnect();
+            disconnect();
         };
     }, [company?.id]);
 
@@ -88,41 +64,11 @@ export default function SupportChatPage() {
     }, [messages.length]);
 
     const handleSendMessage = () => {
-        if (!newMessage.trim()) return;
+        if (!newMessage.trim() || !isConnected) return;
 
-        // For demo: Add message locally
-        const userMessage: ChatMessage = {
-            id: Date.now().toString(),
-            content: newMessage,
-            sender: 'user',
-            senderName: company?.name || 'Company',
-            timestamp: new Date(),
-            read: true,
-            type: 'text'
-        };
-        addMessage(userMessage);
-
-        // In production, use this instead:
-        // sendMessage(newMessage);
-
+        sendMessage(newMessage, false); // false = not admin
         setNewMessage('');
         inputRef.current?.focus();
-
-        // Simulate admin typing and response (demo only)
-        useChatStore.setState({ isTyping: true });
-        setTimeout(() => {
-            useChatStore.setState({ isTyping: false });
-            const adminResponse: ChatMessage = {
-                id: (Date.now() + 1).toString(),
-                content: 'Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.',
-                sender: 'admin',
-                senderName: 'Admin Support',
-                timestamp: new Date(),
-                read: false,
-                type: 'text'
-            };
-            addMessage(adminResponse);
-        }, 2000);
     };
 
     const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -133,18 +79,19 @@ export default function SupportChatPage() {
     };
 
     const handleReconnect = () => {
-        if (company?.id) {
-            connect(company.id.toString());
+        const token = getToken();
+        if (company?.id && token) {
+            connect(token, company.id);
         }
     };
 
-    const formatTime = (date: Date) => {
-        return new Date(date).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+    const formatTime = (timestamp: string) => {
+        return new Date(timestamp).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
     };
 
-    const formatDate = (date: Date) => {
+    const formatDate = (timestamp: string) => {
         const today = new Date();
-        const messageDate = new Date(date);
+        const messageDate = new Date(timestamp);
 
         if (messageDate.toDateString() === today.toDateString()) {
             return t('today');
@@ -161,9 +108,9 @@ export default function SupportChatPage() {
 
     const getConnectionStatusColor = () => {
         switch (connectionStatus) {
-            case 'connected': return 'bg-green-400';
+            case 'connected': return 'bg-green-500';
             case 'connecting': return 'bg-yellow-400 animate-pulse';
-            case 'error': return 'bg-red-400';
+            case 'error': return 'bg-red-500';
             default: return 'bg-gray-400';
         }
     };
@@ -188,20 +135,35 @@ export default function SupportChatPage() {
                         </div>
                         <div>
                             <h3 className="font-semibold text-gray-900">{t('adminSupport')}</h3>
-                            <p className="text-xs text-green-600 flex items-center gap-1">
-                                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                                {t('online')}
-                            </p>
+                            <div className="flex items-center gap-2">
+                                <span className={`w-2 h-2 rounded-full ${getConnectionStatusColor()}`}></span>
+                                <span className="text-xs text-gray-500">{getConnectionStatusText()}</span>
+                            </div>
                         </div>
                     </div>
-                    <button className="p-2 hover:bg-gray-200 rounded-lg transition">
-                        <MoreVertical className="w-5 h-5 text-gray-600" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                        {connectionStatus === 'error' && (
+                            <button
+                                onClick={handleReconnect}
+                                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-lg transition"
+                                title={t('reconnect')}
+                            >
+                                <RefreshCw className="w-5 h-5" />
+                            </button>
+                        )}
+                        <button className="p-2 hover:bg-gray-200 rounded-lg transition">
+                            <MoreVertical className="w-5 h-5 text-gray-600" />
+                        </button>
+                    </div>
                 </div>
 
                 {/* Messages Area */}
                 <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50">
-                    {messages.length === 0 ? (
+                    {isLoading ? (
+                        <div className="flex items-center justify-center h-full">
+                            <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+                        </div>
+                    ) : messages.length === 0 ? (
                         <div className="text-center py-12">
                             <ShieldCheck className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                             <h3 className="text-lg font-medium text-gray-600 mb-2">{t('startConversation')}</h3>
@@ -214,6 +176,8 @@ export default function SupportChatPage() {
                                 const showDateSeparator = index === 0 ||
                                     formatDate(message.timestamp) !== formatDate(messages[index - 1].timestamp);
 
+                                const isUserMessage = !message.admin;
+
                                 return (
                                     <React.Fragment key={message.id}>
                                         {showDateSeparator && (
@@ -224,14 +188,14 @@ export default function SupportChatPage() {
                                             </div>
                                         )}
 
-                                        <div className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                            <div className={`flex items-end gap-2 max-w-[70%] ${message.sender === 'user' ? 'flex-row-reverse' : ''}`}>
+                                        <div className={`flex ${isUserMessage ? 'justify-end' : 'justify-start'}`}>
+                                            <div className={`flex items-end gap-2 max-w-[70%] ${isUserMessage ? 'flex-row-reverse' : ''}`}>
                                                 {/* Avatar */}
-                                                <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center ${message.sender === 'admin'
-                                                    ? 'bg-gradient-to-br from-purple-500 to-purple-600'
-                                                    : 'bg-gradient-to-br from-blue-500 to-blue-600'
+                                                <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center ${message.admin
+                                                        ? 'bg-gradient-to-br from-purple-500 to-purple-600'
+                                                        : 'bg-gradient-to-br from-blue-500 to-blue-600'
                                                     }`}>
-                                                    {message.sender === 'admin' ? (
+                                                    {message.admin ? (
                                                         <ShieldCheck className="w-4 h-4 text-white" />
                                                     ) : (
                                                         <User className="w-4 h-4 text-white" />
@@ -239,12 +203,12 @@ export default function SupportChatPage() {
                                                 </div>
 
                                                 {/* Message Bubble */}
-                                                <div className={`rounded-2xl px-4 py-2.5 ${message.sender === 'user'
-                                                    ? 'bg-blue-600 text-white rounded-br-md'
-                                                    : 'bg-white text-gray-800 rounded-bl-md shadow-sm border border-gray-100'
+                                                <div className={`rounded-2xl px-4 py-2.5 ${isUserMessage
+                                                        ? 'bg-blue-600 text-white rounded-br-md'
+                                                        : 'bg-white text-gray-800 rounded-bl-md shadow-sm border border-gray-100'
                                                     }`}>
-                                                    <p className="text-sm leading-relaxed">{message.content}</p>
-                                                    <p className={`text-xs mt-1 ${message.sender === 'user' ? 'text-blue-200' : 'text-gray-400'
+                                                    <p className="text-sm leading-relaxed">{message.message}</p>
+                                                    <p className={`text-xs mt-1 ${isUserMessage ? 'text-blue-200' : 'text-gray-400'
                                                         }`}>
                                                         {formatTime(message.timestamp)}
                                                     </p>

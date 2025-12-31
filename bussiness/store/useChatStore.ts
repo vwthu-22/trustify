@@ -1,17 +1,15 @@
 import { create } from 'zustand';
+import { Client, IMessage } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 
-// Message interface
+// Message interface matching backend OutgoingMessage
 export interface ChatMessage {
-    id: string;
-    content: string;
-    sender: 'user' | 'admin';
-    senderName: string;
-    senderAvatar?: string;
-    timestamp: Date;
-    read: boolean;
-    type: 'text' | 'image' | 'file';
-    fileUrl?: string;
-    fileName?: string;
+    id: number;
+    roomId: number;
+    sender: string;
+    message: string;
+    admin: boolean;
+    timestamp: string;
 }
 
 // Notification interface
@@ -33,26 +31,35 @@ interface ChatState {
     // Connection
     isConnected: boolean;
     connectionStatus: ConnectionStatus;
-    socket: WebSocket | null;
+    stompClient: Client | null;
+
+    // Room
+    roomId: string | number | null;
 
     // Messages
     messages: ChatMessage[];
     isTyping: boolean;
     unreadCount: number;
+    isLoading: boolean;
 
     // Notifications
     notifications: Notification[];
     unreadNotifications: number;
 
     // Actions - Connection
-    connect: (companyId: string) => void;
+    connect: (token: string, roomId: string | number) => void;
     disconnect: () => void;
 
     // Actions - Messages
-    sendMessage: (content: string, type?: 'text' | 'image' | 'file') => void;
+    sendMessage: (message: string, isAdmin?: boolean) => void;
+    loadMessageHistory: (roomId: string | number, token: string) => Promise<void>;
     addMessage: (message: ChatMessage) => void;
     markMessagesAsRead: () => void;
     setTyping: (isTyping: boolean) => void;
+
+    // Actions - Room
+    setRoomId: (roomId: string | number) => void;
+    createRoom: (token: string) => Promise<string | number | null>;
 
     // Actions - Notifications
     addNotification: (notification: Notification) => void;
@@ -65,209 +72,214 @@ interface ChatState {
     setConnectionStatus: (status: ConnectionStatus) => void;
 }
 
-// WebSocket server URL - Update this with your actual backend URL
-const WS_BASE_URL = process.env.NEXT_PUBLIC_WS_URL || 'wss://your-backend.com/ws';
+// Backend URL
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://trustify.io.vn';
+const WS_URL = `${API_BASE_URL}/ws`;
 
 export const useChatStore = create<ChatState>((set, get) => ({
     // Initial state
     isConnected: false,
     connectionStatus: 'disconnected',
-    socket: null,
+    stompClient: null,
+    roomId: null,
     messages: [],
     isTyping: false,
     unreadCount: 0,
+    isLoading: false,
     notifications: [],
     unreadNotifications: 0,
 
-    // Connect to WebSocket server
-    connect: (companyId: string) => {
-        const { socket, connectionStatus } = get();
+    // Set room ID
+    setRoomId: (roomId: string | number) => {
+        set({ roomId });
+    },
+
+    // Create a new chat room
+    createRoom: async (token: string): Promise<string | number | null> => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/chat/rooms`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                set({ roomId: data.id });
+                return data.id;
+            }
+            return null;
+        } catch (error) {
+            console.error('Failed to create room:', error);
+            return null;
+        }
+    },
+
+    // Connect to WebSocket server using STOMP
+    connect: (token: string, roomId: string | number) => {
+        const { stompClient, connectionStatus } = get();
 
         // Prevent multiple connections
-        if (socket || connectionStatus === 'connecting') {
+        if (stompClient?.active || connectionStatus === 'connecting') {
             console.log('Already connected or connecting...');
             return;
         }
 
-        set({ connectionStatus: 'connecting' });
-        console.log('Connecting to WebSocket...', `${WS_BASE_URL}?companyId=${companyId}`);
+        set({ connectionStatus: 'connecting', roomId });
+        console.log('Connecting to WebSocket...', WS_URL);
 
-        try {
-            const ws = new WebSocket(`${WS_BASE_URL}?companyId=${companyId}`);
+        const client = new Client({
+            webSocketFactory: () => new SockJS(`${WS_URL}?token=${token}`),
+            connectHeaders: {
+                Authorization: `Bearer ${token}`
+            },
+            debug: (str) => {
+                console.log('STOMP Debug:', str);
+            },
+            reconnectDelay: 5000,
+            heartbeatIncoming: 4000,
+            heartbeatOutgoing: 4000,
 
-            ws.onopen = () => {
-                console.log('✅ WebSocket connected');
+            onConnect: () => {
+                console.log('✅ STOMP Connected');
                 set({
                     isConnected: true,
                     connectionStatus: 'connected',
-                    socket: ws
+                    stompClient: client
                 });
-            };
 
-            ws.onmessage = (event) => {
-                try {
-                    const data = JSON.parse(event.data);
-                    console.log('📨 Received message:', data);
-
-                    // Handle different message types
-                    switch (data.type) {
-                        case 'chat_message':
-                            get().addMessage({
-                                id: data.id || Date.now().toString(),
-                                content: data.content,
-                                sender: data.sender,
-                                senderName: data.senderName || 'Admin',
-                                timestamp: new Date(data.timestamp || Date.now()),
-                                read: false,
-                                type: 'text'
-                            });
-                            break;
-
-                        case 'typing':
-                            set({ isTyping: data.isTyping });
-                            break;
-
-                        case 'notification':
-                            get().addNotification({
-                                id: data.id || Date.now().toString(),
-                                type: data.notificationType || 'system',
-                                title: data.title,
-                                message: data.message,
-                                timestamp: new Date(data.timestamp || Date.now()),
-                                read: false,
-                                link: data.link,
-                                data: data.data
-                            });
-                            break;
-
-                        case 'new_review':
-                            get().addNotification({
-                                id: data.id || Date.now().toString(),
-                                type: 'new_review',
-                                title: 'New Review',
-                                message: `${data.userName} left a ${data.rating}-star review`,
-                                timestamp: new Date(data.timestamp || Date.now()),
-                                read: false,
-                                link: `/reviews`,
-                                data: { reviewId: data.reviewId, rating: data.rating }
-                            });
-                            break;
-
-                        default:
-                            console.log('Unknown message type:', data.type);
+                // Subscribe to room messages
+                client.subscribe(`/topic/rooms/${roomId}`, (message: IMessage) => {
+                    try {
+                        const data: ChatMessage = JSON.parse(message.body);
+                        console.log('📨 Received message:', data);
+                        get().addMessage(data);
+                    } catch (error) {
+                        console.error('Error parsing message:', error);
                     }
-                } catch (error) {
-                    console.error('Error parsing WebSocket message:', error);
-                }
-            };
+                });
 
-            ws.onclose = (event) => {
-                console.log('🔌 WebSocket disconnected:', event.code, event.reason);
+                // Load message history after connecting
+                get().loadMessageHistory(roomId, token);
+            },
+
+            onStompError: (frame) => {
+                console.error('❌ STOMP Error:', frame.headers['message']);
+                set({ connectionStatus: 'error', isConnected: false });
+            },
+
+            onDisconnect: () => {
+                console.log('🔌 STOMP Disconnected');
                 set({
                     isConnected: false,
                     connectionStatus: 'disconnected',
-                    socket: null
+                    stompClient: null
                 });
+            },
 
-                // Auto-reconnect after 5 seconds if not intentionally closed
-                if (event.code !== 1000) {
-                    console.log('Attempting to reconnect in 5 seconds...');
-                    setTimeout(() => {
-                        get().connect(companyId);
-                    }, 5000);
-                }
-            };
-
-            ws.onerror = (error) => {
-                console.error('❌ WebSocket error:', error);
+            onWebSocketClose: () => {
+                console.log('WebSocket closed');
                 set({
-                    connectionStatus: 'error',
-                    isConnected: false
+                    isConnected: false,
+                    connectionStatus: 'disconnected'
                 });
-            };
+            },
 
-            set({ socket: ws });
+            onWebSocketError: (event) => {
+                console.error('WebSocket error:', event);
+                set({ connectionStatus: 'error', isConnected: false });
+            }
+        });
 
-        } catch (error) {
-            console.error('Failed to create WebSocket connection:', error);
-            set({ connectionStatus: 'error' });
-        }
+        client.activate();
+        set({ stompClient: client });
     },
 
     // Disconnect from WebSocket server
     disconnect: () => {
-        const { socket } = get();
-        if (socket) {
-            socket.close(1000, 'Client disconnecting');
+        const { stompClient } = get();
+        if (stompClient?.active) {
+            stompClient.deactivate();
             set({
-                socket: null,
+                stompClient: null,
                 isConnected: false,
                 connectionStatus: 'disconnected'
             });
         }
     },
 
-    // Send a chat message
-    sendMessage: (content: string, type: 'text' | 'image' | 'file' = 'text') => {
-        const { socket, isConnected } = get();
+    // Load message history from REST API
+    loadMessageHistory: async (roomId: string | number, token: string) => {
+        set({ isLoading: true });
 
-        if (!socket || !isConnected) {
-            console.error('Cannot send message: Not connected');
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/chat/rooms/${roomId}/messages`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                const messages: ChatMessage[] = await response.json();
+                set({ messages, isLoading: false });
+            } else {
+                console.error('Failed to load messages:', response.status);
+                set({ isLoading: false });
+            }
+        } catch (error) {
+            console.error('Error loading message history:', error);
+            set({ isLoading: false });
+        }
+    },
+
+    // Send a chat message via STOMP
+    sendMessage: (message: string, isAdmin: boolean = false) => {
+        const { stompClient, isConnected, roomId } = get();
+
+        if (!stompClient?.active || !isConnected || !roomId) {
+            console.error('Cannot send message: Not connected or no room');
             return;
         }
 
-        const message: ChatMessage = {
-            id: Date.now().toString(),
-            content,
-            sender: 'user',
-            senderName: 'Company', // Will be replaced with actual company name
-            timestamp: new Date(),
-            read: true,
-            type
+        const payload = {
+            roomId: roomId,
+            message: message,
+            admin: isAdmin
         };
 
-        // Add to local messages immediately (optimistic update)
-        get().addMessage(message);
+        // Send to STOMP destination
+        stompClient.publish({
+            destination: `/app/business/${roomId}`,
+            body: JSON.stringify(payload)
+        });
 
-        // Send to server
-        socket.send(JSON.stringify({
-            type: 'chat_message',
-            content,
-            messageType: type,
-            timestamp: message.timestamp.toISOString()
-        }));
+        console.log('📤 Sent message:', payload);
     },
 
     // Add a message to the list
     addMessage: (message: ChatMessage) => {
-        set((state) => ({
-            messages: [...state.messages, message],
-            unreadCount: message.sender === 'admin' && !message.read
-                ? state.unreadCount + 1
-                : state.unreadCount
-        }));
+        set((state) => {
+            // Check if message already exists (prevent duplicates)
+            const exists = state.messages.some(m => m.id === message.id);
+            if (exists) return state;
+
+            return {
+                messages: [...state.messages, message],
+                unreadCount: message.admin ? state.unreadCount + 1 : state.unreadCount
+            };
+        });
     },
 
     // Mark all messages as read
     markMessagesAsRead: () => {
-        set((state) => ({
-            messages: state.messages.map(msg => ({ ...msg, read: true })),
-            unreadCount: 0
-        }));
+        set({ unreadCount: 0 });
     },
 
     // Set typing status
     setTyping: (isTyping: boolean) => {
-        const { socket } = get();
         set({ isTyping });
-
-        // Notify server about typing status
-        if (socket?.readyState === WebSocket.OPEN) {
-            socket.send(JSON.stringify({
-                type: 'typing',
-                isTyping
-            }));
-        }
     },
 
     // Add a notification
@@ -318,23 +330,5 @@ export const useChatStore = create<ChatState>((set, get) => ({
         set({ connectionStatus: status, isConnected: status === 'connected' });
     }
 }));
-
-// Hook for auto-connecting when component mounts
-export const useAutoConnect = (companyId: string | undefined) => {
-    const { connect, disconnect, isConnected } = useChatStore();
-
-    // This should be called in a useEffect in the component
-    const initConnection = () => {
-        if (companyId && !isConnected) {
-            connect(companyId);
-        }
-    };
-
-    const cleanup = () => {
-        disconnect();
-    };
-
-    return { initConnection, cleanup };
-};
 
 export default useChatStore;
