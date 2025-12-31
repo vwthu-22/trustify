@@ -275,5 +275,37 @@
             "addFeature": "Add Feature",
             "noFeatures": "No features available"
         }
+    },
+    "support": {
+        "title": "Support Center",
+        "tickets": "Support Tickets",
+        "searchPlaceholder": "Search tickets...",
+        "all": "All",
+        "open": "Open",
+        "closed": "Closed",
+        "pending": "Pending",
+        "live": "Live",
+        "offline": "Offline",
+        "noTickets": "No tickets found",
+        "noConversation": "No conversation selected",
+        "selectTicket": "Select a ticket from the list to view messages",
+        "ticket": "Ticket",
+        "closeTicket": "Close Ticket",
+        "ticketClosed": "This ticket has been closed",
+        "typeReply": "Type your reply...",
+        "justNow": "Just now",
+        "mAgo": "m ago",
+        "hAgo": "h ago",
+        "dAgo": "d ago",
+        "priority": {
+            "high": "High",
+            "medium": "Medium",
+            "low": "Low"
+        },
+        "status": {
+            "open": "Open",
+            "closed": "Closed",
+            "pending": "Pending"
+        }
     }
 }

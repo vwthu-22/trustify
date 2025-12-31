@@ -275,5 +275,37 @@
       "addFeature": "Thêm tính năng",
       "noFeatures": "Không có tính năng nào"
     }
+  },
+  "support": {
+    "title": "Trung tâm hỗ trợ",
+    "tickets": "Yêu cầu hỗ trợ",
+    "searchPlaceholder": "Tìm kiếm yêu cầu...",
+    "all": "Tất cả",
+    "open": "Đang mở",
+    "closed": "Đã đóng",
+    "pending": "Đang chờ",
+    "live": "Trực tuyến",
+    "offline": "Ngoại tuyến",
+    "noTickets": "Không có yêu cầu nào",
+    "noConversation": "Chưa chọn cuộc trò chuyện",
+    "selectTicket": "Chọn một yêu cầu từ danh sách để xem tin nhắn",
+    "ticket": "Yêu cầu",
+    "closeTicket": "Đóng yêu cầu",
+    "ticketClosed": "Yêu cầu này đã được đóng",
+    "typeReply": "Nhập tin nhắn phản hồi...",
+    "justNow": "Vừa xong",
+    "mAgo": "phút trước",
+    "hAgo": "giờ trước",
+    "dAgo": "ngày trước",
+    "priority": {
+      "high": "Cao",
+      "medium": "Trung bình",
+      "low": "Thấp"
+    },
+    "status": {
+      "open": "Đang mở",
+      "closed": "Đã đóng",
+      "pending": "Đang chờ"
+    }
   }
 }

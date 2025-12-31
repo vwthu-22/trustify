@@ -1,11 +1,12 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import {
-    Info, Mail, User, Star, Settings, ShieldCheck, Crown, X
+    Info, User, Star, Settings, ShieldCheck, Crown
 } from 'lucide-react';
 
 import { usePathname, useRouter } from 'next/navigation';
 import { useCompanyStore } from '@/store/useCompanyStore';
+import { useChatStore } from '@/store/useChatStore';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useTranslations } from 'next-intl';
 
@@ -34,7 +35,8 @@ export default function Header() {
             '/branches': t('pageBranches'),
             '/subscription': t('pageSubscription'),
             '/settings': t('pageSettings'),
-            '/connect': t('pageConnect')
+            '/connect': t('pageConnect'),
+            '/support': t('pageSupport') || 'Hỗ trợ'
         };
 
         return routes[path] || t('pageDashboard');
@@ -43,11 +45,10 @@ export default function Header() {
     const pageTitle = getPageTitle(pathname);
 
     const { company, fetchCompanyProfile, logout } = useCompanyStore();
+    const { notifications, unreadNotifications, markAllNotificationsAsRead } = useChatStore();
 
     const [showHelpDropdown, setShowHelpDropdown] = useState(false);
-    const [showSupportModal, setShowSupportModal] = useState(false);
     const [showCompanyDropdown, setShowCompanyDropdown] = useState(false);
-    const [unreadMessages] = useState(3);
 
     // Refs for click outside detection
     const helpDropdownRef = useRef<HTMLDivElement>(null);
@@ -98,178 +99,95 @@ export default function Header() {
                 {/* Language Switcher */}
                 <LanguageSwitcher />
 
-                {/* Help Center Button */}
+                {/* Notification Bell */}
                 <div ref={helpDropdownRef} className="relative">
                     <button
                         onClick={() => setShowHelpDropdown(!showHelpDropdown)}
                         className="relative p-2 bg-blue-100 hover:bg-blue-200 rounded-full transition"
-                        title={t('helpCenter')}
+                        title={t('notifications') || 'Notifications'}
                     >
-                        <Info className="w-5 h-5 text-blue-600" />
+                        <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        {unreadNotifications > 0 && (
+                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                                {unreadNotifications}
+                            </span>
+                        )}
                     </button>
 
-                    {/* Help Dropdown */}
+                    {/* Notifications Dropdown */}
                     {showHelpDropdown && (
-                        <div className="absolute right-0 top-12 w-72 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
-                            <div className="p-4 border-b border-gray-200">
-                                <h3 className="font-bold text-gray-900">{t('helpCenter')}</h3>
+                        <div className="absolute right-0 top-12 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                            <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+                                <h3 className="font-bold text-gray-900">{t('notifications') || 'Notifications'}</h3>
+                                <button
+                                    onClick={markAllNotificationsAsRead}
+                                    className="text-xs text-blue-600 hover:underline"
+                                >
+                                    {t('markAllRead') || 'Mark all as read'}
+                                </button>
                             </div>
-                            <div className="p-2">
-                                <a href="#" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-lg">
-                                    <div className="p-2 bg-blue-100 rounded-lg">
-                                        <Info className="w-4 h-4 text-blue-600" />
+                            <div className="max-h-80 overflow-y-auto">
+                                {/* Admin Message Notification */}
+                                <div className="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 border-b border-gray-100 cursor-pointer">
+                                    <div className="p-2 bg-purple-100 rounded-full flex-shrink-0">
+                                        <ShieldCheck className="w-4 h-4 text-purple-600" />
                                     </div>
-                                    <div>
-                                        <p className="font-medium text-gray-900 text-sm">{t('documentation')}</p>
-                                        <p className="text-xs text-gray-600">{t('documentationDesc')}</p>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="font-medium text-gray-900 text-sm">{t('adminMessage') || 'Message from Admin'}</p>
+                                        <p className="text-xs text-gray-600 truncate">{t('adminMessagePreview') || 'Your subscription has been updated...'}</p>
+                                        <p className="text-xs text-gray-400 mt-1">2 {t('hoursAgo') || 'hours ago'}</p>
                                     </div>
-                                </a>
-                                <a href="#" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-lg">
-                                    <div className="p-2 bg-green-100 rounded-lg">
-                                        <Mail className="w-4 h-4 text-green-600" />
+                                    <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2"></div>
+                                </div>
+
+                                {/* New Review Notification */}
+                                <div className="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 border-b border-gray-100 cursor-pointer">
+                                    <div className="p-2 bg-yellow-100 rounded-full flex-shrink-0">
+                                        <Star className="w-4 h-4 text-yellow-600" />
                                     </div>
-                                    <div>
-                                        <p className="font-medium text-gray-900 text-sm">{t('videoTutorials')}</p>
-                                        <p className="text-xs text-gray-600">{t('videoTutorialsDesc')}</p>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="font-medium text-gray-900 text-sm">{t('newReview') || 'New Review'}</p>
+                                        <p className="text-xs text-gray-600 truncate">{t('newReviewPreview') || 'John Doe left a 5-star review'}</p>
+                                        <p className="text-xs text-gray-400 mt-1">5 {t('hoursAgo') || 'hours ago'}</p>
                                     </div>
-                                </a>
-                                <a href="#" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-lg">
-                                    <div className="p-2 bg-purple-100 rounded-lg">
-                                        <Star className="w-4 h-4 text-purple-600" />
+                                    <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2"></div>
+                                </div>
+
+                                {/* Another Review Notification */}
+                                <div className="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 border-b border-gray-100 cursor-pointer">
+                                    <div className="p-2 bg-red-100 rounded-full flex-shrink-0">
+                                        <Star className="w-4 h-4 text-red-600" />
                                     </div>
-                                    <div>
-                                        <p className="font-medium text-gray-900 text-sm">{t('faq')}</p>
-                                        <p className="text-xs text-gray-600">{t('faqDesc')}</p>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="font-medium text-gray-900 text-sm">{t('newReview') || 'New Review'}</p>
+                                        <p className="text-xs text-gray-600 truncate">{t('negativeReviewPreview') || 'Jane Smith left a 2-star review'}</p>
+                                        <p className="text-xs text-gray-400 mt-1">1 {t('dayAgo') || 'day ago'}</p>
                                     </div>
-                                </a>
+                                    <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2"></div>
+                                </div>
+
+                                {/* System Notification */}
+                                <div className="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer opacity-60">
+                                    <div className="p-2 bg-gray-100 rounded-full flex-shrink-0">
+                                        <Info className="w-4 h-4 text-gray-600" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="font-medium text-gray-900 text-sm">{t('systemUpdate') || 'System Update'}</p>
+                                        <p className="text-xs text-gray-600 truncate">{t('systemUpdatePreview') || 'New features are now available'}</p>
+                                        <p className="text-xs text-gray-400 mt-1">3 {t('daysAgo') || 'days ago'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="p-3 border-t border-gray-200 text-center">
+                                <button className="text-sm text-blue-600 hover:underline font-medium">
+                                    {t('viewAllNotifications') || 'View all notifications'}
+                                </button>
                             </div>
                         </div>
                     )}
                 </div>
-
-                {/* Support Messages Button */}
-                <button
-                    onClick={() => setShowSupportModal(!showSupportModal)}
-                    className="relative p-2 bg-blue-100 hover:bg-blue-200 rounded-full transition"
-                    title={t('contactSupport')}
-                >
-                    <Mail className="w-5 h-5 text-blue-600" />
-                    {unreadMessages > 0 && (
-                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
-                            {unreadMessages}
-                        </span>
-                    )}
-                </button>
-
-                {/* Support Modal with Blur Effect */}
-                {showSupportModal && (
-                    <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex items-center justify-center z-50">
-                        <div className="bg-white rounded-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
-                            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-                                <h3 className="text-xl font-bold text-gray-900">{t('contactSupport')}</h3>
-                                <button
-                                    onClick={() => setShowSupportModal(false)}
-                                    className="text-gray-500 hover:text-gray-700"
-                                >
-                                    <X className="w-6 h-6" />
-                                </button>
-                            </div>
-
-                            <div className="flex-1 overflow-y-auto p-6">
-                                <div className="space-y-4">
-                                    {/* Support Type Selection */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            {t('typeOfRequest')}
-                                        </label>
-                                        <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                            <option value="question">{t('generalQuestion')}</option>
-                                            <option value="technical">{t('technicalIssue')}</option>
-                                            <option value="complaint">{t('complaint')}</option>
-                                            <option value="feature">{t('featureRequest')}</option>
-                                            <option value="billing">{t('billingIssue')}</option>
-                                        </select>
-                                    </div>
-
-                                    {/* Subject */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            {t('subject')}
-                                        </label>
-                                        <input
-                                            type="text"
-                                            placeholder={t('subjectPlaceholder')}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        />
-                                    </div>
-
-                                    {/* Message */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            {t('message')}
-                                        </label>
-                                        <textarea
-                                            rows={6}
-                                            placeholder={t('messagePlaceholder')}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        />
-                                    </div>
-
-                                    {/* Priority */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            {t('priority')}
-                                        </label>
-                                        <div className="flex gap-4">
-                                            <label className="flex items-center gap-2">
-                                                <input type="radio" name="priority" value="low" defaultChecked className="w-4 h-4" />
-                                                <span className="text-sm text-gray-700">{t('low')}</span>
-                                            </label>
-                                            <label className="flex items-center gap-2">
-                                                <input type="radio" name="priority" value="medium" className="w-4 h-4" />
-                                                <span className="text-sm text-gray-700">{t('medium')}</span>
-                                            </label>
-                                            <label className="flex items-center gap-2">
-                                                <input type="radio" name="priority" value="high" className="w-4 h-4" />
-                                                <span className="text-sm text-gray-700">{t('high')}</span>
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    {/* Response Time Info */}
-                                    <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                                        <p className="text-sm text-blue-900">
-                                            <strong>{t('expectedResponse')}</strong>
-                                        </p>
-                                        <ul className="text-sm text-blue-800 mt-2 space-y-1">
-                                            <li>• {t('freePlanResponse')}</li>
-                                            <li>• {t('proPlanResponse')}</li>
-                                            <li>• {t('premiumPlanResponse')}</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="p-6 border-t border-gray-200 flex gap-3">
-                                <button
-                                    onClick={() => setShowSupportModal(false)}
-                                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                                >
-                                    {t('cancel')}
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        alert(t('messageSent'));
-                                        setShowSupportModal(false);
-                                    }}
-                                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                                >
-                                    {t('sendMessage')}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
 
                 {/* Company Profile Button */}
                 <div ref={companyDropdownRef} className="relative">

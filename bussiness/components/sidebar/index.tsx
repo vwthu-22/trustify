@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import {
     Home, MessageSquare, Send, Share2, BarChart3, Puzzle, Settings,
     ChevronDown, ChevronRight, Mail, ShieldCheck,
-    Building2, Crown
+    Building2, Crown, Headphones
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -33,12 +33,12 @@ export default function Sidebar() {
             icon: Home,
             title: t('titleDashboard')
         },
-        {
-            href: '/connect',
-            label: t('connect'),
-            icon: Share2,
-            title: t('titleConnect')
-        },
+        // {
+        //     href: '/connect',
+        //     label: t('connect'),
+        //     icon: Share2,
+        //     title: t('titleConnect')
+        // },
         {
             href: '/reviews',
             label: t('reviews'),
@@ -81,6 +81,12 @@ export default function Sidebar() {
             label: t('subscription'),
             icon: Crown,
             title: t('titleSubscription')
+        },
+        {
+            href: '/support',
+            label: t('support') || 'Hỗ trợ',
+            icon: Headphones,
+            title: t('titleSupport') || 'Chat với hỗ trợ'
         },
         {
             href: '/settings',

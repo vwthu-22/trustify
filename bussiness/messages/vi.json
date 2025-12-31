@@ -74,7 +74,20 @@
         "pageSubscription": "Gói đăng ký",
         "pageSettings": "Cài đặt tài khoản",
         "pageConnect": "Kết nối website",
-        "cancel": "Hủy"
+        "cancel": "Hủy",
+        "notifications": "Thông báo",
+        "markAllRead": "Đánh dấu đã đọc",
+        "adminMessage": "Tin nhắn từ Admin",
+        "adminMessagePreview": "Gói đăng ký của bạn đã được cập nhật...",
+        "newReview": "Đánh giá mới",
+        "newReviewPreview": "John Doe đã để lại đánh giá 5 sao",
+        "negativeReviewPreview": "Jane Smith đã để lại đánh giá 2 sao",
+        "systemUpdate": "Cập nhật hệ thống",
+        "systemUpdatePreview": "Các tính năng mới đã có sẵn",
+        "viewAllNotifications": "Xem tất cả thông báo",
+        "hoursAgo": "giờ trước",
+        "dayAgo": "ngày trước",
+        "daysAgo": "ngày trước"
     },
     "sidebar": {
         "dashboard": "Tổng quan",
@@ -113,7 +126,9 @@
         "labelTemplates": "Mẫu email",
         "upgradeToPro": "Nâng cấp lên PRO",
         "unlockFeatures": "Mở khóa phân tích & tính năng nâng cao",
-        "yourPlan": "Gói của bạn:"
+        "yourPlan": "Gói của bạn:",
+        "support": "Hỗ trợ",
+        "titleSupport": "Chat với hỗ trợ"
     },
     "dashboard": {
         "title": "Tổng quan",
@@ -657,5 +672,22 @@
         "lowResponseRate": "Tỷ lệ phản hồi thấp",
         "slowResponseTime": "Thời gian phản hồi chậm",
         "highSatisfaction": "Hài lòng khách hàng cao"
+    },
+    "support": {
+        "title": "Hỗ trợ khách hàng",
+        "subtitle": "Chat trực tiếp với đội ngũ hỗ trợ",
+        "connected": "Đã kết nối",
+        "connecting": "Đang kết nối...",
+        "disconnected": "Mất kết nối",
+        "error": "Lỗi kết nối",
+        "adminSupport": "Admin Support",
+        "online": "Trực tuyến",
+        "typeMessage": "Nhập tin nhắn...",
+        "responseTime": "Thời gian phản hồi trung bình: 5 phút",
+        "today": "Hôm nay",
+        "yesterday": "Hôm qua",
+        "startConversation": "Bắt đầu cuộc trò chuyện",
+        "sendMessageToStart": "Gửi tin nhắn để được hỗ trợ",
+        "reconnect": "Kết nối lại"
     }
 }

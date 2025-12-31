@@ -74,7 +74,20 @@
         "pageSubscription": "Subscription Plans",
         "pageSettings": "Account Settings",
         "pageConnect": "Connect Website",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "notifications": "Notifications",
+        "markAllRead": "Mark all as read",
+        "adminMessage": "Message from Admin",
+        "adminMessagePreview": "Your subscription has been updated...",
+        "newReview": "New Review",
+        "newReviewPreview": "John Doe left a 5-star review",
+        "negativeReviewPreview": "Jane Smith left a 2-star review",
+        "systemUpdate": "System Update",
+        "systemUpdatePreview": "New features are now available",
+        "viewAllNotifications": "View all notifications",
+        "hoursAgo": "hours ago",
+        "dayAgo": "day ago",
+        "daysAgo": "days ago"
     },
     "sidebar": {
         "dashboard": "Dashboard",
@@ -113,7 +126,9 @@
         "labelTemplates": "Email templates",
         "upgradeToPro": "Upgrade to PRO",
         "unlockFeatures": "Unlock analytics & advanced features",
-        "yourPlan": "Your plan:"
+        "yourPlan": "Your plan:",
+        "support": "Support",
+        "titleSupport": "Chat with Support"
     },
     "dashboard": {
         "title": "Dashboard",
@@ -657,5 +672,22 @@
         "lowResponseRate": "Low response rate",
         "slowResponseTime": "Slow response time",
         "highSatisfaction": "High customer satisfaction"
+    },
+    "support": {
+        "title": "Customer Support",
+        "subtitle": "Chat directly with our support team",
+        "connected": "Connected",
+        "connecting": "Connecting...",
+        "disconnected": "Disconnected",
+        "error": "Connection error",
+        "adminSupport": "Admin Support",
+        "online": "Online",
+        "typeMessage": "Type a message...",
+        "responseTime": "Average response time: 5 minutes",
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "startConversation": "Start a conversation",
+        "sendMessageToStart": "Send a message to get support",
+        "reconnect": "Reconnect"
     }
 }
