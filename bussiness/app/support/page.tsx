@@ -14,15 +14,14 @@ export default function SupportChatPage() {
     const {
         messages,
         isConnected,
-        connectionStatus,
         isTyping,
         isLoading,
         roomId,
         connect,
         disconnect,
         sendMessage,
-        markMessagesAsRead,
-        setRoomId
+        addMessage,
+        markMessagesAsRead
     } = useChatStore();
 
     const [newMessage, setNewMessage] = useState('');
@@ -40,17 +39,10 @@ export default function SupportChatPage() {
     // Connect to WebSocket when component mounts
     useEffect(() => {
         const token = getToken();
-
         if (token) {
-            // Connect with company ID - backend will create room if needed on first message
-            // The connect function will try to fetch existing room first
-            const chatRoomId = company?.id || 0;
-            connect(token, chatRoomId);
+            connect(token, company?.id || 0);
         }
-
-        return () => {
-            disconnect();
-        };
+        return () => disconnect();
     }, [company?.id]);
 
     // Auto scroll to bottom when new messages arrive
@@ -64,9 +56,23 @@ export default function SupportChatPage() {
     }, [messages.length]);
 
     const handleSendMessage = () => {
-        if (!newMessage.trim() || !isConnected) return;
+        if (!newMessage.trim()) return;
 
-        sendMessage(newMessage, false); // false = not admin
+        // Try to send via WebSocket, with local fallback
+        if (isConnected) {
+            sendMessage(newMessage, false); // false = not admin
+        } else {
+            // Add message locally if not connected
+            const newMsg = {
+                id: Date.now(),
+                roomId: Number(company?.id) || 0,
+                sender: company?.name || 'Business',
+                message: newMessage,
+                admin: false,
+                timestamp: new Date().toISOString()
+            };
+            addMessage(newMsg);
+        }
         setNewMessage('');
         inputRef.current?.focus();
     };
@@ -106,24 +112,6 @@ export default function SupportChatPage() {
         return messageDate.toLocaleDateString('vi-VN');
     };
 
-    const getConnectionStatusColor = () => {
-        switch (connectionStatus) {
-            case 'connected': return 'bg-green-500';
-            case 'connecting': return 'bg-yellow-400 animate-pulse';
-            case 'error': return 'bg-red-500';
-            default: return 'bg-gray-400';
-        }
-    };
-
-    const getConnectionStatusText = () => {
-        switch (connectionStatus) {
-            case 'connected': return t('connected');
-            case 'connecting': return t('connecting');
-            case 'error': return t('error');
-            default: return t('disconnected');
-        }
-    };
-
     return (
         <div className="h-[calc(100vh-8rem)]">
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full">
@@ -136,21 +124,12 @@ export default function SupportChatPage() {
                         <div>
                             <h3 className="font-semibold text-gray-900">{t('adminSupport')}</h3>
                             <div className="flex items-center gap-2">
-                                <span className={`w-2 h-2 rounded-full ${getConnectionStatusColor()}`}></span>
-                                <span className="text-xs text-gray-500">{getConnectionStatusText()}</span>
+                                <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                                <span className="text-xs text-gray-500">{isConnected ? t('connected') : t('disconnected')}</span>
                             </div>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        {connectionStatus === 'error' && (
-                            <button
-                                onClick={handleReconnect}
-                                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-lg transition"
-                                title={t('reconnect')}
-                            >
-                                <RefreshCw className="w-5 h-5" />
-                            </button>
-                        )}
                         <button className="p-2 hover:bg-gray-200 rounded-lg transition">
                             <MoreVertical className="w-5 h-5 text-gray-600" />
                         </button>
@@ -262,7 +241,7 @@ export default function SupportChatPage() {
                         />
                         <button
                             onClick={handleSendMessage}
-                            disabled={!newMessage.trim() || !isConnected}
+                            disabled={!newMessage.trim()}
                             className="p-2.5 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <Send className="w-5 h-5" />

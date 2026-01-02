@@ -13,7 +13,6 @@ export default function SupportPage() {
         tickets,
         selectedTicketId,
         isConnected,
-        connectionStatus,
         isTyping,
         typingCompanyId,
         isLoading,
@@ -23,7 +22,8 @@ export default function SupportPage() {
         selectTicket,
         sendMessage,
         closeTicket,
-        getSelectedTicket
+        getSelectedTicket,
+        addMessage
     } = useSupportChatStore();
 
     const [newMessage, setNewMessage] = useState('');
@@ -40,24 +40,17 @@ export default function SupportPage() {
         return '';
     };
 
-    // Initialize on mount
+    // Initialize WebSocket on mount
     useEffect(() => {
         const initializeChat = async () => {
             const token = getToken();
-
             if (token) {
-                // First fetch all chat rooms, then connect to WebSocket
                 await fetchTickets(token);
-                // Connect to WebSocket (will subscribe to rooms loaded by fetchTickets)
                 connect(token);
             }
         };
-
         initializeChat();
-
-        return () => {
-            disconnect();
-        };
+        return () => disconnect();
     }, []);
 
     // Auto-scroll to bottom when messages change
@@ -79,7 +72,21 @@ export default function SupportPage() {
     const handleSendMessage = () => {
         if (!newMessage.trim() || !selectedTicketId) return;
 
-        sendMessage(newMessage);
+        // Try to send via WebSocket, with local fallback
+        if (isConnected) {
+            sendMessage(newMessage, selectedTicketId);
+        } else {
+            // Add message locally if not connected
+            const newMsg: ChatMessage = {
+                id: Date.now(),
+                roomId: parseInt(selectedTicketId),
+                sender: 'Admin',
+                message: newMessage,
+                admin: true,
+                timestamp: new Date().toISOString()
+            };
+            addMessage(selectedTicketId, newMsg);
+        }
         setNewMessage('');
         inputRef.current?.focus();
     };
@@ -165,7 +172,7 @@ export default function SupportPage() {
                         <div className="flex items-center gap-2">
                             <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
                             <span className="text-xs text-gray-500">
-                                {connectionStatus === 'connected' ? t('live') : t('offline')}
+                                {isConnected ? t('live') : t('offline')}
                             </span>
                         </div>
                     </div>
