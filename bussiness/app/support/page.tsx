@@ -41,10 +41,10 @@ export default function SupportChatPage() {
     useEffect(() => {
         const token = getToken();
 
-        if (company?.id && token) {
-            // Use company ID as room ID (or get from API)
-            const chatRoomId = company.id;
-            setRoomId(chatRoomId);
+        if (token) {
+            // Connect with company ID - backend will create room if needed on first message
+            // The connect function will try to fetch existing room first
+            const chatRoomId = company?.id || 0;
             connect(token, chatRoomId);
         }
 

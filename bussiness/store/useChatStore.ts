@@ -47,7 +47,7 @@ interface ChatState {
     unreadNotifications: number;
 
     // Actions - Connection
-    connect: (token: string, roomId: string | number) => void;
+    connect: (token: string, roomId: string | number) => Promise<void>;
     disconnect: () => void;
 
     // Actions - Messages
@@ -118,7 +118,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     },
 
     // Connect to WebSocket server using STOMP
-    connect: (token: string, roomId: string | number) => {
+    connect: async (token: string, roomId: string | number) => {
         const { stompClient, connectionStatus } = get();
 
         // Prevent multiple connections
@@ -127,8 +127,34 @@ export const useChatStore = create<ChatState>((set, get) => ({
             return;
         }
 
-        set({ connectionStatus: 'connecting', roomId });
+        set({ connectionStatus: 'connecting' });
         console.log('Connecting to WebSocket...', WS_URL);
+
+        // First, try to get or create room for this company
+        let effectiveRoomId = roomId;
+        try {
+            // Try to get existing room for this company
+            const roomsResponse = await fetch(`${API_BASE_URL}/api/chat/my-room`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (roomsResponse.ok) {
+                const roomData = await roomsResponse.json();
+                if (roomData && roomData.id) {
+                    effectiveRoomId = roomData.id;
+                    console.log('Found existing room:', effectiveRoomId);
+                }
+            } else if (roomsResponse.status === 404) {
+                // No room exists yet, will be created when first message is sent
+                console.log('No existing room, will create on first message');
+            }
+        } catch (error) {
+            console.log('Could not fetch room, using provided roomId:', error);
+        }
+
+        set({ roomId: effectiveRoomId });
 
         const client = new Client({
             webSocketFactory: () => new SockJS(`${WS_URL}?token=${token}`),
@@ -150,19 +176,57 @@ export const useChatStore = create<ChatState>((set, get) => ({
                     stompClient: client
                 });
 
-                // Subscribe to room messages
-                client.subscribe(`/topic/rooms/${roomId}`, (message: IMessage) => {
-                    try {
-                        const data: ChatMessage = JSON.parse(message.body);
-                        console.log('📨 Received message:', data);
-                        get().addMessage(data);
-                    } catch (error) {
-                        console.error('Error parsing message:', error);
-                    }
-                });
+                const currentRoomId = get().roomId;
 
-                // Load message history after connecting
-                get().loadMessageHistory(roomId, token);
+                // Subscribe to room messages if we have a room
+                if (currentRoomId && currentRoomId !== 0) {
+                    console.log('Subscribing to room:', currentRoomId);
+                    client.subscribe(`/topic/rooms/${currentRoomId}`, (message: IMessage) => {
+                        try {
+                            const data: ChatMessage = JSON.parse(message.body);
+                            console.log('📨 Received message:', data);
+                            get().addMessage(data);
+                        } catch (error) {
+                            console.error('Error parsing message:', error);
+                        }
+                    });
+
+                    // Load message history after connecting
+                    get().loadMessageHistory(currentRoomId, token);
+                } else {
+                    // No room yet - subscribe to a temporary topic that will be resolved later
+                    // We'll need to re-subscribe when room is created
+                    console.log('No room yet, will subscribe after first message');
+
+                    // Subscribe to topic/rooms/0 as a catch-all for new room creation
+                    // The backend should broadcast to this when creating a new room
+                    client.subscribe(`/topic/rooms/0`, (message: IMessage) => {
+                        try {
+                            const data: ChatMessage = JSON.parse(message.body);
+                            console.log('📨 Received message from new room:', data);
+
+                            // Update roomId and subscribe to the actual room
+                            if (data.roomId && data.roomId !== 0) {
+                                set({ roomId: data.roomId });
+
+                                // Subscribe to the actual room topic
+                                client.subscribe(`/topic/rooms/${data.roomId}`, (msg: IMessage) => {
+                                    try {
+                                        const msgData: ChatMessage = JSON.parse(msg.body);
+                                        console.log('📨 Received message:', msgData);
+                                        get().addMessage(msgData);
+                                    } catch (err) {
+                                        console.error('Error parsing message:', err);
+                                    }
+                                });
+                            }
+
+                            get().addMessage(data);
+                        } catch (error) {
+                            console.error('Error parsing message:', error);
+                        }
+                    });
+                }
             },
 
             onStompError: (frame) => {
@@ -238,20 +302,24 @@ export const useChatStore = create<ChatState>((set, get) => ({
     sendMessage: (message: string, isAdmin: boolean = false) => {
         const { stompClient, isConnected, roomId } = get();
 
-        if (!stompClient?.active || !isConnected || !roomId) {
-            console.error('Cannot send message: Not connected or no room');
+        if (!stompClient?.active || !isConnected) {
+            console.error('Cannot send message: Not connected');
             return;
         }
 
+        // Use roomId if available, otherwise use 0 (backend will create new room)
+        const effectiveRoomId = roomId || 0;
+
         const payload = {
-            roomId: roomId,
+            roomId: effectiveRoomId,
             message: message,
             admin: isAdmin
         };
 
         // Send to STOMP destination
+        // Note: Backend will create room if roomId is 0 or doesn't exist
         stompClient.publish({
-            destination: `/app/business/${roomId}`,
+            destination: `/app/business/${effectiveRoomId}`,
             body: JSON.stringify(payload)
         });
 
@@ -265,9 +333,15 @@ export const useChatStore = create<ChatState>((set, get) => ({
             const exists = state.messages.some(m => m.id === message.id);
             if (exists) return state;
 
+            // Update roomId if this is from a new room (first message scenario)
+            const newRoomId = (!state.roomId || state.roomId === 0) && message.roomId
+                ? message.roomId
+                : state.roomId;
+
             return {
                 messages: [...state.messages, message],
-                unreadCount: message.admin ? state.unreadCount + 1 : state.unreadCount
+                unreadCount: message.admin ? state.unreadCount + 1 : state.unreadCount,
+                roomId: newRoomId
             };
         });
     },

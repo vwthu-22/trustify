@@ -42,14 +42,18 @@ export default function SupportPage() {
 
     // Initialize on mount
     useEffect(() => {
-        const token = getToken();
+        const initializeChat = async () => {
+            const token = getToken();
 
-        if (token) {
-            // Connect to WebSocket
-            connect(token);
-            // Fetch all chat rooms
-            fetchTickets(token);
-        }
+            if (token) {
+                // First fetch all chat rooms, then connect to WebSocket
+                await fetchTickets(token);
+                // Connect to WebSocket (will subscribe to rooms loaded by fetchTickets)
+                connect(token);
+            }
+        };
+
+        initializeChat();
 
         return () => {
             disconnect();

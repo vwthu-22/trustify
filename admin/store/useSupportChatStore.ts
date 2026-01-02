@@ -114,10 +114,10 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                     stompClient: client
                 });
 
-                // Subscribe to all rooms for admin
-                // Admin will subscribe to each room dynamically when tickets are loaded
+                // Subscribe to all existing rooms for admin
                 const { tickets } = get();
                 tickets.forEach(ticket => {
+                    console.log('Admin subscribing to room:', ticket.id);
                     client.subscribe(`/topic/rooms/${ticket.id}`, (message: IMessage) => {
                         try {
                             const data: ChatMessage = JSON.parse(message.body);
@@ -127,6 +127,53 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                             console.error('Error parsing message:', error);
                         }
                     });
+                });
+
+                // Also subscribe to topic/rooms/0 for new room creation notifications
+                client.subscribe(`/topic/rooms/0`, (message: IMessage) => {
+                    try {
+                        const data: ChatMessage = JSON.parse(message.body);
+                        console.log('📨 Admin received message from new room:', data);
+
+                        // Check if we already have this room
+                        const existingTicket = get().tickets.find(t => t.id === data.roomId.toString());
+                        if (!existingTicket && data.roomId) {
+                            // New room created - subscribe to it and reload tickets
+                            client.subscribe(`/topic/rooms/${data.roomId}`, (msg: IMessage) => {
+                                try {
+                                    const msgData: ChatMessage = JSON.parse(msg.body);
+                                    console.log('📨 Admin received message:', msgData);
+                                    get().addMessage(data.roomId.toString(), msgData);
+                                } catch (err) {
+                                    console.error('Error parsing message:', err);
+                                }
+                            });
+
+                            // Add as new ticket
+                            const newTicket: SupportTicket = {
+                                id: data.roomId.toString(),
+                                companyId: data.sender || 'unknown',
+                                companyName: data.sender || 'New Company',
+                                subject: 'Support Request',
+                                status: 'open',
+                                priority: 'medium',
+                                lastMessage: data.message,
+                                lastMessageTime: new Date(data.timestamp),
+                                unreadCount: 1,
+                                messages: [data],
+                                createdAt: new Date()
+                            };
+
+                            set(state => ({
+                                tickets: [newTicket, ...state.tickets]
+                            }));
+                        } else if (existingTicket) {
+                            // Room exists, add message
+                            get().addMessage(data.roomId.toString(), data);
+                        }
+                    } catch (error) {
+                        console.error('Error parsing message:', error);
+                    }
                 });
             },
 
