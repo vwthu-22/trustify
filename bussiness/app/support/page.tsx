@@ -262,7 +262,7 @@ export default function SupportChatPage() {
                         />
                         <button
                             onClick={handleSendMessage}
-                            disabled={!newMessage.trim()}
+                            disabled={!newMessage.trim() || !isConnected}
                             className="p-2.5 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <Send className="w-5 h-5" />
