@@ -339,13 +339,32 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
         }));
     },
 
-    // Close ticket
+    // Close ticket and notify business via WebSocket
     closeTicket: (ticketId: string) => {
+        const { stompClient, isConnected } = get();
+
+        // Update local state
         set(state => ({
             tickets: state.tickets.map(t =>
                 t.id === ticketId ? { ...t, status: 'closed' as const } : t
             )
         }));
+
+        // Send system message to notify business
+        if (stompClient?.active && isConnected) {
+            const payload = {
+                roomId: parseInt(ticketId),
+                message: '🔒 Yêu cầu hỗ trợ đã được đóng. Nếu bạn cần hỗ trợ thêm, vui lòng gửi tin nhắn mới.',
+                admin: true
+            };
+
+            stompClient.publish({
+                destination: `/app/business/${ticketId}`,
+                body: JSON.stringify(payload)
+            });
+
+            console.log('📤 Sent ticket closed notification:', payload);
+        }
     },
 
     // Send message via STOMP
