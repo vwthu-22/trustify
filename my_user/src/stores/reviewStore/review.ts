@@ -544,7 +544,7 @@ const useReviewStore = create<ReviewState>()(
                             description: review.description,
                             rating: review.rating,
                             contendReport: reason,
-                            status: 'REPORTED',
+                            status: 'PENDING',
                             // Include required fields that were missing
                             reply: review.reply || null,
                             email: review.userEmail || review.email || '',

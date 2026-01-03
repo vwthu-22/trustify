@@ -80,11 +80,11 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
 
                 // Transform to Report format
                 const reports: Report[] = reviewList
-                    // .filter(r => {
-                    //     const hasReport = !!r.contendReport;
-                    //     if (!hasReport) console.log('Skipping review without report:', r.id);
-                    //     return hasReport;
-                    // }) // Only show reviews with reports
+                    .filter(r => {
+                        const hasReport = !!r.contendReport;
+                        if (!hasReport) console.log('Skipping review without report:', r.id);
+                        return hasReport;
+                    }) // Only show reviews with reports
                     .map(r => ({
                         id: r.id,
                         reviewId: r.id,
