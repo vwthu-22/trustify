@@ -136,8 +136,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
         try {
             // Try to get existing room for this company
             const roomsResponse = await fetch(`${API_BASE_URL}/api/chat/my-room`, {
+                credentials: 'include',
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'ngrok-skip-browser-warning': 'true'
                 }
             });
 
@@ -284,8 +285,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
         try {
             const response = await fetch(`${API_BASE_URL}/api/chat/rooms/${roomId}/messages`, {
+                credentials: 'include',
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'ngrok-skip-browser-warning': 'true'
                 }
             });
 
@@ -347,9 +349,10 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
             const response = await fetch(`${API_BASE_URL}/api/chat/send`, {
                 method: 'POST',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'ngrok-skip-browser-warning': 'true'
                 },
                 body: JSON.stringify(payload)
             });

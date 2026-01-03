@@ -29,27 +29,16 @@ export default function SupportChatPage() {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
-    // Get token from localStorage
-    const getToken = () => {
-        if (typeof window !== 'undefined') {
-            return localStorage.getItem('company_token') || '';
-        }
-        return '';
-    };
-
     // Connect to WebSocket and load message history when component mounts
     useEffect(() => {
         const initChat = async () => {
-            const token = getToken();
-            if (token) {
-                // Start WebSocket connection
-                await connect(token, company?.id || 0);
+            // Start WebSocket connection (credentials are sent via HttpOnly cookie)
+            await connect('', company?.id || 0);
 
-                // Load message history via REST API (works even if WebSocket fails)
-                const { roomId, loadMessageHistory } = useChatStore.getState();
-                if (roomId && roomId !== 0) {
-                    loadMessageHistory(roomId, token);
-                }
+            // Load message history via REST API (works even if WebSocket fails)
+            const { roomId, loadMessageHistory } = useChatStore.getState();
+            if (roomId && roomId !== 0) {
+                loadMessageHistory(roomId, '');
             }
         };
 
@@ -70,35 +59,21 @@ export default function SupportChatPage() {
     const handleSendMessage = async () => {
         if (!newMessage.trim()) return;
 
-        const token = getToken();
         const messageToSend = newMessage;
         setNewMessage(''); // Clear input immediately for better UX
         inputRef.current?.focus();
 
         console.log('📤 Attempting to send message:', messageToSend);
         console.log('   isConnected:', isConnected);
-        console.log('   token:', token ? 'exists' : 'missing');
 
         // Try to send via WebSocket first
         if (isConnected) {
             console.log('   → Sending via WebSocket');
             sendMessage(messageToSend, false); // false = not admin
-        } else if (token) {
-            // Fallback: send via REST API (will save to database)
-            console.log('   → Sending via REST API');
-            await sendMessageViaRest(messageToSend, token, false);
         } else {
-            // Last resort: add message locally only
-            console.log('   → Adding locally only (no token)');
-            const newMsg = {
-                id: Date.now(),
-                roomId: Number(company?.id) || 0,
-                sender: company?.name || 'Business',
-                message: messageToSend,
-                admin: false,
-                timestamp: new Date().toISOString()
-            };
-            addMessage(newMsg);
+            // Fallback: send via REST API (credentials sent via HttpOnly cookie)
+            console.log('   → Sending via REST API');
+            await sendMessageViaRest(messageToSend, '', false);
         }
     };
 
@@ -110,9 +85,8 @@ export default function SupportChatPage() {
     };
 
     const handleReconnect = () => {
-        const token = getToken();
-        if (company?.id && token) {
-            connect(token, company.id);
+        if (company?.id) {
+            connect('', company.id);
         }
     };
 
