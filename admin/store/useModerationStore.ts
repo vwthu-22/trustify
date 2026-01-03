@@ -124,8 +124,12 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
                 },
                 body: JSON.stringify({
                     ...report.originalReview,
-                    contendReport: '', // Send empty string because backend ignores null
-                    status: 'approved' // Set to approved to remove from reported list
+                    // Fix potential date format issue
+                    expDate: Array.isArray((report.originalReview as any).expDate)
+                        ? new Date().toISOString()
+                        : (report.originalReview as any).expDate || new Date().toISOString(),
+                    contendReport: '',
+                    status: 'approved'
                 })
             });
 
@@ -153,6 +157,10 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
                 },
                 body: JSON.stringify({
                     ...report.originalReview,
+                    // Fix potential date format issue
+                    expDate: Array.isArray((report.originalReview as any).expDate)
+                        ? new Date().toISOString()
+                        : (report.originalReview as any).expDate || new Date().toISOString(),
                     contendReport: '',
                     status: 'rejected'
                 })
