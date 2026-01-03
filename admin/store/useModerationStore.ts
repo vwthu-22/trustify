@@ -70,6 +70,8 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
                     reviewList = data;
                 } else if (data.content && Array.isArray(data.content)) {
                     reviewList = data.content;
+                } else if (data.reviews && Array.isArray(data.reviews)) {
+                    reviewList = data.reviews;
                 } else if (data.reports && Array.isArray(data.reports)) {
                     reviewList = data.reports;
                 } else {
