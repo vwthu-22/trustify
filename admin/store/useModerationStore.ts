@@ -53,7 +53,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
     fetchReports: async () => {
         set({ isLoading: true, error: null });
         try {
-            const response = await fetch(`${API_BASE_URL}/api/review/allReports`, {
+            const response = await fetch(`${API_BASE_URL}/api/review/allReports?page=0&size=100`, {
                 credentials: 'include',
                 headers: {
                     'ngrok-skip-browser-warning': 'true'
@@ -64,8 +64,18 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
                 const data = await response.json();
                 console.log('Admin Moderation - Raw API Data:', data);
 
-                // Handle different response formats
-                const reviewList: ReviewReport[] = Array.isArray(data) ? data : data.content || data.reports || [];
+                // Handle different response formats (Array, Page, Map)
+                let reviewList: ReviewReport[] = [];
+                if (Array.isArray(data)) {
+                    reviewList = data;
+                } else if (data.content && Array.isArray(data.content)) {
+                    reviewList = data.content;
+                } else if (data.reports && Array.isArray(data.reports)) {
+                    reviewList = data.reports;
+                } else {
+                    // Try to treat as Map or unknown object
+                    reviewList = Object.values(data).filter(item => typeof item === 'object' && item !== null) as ReviewReport[];
+                }
                 console.log('Admin Moderation - Parsed List:', reviewList);
 
                 // Transform to Report format
