@@ -28,7 +28,8 @@ export default function CompanyReviewPage() {
         fetchReviewsByCompany,
         fetchAllReviewsByCompany,
         currentPage,
-        totalPages
+        totalPages,
+        reportReview
     } = useReviewStore();
     const { user } = useAuthStore();
 
@@ -70,63 +71,26 @@ export default function CompanyReviewPage() {
     const [isReportModalOpen, setIsReportModalOpen] = useState(false);
     const [reportingReview, setReportingReview] = useState<any | null>(null);
     const [reportReason, setReportReason] = useState('');
-    const [reportDescription, setReportDescription] = useState('');
     const [isSubmittingReport, setIsSubmittingReport] = useState(false);
     const [reportSuccess, setReportSuccess] = useState(false);
 
-    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://trustify.io.vn';
-
-    const reportReasons = [
-        'Spam / Quảng cáo',
-        'Ngôn từ thù địch / Xúc phạm',
-        'Thông tin sai sự thật',
-        'Đánh giá giả mạo',
-        'Nội dung không phù hợp',
-        'Khác'
-    ];
-
     // Handle report review
     const handleReportReview = async () => {
-        if (!reportingReview || !reportReason) return;
+        if (!reportingReview || !reportReason.trim()) return;
 
         setIsSubmittingReport(true);
         try {
-            // Build contendReport string with reason and description
-            const contendReport = reportDescription
-                ? `${reportReason}: ${reportDescription}`
-                : reportReason;
+            const success = await reportReview(reportingReview, reportReason.trim());
 
-            const response = await fetch(`${API_BASE_URL}/api/review/${reportingReview.id}`, {
-                method: 'PUT',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'ngrok-skip-browser-warning': 'true'
-                },
-                body: JSON.stringify({
-                    id: reportingReview.id,
-                    title: reportingReview.title,
-                    description: reportingReview.description,
-                    rating: reportingReview.rating,
-                    contendReport: contendReport,
-                    status: 'REPORTED'
-                })
-            });
-
-            if (response.ok) {
+            if (success) {
                 setReportSuccess(true);
                 setTimeout(() => {
                     setIsReportModalOpen(false);
                     setReportingReview(null);
                     setReportReason('');
-                    setReportDescription('');
                     setReportSuccess(false);
                 }, 2000);
-            } else {
-                console.error('Failed to submit report');
             }
-        } catch (error) {
-            console.error('Error submitting report:', error);
         } finally {
             setIsSubmittingReport(false);
         }
@@ -804,7 +768,6 @@ export default function CompanyReviewPage() {
                                 setIsReportModalOpen(false);
                                 setReportingReview(null);
                                 setReportReason('');
-                                setReportDescription('');
                             }}
                             className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
                         >
@@ -834,33 +797,12 @@ export default function CompanyReviewPage() {
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         Lý do báo cáo <span className="text-red-500">*</span>
                                     </label>
-                                    <div className="space-y-2">
-                                        {reportReasons.map((reason) => (
-                                            <label key={reason} className="flex items-center gap-2 cursor-pointer">
-                                                <input
-                                                    type="radio"
-                                                    name="reportReason"
-                                                    value={reason}
-                                                    checked={reportReason === reason}
-                                                    onChange={(e) => setReportReason(e.target.value)}
-                                                    className="w-4 h-4 text-blue-600"
-                                                />
-                                                <span className="text-sm text-gray-700">{reason}</span>
-                                            </label>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Mô tả thêm (không bắt buộc)
-                                    </label>
                                     <textarea
-                                        value={reportDescription}
-                                        onChange={(e) => setReportDescription(e.target.value)}
-                                        placeholder="Mô tả chi tiết về vấn đề..."
+                                        value={reportReason}
+                                        onChange={(e) => setReportReason(e.target.value)}
+                                        placeholder="Mô tả lý do bạn muốn báo cáo đánh giá này..."
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        rows={3}
+                                        rows={4}
                                     />
                                 </div>
 
@@ -870,7 +812,6 @@ export default function CompanyReviewPage() {
                                             setIsReportModalOpen(false);
                                             setReportingReview(null);
                                             setReportReason('');
-                                            setReportDescription('');
                                         }}
                                         className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm font-medium"
                                     >
@@ -878,7 +819,7 @@ export default function CompanyReviewPage() {
                                     </button>
                                     <button
                                         onClick={handleReportReview}
-                                        disabled={!reportReason || isSubmittingReport}
+                                        disabled={!reportReason.trim() || isSubmittingReport}
                                         className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         {isSubmittingReport ? 'Đang gửi...' : 'Gửi báo cáo'}

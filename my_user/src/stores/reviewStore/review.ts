@@ -82,6 +82,7 @@ interface ReviewState {
     fetchMyReviews: (page?: number, size?: number) => Promise<void>;
     fetchReviewsByEmail: (email: string, page?: number, size?: number) => Promise<void>; // for my_review page
     fetchCompanyRatings: (companyIds: string[]) => Promise<void>; // for category page
+    reportReview: (review: Review, reason: string) => Promise<boolean>;
     clearError: () => void;
     clearSuccess: () => void;
 }
@@ -518,6 +519,56 @@ const useReviewStore = create<ReviewState>()(
                 } catch (error) {
                     console.error('Failed to fetch recent reviews:', error);
                     set({ highRatedReviews: [] });
+                }
+            },
+
+            // Report a review
+            reportReview: async (review: Review, reason: string) => {
+                set({ isLoading: true, error: null, successMessage: null });
+
+                try {
+                    const url = `${API_BASE_URL}/api/review/${review.id}`;
+                    console.log('Reporting review at:', url);
+
+                    const response = await fetch(url, {
+                        method: 'PUT',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'ngrok-skip-browser-warning': 'true',
+                            'bypass-tunnel-reminder': 'true',
+                        },
+                        body: JSON.stringify({
+                            id: review.id,
+                            title: review.title,
+                            description: review.description,
+                            rating: review.rating,
+                            contendReport: reason,
+                            status: 'REPORTED',
+                            // Include required fields that were missing
+                            reply: review.reply || null,
+                            email: review.userEmail || review.email || '',
+                            companyName: review.companyName || '',
+                            expDate: review.expDate || new Date().toISOString()
+                        }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to report review');
+                    }
+
+                    set({
+                        isLoading: false,
+                        successMessage: 'Review reported successfully!'
+                    });
+                    return true;
+                } catch (error) {
+                    console.error('Report review error:', error);
+                    set({
+                        error: 'Failed to submit report',
+                        isLoading: false,
+                    });
+                    return false;
                 }
             },
 
