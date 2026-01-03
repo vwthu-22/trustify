@@ -153,8 +153,8 @@ export default function CompanyReviewPage() {
     // Step 2: Search by keyword
     const searchedReviewsUnsorted = searchKeyword
         ? filteredReviews.filter(review =>
-            review.title.toLowerCase().includes(searchKeyword.toLowerCase()) ||
-            review.description.toLowerCase().includes(searchKeyword.toLowerCase())
+            (review.title && review.title.toLowerCase().includes(searchKeyword.toLowerCase())) ||
+            (review.description && review.description.toLowerCase().includes(searchKeyword.toLowerCase()))
         )
         : filteredReviews;
 
