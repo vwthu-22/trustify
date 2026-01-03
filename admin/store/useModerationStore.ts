@@ -123,8 +123,13 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
                     'ngrok-skip-browser-warning': 'true'
                 },
                 body: JSON.stringify({
-                    ...report.originalReview,
-                    // Fix potential date format issue
+                    id: (report.originalReview as any).id,
+                    title: (report.originalReview as any).title,
+                    description: (report.originalReview as any).description,
+                    rating: (report.originalReview as any).rating,
+                    reply: (report.originalReview as any).reply || null,
+                    email: (report.originalReview as any).email || (report.originalReview as any).user?.email || '',
+                    companyName: (report.originalReview as any).companyName || (report.originalReview as any).company?.name || '',
                     expDate: Array.isArray((report.originalReview as any).expDate)
                         ? new Date().toISOString()
                         : (report.originalReview as any).expDate || new Date().toISOString(),
@@ -156,8 +161,13 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
                     'ngrok-skip-browser-warning': 'true'
                 },
                 body: JSON.stringify({
-                    ...report.originalReview,
-                    // Fix potential date format issue
+                    id: (report.originalReview as any).id,
+                    title: (report.originalReview as any).title,
+                    description: (report.originalReview as any).description,
+                    rating: (report.originalReview as any).rating,
+                    reply: (report.originalReview as any).reply || null,
+                    email: (report.originalReview as any).email || (report.originalReview as any).user?.email || '',
+                    companyName: (report.originalReview as any).companyName || (report.originalReview as any).company?.name || '',
                     expDate: Array.isArray((report.originalReview as any).expDate)
                         ? new Date().toISOString()
                         : (report.originalReview as any).expDate || new Date().toISOString(),
