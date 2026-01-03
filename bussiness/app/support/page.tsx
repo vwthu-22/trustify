@@ -75,14 +75,21 @@ export default function SupportChatPage() {
         setNewMessage(''); // Clear input immediately for better UX
         inputRef.current?.focus();
 
+        console.log('📤 Attempting to send message:', messageToSend);
+        console.log('   isConnected:', isConnected);
+        console.log('   token:', token ? 'exists' : 'missing');
+
         // Try to send via WebSocket first
         if (isConnected) {
+            console.log('   → Sending via WebSocket');
             sendMessage(messageToSend, false); // false = not admin
         } else if (token) {
             // Fallback: send via REST API (will save to database)
+            console.log('   → Sending via REST API');
             await sendMessageViaRest(messageToSend, token, false);
         } else {
             // Last resort: add message locally only
+            console.log('   → Adding locally only (no token)');
             const newMsg = {
                 id: Date.now(),
                 roomId: Number(company?.id) || 0,

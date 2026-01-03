@@ -342,6 +342,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
         };
 
         try {
+            console.log('📤 REST API call to:', `${API_BASE_URL}/api/chat/send`);
+            console.log('   Payload:', payload);
+
             const response = await fetch(`${API_BASE_URL}/api/chat/send`, {
                 method: 'POST',
                 headers: {
