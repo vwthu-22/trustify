@@ -141,15 +141,21 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
         }
     },
 
-    // Delete review
+    // Delete review -> Mark as REJECTED
     deleteReview: async (report: Report) => {
         try {
             const response = await fetch(`${API_BASE_URL}/api/review/${report.reviewId}`, {
-                method: 'DELETE',
+                method: 'PUT',
                 credentials: 'include',
                 headers: {
+                    'Content-Type': 'application/json',
                     'ngrok-skip-browser-warning': 'true'
-                }
+                },
+                body: JSON.stringify({
+                    ...report.originalReview,
+                    contendReport: '',
+                    status: 'rejected'
+                })
             });
 
             if (response.ok) {
@@ -158,9 +164,13 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
                         r.id === report.id ? { ...r, status: 'RESOLVED' as const } : r
                     )
                 }));
+            } else {
+                set({ error: 'Failed to delete review' });
             }
         } catch (err) {
             console.error('Error deleting review:', err);
+            set({ error: 'Error deleting review' });
         }
     }
 }));
+
