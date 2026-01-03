@@ -124,8 +124,8 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
                 },
                 body: JSON.stringify({
                     ...report.originalReview,
-                    contendReport: null, // Clear the report
-                    status: 'DISMISSED'
+                    contendReport: '', // Send empty string because backend ignores null
+                    status: 'approved' // Set to approved to remove from reported list
                 })
             });
 
