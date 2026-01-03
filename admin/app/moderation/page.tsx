@@ -117,7 +117,7 @@ export default function ModerationPage() {
                         )}
                     </div>
 
-                    {/* Resolved Reports */}
+                    {/* Resolved Reports - Hidden temporarily as requested
                     <div className="space-y-4">
                         <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                             <CheckCircle className="w-5 h-5 text-green-500" />
@@ -158,6 +158,7 @@ export default function ModerationPage() {
                             ))
                         )}
                     </div>
+                    */}
                 </div>
             )}
         </div>
