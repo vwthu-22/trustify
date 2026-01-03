@@ -62,12 +62,19 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
 
             if (response.ok) {
                 const data = await response.json();
+                console.log('Admin Moderation - Raw API Data:', data);
+
                 // Handle different response formats
                 const reviewList: ReviewReport[] = Array.isArray(data) ? data : data.content || data.reports || [];
+                console.log('Admin Moderation - Parsed List:', reviewList);
 
                 // Transform to Report format
                 const reports: Report[] = reviewList
-                    .filter(r => r.contendReport) // Only show reviews with reports
+                    .filter(r => {
+                        const hasReport = !!r.contendReport;
+                        if (!hasReport) console.log('Skipping review without report:', r.id);
+                        return hasReport;
+                    }) // Only show reviews with reports
                     .map(r => ({
                         id: r.id,
                         reviewId: r.id,
