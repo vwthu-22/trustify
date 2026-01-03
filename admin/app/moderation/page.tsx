@@ -57,7 +57,7 @@ export default function ModerationPage() {
                     <button onClick={fetchReports} className="ml-2 underline">Thử lại</button>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="max-w-5xl mx-auto">
                     {/* Pending Reports */}
                     <div className="space-y-4">
                         <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
