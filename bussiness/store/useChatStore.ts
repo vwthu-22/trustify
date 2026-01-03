@@ -52,6 +52,7 @@ interface ChatState {
 
     // Actions - Messages
     sendMessage: (message: string, isAdmin?: boolean) => void;
+    sendMessageViaRest: (message: string, token: string, isAdmin?: boolean) => Promise<void>;
     loadMessageHistory: (roomId: string | number, token: string) => Promise<void>;
     addMessage: (message: ChatMessage) => void;
     markMessagesAsRead: () => void;
@@ -324,6 +325,46 @@ export const useChatStore = create<ChatState>((set, get) => ({
         });
 
         console.log('📤 Sent message:', payload);
+    },
+
+    // Send message via REST API (fallback when WebSocket not connected)
+    sendMessageViaRest: async (message: string, token: string, isAdmin: boolean = false) => {
+        const { roomId } = get();
+        const effectiveRoomId = roomId || 0;
+
+        const payload = {
+            roomId: effectiveRoomId,
+            message: message,
+            admin: isAdmin
+        };
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/chat/send`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                const savedMessage: ChatMessage = await response.json();
+                console.log('📤 Sent message via REST:', savedMessage);
+
+                // Add to local state
+                get().addMessage(savedMessage);
+
+                // Update roomId if new room was created
+                if (savedMessage.roomId && (!roomId || roomId === 0)) {
+                    set({ roomId: savedMessage.roomId });
+                }
+            } else {
+                console.error('Failed to send message via REST:', response.status);
+            }
+        } catch (error) {
+            console.error('Error sending message via REST:', error);
+        }
     },
 
     // Add a message to the list

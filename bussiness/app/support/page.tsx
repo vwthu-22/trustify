@@ -20,6 +20,7 @@ export default function SupportChatPage() {
         connect,
         disconnect,
         sendMessage,
+        sendMessageViaRest,
         addMessage,
         markMessagesAsRead
     } = useChatStore();
@@ -55,26 +56,32 @@ export default function SupportChatPage() {
         markMessagesAsRead();
     }, [messages.length]);
 
-    const handleSendMessage = () => {
+    const handleSendMessage = async () => {
         if (!newMessage.trim()) return;
 
-        // Try to send via WebSocket, with local fallback
+        const token = getToken();
+        const messageToSend = newMessage;
+        setNewMessage(''); // Clear input immediately for better UX
+        inputRef.current?.focus();
+
+        // Try to send via WebSocket first
         if (isConnected) {
-            sendMessage(newMessage, false); // false = not admin
+            sendMessage(messageToSend, false); // false = not admin
+        } else if (token) {
+            // Fallback: send via REST API (will save to database)
+            await sendMessageViaRest(messageToSend, token, false);
         } else {
-            // Add message locally if not connected
+            // Last resort: add message locally only
             const newMsg = {
                 id: Date.now(),
                 roomId: Number(company?.id) || 0,
                 sender: company?.name || 'Business',
-                message: newMessage,
+                message: messageToSend,
                 admin: false,
                 timestamp: new Date().toISOString()
             };
             addMessage(newMsg);
         }
-        setNewMessage('');
-        inputRef.current?.focus();
     };
 
     const handleKeyPress = (e: React.KeyboardEvent) => {
