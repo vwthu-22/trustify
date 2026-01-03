@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { CheckCircle, ExternalLink, Star, MessageCircle, Info, MapPin, Phone, Mail, Globe, ChevronLeft, ChevronRight, Filter, ChevronDown, Search, Pencil, Trash2 } from 'lucide-react';
+import { CheckCircle, ExternalLink, Star, MessageCircle, Info, MapPin, Phone, Mail, Globe, ChevronLeft, ChevronRight, Filter, ChevronDown, Search, Pencil, Trash2, Flag, X } from 'lucide-react';
 import Link from 'next/link';
 import WriteReviewModal from '../../cmt/page';
 import ThankYouModal from '../../thankyou/page';
@@ -65,6 +65,69 @@ export default function CompanyReviewPage() {
         companyName?: string;
         userEmail?: string;
     } | null>(null);
+
+    // Report modal state
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+    const [reportingReview, setReportingReview] = useState<any | null>(null);
+    const [reportReason, setReportReason] = useState('');
+    const [reportDescription, setReportDescription] = useState('');
+    const [isSubmittingReport, setIsSubmittingReport] = useState(false);
+    const [reportSuccess, setReportSuccess] = useState(false);
+
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://trustify.io.vn';
+
+    const reportReasons = [
+        'Spam / Quảng cáo',
+        'Ngôn từ thù địch / Xúc phạm',
+        'Thông tin sai sự thật',
+        'Đánh giá giả mạo',
+        'Nội dung không phù hợp',
+        'Khác'
+    ];
+
+    // Handle report review
+    const handleReportReview = async () => {
+        if (!reportingReview || !reportReason) return;
+
+        setIsSubmittingReport(true);
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/review/report`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true'
+                },
+                body: JSON.stringify({
+                    reviewId: reportingReview.id,
+                    reason: reportReason,
+                    description: reportDescription
+                })
+            });
+
+            if (response.ok) {
+                setReportSuccess(true);
+                setTimeout(() => {
+                    setIsReportModalOpen(false);
+                    setReportingReview(null);
+                    setReportReason('');
+                    setReportDescription('');
+                    setReportSuccess(false);
+                }, 2000);
+            } else {
+                console.error('Failed to submit report');
+            }
+        } catch (error) {
+            console.error('Error submitting report:', error);
+        } finally {
+            setIsSubmittingReport(false);
+        }
+    };
+
+    const openReportModal = (review: any) => {
+        setReportingReview(review);
+        setIsReportModalOpen(true);
+    };
 
     // Check if review belongs to current user
     const isOwnReview = (review: any) => {
@@ -632,10 +695,10 @@ export default function CompanyReviewPage() {
                                                         </div>
                                                     </div>
                                                 )}
-
-                                                {/* Edit Button - Only show for own reviews */}
-                                                {isOwnReview(review) && (
-                                                    <div className="flex items-center gap-2 pt-2 sm:pt-3 mt-2 sm:mt-3 border-t border-gray-200">
+                                                {/* Action Buttons */}
+                                                <div className="flex items-center gap-3 pt-2 sm:pt-3 mt-2 sm:mt-3 border-t border-gray-200">
+                                                    {/* Edit Button - Only show for own reviews */}
+                                                    {isOwnReview(review) && (
                                                         <button
                                                             onClick={() => handleEditReview(review)}
                                                             className="flex items-center gap-1 text-gray-600 hover:text-blue-700 text-xs font-medium transition"
@@ -643,8 +706,19 @@ export default function CompanyReviewPage() {
                                                             <Pencil className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                                                             {tReview('editReview')}
                                                         </button>
-                                                    </div>
-                                                )}
+                                                    )}
+
+                                                    {/* Report Button - Show for other users' reviews */}
+                                                    {!isOwnReview(review) && user && (
+                                                        <button
+                                                            onClick={() => openReportModal(review)}
+                                                            className="flex items-center gap-1 text-gray-500 hover:text-red-600 text-xs font-medium transition"
+                                                        >
+                                                            <Flag className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                                                            Báo cáo
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </div>
                                         );
                                     })
@@ -712,6 +786,101 @@ export default function CompanyReviewPage() {
                 onUpdateSuccess={handleUpdateSuccess}
                 review={editingReview}
             />
+
+            {/* Report Review Modal */}
+            {isReportModalOpen && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-xl max-w-md w-full p-6 relative">
+                        <button
+                            onClick={() => {
+                                setIsReportModalOpen(false);
+                                setReportingReview(null);
+                                setReportReason('');
+                                setReportDescription('');
+                            }}
+                            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+
+                        <div className="flex items-center gap-2 mb-4">
+                            <Flag className="w-5 h-5 text-red-500" />
+                            <h3 className="text-lg font-bold text-gray-900">Báo cáo đánh giá</h3>
+                        </div>
+
+                        {reportSuccess ? (
+                            <div className="text-center py-8">
+                                <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
+                                <p className="text-gray-700 font-medium">Báo cáo đã được gửi thành công!</p>
+                                <p className="text-gray-500 text-sm mt-1">Chúng tôi sẽ xem xét và xử lý báo cáo của bạn.</p>
+                            </div>
+                        ) : (
+                            <>
+                                {reportingReview && (
+                                    <div className="bg-gray-50 p-3 rounded-lg mb-4 text-sm text-gray-700 italic">
+                                        "{reportingReview.title}" - {reportingReview.description?.substring(0, 100)}...
+                                    </div>
+                                )}
+
+                                <div className="mb-4">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Lý do báo cáo <span className="text-red-500">*</span>
+                                    </label>
+                                    <div className="space-y-2">
+                                        {reportReasons.map((reason) => (
+                                            <label key={reason} className="flex items-center gap-2 cursor-pointer">
+                                                <input
+                                                    type="radio"
+                                                    name="reportReason"
+                                                    value={reason}
+                                                    checked={reportReason === reason}
+                                                    onChange={(e) => setReportReason(e.target.value)}
+                                                    className="w-4 h-4 text-blue-600"
+                                                />
+                                                <span className="text-sm text-gray-700">{reason}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="mb-4">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Mô tả thêm (không bắt buộc)
+                                    </label>
+                                    <textarea
+                                        value={reportDescription}
+                                        onChange={(e) => setReportDescription(e.target.value)}
+                                        placeholder="Mô tả chi tiết về vấn đề..."
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        rows={3}
+                                    />
+                                </div>
+
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={() => {
+                                            setIsReportModalOpen(false);
+                                            setReportingReview(null);
+                                            setReportReason('');
+                                            setReportDescription('');
+                                        }}
+                                        className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm font-medium"
+                                    >
+                                        Hủy
+                                    </button>
+                                    <button
+                                        onClick={handleReportReview}
+                                        disabled={!reportReason || isSubmittingReport}
+                                        className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {isSubmittingReport ? 'Đang gửi...' : 'Gửi báo cáo'}
+                                    </button>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
