@@ -153,11 +153,6 @@ export default function SupportPage() {
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-2">
                             <h2 className="text-lg font-bold text-gray-900">{t('tickets')}</h2>
-                            {totalUnread > 0 && (
-                                <span className="px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full">
-                                    {totalUnread}
-                                </span>
-                            )}
                         </div>
                         <div className="flex items-center gap-2">
                             <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>

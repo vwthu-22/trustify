@@ -262,7 +262,8 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                         }
 
                         const lastMessage = messages.length > 0 ? messages[messages.length - 1] : null;
-                        const unreadCount = messages.filter(m => !m.admin).length;
+                        // Set unreadCount to 0 on load - only new real-time messages should be counted as unread
+                        const unreadCount = 0;
 
                         return {
                             id: room.id.toString(),
@@ -270,7 +271,8 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                             // Use userBusinessName (company name) instead of room.name (email)
                             companyName: room.userBusinessName || room.userBusiness?.name || room.name || 'Unknown Company',
                             subject: 'Support Request',
-                            status: 'open' as const,
+                            // Infer status from last message - if it's the close notification, status is closed
+                            status: (lastMessage?.message?.includes('🔒') && lastMessage?.admin) ? 'closed' as const : 'open' as const,
                             priority: 'medium' as const,
                             lastMessage: lastMessage?.message || '',
                             lastMessageTime: lastMessage ? new Date(lastMessage.timestamp) : new Date(),
@@ -354,7 +356,7 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
         if (stompClient?.active && isConnected) {
             const payload = {
                 roomId: parseInt(ticketId),
-                message: '🔒 Yêu cầu hỗ trợ đã được đóng. Nếu bạn cần hỗ trợ thêm, vui lòng gửi tin nhắn mới.',
+                message: 'Yêu cầu hỗ trợ đã được đóng. Nếu bạn cần hỗ trợ thêm, vui lòng gửi tin nhắn mới.',
                 admin: true
             };
 
