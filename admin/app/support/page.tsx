@@ -221,8 +221,7 @@ export default function SupportPage() {
                             <div
                                 key={ticket.id}
                                 onClick={() => selectTicket(ticket.id)}
-                                className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors border-l-4 ${getPriorityColor(ticket.priority)} ${selectedTicketId === ticket.id ? 'bg-blue-50 hover:bg-blue-50' : ''
-                                    } ${ticket.unreadCount > 0 ? 'bg-blue-50/50' : ''}`}
+                                className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors border-l-4 ${getPriorityColor(ticket.priority)} ${selectedTicketId === ticket.id ? 'bg-blue-50 hover:bg-blue-50' : ''} ${ticket.unreadCount > 0 ? 'bg-blue-50/50' : ''}`}
                             >
                                 <div className="flex justify-between items-start mb-1">
                                     <div className="flex items-center gap-2">
@@ -236,14 +235,6 @@ export default function SupportPage() {
                                         )}
                                     </div>
                                     <span className="text-xs text-gray-400">{formatTime(ticket.lastMessageTime)}</span>
-                                </div>
-                                <div className="flex items-center gap-2 mb-1">
-                                    <h3 className={`text-sm ${ticket.unreadCount > 0 ? 'font-semibold text-gray-900' : 'text-gray-600'}`}>
-                                        {ticket.subject}
-                                    </h3>
-                                    <span className={`px-2 py-0.5 text-xs rounded-full ${getStatusColor(ticket.status)}`}>
-                                        {getStatusText(ticket.status)}
-                                    </span>
                                 </div>
                                 <p className="text-xs text-gray-500 truncate">{ticket.lastMessage}</p>
                             </div>
@@ -380,6 +371,6 @@ export default function SupportPage() {
                     </div>
                 )}
             </div>
-        </div>
+        </div >
     );
 }

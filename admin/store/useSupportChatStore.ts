@@ -266,8 +266,9 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
 
                         return {
                             id: room.id.toString(),
-                            companyId: room.userBusiness?.id?.toString() || 'unknown',
-                            companyName: room.name || 'Unknown Company',
+                            companyId: room.userBusinessId?.toString() || room.userBusiness?.id?.toString() || 'unknown',
+                            // Use userBusinessName (company name) instead of room.name (email)
+                            companyName: room.userBusinessName || room.userBusiness?.name || room.name || 'Unknown Company',
                             subject: 'Support Request',
                             status: 'open' as const,
                             priority: 'medium' as const,
@@ -384,8 +385,14 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                     const exists = ticket.messages.some(m => m.id === message.id);
                     if (exists) return ticket;
 
+                    // Reopen ticket if it's closed and message is from business (not admin)
+                    const newStatus = (!message.admin && ticket.status === 'closed')
+                        ? 'open' as const
+                        : ticket.status;
+
                     return {
                         ...ticket,
+                        status: newStatus,
                         messages: [...ticket.messages, message],
                         lastMessage: message.message,
                         lastMessageTime: new Date(message.timestamp),
