@@ -32,22 +32,12 @@ export default function SupportPage() {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
-    // Get token from localStorage
-    const getToken = () => {
-        if (typeof window !== 'undefined') {
-            return localStorage.getItem('admin_token') || '';
-        }
-        return '';
-    };
-
     // Initialize WebSocket on mount
     useEffect(() => {
         const initializeChat = async () => {
-            const token = getToken();
-            if (token) {
-                await fetchTickets(token);
-                connect(token);
-            }
+            // Credentials are sent via HttpOnly cookie
+            await fetchTickets('');
+            connect('');
         };
         initializeChat();
         return () => disconnect();

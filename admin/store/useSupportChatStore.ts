@@ -228,8 +228,9 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
 
         try {
             const response = await fetch(`${API_BASE_URL}/api/chat/rooms`, {
+                credentials: 'include',
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'ngrok-skip-browser-warning': 'true'
                 }
             });
 
@@ -241,8 +242,9 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                     rooms.map(async (room: any) => {
                         // Fetch messages for each room
                         const messagesResponse = await fetch(`${API_BASE_URL}/api/chat/rooms/${room.id}/messages`, {
+                            credentials: 'include',
                             headers: {
-                                'Authorization': `Bearer ${token}`
+                                'ngrok-skip-browser-warning': 'true'
                             }
                         });
 
