@@ -2,6 +2,23 @@ import { create } from 'zustand';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://trustify.io.vn';
 
+// API response format from /api/review/allReports
+export interface ReviewReport {
+    id: number;
+    title: string;
+    description: string;
+    reply?: string;
+    email?: string;
+    status: string;
+    contendReport: string;
+    companyName: string;
+    rating: number;
+    expDate?: string;
+    userName?: string;
+    userEmail?: string;
+}
+
+// Transformed format for display
 export interface Report {
     id: number;
     reviewId: number;
@@ -12,11 +29,9 @@ export interface Report {
     reviewerEmail: string;
     companyName: string;
     reason: string;
-    description?: string;
-    reporterName?: string;
-    reporterEmail?: string;
     status: 'PENDING' | 'RESOLVED' | 'DISMISSED';
     createdAt: string;
+    originalReview: ReviewReport;
 }
 
 interface ModerationState {
@@ -26,7 +41,7 @@ interface ModerationState {
 
     // Actions
     fetchReports: () => Promise<void>;
-    dismissReport: (reportId: number) => Promise<void>;
+    dismissReport: (report: Report) => Promise<void>;
     deleteReview: (report: Report) => Promise<void>;
 }
 
@@ -48,8 +63,27 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
             if (response.ok) {
                 const data = await response.json();
                 // Handle different response formats
-                const reportList = Array.isArray(data) ? data : data.content || data.reports || [];
-                set({ reports: reportList, isLoading: false });
+                const reviewList: ReviewReport[] = Array.isArray(data) ? data : data.content || data.reports || [];
+
+                // Transform to Report format
+                const reports: Report[] = reviewList
+                    .filter(r => r.contendReport) // Only show reviews with reports
+                    .map(r => ({
+                        id: r.id,
+                        reviewId: r.id,
+                        reviewTitle: r.title,
+                        reviewContent: r.description,
+                        reviewRating: r.rating,
+                        reviewerName: r.userName || r.email?.split('@')[0] || 'User',
+                        reviewerEmail: r.userEmail || r.email || '',
+                        companyName: r.companyName || '',
+                        reason: r.contendReport,
+                        status: r.status === 'RESOLVED' ? 'RESOLVED' : r.status === 'DISMISSED' ? 'DISMISSED' : 'PENDING',
+                        createdAt: r.expDate || new Date().toISOString(),
+                        originalReview: r
+                    }));
+
+                set({ reports, isLoading: false });
             } else {
                 set({ error: 'Failed to fetch reports', isLoading: false });
             }
@@ -59,20 +93,27 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
         }
     },
 
-    dismissReport: async (reportId: number) => {
+    // Dismiss report - clear contendReport via PUT
+    dismissReport: async (report: Report) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/api/review/report/${reportId}/dismiss`, {
-                method: 'POST',
+            const response = await fetch(`${API_BASE_URL}/api/review/${report.reviewId}`, {
+                method: 'PUT',
                 credentials: 'include',
                 headers: {
+                    'Content-Type': 'application/json',
                     'ngrok-skip-browser-warning': 'true'
-                }
+                },
+                body: JSON.stringify({
+                    ...report.originalReview,
+                    contendReport: null, // Clear the report
+                    status: 'DISMISSED'
+                })
             });
 
             if (response.ok) {
                 set(state => ({
                     reports: state.reports.map(r =>
-                        r.id === reportId ? { ...r, status: 'DISMISSED' as const } : r
+                        r.id === report.id ? { ...r, status: 'DISMISSED' as const } : r
                     )
                 }));
             }
@@ -81,6 +122,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
         }
     },
 
+    // Delete review
     deleteReview: async (report: Report) => {
         try {
             const response = await fetch(`${API_BASE_URL}/api/review/${report.reviewId}`, {

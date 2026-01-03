@@ -96,22 +96,11 @@ export default function ModerationPage() {
                                         <span className="px-2 py-1 bg-red-50 text-red-700 rounded font-medium">
                                             Lý do: {report.reason}
                                         </span>
-                                        {report.reporterName && (
-                                            <span className="text-gray-500">
-                                                Báo cáo bởi {report.reporterName}
-                                            </span>
-                                        )}
                                     </div>
-
-                                    {report.description && (
-                                        <p className="text-sm text-gray-600 mb-4 italic">
-                                            Mô tả: "{report.description}"
-                                        </p>
-                                    )}
 
                                     <div className="flex gap-2 pt-3 border-t border-gray-100">
                                         <button
-                                            onClick={() => dismissReport(report.id)}
+                                            onClick={() => dismissReport(report)}
                                             className="flex-1 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded transition-colors flex items-center justify-center gap-1"
                                         >
                                             <CheckCircle className="w-4 h-4" /> Giữ lại
@@ -155,8 +144,8 @@ export default function ModerationPage() {
                                             <span className="font-medium text-blue-600">{report.companyName}</span>
                                         </div>
                                         <span className={`text-xs px-2 py-0.5 rounded-full ${report.status === 'RESOLVED'
-                                                ? 'bg-red-100 text-red-700'
-                                                : 'bg-green-100 text-green-700'
+                                            ? 'bg-red-100 text-red-700'
+                                            : 'bg-green-100 text-green-700'
                                             }`}>
                                             {report.status === 'RESOLVED' ? 'Đã xóa' : 'Đã giữ lại'}
                                         </span>

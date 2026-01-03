@@ -91,17 +91,25 @@ export default function CompanyReviewPage() {
 
         setIsSubmittingReport(true);
         try {
-            const response = await fetch(`${API_BASE_URL}/api/review/report`, {
-                method: 'POST',
+            // Build contendReport string with reason and description
+            const contendReport = reportDescription
+                ? `${reportReason}: ${reportDescription}`
+                : reportReason;
+
+            const response = await fetch(`${API_BASE_URL}/api/review/${reportingReview.id}`, {
+                method: 'PUT',
                 credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                     'ngrok-skip-browser-warning': 'true'
                 },
                 body: JSON.stringify({
-                    reviewId: reportingReview.id,
-                    reason: reportReason,
-                    description: reportDescription
+                    id: reportingReview.id,
+                    title: reportingReview.title,
+                    description: reportingReview.description,
+                    rating: reportingReview.rating,
+                    contendReport: contendReport,
+                    status: 'REPORTED'
                 })
             });
 
