@@ -37,12 +37,23 @@ export default function SupportChatPage() {
         return '';
     };
 
-    // Connect to WebSocket when component mounts
+    // Connect to WebSocket and load message history when component mounts
     useEffect(() => {
-        const token = getToken();
-        if (token) {
-            connect(token, company?.id || 0);
-        }
+        const initChat = async () => {
+            const token = getToken();
+            if (token) {
+                // Start WebSocket connection
+                await connect(token, company?.id || 0);
+
+                // Load message history via REST API (works even if WebSocket fails)
+                const { roomId, loadMessageHistory } = useChatStore.getState();
+                if (roomId && roomId !== 0) {
+                    loadMessageHistory(roomId, token);
+                }
+            }
+        };
+
+        initChat();
         return () => disconnect();
     }, [company?.id]);
 

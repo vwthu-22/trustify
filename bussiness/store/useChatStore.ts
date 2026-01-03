@@ -157,6 +157,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
         set({ roomId: effectiveRoomId });
 
+        // Load message history immediately if we have a room (doesn't depend on WebSocket)
+        if (effectiveRoomId && effectiveRoomId !== 0) {
+            get().loadMessageHistory(effectiveRoomId, token);
+        }
+
         const client = new Client({
             webSocketFactory: () => new SockJS(`${WS_URL}?token=${token}`),
             connectHeaders: {
@@ -191,9 +196,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
                             console.error('Error parsing message:', error);
                         }
                     });
-
-                    // Load message history after connecting
-                    get().loadMessageHistory(currentRoomId, token);
+                    // Note: Message history is already loaded before WebSocket connection
                 } else {
                     // No room yet - subscribe to a temporary topic that will be resolved later
                     // We'll need to re-subscribe when room is created
