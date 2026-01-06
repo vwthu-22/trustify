@@ -129,59 +129,47 @@ export default function Header() {
                                 </button>
                             </div>
                             <div className="max-h-80 overflow-y-auto">
-                                {/* Admin Message Notification */}
-                                <div className="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 border-b border-gray-100 cursor-pointer">
-                                    <div className="p-2 bg-purple-100 rounded-full flex-shrink-0">
-                                        <ShieldCheck className="w-4 h-4 text-purple-600" />
+                                {notifications.length === 0 ? (
+                                    <div className="px-4 py-8 text-center text-gray-500">
+                                        <Info className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                                        <p className="text-sm">{t('noNotifications') || 'No notifications'}</p>
                                     </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="font-medium text-gray-900 text-sm">{t('adminMessage') || 'Message from Admin'}</p>
-                                        <p className="text-xs text-gray-600 truncate">{t('adminMessagePreview') || 'Your subscription has been updated...'}</p>
-                                        <p className="text-xs text-gray-400 mt-1">2 {t('hoursAgo') || 'hours ago'}</p>
-                                    </div>
-                                    <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2"></div>
-                                </div>
-
-                                {/* New Review Notification */}
-                                <div className="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 border-b border-gray-100 cursor-pointer">
-                                    <div className="p-2 bg-yellow-100 rounded-full flex-shrink-0">
-                                        <Star className="w-4 h-4 text-yellow-600" />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="font-medium text-gray-900 text-sm">{t('newReview') || 'New Review'}</p>
-                                        <p className="text-xs text-gray-600 truncate">{t('newReviewPreview') || 'John Doe left a 5-star review'}</p>
-                                        <p className="text-xs text-gray-400 mt-1">5 {t('hoursAgo') || 'hours ago'}</p>
-                                    </div>
-                                    <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2"></div>
-                                </div>
-
-                                {/* Another Review Notification */}
-                                <div className="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 border-b border-gray-100 cursor-pointer">
-                                    <div className="p-2 bg-red-100 rounded-full flex-shrink-0">
-                                        <Star className="w-4 h-4 text-red-600" />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="font-medium text-gray-900 text-sm">{t('newReview') || 'New Review'}</p>
-                                        <p className="text-xs text-gray-600 truncate">{t('negativeReviewPreview') || 'Jane Smith left a 2-star review'}</p>
-                                        <p className="text-xs text-gray-400 mt-1">1 {t('dayAgo') || 'day ago'}</p>
-                                    </div>
-                                    <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2"></div>
-                                </div>
-
-                                {/* System Notification */}
-                                <div className="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer opacity-60">
-                                    <div className="p-2 bg-gray-100 rounded-full flex-shrink-0">
-                                        <Info className="w-4 h-4 text-gray-600" />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="font-medium text-gray-900 text-sm">{t('systemUpdate') || 'System Update'}</p>
-                                        <p className="text-xs text-gray-600 truncate">{t('systemUpdatePreview') || 'New features are now available'}</p>
-                                        <p className="text-xs text-gray-400 mt-1">3 {t('daysAgo') || 'days ago'}</p>
-                                    </div>
-                                </div>
+                                ) : (
+                                    notifications.slice(0, 10).map((notification) => (
+                                        <div
+                                            key={notification.id}
+                                            className={`flex items-start gap-3 px-4 py-3 hover:bg-gray-50 border-b border-gray-100 cursor-pointer ${notification.read ? 'opacity-60' : ''}`}
+                                        >
+                                            <div className={`p-2 rounded-full flex-shrink-0 ${notification.type === 'admin_message' ? 'bg-purple-100' :
+                                                    notification.type === 'new_review' ? 'bg-yellow-100' : 'bg-gray-100'
+                                                }`}>
+                                                {notification.type === 'admin_message' ? (
+                                                    <ShieldCheck className={`w-4 h-4 text-purple-600`} />
+                                                ) : notification.type === 'new_review' ? (
+                                                    <Star className={`w-4 h-4 text-yellow-600`} />
+                                                ) : (
+                                                    <Info className={`w-4 h-4 text-gray-600`} />
+                                                )}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="font-medium text-gray-900 text-sm">{notification.title}</p>
+                                                <p className="text-xs text-gray-600 truncate">{notification.message}</p>
+                                                <p className="text-xs text-gray-400 mt-1">
+                                                    {new Date(notification.timestamp).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                                                </p>
+                                            </div>
+                                            {!notification.read && (
+                                                <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2"></div>
+                                            )}
+                                        </div>
+                                    ))
+                                )}
                             </div>
                             <div className="p-3 border-t border-gray-200 text-center">
-                                <button className="text-sm text-blue-600 hover:underline font-medium">
+                                <button
+                                    onClick={() => router.push('/support')}
+                                    className="text-sm text-blue-600 hover:underline font-medium"
+                                >
                                     {t('viewAllNotifications') || 'View all notifications'}
                                 </button>
                             </div>

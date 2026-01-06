@@ -5,14 +5,22 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import useAdminAuthStore from '@/store/useAdminAuthStore'
+import { useSupportChatStore } from '@/store/useSupportChatStore'
 
 export default function Header() {
   const router = useRouter();
   const t = useTranslations('header');
   const tCommon = useTranslations('common');
   const { adminUser, isAuthenticated, logout, checkAuthStatus } = useAdminAuthStore();
+  const { tickets } = useSupportChatStore();
+
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const notificationRef = useRef<HTMLDivElement>(null);
+
+  // Calculate total unread from tickets
+  const totalUnread = tickets.reduce((sum, t) => sum + t.unreadCount, 0);
 
   useEffect(() => {
     // Load admin user from store/localStorage
@@ -20,10 +28,13 @@ export default function Header() {
   }, [checkAuthStatus]);
 
   useEffect(() => {
-    // Close dropdown when clicking outside
+    // Close dropdowns when clicking outside
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setShowDropdown(false);
+      }
+      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+        setShowNotifications(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -65,10 +76,78 @@ export default function Header() {
           </div>
 
           {/* Notifications */}
-          <button className="relative p-2.5 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors" title={t('notifications')}>
-            <Bell className="w-5 h-5 text-gray-600" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
-          </button>
+          <div className="relative" ref={notificationRef}>
+            <button
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="relative p-2.5 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
+              title={t('notifications')}
+            >
+              <Bell className="w-5 h-5 text-gray-600" />
+              {totalUnread > 0 && (
+                <span className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                  {totalUnread > 9 ? '9+' : totalUnread}
+                </span>
+              )}
+            </button>
+
+            {/* Notification Dropdown */}
+            {showNotifications && (
+              <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-200 z-50">
+                <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+                  <h3 className="font-bold text-gray-900">{t('notifications')}</h3>
+                  <span className="text-xs text-gray-500">{totalUnread} {t('unread') || 'unread'}</span>
+                </div>
+                <div className="max-h-80 overflow-y-auto">
+                  {tickets.length === 0 ? (
+                    <div className="px-4 py-8 text-center text-gray-500">
+                      <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                      <p className="text-sm">{t('noNotifications') || 'No new messages'}</p>
+                    </div>
+                  ) : (
+                    tickets.slice(0, 5).map((ticket) => (
+                      <div
+                        key={ticket.id}
+                        onClick={() => {
+                          router.push('/support');
+                          setShowNotifications(false);
+                        }}
+                        className={`flex items-start gap-3 px-4 py-3 hover:bg-gray-50 border-b border-gray-100 cursor-pointer ${ticket.unreadCount === 0 ? 'opacity-60' : ''}`}
+                      >
+                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                          <span className="text-white text-xs font-bold">
+                            {ticket.companyName.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-gray-900 text-sm">{ticket.companyName}</p>
+                          <p className="text-xs text-gray-600 truncate">{ticket.lastMessage}</p>
+                          <p className="text-xs text-gray-400 mt-1">
+                            {new Date(ticket.lastMessageTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                        </div>
+                        {ticket.unreadCount > 0 && (
+                          <span className="w-5 h-5 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">
+                            {ticket.unreadCount}
+                          </span>
+                        )}
+                      </div>
+                    ))
+                  )}
+                </div>
+                <div className="p-3 border-t border-gray-200 text-center">
+                  <button
+                    onClick={() => {
+                      router.push('/support');
+                      setShowNotifications(false);
+                    }}
+                    className="text-sm text-blue-600 hover:underline font-medium"
+                  >
+                    {t('viewAll') || 'View all messages'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* User Profile / Login */}
           <div className="relative" ref={dropdownRef}>

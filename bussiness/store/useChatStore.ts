@@ -261,6 +261,25 @@ export const useChatStore = create<ChatState>((set, get) => ({
                         }
                     });
                 }
+
+                // Subscribe to user notifications (for new message alerts from admin)
+                client.subscribe('/user/queue/notifications', (message: IMessage) => {
+                    try {
+                        const notification = JSON.parse(message.body);
+                        console.log('🔔 Received notification:', notification);
+                        // Add notification to store
+                        get().addNotification({
+                            id: notification.id?.toString() || Date.now().toString(),
+                            type: notification.type === 'MESSAGE' ? 'admin_message' : 'system',
+                            title: 'Thông báo',
+                            message: notification.message,
+                            timestamp: new Date(notification.timestamp || Date.now()),
+                            read: false
+                        });
+                    } catch (error) {
+                        console.error('Error parsing notification:', error);
+                    }
+                });
             },
 
             onStompError: (frame) => {

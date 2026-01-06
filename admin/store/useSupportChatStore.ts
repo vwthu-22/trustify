@@ -205,6 +205,18 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                         console.error('Error parsing message:', error);
                     }
                 });
+
+                // Subscribe to admin notifications (for new message alerts from business users)
+                client.subscribe('/user/queue/notifications', (message: IMessage) => {
+                    try {
+                        const notification = JSON.parse(message.body);
+                        console.log('🔔 Admin received notification:', notification);
+                        // Can be used to show toast notification or update bell icon
+                        // For now just log it - the message will already appear in the ticket list
+                    } catch (error) {
+                        console.error('Error parsing notification:', error);
+                    }
+                });
             },
 
             onStompError: (frame) => {
