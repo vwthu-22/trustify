@@ -57,6 +57,10 @@ interface SupportChatState {
     notifications: AdminNotification[];
     unreadNotificationCount: number;
 
+    // Chat Widget
+    isChatWidgetOpen: boolean;
+    shouldOpenChatWithTicket: string | null; // Ticket ID to open when widget opens
+
     // Typing
     isTyping: boolean;
     typingCompanyId: string | null;
@@ -80,6 +84,11 @@ interface SupportChatState {
     addNotification: (ticketId: string, companyName: string, companyLogo?: string) => void;
     markAllNotificationsAsRead: () => void;
     clearNotifications: () => void;
+    clearNotificationsForTicket: (ticketId: string) => void;
+
+    // Actions - Chat Widget
+    openChatWidget: (ticketId?: string) => void;
+    closeChatWidget: () => void;
 
     // Utility
     getSelectedTicket: () => SupportTicket | undefined;
@@ -132,6 +141,8 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
     isViewingSupport: false,
     notifications: [],
     unreadNotificationCount: 0,
+    isChatWidgetOpen: false,
+    shouldOpenChatWithTicket: null,
     isTyping: false,
     typingCompanyId: null,
 
@@ -449,6 +460,7 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
     selectTicket: (ticketId: string) => {
         set({ selectedTicketId: ticketId });
         get().markMessagesAsRead(ticketId);
+        get().clearNotificationsForTicket(ticketId);
     },
 
     // Create new ticket
@@ -629,6 +641,38 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
     // Clear all notifications
     clearNotifications: () => {
         set({ notifications: [], unreadNotificationCount: 0 });
+    },
+
+    // Clear notifications for a specific ticket
+    clearNotificationsForTicket: (ticketId: string) => {
+        set(state => {
+            const notificationsToRemove = state.notifications.filter(n => n.ticketId === ticketId && !n.read);
+            return {
+                notifications: state.notifications.filter(n => n.ticketId !== ticketId),
+                unreadNotificationCount: Math.max(0, state.unreadNotificationCount - notificationsToRemove.length)
+            };
+        });
+    },
+
+    // Open chat widget (optionally with a specific ticket)
+    openChatWidget: (ticketId?: string) => {
+        if (ticketId) {
+            set({
+                isChatWidgetOpen: true,
+                shouldOpenChatWithTicket: ticketId,
+                selectedTicketId: ticketId
+            });
+            // Clear notifications for this ticket
+            get().clearNotificationsForTicket(ticketId);
+            get().markMessagesAsRead(ticketId);
+        } else {
+            set({ isChatWidgetOpen: true, shouldOpenChatWithTicket: null });
+        }
+    },
+
+    // Close chat widget
+    closeChatWidget: () => {
+        set({ isChatWidgetOpen: false, shouldOpenChatWithTicket: null });
     },
 
     // Set whether admin is viewing support page

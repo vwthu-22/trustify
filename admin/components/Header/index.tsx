@@ -21,7 +21,8 @@ export default function Header() {
     connect,
     disconnect,
     fetchTickets,
-    isConnected
+    isConnected,
+    openChatWidget
   } = useSupportChatStore();
 
   const [showDropdown, setShowDropdown] = useState(false);
@@ -145,9 +146,8 @@ export default function Header() {
                       <div
                         key={notif.id}
                         onClick={() => {
-                          router.push('/support');
+                          openChatWidget(notif.ticketId);
                           setShowNotifications(false);
-                          markAllNotificationsAsRead();
                         }}
                         className={`flex items-start gap-3 px-4 py-3 hover:bg-gray-50 border-b border-gray-100 cursor-pointer ${notif.read ? 'opacity-60' : ''}`}
                       >
@@ -176,7 +176,7 @@ export default function Header() {
                 <div className="p-3 border-t border-gray-200 text-center">
                   <button
                     onClick={() => {
-                      router.push('/support');
+                      openChatWidget();
                       setShowNotifications(false);
                     }}
                     className="text-sm text-blue-600 hover:underline font-medium"

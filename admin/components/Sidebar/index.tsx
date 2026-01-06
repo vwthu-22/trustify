@@ -58,12 +58,12 @@ export default function Sidebar() {
       label: t('moderation'),
       path: '/moderation'
     },
-    {
-      key: 'support',
-      icon: MessageSquare,
-      label: t('support'),
-      path: '/support'
-    },
+    // {
+    //   key: 'support',
+    //   icon: MessageSquare,
+    //   label: t('support'),
+    //   path: '/support'
+    // },
     {
       key: 'billing',
       icon: CreditCard,
