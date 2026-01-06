@@ -70,6 +70,36 @@ interface SupportChatState {
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://trustify.io.vn';
 const WS_URL = `${API_BASE_URL}/ws`;
 
+// Helper function to parse timestamp from backend (handles array format from Java LocalDateTime)
+const parseTimestamp = (timestamp: any): string => {
+    if (!timestamp) return new Date().toISOString();
+
+    // If it's already a valid ISO string
+    if (typeof timestamp === 'string') {
+        // Check if it's a valid date string
+        const parsed = new Date(timestamp);
+        if (!isNaN(parsed.getTime())) {
+            return timestamp;
+        }
+    }
+
+    // If it's an array (Java LocalDateTime format: [year, month, day, hour, minute, second, nano])
+    if (Array.isArray(timestamp)) {
+        const [year, month, day, hour = 0, minute = 0, second = 0] = timestamp;
+        // Note: JavaScript months are 0-indexed, but Java months are 1-indexed
+        const date = new Date(year, month - 1, day, hour, minute, second);
+        return date.toISOString();
+    }
+
+    // If it's a number (epoch milliseconds)
+    if (typeof timestamp === 'number') {
+        return new Date(timestamp).toISOString();
+    }
+
+    // Fallback
+    return new Date().toISOString();
+};
+
 export const useSupportChatStore = create<SupportChatState>((set, get) => ({
     // Initial state
     isConnected: false,
@@ -158,7 +188,7 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                                 status: 'open',
                                 priority: 'medium',
                                 lastMessage: data.message,
-                                lastMessageTime: new Date(data.timestamp),
+                                lastMessageTime: new Date(parseTimestamp(data.timestamp)),
                                 unreadCount: 1,
                                 messages: [data],
                                 createdAt: new Date()
@@ -257,7 +287,7 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                                 sender: msg.sender,
                                 message: msg.message,
                                 admin: msg.admin || false,
-                                timestamp: msg.timestamp || new Date().toISOString()
+                                timestamp: parseTimestamp(msg.timestamp)
                             }));
                         }
 
@@ -271,14 +301,16 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                             // Use userBusinessName (company name) instead of room.name (email)
                             companyName: room.userBusinessName || room.userBusiness?.name || room.name || 'Unknown Company',
                             subject: 'Support Request',
-                            // Infer status from last message - if it's the close notification, status is closed
-                            status: (lastMessage?.message?.includes('🔒') && lastMessage?.admin) ? 'closed' as const : 'open' as const,
+                            // Use backend status if available, otherwise infer from last message
+                            status: room.status
+                                ? (room.status.toLowerCase() === 'closed' ? 'closed' as const : 'open' as const)
+                                : ((lastMessage?.message?.includes('🔒') && lastMessage?.admin) ? 'closed' as const : 'open' as const),
                             priority: 'medium' as const,
                             lastMessage: lastMessage?.message || '',
-                            lastMessageTime: lastMessage ? new Date(lastMessage.timestamp) : new Date(),
+                            lastMessageTime: lastMessage ? new Date(parseTimestamp(lastMessage.timestamp)) : new Date(),
                             unreadCount,
                             messages,
-                            createdAt: new Date(room.createdAt || Date.now())
+                            createdAt: new Date(parseTimestamp(room.createdAt))
                         };
                     })
                 );

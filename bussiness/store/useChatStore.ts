@@ -77,6 +77,35 @@ interface ChatState {
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://trustify.io.vn';
 const WS_URL = `${API_BASE_URL}/ws`;
 
+// Helper function to parse timestamp from backend (handles array format from Java LocalDateTime)
+const parseTimestamp = (timestamp: any): string => {
+    if (!timestamp) return new Date().toISOString();
+
+    // If it's already a valid ISO string
+    if (typeof timestamp === 'string') {
+        const parsed = new Date(timestamp);
+        if (!isNaN(parsed.getTime())) {
+            return timestamp;
+        }
+    }
+
+    // If it's an array (Java LocalDateTime format: [year, month, day, hour, minute, second, nano])
+    if (Array.isArray(timestamp)) {
+        const [year, month, day, hour = 0, minute = 0, second = 0] = timestamp;
+        // Note: JavaScript months are 0-indexed, but Java months are 1-indexed
+        const date = new Date(year, month - 1, day, hour, minute, second);
+        return date.toISOString();
+    }
+
+    // If it's a number (epoch milliseconds)
+    if (typeof timestamp === 'number') {
+        return new Date(timestamp).toISOString();
+    }
+
+    // Fallback
+    return new Date().toISOString();
+};
+
 export const useChatStore = create<ChatState>((set, get) => ({
     // Initial state
     isConnected: false,
@@ -292,7 +321,12 @@ export const useChatStore = create<ChatState>((set, get) => ({
             });
 
             if (response.ok) {
-                const messages: ChatMessage[] = await response.json();
+                const apiMessages = await response.json();
+                // Transform messages to ensure timestamps are properly parsed
+                const messages: ChatMessage[] = apiMessages.map((msg: any) => ({
+                    ...msg,
+                    timestamp: parseTimestamp(msg.timestamp)
+                }));
                 set({ messages, isLoading: false });
             } else {
                 console.error('Failed to load messages:', response.status);

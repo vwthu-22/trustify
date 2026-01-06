@@ -175,6 +175,7 @@ export default function SupportPage() {
                     </div>
 
                     {/* Filter Tabs */}
+                    {/* Status filter tabs - disabled as backend doesn't support status
                     <div className="flex gap-1 bg-gray-100 p-1 rounded-lg">
                         <button
                             onClick={() => setFilterStatus('all')}
@@ -198,6 +199,7 @@ export default function SupportPage() {
                             {t('closed')} ({tickets.filter(t => t.status === 'closed').length})
                         </button>
                     </div>
+                    */}
                 </div>
 
                 {/* Ticket List */}
@@ -256,6 +258,7 @@ export default function SupportPage() {
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">
+                                {/* Close ticket button - disabled as backend doesn't support status
                                 {selectedTicket.status === 'open' && (
                                     <button
                                         onClick={() => closeTicket(selectedTicket.id)}
@@ -265,6 +268,7 @@ export default function SupportPage() {
                                         {t('closeTicket')}
                                     </button>
                                 )}
+                                */}
                                 <button className="p-2 hover:bg-gray-100 rounded-lg text-gray-500">
                                     <MoreVertical className="w-5 h-5" />
                                 </button>
@@ -321,39 +325,30 @@ export default function SupportPage() {
                             <div ref={messagesEndRef} />
                         </div>
 
-                        {/* Input */}
-                        {selectedTicket.status === 'open' ? (
-                            <div className="p-4 border-t border-gray-200 bg-white">
-                                <div className="flex gap-2">
-                                    <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-                                        <Paperclip className="w-5 h-5" />
-                                    </button>
-                                    <input
-                                        ref={inputRef}
-                                        type="text"
-                                        value={newMessage}
-                                        onChange={(e) => setNewMessage(e.target.value)}
-                                        onKeyPress={handleKeyPress}
-                                        placeholder={t('typeReply')}
-                                        className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-4 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm"
-                                    />
-                                    <button
-                                        onClick={handleSendMessage}
-                                        disabled={!newMessage.trim()}
-                                        className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        <Send className="w-5 h-5" />
-                                    </button>
-                                </div>
+                        {/* Input - always shown since backend doesn't track closed status */}
+                        <div className="p-4 border-t border-gray-200 bg-white">
+                            <div className="flex gap-2">
+                                <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                                    <Paperclip className="w-5 h-5" />
+                                </button>
+                                <input
+                                    ref={inputRef}
+                                    type="text"
+                                    value={newMessage}
+                                    onChange={(e) => setNewMessage(e.target.value)}
+                                    onKeyPress={handleKeyPress}
+                                    placeholder={t('typeReply')}
+                                    className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-4 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm"
+                                />
+                                <button
+                                    onClick={handleSendMessage}
+                                    disabled={!newMessage.trim()}
+                                    className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    <Send className="w-5 h-5" />
+                                </button>
                             </div>
-                        ) : (
-                            <div className="p-4 border-t border-gray-200 bg-gray-50 text-center">
-                                <div className="flex items-center justify-center gap-2 text-gray-500">
-                                    <CheckCircle className="w-5 h-5 text-green-500" />
-                                    <span className="text-sm">{t('ticketClosed')}</span>
-                                </div>
-                            </div>
-                        )}
+                        </div>
                     </>
                 ) : (
                     // No ticket selected
