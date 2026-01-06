@@ -1,6 +1,7 @@
 {
   "common": {
     "save": "Lưu thay đổi",
+    "adminPanel": "Admin Panel",
     "cancel": "Hủy",
     "delete": "Xóa",
     "edit": "Sửa",

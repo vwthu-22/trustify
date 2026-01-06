@@ -61,6 +61,7 @@ export default function ChatWidget() {
 
     const handleBackToList = () => {
         setShowChat(false);
+        selectTicket('');
     };
 
     const handleClose = () => {
@@ -140,37 +141,65 @@ export default function ChatWidget() {
     return (
         <div className={`fixed bottom-6 right-6 bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 transition-all duration-300 overflow-hidden ${isMinimized ? 'w-80 h-14' : 'w-[380px] h-[500px]'}`}>
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-blue-600 to-cyan-500">
-                <div className="flex items-center gap-2 text-white">
-                    {showChat && selectedTicket ? (
-                        <>
-                            <button onClick={handleBackToList} className="p-1 hover:bg-white/20 rounded-lg transition-colors">
+            <div className="flex-none flex items-center justify-between px-4 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-sm z-50 h-[60px]">
+                <div className="flex items-center gap-2 text-white flex-1 overflow-hidden">
+                    {showChat ? (
+                        <div className="flex items-center gap-2 w-full">
+                            <button
+                                onClick={handleBackToList}
+                                className="p-1.5 -ml-2 text-white hover:bg-white/20 rounded-full transition-colors flex-shrink-0"
+                                title={t('back') || "Back"}
+                            >
                                 <ArrowLeft className="w-5 h-5" />
                             </button>
-                            <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden bg-white/20 relative">
-                                <span className="text-white text-xs font-bold absolute inset-0 flex items-center justify-center">
-                                    {getInitials(selectedTicket.companyName)}
-                                </span>
-                                {selectedTicket.companyLogo && (
-                                    <img
-                                        src={selectedTicket.companyLogo}
-                                        alt={selectedTicket.companyName}
-                                        className="w-full h-full object-cover relative z-10"
-                                        onError={(e) => e.currentTarget.style.display = 'none'}
-                                    />
-                                )}
+
+                            <div className="flex items-center gap-2 flex-1 overflow-hidden">
+                                <div className="w-9 h-9 rounded-full bg-white/20 flex-shrink-0 flex items-center justify-center overflow-hidden border border-white/30 relative">
+                                    {selectedTicket ? (
+                                        <>
+                                            {selectedTicket.companyLogo ? (
+                                                <img
+                                                    src={selectedTicket.companyLogo}
+                                                    alt={selectedTicket.companyName}
+                                                    className="w-full h-full object-cover"
+                                                    onError={(e) => e.currentTarget.style.display = 'none'}
+                                                />
+                                            ) : (
+                                                <span className="text-white text-xs font-bold absolute z-0 select-none">
+                                                    {getInitials(selectedTicket.companyName)}
+                                                </span>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <div className="w-full h-full bg-gray-300 animate-pulse"></div>
+                                    )}
+                                </div>
+                                <div className="flex flex-col flex-1 overflow-hidden">
+                                    <span className="font-bold text-sm leading-tight truncate">
+                                        {selectedTicket?.companyName || 'Loading...'}
+                                    </span>
+                                    <span className="text-[10px] opacity-80 leading-tight flex items-center gap-1">
+                                        <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-green-300' : 'bg-red-300'}`}></span>
+                                        {isConnected ? 'Online' : 'Offline'}
+                                    </span>
+                                </div>
                             </div>
-                            <span className="font-semibold truncate max-w-[150px]">{selectedTicket.companyName}</span>
-                        </>
+                        </div>
                     ) : (
-                        <>
-                            <MessageSquare className="w-5 h-5" />
-                            <span className="font-semibold">{t('tickets')}</span>
-                            <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-400' : 'bg-red-400'}`}></span>
-                        </>
+                        <div className="flex items-center gap-2">
+                            <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center">
+                                <MessageSquare className="w-5 h-5 text-white" />
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="font-bold text-base leading-tight">{t('tickets') || "Support Tickets"}</span>
+                                <span className="text-xs opacity-80 font-medium">
+                                    {isConnected ? 'System Operational' : 'Connecting...'}
+                                </span>
+                            </div>
+                        </div>
                     )}
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 flex-shrink-0">
                     <button
                         onClick={() => setIsMinimized(!isMinimized)}
                         className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
