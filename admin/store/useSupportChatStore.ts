@@ -559,8 +559,17 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
 
         console.log('📤 Admin sent message:', payload);
 
-        // Don't add optimistically - wait for backend to broadcast
-        // This prevents duplicate messages with mismatched IDs
+        // Add optimistically with NEGATIVE temp ID so it can be replaced when real message arrives
+        const optimisticMessage: ChatMessage = {
+            id: -Date.now(), // Negative ID = temporary/optimistic
+            roomId: parseInt(targetTicketId),
+            sender: 'Admin',
+            message: content,
+            admin: true,
+            timestamp: new Date().toISOString()
+        };
+
+        get().addMessage(targetTicketId, optimisticMessage);
     },
 
     // Add message to a ticket
@@ -575,13 +584,38 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
         set(state => ({
             tickets: state.tickets.map(t => {
                 if (t.id === ticketId) {
-                    // Check if message already exists (prevent duplicates by ID and content)
-                    const exists = t.messages.some(m =>
-                        m.id === message.id ||
-                        (m.message === message.message &&
+                    // If this is a real message from backend (positive ID), check for optimistic message to replace
+                    if (message.id > 0) {
+                        const optimisticIndex = t.messages.findIndex(m =>
+                            m.id < 0 && // Optimistic message has negative ID
+                            m.message === message.message &&
                             m.admin === message.admin &&
-                            Math.abs(new Date(m.timestamp).getTime() - new Date(message.timestamp).getTime()) < 2000)
-                    );
+                            Math.abs(new Date(m.timestamp).getTime() - new Date(message.timestamp).getTime()) < 5000
+                        );
+
+                        if (optimisticIndex !== -1) {
+                            // Replace optimistic message with real one
+                            console.log('✅ Admin: Replacing optimistic message with real message:', message.id);
+                            const newMessages = [...t.messages];
+                            newMessages[optimisticIndex] = message;
+
+                            // Reopen ticket if needed
+                            const newStatus = (!message.admin && t.status === 'closed')
+                                ? 'open' as const
+                                : t.status;
+
+                            return {
+                                ...t,
+                                status: newStatus,
+                                messages: newMessages,
+                                lastMessage: message.message,
+                                lastMessageTime: new Date(message.timestamp)
+                            };
+                        }
+                    }
+
+                    // Check if message already exists (prevent duplicates by positive ID)
+                    const exists = t.messages.some(m => m.id === message.id && m.id > 0);
                     if (exists) {
                         console.log('🔍 Admin: Duplicate message detected, skipping:', message.id);
                         return t;

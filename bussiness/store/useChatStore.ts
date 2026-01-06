@@ -414,8 +414,17 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
         console.log('📤 Sent message:', payload);
 
-        // Don't add optimistically - wait for backend to broadcast
-        // This prevents duplicate messages with mismatched IDs
+        // Add optimistically with NEGATIVE temp ID so it can be replaced when real message arrives
+        const optimisticMessage: ChatMessage = {
+            id: -Date.now(), // Negative ID = temporary/optimistic
+            roomId: typeof effectiveRoomId === 'string' ? parseInt(effectiveRoomId) : effectiveRoomId,
+            sender: 'Me',
+            message: message,
+            admin: isAdmin,
+            timestamp: new Date().toISOString()
+        };
+
+        get().addMessage(optimisticMessage);
     },
 
     // Send message via REST API (fallback when WebSocket not connected)
@@ -465,12 +474,36 @@ export const useChatStore = create<ChatState>((set, get) => ({
     // Add a message to the list
     addMessage: (message: ChatMessage) => {
         set((state) => {
-            // Check if message already exists (prevent duplicates by ID and content)
-            const exists = state.messages.some(m =>
-                m.id === message.id ||
-                (m.message === message.message &&
-                    Math.abs(new Date(m.timestamp).getTime() - new Date(message.timestamp).getTime()) < 2000)
-            );
+            // If this is a real message from backend (positive ID), check for optimistic message to replace
+            if (message.id > 0) {
+                const optimisticIndex = state.messages.findIndex(m =>
+                    m.id < 0 && // Optimistic message has negative ID
+                    m.message === message.message &&
+                    Math.abs(new Date(m.timestamp).getTime() - new Date(message.timestamp).getTime()) < 5000
+                );
+
+                if (optimisticIndex !== -1) {
+                    // Replace optimistic message with real one
+                    console.log('✅ Replacing optimistic message with real message:', message.id);
+                    const newMessages = [...state.messages];
+                    newMessages[optimisticIndex] = message;
+
+                    // Update roomId if needed
+                    const newRoomId = (!state.roomId || state.roomId === 0) && message.roomId
+                        ? message.roomId
+                        : state.roomId;
+
+                    return {
+                        ...state,
+                        messages: newMessages,
+                        roomId: newRoomId,
+                        unreadCount: message.admin ? state.unreadCount + 1 : state.unreadCount
+                    };
+                }
+            }
+
+            // Check if message already exists (prevent duplicates by ID)
+            const exists = state.messages.some(m => m.id === message.id && m.id > 0);
             if (exists) {
                 console.log('🔍 Duplicate message detected, skipping:', message.id);
                 return state;
