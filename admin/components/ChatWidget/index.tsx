@@ -256,7 +256,7 @@ export default function ChatWidget() {
                     {showChat && selectedTicket && (
                         <div className="flex-1 flex flex-col">
                             {/* Chat Header */}
-                            <div className="flex-none flex items-center justify-between px-4 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-sm z-50 h-[60px]">
+                            <div className="flex-none flex items-center justify-between px-4 py-3 bg-blue-600 text-white shadow-sm z-50 h-[60px] relative">
                                 <div className="flex items-center gap-2 w-full overflow-hidden">
                                     <button
                                         onClick={handleBackToList}
