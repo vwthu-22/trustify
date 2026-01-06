@@ -391,6 +391,18 @@ export const useChatStore = create<ChatState>((set, get) => ({
         });
 
         console.log('📤 Sent message:', payload);
+
+        // Optimistically add message to UI immediately
+        const optimisticMessage: ChatMessage = {
+            id: Date.now(), // Temp ID
+            roomId: typeof effectiveRoomId === 'string' ? parseInt(effectiveRoomId) : effectiveRoomId,
+            sender: 'Me', // Or actual user name if available
+            message: message,
+            admin: isAdmin,
+            timestamp: new Date().toISOString()
+        };
+
+        get().addMessage(optimisticMessage);
     },
 
     // Send message via REST API (fallback when WebSocket not connected)

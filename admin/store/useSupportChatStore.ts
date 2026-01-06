@@ -538,6 +538,19 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
         });
 
         console.log('📤 Admin sent message:', payload);
+
+        // Optimistically add message to UI immediately for Admin
+        if (targetTicketId) {
+            const optimisticMessage: ChatMessage = {
+                id: Date.now(),
+                roomId: parseInt(targetTicketId),
+                sender: 'Admin',
+                message: content,
+                admin: true,
+                timestamp: new Date().toISOString()
+            };
+            get().addMessage(targetTicketId, optimisticMessage);
+        }
     },
 
     // Add message to a ticket
