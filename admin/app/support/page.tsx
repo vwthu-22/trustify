@@ -220,20 +220,39 @@ export default function SupportPage() {
                                 onClick={() => selectTicket(ticket.id)}
                                 className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors border-l-4 ${getPriorityColor(ticket.priority)} ${selectedTicketId === ticket.id ? 'bg-blue-50 hover:bg-blue-50' : ''} ${ticket.unreadCount > 0 ? 'bg-blue-50/50' : ''}`}
                             >
-                                <div className="flex justify-between items-start mb-1">
-                                    <div className="flex items-center gap-2">
-                                        <span className={`font-semibold text-sm ${ticket.unreadCount > 0 ? 'text-gray-900' : 'text-gray-700'}`}>
-                                            {ticket.companyName}
-                                        </span>
-                                        {ticket.unreadCount > 0 && (
-                                            <span className="w-5 h-5 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center">
-                                                {ticket.unreadCount}
+                                <div className="flex gap-3">
+                                    {/* Avatar */}
+                                    <div className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600">
+                                        {ticket.companyLogo ? (
+                                            <img
+                                                src={ticket.companyLogo}
+                                                alt={ticket.companyName}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <span className="text-white text-xs font-bold">
+                                                {getInitials(ticket.companyName)}
                                             </span>
                                         )}
                                     </div>
-                                    <span className="text-xs text-gray-400">{formatTime(ticket.lastMessageTime)}</span>
+
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex justify-between items-start mb-0.5">
+                                            <span className={`font-semibold text-sm truncate pr-2 ${ticket.unreadCount > 0 ? 'text-gray-900' : 'text-gray-700'}`}>
+                                                {ticket.companyName}
+                                            </span>
+                                            <span className="text-xs text-gray-400 whitespace-nowrap">{formatTime(ticket.lastMessageTime)}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <p className="text-xs text-gray-500 truncate mr-2 flex-1">{ticket.lastMessage}</p>
+                                            {ticket.unreadCount > 0 && (
+                                                <span className="w-5 h-5 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">
+                                                    {ticket.unreadCount}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
-                                <p className="text-xs text-gray-500 truncate">{ticket.lastMessage}</p>
                             </div>
                         ))
                     )}
@@ -247,8 +266,18 @@ export default function SupportPage() {
                         {/* Chat Header */}
                         <div className="p-4 border-b border-gray-200 flex justify-between items-center">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
-                                    <span className="font-bold text-white text-sm">{getInitials(selectedTicket.companyName)}</span>
+                                <div className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600">
+                                    {selectedTicket.companyLogo ? (
+                                        <img
+                                            src={selectedTicket.companyLogo}
+                                            alt={selectedTicket.companyName}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <span className="text-white text-xs font-bold">
+                                            {getInitials(selectedTicket.companyName)}
+                                        </span>
+                                    )}
                                 </div>
                                 <div>
                                     <h3 className="font-bold text-gray-900">{selectedTicket.companyName}</h3>
