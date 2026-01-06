@@ -27,7 +27,7 @@ export default function ChatWidget() {
     } = useSupportChatStore();
 
     const [isMinimized, setIsMinimized] = useState(false);
-    const [showChat, setShowChat] = useState(false); // Track if we're showing chat or list
+    const [showChat, setShowChat] = useState(false);
     const [newMessage, setNewMessage] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -122,7 +122,6 @@ export default function ChatWidget() {
     const totalUnread = tickets.reduce((sum, t) => sum + t.unreadCount, 0);
 
     if (!isChatWidgetOpen) {
-        // Floating button only
         return (
             <button
                 onClick={() => openChatWidget()}
@@ -140,27 +139,87 @@ export default function ChatWidget() {
 
     return (
         <div className={`fixed bottom-6 right-6 bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 transition-all duration-300 overflow-hidden flex flex-col ${isMinimized ? 'w-80 h-14' : 'w-[380px] h-[600px]'}`}>
-            {/* Header (List View) */}
+            {/* Header - List View */}
             {!showChat && (
-                <div className="flex-none flex items-center justify-between px-4 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-sm z-50 h-[60px]">
-                    <div className="flex items-center gap-2 text-white flex-1 overflow-hidden">
-                        <div className="flex items-center gap-2">
-                            <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center relative">
-                                <MessageSquare className="w-5 h-5 text-white" />
-                                {(totalUnread > 0 || unreadNotificationCount > 0) && (
-                                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border border-white">
-                                        {totalUnread + unreadNotificationCount > 9 ? '9+' : totalUnread + unreadNotificationCount}
-                                    </span>
-                                )}
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="font-bold text-base leading-tight">{t('tickets') || "Support Tickets"}</span>
-                                <span className="text-xs opacity-80 font-medium">
-                                    {isConnected ? 'System Operational' : 'Connecting...'}
+                <div className="flex-none flex items-center justify-between px-4 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-md z-50 h-[60px]">
+                    <div className="flex items-center gap-3 flex-1 overflow-hidden">
+                        <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center relative">
+                            <MessageSquare className="w-5 h-5 text-white" />
+                            {(totalUnread > 0 || unreadNotificationCount > 0) && (
+                                <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border border-white">
+                                    {totalUnread + unreadNotificationCount > 9 ? '9+' : totalUnread + unreadNotificationCount}
                                 </span>
-                            </div>
+                            )}
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="font-bold text-base leading-tight">{t('tickets') || "Support Tickets"}</span>
+                            <span className="text-xs opacity-90 font-medium flex items-center gap-1">
+                                <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-green-300' : 'bg-red-300'}`}></span>
+                                {isConnected ? 'System Operational' : 'Connecting...'}
+                            </span>
                         </div>
                     </div>
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                        <button
+                            onClick={() => setIsMinimized(!isMinimized)}
+                            className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
+                        >
+                            {isMinimized ? <Maximize2 className="w-4 h-4 text-white" /> : <Minimize2 className="w-4 h-4 text-white" />}
+                        </button>
+                        <button
+                            onClick={handleClose}
+                            className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
+                        >
+                            <X className="w-4 h-4 text-white" />
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Header - Chat View */}
+            {showChat && selectedTicket && (
+                <div className="flex-none flex items-center justify-between px-3 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-md z-50 h-[60px]">
+                    <div className="flex items-center gap-2 flex-1 overflow-hidden">
+                        {/* Back Button */}
+                        <button
+                            onClick={handleBackToList}
+                            className="p-2 -ml-1 text-white hover:bg-white/20 rounded-full transition-all flex-shrink-0"
+                            title={t('back') || "Back to list"}
+                        >
+                            <ArrowLeft className="w-5 h-5" />
+                        </button>
+
+                        {/* Avatar */}
+                        <div className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden border-2 border-white/30 shadow-md relative bg-gradient-to-br from-blue-400 to-blue-600">
+                            {selectedTicket.companyLogo ? (
+                                <img
+                                    src={selectedTicket.companyLogo}
+                                    alt={selectedTicket.companyName}
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                        e.currentTarget.style.display = 'none';
+                                    }}
+                                />
+                            ) : (
+                                <span className="text-white text-sm font-bold">
+                                    {getInitials(selectedTicket.companyName)}
+                                </span>
+                            )}
+                        </div>
+
+                        {/* User Info */}
+                        <div className="flex flex-col flex-1 overflow-hidden">
+                            <span className="font-bold text-base leading-tight truncate">
+                                {selectedTicket.companyName}
+                            </span>
+                            <span className="text-xs opacity-90 leading-tight flex items-center gap-1">
+                                <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-green-300' : 'bg-red-300'}`}></span>
+                                {isConnected ? 'Online' : 'Offline'}
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Action Buttons */}
                     <div className="flex items-center gap-1 flex-shrink-0">
                         <button
                             onClick={() => setIsMinimized(!isMinimized)}
@@ -194,7 +253,7 @@ export default function ChatWidget() {
                                 />
                             </div>
 
-                            {/* List */}
+                            {/* Ticket List */}
                             <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-gray-400">
                                 {isLoading ? (
                                     <div className="flex items-center justify-center h-32">
@@ -255,58 +314,6 @@ export default function ChatWidget() {
                     {/* Chat View */}
                     {showChat && selectedTicket && (
                         <div className="flex-1 flex flex-col">
-                            {/* Chat Header */}
-                            <div className="flex-none flex items-center justify-between px-4 py-3 bg-blue-600 text-white shadow-sm z-50 h-[60px] relative">
-                                <div className="flex items-center gap-2 w-full overflow-hidden">
-                                    <button
-                                        onClick={handleBackToList}
-                                        className="p-1.5 -ml-2 text-white hover:bg-white/20 rounded-full transition-colors flex-shrink-0"
-                                        title={t('back') || "Back"}
-                                    >
-                                        <ArrowLeft className="w-5 h-5" />
-                                    </button>
-
-                                    <div className="flex items-center gap-2 flex-1 overflow-hidden">
-                                        <div className="w-9 h-9 rounded-full bg-white/20 flex-shrink-0 flex items-center justify-center overflow-hidden border border-white/30 relative">
-                                            {selectedTicket.companyLogo ? (
-                                                <img
-                                                    src={selectedTicket.companyLogo}
-                                                    alt={selectedTicket.companyName}
-                                                    className="w-full h-full object-cover"
-                                                    onError={(e) => e.currentTarget.style.display = 'none'}
-                                                />
-                                            ) : (
-                                                <span className="text-white text-xs font-bold absolute z-0 select-none">
-                                                    {getInitials(selectedTicket.companyName)}
-                                                </span>
-                                            )}
-                                        </div>
-                                        <div className="flex flex-col flex-1 overflow-hidden">
-                                            <span className="font-bold text-sm leading-tight truncate">
-                                                {selectedTicket.companyName}
-                                            </span>
-                                            <span className="text-[10px] opacity-80 leading-tight flex items-center gap-1">
-                                                <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-green-300' : 'bg-red-300'}`}></span>
-                                                {isConnected ? 'Online' : 'Offline'}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-1 flex-shrink-0">
-                                    <button
-                                        onClick={() => setIsMinimized(!isMinimized)}
-                                        className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
-                                    >
-                                        {isMinimized ? <Maximize2 className="w-4 h-4 text-white" /> : <Minimize2 className="w-4 h-4 text-white" />}
-                                    </button>
-                                    <button
-                                        onClick={handleClose}
-                                        className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
-                                    >
-                                        <X className="w-4 h-4 text-white" />
-                                    </button>
-                                </div>
-                            </div>
                             {/* Messages */}
                             <div className="flex-1 overflow-y-auto p-3 space-y-3 bg-gray-50 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-gray-400">
                                 {selectedTicket.messages.map((message) => {

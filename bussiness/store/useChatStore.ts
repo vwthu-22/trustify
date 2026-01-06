@@ -167,6 +167,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
             const roomsResponse = await fetch(`${API_BASE_URL}/api/chat/my-room`, {
                 credentials: 'include',
                 headers: {
+                    'Authorization': `Bearer ${token}`,
                     'ngrok-skip-browser-warning': 'true'
                 }
             });
