@@ -139,56 +139,19 @@ export default function ChatWidget() {
     }
 
     return (
-        <div className={`fixed bottom-6 right-6 bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 transition-all duration-300 overflow-hidden ${isMinimized ? 'w-80 h-14' : 'w-[380px] h-[500px]'}`}>
-            {/* Header */}
-            <div className="flex-none flex items-center justify-between px-4 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-sm z-50 h-[60px]">
-                <div className="flex items-center gap-2 text-white flex-1 overflow-hidden">
-                    {showChat ? (
-                        <div className="flex items-center gap-2 w-full">
-                            <button
-                                onClick={handleBackToList}
-                                className="p-1.5 -ml-2 text-white hover:bg-white/20 rounded-full transition-colors flex-shrink-0"
-                                title={t('back') || "Back"}
-                            >
-                                <ArrowLeft className="w-5 h-5" />
-                            </button>
-
-                            <div className="flex items-center gap-2 flex-1 overflow-hidden">
-                                <div className="w-9 h-9 rounded-full bg-white/20 flex-shrink-0 flex items-center justify-center overflow-hidden border border-white/30 relative">
-                                    {selectedTicket ? (
-                                        <>
-                                            {selectedTicket.companyLogo ? (
-                                                <img
-                                                    src={selectedTicket.companyLogo}
-                                                    alt={selectedTicket.companyName}
-                                                    className="w-full h-full object-cover"
-                                                    onError={(e) => e.currentTarget.style.display = 'none'}
-                                                />
-                                            ) : (
-                                                <span className="text-white text-xs font-bold absolute z-0 select-none">
-                                                    {getInitials(selectedTicket.companyName)}
-                                                </span>
-                                            )}
-                                        </>
-                                    ) : (
-                                        <div className="w-full h-full bg-gray-300 animate-pulse"></div>
-                                    )}
-                                </div>
-                                <div className="flex flex-col flex-1 overflow-hidden">
-                                    <span className="font-bold text-sm leading-tight truncate">
-                                        {selectedTicket?.companyName || 'Loading...'}
-                                    </span>
-                                    <span className="text-[10px] opacity-80 leading-tight flex items-center gap-1">
-                                        <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-green-300' : 'bg-red-300'}`}></span>
-                                        {isConnected ? 'Online' : 'Offline'}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    ) : (
+        <div className={`fixed bottom-6 right-6 bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 transition-all duration-300 overflow-hidden flex flex-col ${isMinimized ? 'w-80 h-14' : 'w-[380px] h-[600px]'}`}>
+            {/* Header (List View) */}
+            {!showChat && (
+                <div className="flex-none flex items-center justify-between px-4 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-sm z-50 h-[60px]">
+                    <div className="flex items-center gap-2 text-white flex-1 overflow-hidden">
                         <div className="flex items-center gap-2">
-                            <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center">
+                            <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center relative">
                                 <MessageSquare className="w-5 h-5 text-white" />
+                                {(totalUnread > 0 || unreadNotificationCount > 0) && (
+                                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border border-white">
+                                        {totalUnread + unreadNotificationCount > 9 ? '9+' : totalUnread + unreadNotificationCount}
+                                    </span>
+                                )}
                             </div>
                             <div className="flex flex-col">
                                 <span className="font-bold text-base leading-tight">{t('tickets') || "Support Tickets"}</span>
@@ -197,26 +160,26 @@ export default function ChatWidget() {
                                 </span>
                             </div>
                         </div>
-                    )}
+                    </div>
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                        <button
+                            onClick={() => setIsMinimized(!isMinimized)}
+                            className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
+                        >
+                            {isMinimized ? <Maximize2 className="w-4 h-4 text-white" /> : <Minimize2 className="w-4 h-4 text-white" />}
+                        </button>
+                        <button
+                            onClick={handleClose}
+                            className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
+                        >
+                            <X className="w-4 h-4 text-white" />
+                        </button>
+                    </div>
                 </div>
-                <div className="flex items-center gap-1 flex-shrink-0">
-                    <button
-                        onClick={() => setIsMinimized(!isMinimized)}
-                        className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
-                    >
-                        {isMinimized ? <Maximize2 className="w-4 h-4 text-white" /> : <Minimize2 className="w-4 h-4 text-white" />}
-                    </button>
-                    <button
-                        onClick={handleClose}
-                        className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
-                    >
-                        <X className="w-4 h-4 text-white" />
-                    </button>
-                </div>
-            </div>
+            )}
 
             {!isMinimized && (
-                <div className="h-[calc(100%-52px)] flex flex-col">
+                <div className="flex-1 flex flex-col min-h-0 relative bg-white">
                     {/* Conversation List View */}
                     {!showChat && (
                         <div className="flex-1 flex flex-col">
@@ -292,6 +255,58 @@ export default function ChatWidget() {
                     {/* Chat View */}
                     {showChat && selectedTicket && (
                         <div className="flex-1 flex flex-col">
+                            {/* Chat Header */}
+                            <div className="flex-none flex items-center justify-between px-4 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-sm z-50 h-[60px]">
+                                <div className="flex items-center gap-2 w-full overflow-hidden">
+                                    <button
+                                        onClick={handleBackToList}
+                                        className="p-1.5 -ml-2 text-white hover:bg-white/20 rounded-full transition-colors flex-shrink-0"
+                                        title={t('back') || "Back"}
+                                    >
+                                        <ArrowLeft className="w-5 h-5" />
+                                    </button>
+
+                                    <div className="flex items-center gap-2 flex-1 overflow-hidden">
+                                        <div className="w-9 h-9 rounded-full bg-white/20 flex-shrink-0 flex items-center justify-center overflow-hidden border border-white/30 relative">
+                                            {selectedTicket.companyLogo ? (
+                                                <img
+                                                    src={selectedTicket.companyLogo}
+                                                    alt={selectedTicket.companyName}
+                                                    className="w-full h-full object-cover"
+                                                    onError={(e) => e.currentTarget.style.display = 'none'}
+                                                />
+                                            ) : (
+                                                <span className="text-white text-xs font-bold absolute z-0 select-none">
+                                                    {getInitials(selectedTicket.companyName)}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className="flex flex-col flex-1 overflow-hidden">
+                                            <span className="font-bold text-sm leading-tight truncate">
+                                                {selectedTicket.companyName}
+                                            </span>
+                                            <span className="text-[10px] opacity-80 leading-tight flex items-center gap-1">
+                                                <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-green-300' : 'bg-red-300'}`}></span>
+                                                {isConnected ? 'Online' : 'Offline'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-1 flex-shrink-0">
+                                    <button
+                                        onClick={() => setIsMinimized(!isMinimized)}
+                                        className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
+                                    >
+                                        {isMinimized ? <Maximize2 className="w-4 h-4 text-white" /> : <Minimize2 className="w-4 h-4 text-white" />}
+                                    </button>
+                                    <button
+                                        onClick={handleClose}
+                                        className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
+                                    >
+                                        <X className="w-4 h-4 text-white" />
+                                    </button>
+                                </div>
+                            </div>
                             {/* Messages */}
                             <div className="flex-1 overflow-y-auto p-3 space-y-3 bg-gray-50">
                                 {selectedTicket.messages.map((message) => {

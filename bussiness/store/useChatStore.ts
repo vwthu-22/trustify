@@ -216,8 +216,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
                 // Subscribe to room messages if we have a room
                 if (currentRoomId && currentRoomId !== 0) {
-                    console.log('Subscribing to room:', currentRoomId);
-                    client.subscribe(`/topic/rooms/${currentRoomId}`, (message: IMessage) => {
+                    console.log('Subscribing to room topics:', currentRoomId);
+
+                    const handleIncomingMessage = (message: IMessage) => {
                         try {
                             const data: ChatMessage = JSON.parse(message.body);
                             console.log('📨 Received message:', data);
@@ -225,7 +226,12 @@ export const useChatStore = create<ChatState>((set, get) => ({
                         } catch (error) {
                             console.error('Error parsing message:', error);
                         }
-                    });
+                    };
+
+                    client.subscribe(`/topic/rooms/${currentRoomId}`, handleIncomingMessage);
+                    client.subscribe(`/topic/business/${currentRoomId}`, handleIncomingMessage);
+                    client.subscribe(`/topic/chat/${currentRoomId}`, handleIncomingMessage);
+
                     // Note: Message history is already loaded before WebSocket connection
                 } else {
                     // No room yet - subscribe to a temporary topic that will be resolved later
