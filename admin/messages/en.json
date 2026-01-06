@@ -21,7 +21,8 @@
         "login": "Login",
         "logout": "Logout",
         "profile": "Profile",
-        "settings": "Settings"
+        "settings": "Settings",
+        "adminPanel": "Admin Panel"
     },
     "header": {
         "search": "Search...",

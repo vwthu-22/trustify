@@ -38,7 +38,14 @@ export default function ModerationPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                    <Flag className="w-5 h-5 text-red-500" />
+                    Chờ xử lý
+                    <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs rounded-full">
+                        {pendingReports.length}
+                    </span>
+                </h2>
                 <div className="flex gap-3">
                     <button
                         onClick={fetchReports}
@@ -63,13 +70,7 @@ export default function ModerationPage() {
                 <div className="max-w-5xl mx-auto">
                     {/* Pending Reports */}
                     <div className="space-y-4">
-                        <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                            <Flag className="w-5 h-5 text-red-500" />
-                            Chờ xử lý
-                            <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs rounded-full">
-                                {pendingReports.length}
-                            </span>
-                        </h2>
+
 
                         {pendingReports.length === 0 ? (
                             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center text-gray-500">

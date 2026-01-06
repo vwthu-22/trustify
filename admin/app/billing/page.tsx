@@ -245,16 +245,6 @@ export default function BillingPage() {
 
     return (
         <div className="space-y-6">
-            {/* Header */}
-            <div className="flex items-center justify-end">
-                <button
-                    onClick={handleCreateClick}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
-                >
-                    <Plus className="w-4 h-4" />
-                    Create New Plan
-                </button>
-            </div>
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -303,7 +293,15 @@ export default function BillingPage() {
                     </div>
                 </div>
             </div>
-
+            <div className="flex items-center justify-end">
+                <button
+                    onClick={handleCreateClick}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                >
+                    <Plus className="w-4 h-4" />
+                    Create New Plan
+                </button>
+            </div>
             {/* Tabs */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                 <div className="border-b border-gray-200">
