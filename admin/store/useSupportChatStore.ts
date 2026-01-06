@@ -303,6 +303,8 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                 // Transform API response to tickets format
                 const tickets: SupportTicket[] = await Promise.all(
                     rooms.map(async (room: any) => {
+                        console.log('🔍 Admin - Processing room:', room); // Debug room structure
+
                         // Fetch messages for each room
                         const messagesResponse = await fetch(`${API_BASE_URL}/api/chat/rooms/${room.id}/messages`, {
                             credentials: 'include',
@@ -314,15 +316,8 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                         let messages: ChatMessage[] = [];
                         if (messagesResponse.ok) {
                             const apiMessages = await messagesResponse.json();
-                            console.log('🔍 Admin - Raw API messages for room', room.id, ':', apiMessages);
-                            if (apiMessages[0]) {
-                                console.log('🔍 Admin - First message timestamp fields:', {
-                                    timestamp: apiMessages[0].timestamp,
-                                    createdAt: apiMessages[0].createdAt,
-                                    sentAt: apiMessages[0].sentAt,
-                                    time: apiMessages[0].time
-                                });
-                            }
+                            // console.log('🔍 Admin - Raw API messages for room', room.id, ':', apiMessages); 
+
                             messages = apiMessages.map((msg: any) => ({
                                 id: msg.id,
                                 roomId: room.id,
@@ -343,6 +338,8 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                             companyId: room.userBusinessId?.toString() || room.userBusiness?.id?.toString() || 'unknown',
                             // Use userBusinessName (company name) instead of room.name (email)
                             companyName: room.userBusinessName || room.userBusiness?.name || room.name || 'Unknown Company',
+                            // Map logo from various possible fields
+                            companyLogo: room.userBusinessLogo || room.userBusiness?.logo || room.userBusiness?.logoUrl || room.userBusiness?.avatar || room.userBusiness?.profileImage || room.userBusiness?.imageUrl,
                             subject: 'Support Request',
                             // Use backend status if available, otherwise infer from last message
                             status: room.status

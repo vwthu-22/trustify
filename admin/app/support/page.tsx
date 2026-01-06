@@ -222,17 +222,17 @@ export default function SupportPage() {
                             >
                                 <div className="flex gap-3">
                                     {/* Avatar */}
-                                    <div className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600">
-                                        {ticket.companyLogo ? (
+                                    <div className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600 relative">
+                                        <span className="text-white text-xs font-bold absolute inset-0 flex items-center justify-center">
+                                            {getInitials(ticket.companyName)}
+                                        </span>
+                                        {ticket.companyLogo && (
                                             <img
                                                 src={ticket.companyLogo}
                                                 alt={ticket.companyName}
-                                                className="w-full h-full object-cover"
+                                                className="w-full h-full object-cover relative z-10"
+                                                onError={(e) => e.currentTarget.style.display = 'none'}
                                             />
-                                        ) : (
-                                            <span className="text-white text-xs font-bold">
-                                                {getInitials(ticket.companyName)}
-                                            </span>
                                         )}
                                     </div>
 
@@ -266,17 +266,17 @@ export default function SupportPage() {
                         {/* Chat Header */}
                         <div className="p-4 border-b border-gray-200 flex justify-between items-center">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600">
-                                    {selectedTicket.companyLogo ? (
+                                <div className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600 relative">
+                                    <span className="text-white text-xs font-bold absolute inset-0 flex items-center justify-center">
+                                        {getInitials(selectedTicket.companyName)}
+                                    </span>
+                                    {selectedTicket.companyLogo && (
                                         <img
                                             src={selectedTicket.companyLogo}
                                             alt={selectedTicket.companyName}
-                                            className="w-full h-full object-cover"
+                                            className="w-full h-full object-cover relative z-10"
+                                            onError={(e) => e.currentTarget.style.display = 'none'}
                                         />
-                                    ) : (
-                                        <span className="text-white text-xs font-bold">
-                                            {getInitials(selectedTicket.companyName)}
-                                        </span>
                                     )}
                                 </div>
                                 <div>
@@ -317,17 +317,17 @@ export default function SupportPage() {
                                                 <ShieldCheck className="w-4 h-4 text-white" />
                                             </div>
                                         ) : (
-                                            <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center mt-1 overflow-hidden bg-gradient-to-br from-purple-500 to-purple-600">
-                                                {selectedTicket.companyLogo ? (
+                                            <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center mt-1 overflow-hidden bg-gradient-to-br from-purple-500 to-purple-600 relative">
+                                                <span className="text-white text-xs font-bold absolute inset-0 flex items-center justify-center">
+                                                    {getInitials(selectedTicket.companyName)}
+                                                </span>
+                                                {selectedTicket.companyLogo && (
                                                     <img
                                                         src={selectedTicket.companyLogo}
                                                         alt={selectedTicket.companyName}
-                                                        className="w-full h-full object-cover"
+                                                        className="w-full h-full object-cover relative z-10"
+                                                        onError={(e) => e.currentTarget.style.display = 'none'}
                                                     />
-                                                ) : (
-                                                    <span className="text-white text-xs font-bold">
-                                                        {getInitials(selectedTicket.companyName)}
-                                                    </span>
                                                 )}
                                             </div>
                                         )}
@@ -349,17 +349,17 @@ export default function SupportPage() {
                             {/* Typing indicator */}
                             {isTyping && typingCompanyId === selectedTicket.companyId && (
                                 <div className="flex gap-4">
-                                    <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center mt-1 overflow-hidden bg-gradient-to-br from-purple-500 to-purple-600">
-                                        {selectedTicket.companyLogo ? (
+                                    <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center mt-1 overflow-hidden bg-gradient-to-br from-purple-500 to-purple-600 relative">
+                                        <span className="text-white text-xs font-bold absolute inset-0 flex items-center justify-center">
+                                            {getInitials(selectedTicket.companyName)}
+                                        </span>
+                                        {selectedTicket.companyLogo && (
                                             <img
                                                 src={selectedTicket.companyLogo}
                                                 alt={selectedTicket.companyName}
-                                                className="w-full h-full object-cover"
+                                                className="w-full h-full object-cover relative z-10"
+                                                onError={(e) => e.currentTarget.style.display = 'none'}
                                             />
-                                        ) : (
-                                            <span className="text-white text-xs font-bold">
-                                                {getInitials(selectedTicket.companyName)}
-                                            </span>
                                         )}
                                     </div>
                                     <div className="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm border border-gray-100">
