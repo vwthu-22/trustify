@@ -195,7 +195,7 @@ export default function ChatWidget() {
                             </div>
 
                             {/* List */}
-                            <div className="flex-1 overflow-y-auto">
+                            <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-gray-400">
                                 {isLoading ? (
                                     <div className="flex items-center justify-center h-32">
                                         <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
@@ -308,7 +308,7 @@ export default function ChatWidget() {
                                 </div>
                             </div>
                             {/* Messages */}
-                            <div className="flex-1 overflow-y-auto p-3 space-y-3 bg-gray-50">
+                            <div className="flex-1 overflow-y-auto p-3 space-y-3 bg-gray-50 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-gray-400">
                                 {selectedTicket.messages.map((message) => {
                                     const isAdmin = message.admin;
 
