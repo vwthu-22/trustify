@@ -551,16 +551,17 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
             admin: true // Admin sending message
         };
 
-        // Send to STOMP destination - try /app/admin for admin messages
-        // Backend might route admin messages differently
+        // Send to STOMP destination
         stompClient.publish({
-            destination: `/app/admin/${targetTicketId}`,
+            destination: `/app/business/${targetTicketId}`,
             body: JSON.stringify(payload)
         });
 
-        console.log('📤 Admin sent message to /app/admin:', payload);
+        console.log('📤 Admin sent message via WebSocket:', payload);
 
-        // Add optimistically with NEGATIVE temp ID so it can be replaced when real message arrives
+        // Add optimistically with NEGATIVE temp ID
+        // Note: Backend doesn't broadcast back to admin (WebSocket limitation)
+        // Message will persist with negative ID until page reload, when real message from API replaces it
         const optimisticMessage: ChatMessage = {
             id: -Date.now(), // Negative ID = temporary/optimistic
             roomId: parseInt(targetTicketId),
@@ -571,6 +572,7 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
         };
 
         get().addMessage(targetTicketId, optimisticMessage);
+        console.log('💬 Showing optimistic message (will be replaced on page reload)');
     },
 
     // Add message to a ticket

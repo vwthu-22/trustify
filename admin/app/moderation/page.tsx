@@ -29,6 +29,13 @@ export default function ModerationPage() {
     const pendingReports = reports.filter(r => r.status === 'PENDING');
     const resolvedReports = reports.filter(r => r.status === 'RESOLVED' || r.status === 'DISMISSED');
 
+    // Sort pending reports by number of reports (descending)
+    const sortedPendingReports = [...pendingReports].sort((a, b) => {
+        const countA = reports.filter(r => r.reviewId === a.reviewId).length;
+        const countB = reports.filter(r => r.reviewId === b.reviewId).length;
+        return countB - countA; // More reports first
+    });
+
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-end">
@@ -70,12 +77,12 @@ export default function ModerationPage() {
                                 <p>Không có báo cáo nào đang chờ xử lý</p>
                             </div>
                         ) : (
-                            pendingReports.map((report) => (
+                            sortedPendingReports.map((report) => (
                                 <div key={report.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
                                     <div className="flex justify-between items-start mb-3">
                                         <div className="flex items-center gap-2">
                                             <span className="font-medium text-gray-900">
-                                                {report.reviewerName || report.reviewerEmail?.split('@')[0] || 'User'}
+                                                {report.reviewerName || report.reviewerEmail || 'Người dùng ẩn danh'}
                                             </span>
                                             <span className="text-gray-400 text-sm">đánh giá</span>
                                             <span className="font-medium text-blue-600">{report.companyName}</span>
