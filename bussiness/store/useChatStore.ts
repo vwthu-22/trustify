@@ -193,11 +193,14 @@ export const useChatStore = create<ChatState>((set, get) => ({
             get().loadMessageHistory(effectiveRoomId, token);
         }
 
+        const connectHeaders: Record<string, string> = {};
+        if (token) {
+            connectHeaders['Authorization'] = `Bearer ${token}`;
+        }
+
         const client = new Client({
-            webSocketFactory: () => new SockJS(`${WS_URL}?token=${token}`),
-            connectHeaders: {
-                Authorization: `Bearer ${token}`
-            },
+            webSocketFactory: () => new SockJS(`${WS_URL}${token ? `?token=${token}` : ''}`),
+            connectHeaders,
             debug: (str) => {
                 console.log('STOMP Debug:', str);
             },

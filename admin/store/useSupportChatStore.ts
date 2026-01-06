@@ -159,11 +159,14 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
         set({ connectionStatus: 'connecting' });
         console.log('Admin connecting to WebSocket...', WS_URL);
 
+        const connectHeaders: Record<string, string> = {};
+        if (token) {
+            connectHeaders['Authorization'] = `Bearer ${token}`;
+        }
+
         const client = new Client({
-            webSocketFactory: () => new SockJS(`${WS_URL}?token=${token}`),
-            connectHeaders: {
-                Authorization: `Bearer ${token}`
-            },
+            webSocketFactory: () => new SockJS(`${WS_URL}${token ? ` ?token=${token}` : ''}`),
+            connectHeaders,
             debug: (str) => {
                 console.log('STOMP Debug:', str);
             },
