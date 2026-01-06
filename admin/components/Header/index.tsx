@@ -12,7 +12,15 @@ export default function Header() {
   const t = useTranslations('header');
   const tCommon = useTranslations('common');
   const { adminUser, isAuthenticated, logout, checkAuthStatus } = useAdminAuthStore();
-  const { notifications, unreadNotificationCount, markAllNotificationsAsRead } = useSupportChatStore();
+  const {
+    notifications,
+    unreadNotificationCount,
+    markAllNotificationsAsRead,
+    connect,
+    disconnect,
+    fetchTickets,
+    isConnected
+  } = useSupportChatStore();
 
   const [showDropdown, setShowDropdown] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -23,6 +31,18 @@ export default function Header() {
     // Load admin user from store/localStorage
     checkAuthStatus();
   }, [checkAuthStatus]);
+
+  // Initialize WebSocket connection globally (so notifications work on all pages)
+  useEffect(() => {
+    if (isAuthenticated && !isConnected) {
+      const initChat = async () => {
+        await fetchTickets('');
+        connect('');
+      };
+      initChat();
+    }
+    // Don't disconnect on unmount - Header stays mounted
+  }, [isAuthenticated, isConnected]);
 
   useEffect(() => {
     // Close dropdowns when clicking outside

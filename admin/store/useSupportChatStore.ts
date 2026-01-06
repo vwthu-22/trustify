@@ -306,8 +306,9 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
             if (response.ok) {
                 const rooms = await response.json();
 
-                // Fetch companies to get logo URLs
-                let companiesMap: Record<string, string> = {};
+                // Fetch companies to get logo URLs - create maps by both ID and name
+                let companiesMapById: Record<string, string> = {};
+                let companiesMapByName: Record<string, string> = {};
                 try {
                     const companiesResponse = await fetch(`${API_BASE_URL}/api/users/companies?page=0&size=100`, {
                         credentials: 'include',
@@ -318,12 +319,19 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                     if (companiesResponse.ok) {
                         const companiesData = await companiesResponse.json();
                         const companies = companiesData.content || companiesData;
+                        console.log('🔍 Admin - Companies data:', companies);
                         companies.forEach((company: any) => {
-                            if (company.id && company.logoUrl) {
-                                companiesMap[company.id.toString()] = company.logoUrl;
+                            if (company.logoUrl) {
+                                if (company.id) {
+                                    companiesMapById[company.id.toString()] = company.logoUrl;
+                                }
+                                if (company.name) {
+                                    companiesMapByName[company.name.toLowerCase()] = company.logoUrl;
+                                }
                             }
                         });
-                        console.log('🔍 Admin - Companies logo map:', companiesMap);
+                        console.log('🔍 Admin - Companies logo map by ID:', companiesMapById);
+                        console.log('🔍 Admin - Companies logo map by Name:', companiesMapByName);
                     }
                 } catch (err) {
                     console.log('Could not fetch companies for logo mapping:', err);
@@ -361,19 +369,23 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                         // Set unreadCount to 0 on load - only new real-time messages should be counted as unread
                         const unreadCount = 0;
 
-                        // Get companyId for logo lookup
+                        // Get companyId and companyName for logo lookup
                         const companyId = room.userBusinessId?.toString() || room.userBusiness?.id?.toString() || 'unknown';
+                        const companyName = room.userBusinessName || room.userBusiness?.name || room.name || 'Unknown Company';
 
-                        // Try to get logo from: room data first, then from companies map
+                        // Try to get logo from: room data first, then from companies maps (by ID, then by name)
                         const companyLogo = room.userBusinessLogo || room.userBusiness?.logo || room.userBusiness?.logoUrl
                             || room.userBusiness?.avatar || room.userBusiness?.profileImage || room.userBusiness?.imageUrl
-                            || companiesMap[companyId];
+                            || companiesMapById[companyId]
+                            || companiesMapByName[companyName.toLowerCase()];
+
+                        console.log('🔍 Admin - Ticket logo lookup:', { companyId, companyName, companyLogo });
 
                         return {
                             id: room.id.toString(),
                             companyId,
                             // Use userBusinessName (company name) instead of room.name (email)
-                            companyName: room.userBusinessName || room.userBusiness?.name || room.name || 'Unknown Company',
+                            companyName,
                             // Map logo from various possible fields + companies map fallback
                             companyLogo,
                             subject: 'Support Request',

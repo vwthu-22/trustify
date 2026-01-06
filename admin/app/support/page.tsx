@@ -16,9 +16,6 @@ export default function SupportPage() {
         isTyping,
         typingCompanyId,
         isLoading,
-        connect,
-        disconnect,
-        fetchTickets,
         selectTicket,
         sendMessage,
         closeTicket,
@@ -38,17 +35,6 @@ export default function SupportPage() {
         setViewingSupport(true);
         return () => setViewingSupport(false);
     }, [setViewingSupport]);
-
-    // Initialize WebSocket on mount
-    useEffect(() => {
-        const initializeChat = async () => {
-            // Credentials are sent via HttpOnly cookie
-            await fetchTickets('');
-            connect('');
-        };
-        initializeChat();
-        return () => disconnect();
-    }, []);
 
     // Auto-scroll to bottom when messages change
     useEffect(() => {
