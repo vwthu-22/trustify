@@ -2,15 +2,17 @@
 
 import { Search, Bell, LogOut, User, Settings, Shield, MessageCircle } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import useAdminAuthStore from '@/store/useAdminAuthStore'
 import { useSupportChatStore } from '@/store/useSupportChatStore'
 
 export default function Header() {
   const router = useRouter();
+  const pathname = usePathname();
   const t = useTranslations('header');
   const tCommon = useTranslations('common');
+  const tSidebar = useTranslations('sidebar');
   const { adminUser, isAuthenticated, logout, checkAuthStatus } = useAdminAuthStore();
   const {
     notifications,
@@ -63,6 +65,23 @@ export default function Header() {
     router.push('/login');
   };
 
+  // Get page title based on pathname
+  const getPageTitle = () => {
+    const path = pathname?.replace('/', '') || 'dashboard';
+    const titleMap: Record<string, string> = {
+      'dashboard': tSidebar('dashboard'),
+      'users': tSidebar('users'),
+      'companies': tSidebar('companies'),
+      'companies/verification': tSidebar('verificationRequests'),
+      'moderation': tSidebar('moderation'),
+      'support': tSidebar('support'),
+      'billing': tSidebar('billing'),
+      'settings': tSidebar('settings'),
+      'profile': tCommon('profile'),
+    };
+    return titleMap[path] || tSidebar('dashboard');
+  };
+
   // Get display name (email)
   const displayName = adminUser?.email || 'Admin';
   const displayInitial = displayName.charAt(0).toUpperCase();
@@ -70,15 +89,9 @@ export default function Header() {
   return (
     <header className="bg-white border-b border-gray-200 px-8 py-4 z-50 sticky top-0 ml-64">
       <div className='flex items-center justify-between'>
-        {/* Logo */}
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center">
-            <Shield className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <span className="text-lg font-bold text-gray-900">Trustify</span>
-            <span className="text-xs text-gray-500 ml-1">Admin</span>
-          </div>
+        {/* Page Title */}
+        <div>
+          <h1 className="text-2xl text-gray-900">{getPageTitle()}</h1>
         </div>
 
         <div className="flex items-center justify-end gap-4">

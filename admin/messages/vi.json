@@ -302,6 +302,11 @@
     "mAgo": "phút trước",
     "hAgo": "giờ trước",
     "dAgo": "ngày trước",
+    "useFloatingChat": "Sử dụng Chat Widget",
+    "floatingChatDescription": "Để chat với khách hàng, hãy sử dụng nút chat ở góc phải dưới màn hình. Widget này hoạt động giống như Messenger - bạn có thể chat từ bất kỳ trang nào!",
+    "redirecting": "Đang chuyển hướng về Dashboard...",
+    "lookForButton": "Tìm nút này ở góc phải dưới",
+    "clickToChat": "Click để mở chat",
     "priority": {
       "high": "Cao",
       "medium": "Trung bình",

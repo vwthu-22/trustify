@@ -49,10 +49,6 @@ export default function DashboardPage() {
 
   return (
     <>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
-        <p className="text-gray-500 mt-1">{t('subtitle')}</p>
-      </div>
 
       {/* Stats Grid - 3 cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

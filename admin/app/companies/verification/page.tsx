@@ -14,7 +14,6 @@ export default function VerificationPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Verification Requests</h1>
                     <p className="text-gray-500 mt-1">Review and approve business verification documents</p>
                 </div>
                 <div className="flex gap-2">

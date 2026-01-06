@@ -246,11 +246,7 @@ export default function BillingPage() {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Billing & Plans</h1>
-                    <p className="text-gray-500 mt-1">Manage subscription plans, features and transactions</p>
-                </div>
+            <div className="flex items-center justify-end">
                 <button
                     onClick={handleCreateClick}
                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"

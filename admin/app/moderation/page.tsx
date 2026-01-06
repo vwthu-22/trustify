@@ -31,11 +31,7 @@ export default function ModerationPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Quản lý nội dung</h1>
-                    <p className="text-gray-500 mt-1">Xử lý báo cáo đánh giá từ người dùng</p>
-                </div>
+            <div className="flex items-center justify-end">
                 <div className="flex gap-3">
                     <button
                         onClick={fetchReports}
