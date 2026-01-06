@@ -1,6 +1,6 @@
 'use client'
 
-import { Search, Bell, LogOut, User, Settings, Shield } from 'lucide-react'
+import { Search, Bell, LogOut, User, Settings, Shield, MessageCircle } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -12,15 +12,12 @@ export default function Header() {
   const t = useTranslations('header');
   const tCommon = useTranslations('common');
   const { adminUser, isAuthenticated, logout, checkAuthStatus } = useAdminAuthStore();
-  const { tickets } = useSupportChatStore();
+  const { notifications, unreadNotificationCount, markAllNotificationsAsRead } = useSupportChatStore();
 
   const [showDropdown, setShowDropdown] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const notificationRef = useRef<HTMLDivElement>(null);
-
-  // Calculate total unread from tickets
-  const totalUnread = tickets.reduce((sum, t) => sum + t.unreadCount, 0);
 
   useEffect(() => {
     // Load admin user from store/localStorage
@@ -83,9 +80,9 @@ export default function Header() {
               title={t('notifications')}
             >
               <Bell className="w-5 h-5 text-gray-600" />
-              {totalUnread > 0 && (
+              {unreadNotificationCount > 0 && (
                 <span className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
-                  {totalUnread > 9 ? '9+' : totalUnread}
+                  {unreadNotificationCount > 9 ? '9+' : unreadNotificationCount}
                 </span>
               )}
             </button>
@@ -95,40 +92,49 @@ export default function Header() {
               <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-200 z-50">
                 <div className="p-4 border-b border-gray-200 flex items-center justify-between">
                   <h3 className="font-bold text-gray-900">{t('notifications')}</h3>
-                  <span className="text-xs text-gray-500">{totalUnread} {t('unread') || 'unread'}</span>
+                  {unreadNotificationCount > 0 && (
+                    <button
+                      onClick={() => markAllNotificationsAsRead()}
+                      className="text-xs text-blue-600 hover:underline"
+                    >
+                      {t('markAllRead') || 'Mark all as read'}
+                    </button>
+                  )}
                 </div>
                 <div className="max-h-80 overflow-y-auto">
-                  {tickets.length === 0 ? (
+                  {notifications.length === 0 ? (
                     <div className="px-4 py-8 text-center text-gray-500">
                       <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
                       <p className="text-sm">{t('noNotifications') || 'No new messages'}</p>
                     </div>
                   ) : (
-                    tickets.slice(0, 5).map((ticket) => (
+                    notifications.slice(0, 10).map((notif) => (
                       <div
-                        key={ticket.id}
+                        key={notif.id}
                         onClick={() => {
                           router.push('/support');
                           setShowNotifications(false);
+                          markAllNotificationsAsRead();
                         }}
-                        className={`flex items-start gap-3 px-4 py-3 hover:bg-gray-50 border-b border-gray-100 cursor-pointer ${ticket.unreadCount === 0 ? 'opacity-60' : ''}`}
+                        className={`flex items-start gap-3 px-4 py-3 hover:bg-gray-50 border-b border-gray-100 cursor-pointer ${notif.read ? 'opacity-60' : ''}`}
                       >
-                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
-                          <span className="text-white text-xs font-bold">
-                            {ticket.companyName.charAt(0).toUpperCase()}
+                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                          <span className="text-white text-sm font-bold">
+                            {notif.companyName.charAt(0).toUpperCase()}
                           </span>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium text-gray-900 text-sm">{ticket.companyName}</p>
-                          <p className="text-xs text-gray-600 truncate">{ticket.lastMessage}</p>
+                          <p className="font-medium text-gray-900 text-sm">{notif.companyName}</p>
+                          <p className="text-xs text-blue-600 flex items-center gap-1">
+                            <MessageCircle className="w-3 h-3" />
+                            {t('newMessage') || 'có tin nhắn mới'}
+                          </p>
                           <p className="text-xs text-gray-400 mt-1">
-                            {new Date(ticket.lastMessageTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                            {new Date(notif.timestamp).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
                           </p>
                         </div>
-                        {ticket.unreadCount > 0 && (
-                          <span className="w-5 h-5 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">
-                            {ticket.unreadCount}
-                          </span>
+                        {!notif.read && (
+                          <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2"></div>
                         )}
                       </div>
                     ))

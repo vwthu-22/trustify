@@ -86,6 +86,7 @@
         "systemUpdate": "System Update",
         "systemUpdatePreview": "New features are now available",
         "viewAllNotifications": "View all notifications",
+        "noNotifications": "No notifications",
         "hoursAgo": "hours ago",
         "dayAgo": "day ago",
         "daysAgo": "days ago"

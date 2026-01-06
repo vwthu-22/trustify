@@ -28,6 +28,16 @@ export interface SupportTicket {
     createdAt: Date;
 }
 
+// Admin Notification for new messages
+export interface AdminNotification {
+    id: string;
+    ticketId: string;
+    companyName: string;
+    companyLogo?: string;
+    timestamp: Date;
+    read: boolean;
+}
+
 // Connection status
 type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error';
 
@@ -41,6 +51,10 @@ interface SupportChatState {
     tickets: SupportTicket[];
     selectedTicketId: string | null;
     isLoading: boolean;
+
+    // Notifications
+    notifications: AdminNotification[];
+    unreadNotificationCount: number;
 
     // Typing
     isTyping: boolean;
@@ -60,6 +74,11 @@ interface SupportChatState {
     sendMessage: (content: string, ticketId?: string) => void;
     addMessage: (ticketId: string, message: ChatMessage) => void;
     markMessagesAsRead: (ticketId: string) => void;
+
+    // Actions - Notifications
+    addNotification: (ticketId: string, companyName: string, companyLogo?: string) => void;
+    markAllNotificationsAsRead: () => void;
+    clearNotifications: () => void;
 
     // Utility
     getSelectedTicket: () => SupportTicket | undefined;
@@ -108,6 +127,8 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
     tickets: [],
     selectedTicketId: null,
     isLoading: false,
+    notifications: [],
+    unreadNotificationCount: 0,
     isTyping: false,
     typingCompanyId: null,
 
@@ -453,32 +474,48 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
 
     // Add message to a ticket
     addMessage: (ticketId: string, message: ChatMessage) => {
+        const { selectedTicketId, tickets, addNotification } = get();
+        const isViewingThisTicket = selectedTicketId === ticketId;
+
+        // Find ticket to get company info for notification
+        const ticket = tickets.find(t => t.id === ticketId);
+
         set(state => ({
-            tickets: state.tickets.map(ticket => {
-                if (ticket.id === ticketId) {
+            tickets: state.tickets.map(t => {
+                if (t.id === ticketId) {
                     // Check if message already exists
-                    const exists = ticket.messages.some(m => m.id === message.id);
-                    if (exists) return ticket;
+                    const exists = t.messages.some(m => m.id === message.id);
+                    if (exists) return t;
 
                     // Reopen ticket if it's closed and message is from business (not admin)
-                    const newStatus = (!message.admin && ticket.status === 'closed')
+                    const newStatus = (!message.admin && t.status === 'closed')
                         ? 'open' as const
-                        : ticket.status;
+                        : t.status;
+
+                    // Only increment unread count if:
+                    // 1. Message is not from admin (it's from business user)
+                    // 2. Admin is NOT currently viewing this ticket
+                    const shouldIncrementUnread = !message.admin && !isViewingThisTicket;
 
                     return {
-                        ...ticket,
+                        ...t,
                         status: newStatus,
-                        messages: [...ticket.messages, message],
+                        messages: [...t.messages, message],
                         lastMessage: message.message,
                         lastMessageTime: new Date(message.timestamp),
-                        unreadCount: !message.admin
-                            ? ticket.unreadCount + 1
-                            : ticket.unreadCount
+                        unreadCount: shouldIncrementUnread
+                            ? t.unreadCount + 1
+                            : t.unreadCount
                     };
                 }
-                return ticket;
+                return t;
             })
         }));
+
+        // Add notification if message is from business user (not admin) and not viewing that ticket
+        if (!message.admin && !isViewingThisTicket && ticket) {
+            addNotification(ticketId, ticket.companyName, ticket.companyLogo);
+        }
     },
 
     // Mark messages as read
@@ -505,6 +542,35 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
     // Set connection status
     setConnectionStatus: (status: ConnectionStatus) => {
         set({ connectionStatus: status, isConnected: status === 'connected' });
+    },
+
+    // Add notification for new message
+    addNotification: (ticketId: string, companyName: string, companyLogo?: string) => {
+        const notification: AdminNotification = {
+            id: `notif_${Date.now()}`,
+            ticketId,
+            companyName,
+            companyLogo,
+            timestamp: new Date(),
+            read: false
+        };
+        set(state => ({
+            notifications: [notification, ...state.notifications].slice(0, 20), // Keep max 20 notifications
+            unreadNotificationCount: state.unreadNotificationCount + 1
+        }));
+    },
+
+    // Mark all notifications as read
+    markAllNotificationsAsRead: () => {
+        set(state => ({
+            notifications: state.notifications.map(n => ({ ...n, read: true })),
+            unreadNotificationCount: 0
+        }));
+    },
+
+    // Clear all notifications
+    clearNotifications: () => {
+        set({ notifications: [], unreadNotificationCount: 0 });
     }
 }));
 

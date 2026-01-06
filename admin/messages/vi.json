@@ -26,6 +26,11 @@
   "header": {
     "search": "Tìm kiếm...",
     "notifications": "Thông báo",
+    "noNotifications": "Chưa có tin nhắn mới",
+    "newMessage": "có tin nhắn mới",
+    "markAllRead": "Đánh dấu đã đọc",
+    "unread": "chưa đọc",
+    "viewAll": "Xem tất cả tin nhắn",
     "signOut": "Đăng xuất"
   },
   "sidebar": {

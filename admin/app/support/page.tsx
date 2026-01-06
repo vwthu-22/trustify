@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, MessageSquare, Clock, MoreVertical, Send, Paperclip, X, RefreshCw, CheckCircle, AlertCircle } from 'lucide-react';
+import { Search, MessageSquare, Clock, MoreVertical, Send, Paperclip, X, RefreshCw, CheckCircle, AlertCircle, ShieldCheck, User } from 'lucide-react';
 import { useSupportChatStore, SupportTicket, ChatMessage } from '@/store/useSupportChatStore';
 import { useTranslations } from 'next-intl';
 
@@ -279,18 +279,31 @@ export default function SupportPage() {
                         <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50/50">
                             {selectedTicket.messages.map((message) => {
                                 const isAdmin = message.admin;
-                                const displayName = message.sender || (isAdmin ? 'Admin' : selectedTicket.companyName);
 
                                 return (
                                     <div key={message.id} className={`flex gap-4 ${isAdmin ? 'flex-row-reverse' : ''}`}>
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1 ${isAdmin
-                                            ? 'bg-blue-600'
-                                            : 'bg-gradient-to-br from-blue-500 to-blue-600'
-                                            }`}>
-                                            <span className="text-xs font-bold text-white">
-                                                {isAdmin ? 'AD' : getInitials(displayName)}
-                                            </span>
-                                        </div>
+                                        {/* Avatar */}
+                                        {isAdmin ? (
+                                            <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1 bg-gradient-to-br from-blue-500 to-blue-600">
+                                                <ShieldCheck className="w-4 h-4 text-white" />
+                                            </div>
+                                        ) : (
+                                            <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center mt-1 overflow-hidden bg-gradient-to-br from-purple-500 to-purple-600">
+                                                {selectedTicket.companyLogo ? (
+                                                    <img
+                                                        src={selectedTicket.companyLogo}
+                                                        alt={selectedTicket.companyName}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <span className="text-white text-xs font-bold">
+                                                        {getInitials(selectedTicket.companyName)}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {/* Message Bubble */}
                                         <div className={`p-4 rounded-2xl shadow-sm max-w-[70%] ${isAdmin
                                             ? 'bg-blue-600 text-white rounded-tr-none'
                                             : 'bg-white text-gray-700 rounded-tl-none border border-gray-100'
@@ -307,10 +320,18 @@ export default function SupportPage() {
                             {/* Typing indicator */}
                             {isTyping && typingCompanyId === selectedTicket.companyId && (
                                 <div className="flex gap-4">
-                                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                                        <span className="text-xs font-bold text-white">
-                                            {getInitials(selectedTicket.companyName)}
-                                        </span>
+                                    <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center mt-1 overflow-hidden bg-gradient-to-br from-purple-500 to-purple-600">
+                                        {selectedTicket.companyLogo ? (
+                                            <img
+                                                src={selectedTicket.companyLogo}
+                                                alt={selectedTicket.companyName}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <span className="text-white text-xs font-bold">
+                                                {getInitials(selectedTicket.companyName)}
+                                            </span>
+                                        )}
                                     </div>
                                     <div className="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm border border-gray-100">
                                         <div className="flex gap-1">

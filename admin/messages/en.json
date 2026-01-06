@@ -26,6 +26,11 @@
     "header": {
         "search": "Search...",
         "notifications": "Notifications",
+        "noNotifications": "No new messages",
+        "newMessage": "has a new message",
+        "markAllRead": "Mark all as read",
+        "unread": "unread",
+        "viewAll": "View all messages",
         "signOut": "Sign Out"
     },
     "sidebar": {

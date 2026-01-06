@@ -169,16 +169,27 @@ export default function SupportChatPage() {
                                         <div className={`flex ${isUserMessage ? 'justify-end' : 'justify-start'}`}>
                                             <div className={`flex items-end gap-2 max-w-[70%] ${isUserMessage ? 'flex-row-reverse' : ''}`}>
                                                 {/* Avatar */}
-                                                <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center ${message.admin
-                                                    ? 'bg-gradient-to-br from-purple-500 to-purple-600'
-                                                    : 'bg-gradient-to-br from-blue-500 to-blue-600'
-                                                    }`}>
-                                                    {message.admin ? (
+                                                {message.admin ? (
+                                                    <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-purple-500 to-purple-600">
                                                         <ShieldCheck className="w-4 h-4 text-white" />
-                                                    ) : (
-                                                        <User className="w-4 h-4 text-white" />
-                                                    )}
-                                                </div>
+                                                    </div>
+                                                ) : (
+                                                    <div className="w-8 h-8 rounded-full flex-shrink-0 overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                                                        {company?.logo ? (
+                                                            <img
+                                                                src={company.logo}
+                                                                alt={company.name || 'User'}
+                                                                className="w-full h-full object-cover"
+                                                            />
+                                                        ) : company?.name ? (
+                                                            <span className="text-white text-xs font-bold">
+                                                                {company.name.charAt(0).toUpperCase()}
+                                                            </span>
+                                                        ) : (
+                                                            <User className="w-4 h-4 text-white" />
+                                                        )}
+                                                    </div>
+                                                )}
 
                                                 {/* Message Bubble */}
                                                 <div className={`rounded-2xl px-4 py-2.5 ${isUserMessage
