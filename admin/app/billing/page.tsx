@@ -293,7 +293,7 @@ export default function BillingPage() {
                     </div>
                 </div>
             </div>
-            <div className="flex items-center justify-end">
+            {/* <div className="flex items-center justify-end">
                 <button
                     onClick={handleCreateClick}
                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
@@ -301,10 +301,10 @@ export default function BillingPage() {
                     <Plus className="w-4 h-4" />
                     Create New Plan
                 </button>
-            </div>
+            </div> */}
             {/* Tabs */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-                <div className="border-b border-gray-200">
+                <div className="border-b border-gray-200 flex items-center justify-between">
                     <nav className="flex gap-6 px-6">
                         {[
                             { id: 'overview', label: 'Overview' },
@@ -323,6 +323,15 @@ export default function BillingPage() {
                             </button>
                         ))}
                     </nav>
+                    <div className="flex items-center">
+                        <button
+                            onClick={handleCreateClick}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                        >
+                            <Plus className="w-4 h-4" />
+                            Create New Plan
+                        </button>
+                    </div>
                 </div>
 
                 {/* Error Message */}

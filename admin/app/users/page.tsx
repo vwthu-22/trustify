@@ -128,26 +128,7 @@ export default function UsersPage() {
 
     return (
         <div className="space-y-6">
-            {/* Header */}
-            <div className="flex items-center justify-end">
-                <button
-                    onClick={() => setShowCreateModal(true)}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
-                >
-                    <UserPlus className="w-4 h-4" />
-                    <span>{t('addNewAdmin')}</span>
-                </button>
-            </div>
 
-            {/* Error Message */}
-            {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center justify-between">
-                    <span>{error}</span>
-                    <button onClick={clearError} className="text-red-500 hover:text-red-700">
-                        <X className="w-4 h-4" />
-                    </button>
-                </div>
-            )}
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 {/* Search & Filter */}
@@ -163,29 +144,23 @@ export default function UsersPage() {
                         />
                     </div>
                     <div className="relative">
-                        <button
-                            onClick={() => setShowFilterDropdown(!showFilterDropdown)}
-                            className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2 text-gray-600"
-                        >
-                            <Filter className="w-4 h-4" />
-                            <span>{tCommon('filter')}: {statusFilter === 'all' ? tCommon('all') : statusFilter}</span>
-                        </button>
-                        {showFilterDropdown && (
-                            <div className="absolute right-0 top-full mt-1 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
-                                {['all', 'ACTIVE', 'INACTIVE', 'SUSPENDED'].map((status) => (
-                                    <button
-                                        key={status}
-                                        onClick={() => {
-                                            setStatusFilter(status)
-                                            setShowFilterDropdown(false)
-                                        }}
-                                        className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-50 ${statusFilter === status ? 'text-blue-600 font-medium' : 'text-gray-700'}`}
-                                    >
-                                        {status === 'all' ? tCommon('all') :
-                                            status === 'ACTIVE' ? tCommon('active') :
-                                                status === 'INACTIVE' ? tCommon('inactive') : tCommon('suspended')}
-                                    </button>
-                                ))}
+                        <div className="flex items-center justify-end">
+                            <button
+                                onClick={() => setShowCreateModal(true)}
+                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                            >
+                                <UserPlus className="w-4 h-4" />
+                                <span>{t('addNewAdmin')}</span>
+                            </button>
+                        </div>
+
+                        {/* Error Message */}
+                        {error && (
+                            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center justify-between">
+                                <span>{error}</span>
+                                <button onClick={clearError} className="text-red-500 hover:text-red-700">
+                                    <X className="w-4 h-4" />
+                                </button>
                             </div>
                         )}
                     </div>
