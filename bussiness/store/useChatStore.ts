@@ -232,9 +232,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
                         }
                     };
 
+                    // Subscribe to all possible topics where backend might broadcast
                     client.subscribe(`/topic/rooms/${currentRoomId}`, handleIncomingMessage);
                     client.subscribe(`/topic/business/${currentRoomId}`, handleIncomingMessage);
                     client.subscribe(`/topic/chat/${currentRoomId}`, handleIncomingMessage);
+                    client.subscribe(`/topic/admin/${currentRoomId}`, handleIncomingMessage); // For admin messages
 
                     // Note: Message history is already loaded before WebSocket connection
                 } else {
@@ -412,17 +414,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
         console.log('📤 Sent message:', payload);
 
-        // Optimistically add message to UI immediately
-        const optimisticMessage: ChatMessage = {
-            id: Date.now(), // Temp ID
-            roomId: typeof effectiveRoomId === 'string' ? parseInt(effectiveRoomId) : effectiveRoomId,
-            sender: 'Me', // Or actual user name if available
-            message: message,
-            admin: isAdmin,
-            timestamp: new Date().toISOString()
-        };
-
-        get().addMessage(optimisticMessage);
+        // Don't add optimistically - wait for backend to broadcast
+        // This prevents duplicate messages with mismatched IDs
     },
 
     // Send message via REST API (fallback when WebSocket not connected)
@@ -472,14 +465,44 @@ export const useChatStore = create<ChatState>((set, get) => ({
     // Add a message to the list
     addMessage: (message: ChatMessage) => {
         set((state) => {
-            // Check if message already exists (prevent duplicates)
-            const exists = state.messages.some(m => m.id === message.id);
-            if (exists) return state;
+            // Check if message already exists (prevent duplicates by ID and content)
+            const exists = state.messages.some(m =>
+                m.id === message.id ||
+                (m.message === message.message &&
+                    Math.abs(new Date(m.timestamp).getTime() - new Date(message.timestamp).getTime()) < 2000)
+            );
+            if (exists) {
+                console.log('🔍 Duplicate message detected, skipping:', message.id);
+                return state;
+            }
+
+            console.log('✅ Adding new message:', message);
 
             // Update roomId if this is from a new room (first message scenario)
             const newRoomId = (!state.roomId || state.roomId === 0) && message.roomId
                 ? message.roomId
                 : state.roomId;
+
+            // If roomId changed and we have an active connection, subscribe to the new room topics
+            if (newRoomId !== state.roomId && state.stompClient?.active) {
+                const client = state.stompClient;
+                const handleIncomingMessage = (msg: IMessage) => {
+                    try {
+                        const data: ChatMessage = JSON.parse(msg.body);
+                        console.log('📨 Received message on new subscription:', data);
+                        get().addMessage(data);
+                    } catch (error) {
+                        console.error('Error parsing message:', error);
+                    }
+                };
+
+                // Subscribe to all topics for the new room
+                client.subscribe(`/topic/rooms/${newRoomId}`, handleIncomingMessage);
+                client.subscribe(`/topic/business/${newRoomId}`, handleIncomingMessage);
+                client.subscribe(`/topic/chat/${newRoomId}`, handleIncomingMessage);
+                client.subscribe(`/topic/admin/${newRoomId}`, handleIncomingMessage);
+                console.log('🔔 Subscribed to topics for new room:', newRoomId);
+            }
 
             return {
                 messages: [...state.messages, message],

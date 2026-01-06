@@ -204,6 +204,7 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                     // Redundancy subscriptions just in case
                     client.subscribe(`/topic/business/${ticket.id}`, (msg) => handleIncomingMessage(ticket.id, msg));
                     client.subscribe(`/topic/chat/${ticket.id}`, (msg) => handleIncomingMessage(ticket.id, msg));
+                    client.subscribe(`/topic/admin/${ticket.id}`, (msg) => handleIncomingMessage(ticket.id, msg));
                 });
 
                 // Also subscribe to topic/rooms/0 for new room creation notifications
@@ -462,6 +463,7 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                         stompClient.subscribe(`/topic/rooms/${ticket.id}`, (msg) => handleIncomingMessage(ticket.id, msg));
                         stompClient.subscribe(`/topic/business/${ticket.id}`, (msg) => handleIncomingMessage(ticket.id, msg));
                         stompClient.subscribe(`/topic/chat/${ticket.id}`, (msg) => handleIncomingMessage(ticket.id, msg));
+                        stompClient.subscribe(`/topic/admin/${ticket.id}`, (msg) => handleIncomingMessage(ticket.id, msg));
                     });
                 }
             } else {
@@ -557,18 +559,8 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
 
         console.log('📤 Admin sent message:', payload);
 
-        // Optimistically add message to UI immediately for Admin
-        if (targetTicketId) {
-            const optimisticMessage: ChatMessage = {
-                id: Date.now(),
-                roomId: parseInt(targetTicketId),
-                sender: 'Admin',
-                message: content,
-                admin: true,
-                timestamp: new Date().toISOString()
-            };
-            get().addMessage(targetTicketId, optimisticMessage);
-        }
+        // Don't add optimistically - wait for backend to broadcast
+        // This prevents duplicate messages with mismatched IDs
     },
 
     // Add message to a ticket
@@ -583,9 +575,19 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
         set(state => ({
             tickets: state.tickets.map(t => {
                 if (t.id === ticketId) {
-                    // Check if message already exists
-                    const exists = t.messages.some(m => m.id === message.id);
-                    if (exists) return t;
+                    // Check if message already exists (prevent duplicates by ID and content)
+                    const exists = t.messages.some(m =>
+                        m.id === message.id ||
+                        (m.message === message.message &&
+                            m.admin === message.admin &&
+                            Math.abs(new Date(m.timestamp).getTime() - new Date(message.timestamp).getTime()) < 2000)
+                    );
+                    if (exists) {
+                        console.log('🔍 Admin: Duplicate message detected, skipping:', message.id);
+                        return t;
+                    }
+
+                    console.log('✅ Admin: Adding new message to ticket', ticketId, ':', message);
 
                     // Reopen ticket if it's closed and message is from business (not admin)
                     const newStatus = (!message.admin && t.status === 'closed')
