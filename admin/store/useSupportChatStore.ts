@@ -581,8 +581,15 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
             })
         }));
 
+        console.log('🔔 Check notification trigger:', {
+            isAdminMessage: message.admin,
+            ticketExists: !!ticket,
+            ticketId,
+            shouldNotify: !message.admin && ticket
+        });
+
         // Add notification if message is from business user (not admin)
-        // Always show notification in header bell icon
+        // Always show notification in header bell icon for incoming messages
         if (!message.admin && ticket) {
             addNotification(ticketId, ticket.companyName, ticket.companyLogo);
         }
