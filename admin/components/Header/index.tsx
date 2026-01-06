@@ -184,12 +184,12 @@ export default function Header() {
                   onClick={() => setShowDropdown(!showDropdown)}
                   className="flex items-center gap-3 pl-4 border-l border-gray-200 hover:bg-gray-50 rounded-lg py-1 pr-2 transition-colors"
                 >
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                    {displayInitial}
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center">
+                    <Shield className="w-6 h-6 text-white" />
                   </div>
                   <div className="text-left">
                     <p className="font-medium text-gray-900 text-sm max-w-[150px] truncate">{displayName}</p>
-                    <p className="text-xs text-gray-500">{adminUser.role}</p>
+                    <p className="text-xs text-gray-500">{tCommon('adminPanel')}</p>
                   </div>
                   <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${showDropdown ? 'rotate-180' : ''}`} />
                 </button>

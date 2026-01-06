@@ -310,7 +310,7 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                 let companiesMapById: Record<string, string> = {};
                 let companiesMapByName: Record<string, string> = {};
                 try {
-                    const companiesResponse = await fetch(`${API_BASE_URL}/api/users/companies?page=0&size=100`, {
+                    const companiesResponse = await fetch(`${API_BASE_URL}/admin/company/all?page=0&size=100`, {
                         credentials: 'include',
                         headers: {
                             'ngrok-skip-browser-warning': 'true'
@@ -318,7 +318,18 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                     });
                     if (companiesResponse.ok) {
                         const companiesData = await companiesResponse.json();
-                        const companies = companiesData.content || companiesData;
+                        // Parse response - handle different possible structures
+                        let companies: any[] = [];
+                        if (companiesData.success && Array.isArray(companiesData.companies)) {
+                            companies = companiesData.companies;
+                        } else if (Array.isArray(companiesData)) {
+                            companies = companiesData;
+                        } else if (companiesData.content && Array.isArray(companiesData.content)) {
+                            companies = companiesData.content;
+                        } else if (companiesData.data && Array.isArray(companiesData.data)) {
+                            companies = companiesData.data;
+                        }
+
                         console.log('🔍 Admin - Companies data:', companies);
                         companies.forEach((company: any) => {
                             if (company.logoUrl) {
