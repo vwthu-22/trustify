@@ -183,10 +183,10 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                 });
 
                 // Helper to handle incoming message
-                const handleIncomingMessage = (ticketId: string, message: IMessage) => {
+                const handleIncomingMessage = (ticketId: string, topic: string) => (message: IMessage) => {
                     try {
                         const data: ChatMessage = JSON.parse(message.body);
-                        console.log(`📨 Admin received message (Ticket ${ticketId}):`, data);
+                        console.log(`📨 Admin received message from ${topic} (Ticket ${ticketId}):`, data);
                         get().addMessage(ticketId, data);
                     } catch (error) {
                         console.error('Error parsing message:', error);
@@ -199,12 +199,12 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                     console.log('Admin subscribing to room:', ticket.id);
 
                     // Subscribe to multiple possible topics
-                    client.subscribe(`/topic/rooms/${ticket.id}`, (msg) => handleIncomingMessage(ticket.id, msg));
+                    client.subscribe(`/topic/rooms/${ticket.id}`, handleIncomingMessage(ticket.id, 'rooms'));
 
                     // Redundancy subscriptions just in case
-                    client.subscribe(`/topic/business/${ticket.id}`, (msg) => handleIncomingMessage(ticket.id, msg));
-                    client.subscribe(`/topic/chat/${ticket.id}`, (msg) => handleIncomingMessage(ticket.id, msg));
-                    client.subscribe(`/topic/admin/${ticket.id}`, (msg) => handleIncomingMessage(ticket.id, msg));
+                    client.subscribe(`/topic/business/${ticket.id}`, handleIncomingMessage(ticket.id, 'business'));
+                    client.subscribe(`/topic/chat/${ticket.id}`, handleIncomingMessage(ticket.id, 'chat'));
+                    client.subscribe(`/topic/admin/${ticket.id}`, handleIncomingMessage(ticket.id, 'admin'));
                 });
 
                 // Also subscribe to topic/rooms/0 for new room creation notifications
@@ -449,10 +449,10 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                 if (stompClient?.active) {
                     tickets.forEach(ticket => {
                         // Helper to handle incoming message
-                        const handleIncomingMessage = (ticketId: string, message: IMessage) => {
+                        const handleIncomingMessage = (ticketId: string, topic: string) => (message: IMessage) => {
                             try {
                                 const data: ChatMessage = JSON.parse(message.body);
-                                console.log(`📨 Admin received message (Ticket ${ticketId}):`, data);
+                                console.log(`📨 Admin received message from ${topic} (Ticket ${ticketId}):`, data);
                                 get().addMessage(ticketId, data);
                             } catch (error) {
                                 console.error('Error parsing message:', error);
@@ -460,10 +460,10 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                         };
 
                         console.log('Admin subscribing to room (post-fetch):', ticket.id);
-                        stompClient.subscribe(`/topic/rooms/${ticket.id}`, (msg) => handleIncomingMessage(ticket.id, msg));
-                        stompClient.subscribe(`/topic/business/${ticket.id}`, (msg) => handleIncomingMessage(ticket.id, msg));
-                        stompClient.subscribe(`/topic/chat/${ticket.id}`, (msg) => handleIncomingMessage(ticket.id, msg));
-                        stompClient.subscribe(`/topic/admin/${ticket.id}`, (msg) => handleIncomingMessage(ticket.id, msg));
+                        stompClient.subscribe(`/topic/rooms/${ticket.id}`, handleIncomingMessage(ticket.id, 'rooms'));
+                        stompClient.subscribe(`/topic/business/${ticket.id}`, handleIncomingMessage(ticket.id, 'business'));
+                        stompClient.subscribe(`/topic/chat/${ticket.id}`, handleIncomingMessage(ticket.id, 'chat'));
+                        stompClient.subscribe(`/topic/admin/${ticket.id}`, handleIncomingMessage(ticket.id, 'admin'));
                     });
                 }
             } else {
@@ -551,13 +551,14 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
             admin: true // Admin sending message
         };
 
-        // Send to STOMP destination
+        // Send to STOMP destination - try /app/admin for admin messages
+        // Backend might route admin messages differently
         stompClient.publish({
-            destination: `/app/business/${targetTicketId}`,
+            destination: `/app/admin/${targetTicketId}`,
             body: JSON.stringify(payload)
         });
 
-        console.log('📤 Admin sent message:', payload);
+        console.log('📤 Admin sent message to /app/admin:', payload);
 
         // Add optimistically with NEGATIVE temp ID so it can be replaced when real message arrives
         const optimisticMessage: ChatMessage = {
