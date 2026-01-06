@@ -138,10 +138,10 @@ export default function ChatWidget() {
     }
 
     return (
-        <div className={`fixed bottom-6 right-6 bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 transition-all duration-300 overflow-hidden flex flex-col ${isMinimized ? 'w-80 h-14' : 'w-[380px] h-[600px]'}`}>
+        <div className={`fixed bottom-6 right-6 bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 transition-all duration-300 flex flex-col ${isMinimized ? 'w-80 h-14' : 'w-[380px] h-[600px]'}`}>
             {/* Header - List View */}
             {!showChat && (
-                <div className="flex-none flex items-center justify-between px-4 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-md z-50 h-[60px]">
+                <div className="flex-none flex items-center justify-between px-4 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-md z-10 h-[60px] rounded-t-2xl">
                     <div className="flex items-center gap-3 flex-1 overflow-hidden">
                         <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center relative">
                             <MessageSquare className="w-5 h-5 text-white" />
@@ -178,7 +178,7 @@ export default function ChatWidget() {
 
             {/* Header - Chat View */}
             {showChat && selectedTicket && (
-                <div className="flex-none flex items-center justify-between px-3 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-md z-50 h-[60px]">
+                <div className="flex-none flex items-center justify-between px-3 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-md z-10 h-[60px] rounded-t-2xl">
                     <div className="flex items-center gap-2 flex-1 overflow-hidden">
                         {/* Back Button */}
                         <button
@@ -238,12 +238,12 @@ export default function ChatWidget() {
             )}
 
             {!isMinimized && (
-                <div className="flex-1 flex flex-col min-h-0 relative bg-white">
+                <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
                     {/* Conversation List View */}
                     {!showChat && (
-                        <div className="flex-1 flex flex-col">
+                        <div className="flex-1 flex flex-col min-h-0">
                             {/* Search */}
-                            <div className="p-3 border-b border-gray-100">
+                            <div className="flex-none p-3 border-b border-gray-100">
                                 <input
                                     type="text"
                                     placeholder={t('searchPlaceholder')}
@@ -313,7 +313,7 @@ export default function ChatWidget() {
 
                     {/* Chat View */}
                     {showChat && selectedTicket && (
-                        <div className="flex-1 flex flex-col">
+                        <div className="flex-1 flex flex-col min-h-0">
                             {/* Messages */}
                             <div className="flex-1 overflow-y-auto p-3 space-y-3 bg-gray-50 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-gray-400">
                                 {selectedTicket.messages.map((message) => {
@@ -376,7 +376,7 @@ export default function ChatWidget() {
                             </div>
 
                             {/* Input */}
-                            <div className="p-3 border-t border-gray-200 bg-white">
+                            <div className="flex-none p-3 border-t border-gray-200 bg-white">
                                 <div className="flex gap-2">
                                     <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors">
                                         <Paperclip className="w-5 h-5" />
