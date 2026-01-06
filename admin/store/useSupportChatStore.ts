@@ -281,13 +281,23 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                         let messages: ChatMessage[] = [];
                         if (messagesResponse.ok) {
                             const apiMessages = await messagesResponse.json();
+                            console.log('🔍 Admin - Raw API messages for room', room.id, ':', apiMessages);
+                            if (apiMessages[0]) {
+                                console.log('🔍 Admin - First message timestamp fields:', {
+                                    timestamp: apiMessages[0].timestamp,
+                                    createdAt: apiMessages[0].createdAt,
+                                    sentAt: apiMessages[0].sentAt,
+                                    time: apiMessages[0].time
+                                });
+                            }
                             messages = apiMessages.map((msg: any) => ({
                                 id: msg.id,
                                 roomId: room.id,
                                 sender: msg.sender,
                                 message: msg.message,
                                 admin: msg.admin || false,
-                                timestamp: parseTimestamp(msg.timestamp)
+                                // Try multiple possible field names for timestamp
+                                timestamp: parseTimestamp(msg.timestamp || msg.createdAt || msg.sentAt || msg.time)
                             }));
                         }
 

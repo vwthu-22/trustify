@@ -322,10 +322,18 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
             if (response.ok) {
                 const apiMessages = await response.json();
+                console.log('🔍 Raw API messages:', apiMessages);
+                console.log('🔍 First message timestamp fields:', apiMessages[0] ? {
+                    timestamp: apiMessages[0].timestamp,
+                    createdAt: apiMessages[0].createdAt,
+                    sentAt: apiMessages[0].sentAt,
+                    time: apiMessages[0].time
+                } : 'No messages');
                 // Transform messages to ensure timestamps are properly parsed
+                // Try multiple possible field names for timestamp
                 const messages: ChatMessage[] = apiMessages.map((msg: any) => ({
                     ...msg,
-                    timestamp: parseTimestamp(msg.timestamp)
+                    timestamp: parseTimestamp(msg.timestamp || msg.createdAt || msg.sentAt || msg.time)
                 }));
                 set({ messages, isLoading: false });
             } else {
