@@ -39,12 +39,13 @@ export default function Header() {
   useEffect(() => {
     if (isAuthenticated && !isConnected) {
       const initChat = async () => {
+        // Fetch tickets first to ensure we have IDs to subscribe to
         await fetchTickets('');
+        // Then connect (will use the tickets in store to subscribe)
         connect('');
       };
       initChat();
     }
-    // Don't disconnect on unmount - Header stays mounted
   }, [isAuthenticated, isConnected]);
 
   useEffect(() => {

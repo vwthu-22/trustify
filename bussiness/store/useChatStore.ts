@@ -283,6 +283,16 @@ export const useChatStore = create<ChatState>((set, get) => ({
                             timestamp: new Date(notification.timestamp || Date.now()),
                             read: false
                         });
+
+                        // If it's a message notification, refresh the chat history
+                        // This serves as a backup mechanism if the main room topic subscription fails
+                        if (notification.type === 'MESSAGE') {
+                            const currentRoomId = get().roomId;
+                            if (currentRoomId) {
+                                console.log('🔔 Triggering message refresh from notification');
+                                get().loadMessageHistory(currentRoomId, token);
+                            }
+                        }
                     } catch (error) {
                         console.error('Error parsing notification:', error);
                     }

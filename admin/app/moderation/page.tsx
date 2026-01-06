@@ -85,12 +85,15 @@ export default function ModerationPage() {
 
                                     <div className="bg-gray-50 p-3 rounded-lg mb-3 text-sm text-gray-700 italic">
                                         <p className="font-medium mb-1">"{report.reviewTitle}"</p>
-                                        <p>"{report.reviewContent?.substring(0, 150)}..."</p>
+                                        <div className="text-gray-800 whitespace-pre-wrap">"{report.reviewContent}"</div>
                                     </div>
 
                                     <div className="flex flex-wrap items-center gap-2 mb-4 text-xs">
-                                        <span className="px-2 py-1 bg-red-50 text-red-700 rounded font-medium">
+                                        <span className="px-2 py-1 bg-red-50 text-red-700 rounded font-medium border border-red-100">
                                             Lý do: {report.reason}
+                                        </span>
+                                        <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded font-medium border border-gray-200">
+                                            {reports.filter(r => r.reviewId === report.reviewId).length} lượt báo cáo
                                         </span>
                                     </div>
 

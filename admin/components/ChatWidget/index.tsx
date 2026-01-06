@@ -40,20 +40,7 @@ export default function ChatWidget() {
         }
     }, [shouldOpenChatWithTicket, isChatWidgetOpen]);
 
-    // Polling mechanism as fallback for WebSocket
-    useEffect(() => {
-        let interval: NodeJS.Timeout;
-        if (showChat && isConnected) {
-            console.log('🔄 Starting polling for messages...');
-            interval = setInterval(() => {
-                // Refresh data silently
-                useSupportChatStore.getState().fetchTickets('');
-            }, 5000);
-        }
-        return () => {
-            if (interval) clearInterval(interval);
-        };
-    }, [showChat, isConnected]);
+
 
     // Auto-scroll to bottom when messages change
     useEffect(() => {
