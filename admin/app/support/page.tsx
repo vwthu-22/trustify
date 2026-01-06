@@ -23,7 +23,8 @@ export default function SupportPage() {
         sendMessage,
         closeTicket,
         getSelectedTicket,
-        addMessage
+        addMessage,
+        setViewingSupport
     } = useSupportChatStore();
 
     const [newMessage, setNewMessage] = useState('');
@@ -31,6 +32,12 @@ export default function SupportPage() {
     const [filterStatus, setFilterStatus] = useState<'all' | 'open' | 'closed'>('all');
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+
+    // Track when admin is viewing support page
+    useEffect(() => {
+        setViewingSupport(true);
+        return () => setViewingSupport(false);
+    }, [setViewingSupport]);
 
     // Initialize WebSocket on mount
     useEffect(() => {

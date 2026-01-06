@@ -51,6 +51,7 @@ interface SupportChatState {
     tickets: SupportTicket[];
     selectedTicketId: string | null;
     isLoading: boolean;
+    isViewingSupport: boolean; // Track if admin is on the support page
 
     // Notifications
     notifications: AdminNotification[];
@@ -83,6 +84,7 @@ interface SupportChatState {
     // Utility
     getSelectedTicket: () => SupportTicket | undefined;
     setConnectionStatus: (status: ConnectionStatus) => void;
+    setViewingSupport: (viewing: boolean) => void; // Set whether admin is viewing support page
 }
 
 // Backend URL
@@ -127,6 +129,7 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
     tickets: [],
     selectedTicketId: null,
     isLoading: false,
+    isViewingSupport: false,
     notifications: [],
     unreadNotificationCount: 0,
     isTyping: false,
@@ -218,6 +221,9 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                             set(state => ({
                                 tickets: [newTicket, ...state.tickets]
                             }));
+
+                            // Add notification for new room/conversation
+                            get().addNotification(newTicket.id, newTicket.companyName, newTicket.companyLogo);
                         } else if (existingTicket) {
                             // Room exists, add message
                             get().addMessage(data.roomId.toString(), data);
@@ -300,6 +306,29 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
             if (response.ok) {
                 const rooms = await response.json();
 
+                // Fetch companies to get logo URLs
+                let companiesMap: Record<string, string> = {};
+                try {
+                    const companiesResponse = await fetch(`${API_BASE_URL}/api/users/companies?page=0&size=100`, {
+                        credentials: 'include',
+                        headers: {
+                            'ngrok-skip-browser-warning': 'true'
+                        }
+                    });
+                    if (companiesResponse.ok) {
+                        const companiesData = await companiesResponse.json();
+                        const companies = companiesData.content || companiesData;
+                        companies.forEach((company: any) => {
+                            if (company.id && company.logoUrl) {
+                                companiesMap[company.id.toString()] = company.logoUrl;
+                            }
+                        });
+                        console.log('🔍 Admin - Companies logo map:', companiesMap);
+                    }
+                } catch (err) {
+                    console.log('Could not fetch companies for logo mapping:', err);
+                }
+
                 // Transform API response to tickets format
                 const tickets: SupportTicket[] = await Promise.all(
                     rooms.map(async (room: any) => {
@@ -316,7 +345,6 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                         let messages: ChatMessage[] = [];
                         if (messagesResponse.ok) {
                             const apiMessages = await messagesResponse.json();
-                            // console.log('🔍 Admin - Raw API messages for room', room.id, ':', apiMessages); 
 
                             messages = apiMessages.map((msg: any) => ({
                                 id: msg.id,
@@ -333,13 +361,21 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                         // Set unreadCount to 0 on load - only new real-time messages should be counted as unread
                         const unreadCount = 0;
 
+                        // Get companyId for logo lookup
+                        const companyId = room.userBusinessId?.toString() || room.userBusiness?.id?.toString() || 'unknown';
+
+                        // Try to get logo from: room data first, then from companies map
+                        const companyLogo = room.userBusinessLogo || room.userBusiness?.logo || room.userBusiness?.logoUrl
+                            || room.userBusiness?.avatar || room.userBusiness?.profileImage || room.userBusiness?.imageUrl
+                            || companiesMap[companyId];
+
                         return {
                             id: room.id.toString(),
-                            companyId: room.userBusinessId?.toString() || room.userBusiness?.id?.toString() || 'unknown',
+                            companyId,
                             // Use userBusinessName (company name) instead of room.name (email)
                             companyName: room.userBusinessName || room.userBusiness?.name || room.name || 'Unknown Company',
-                            // Map logo from various possible fields
-                            companyLogo: room.userBusinessLogo || room.userBusiness?.logo || room.userBusiness?.logoUrl || room.userBusiness?.avatar || room.userBusiness?.profileImage || room.userBusiness?.imageUrl,
+                            // Map logo from various possible fields + companies map fallback
+                            companyLogo,
                             subject: 'Support Request',
                             // Use backend status if available, otherwise infer from last message
                             status: room.status
@@ -471,8 +507,9 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
 
     // Add message to a ticket
     addMessage: (ticketId: string, message: ChatMessage) => {
-        const { selectedTicketId, tickets, addNotification } = get();
-        const isViewingThisTicket = selectedTicketId === ticketId;
+        const { selectedTicketId, isViewingSupport, tickets, addNotification } = get();
+        // Only consider "viewing" if admin is on support page AND has this ticket selected
+        const isViewingThisTicket = isViewingSupport && selectedTicketId === ticketId;
 
         // Find ticket to get company info for notification
         const ticket = tickets.find(t => t.id === ticketId);
@@ -491,7 +528,7 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
 
                     // Only increment unread count if:
                     // 1. Message is not from admin (it's from business user)
-                    // 2. Admin is NOT currently viewing this ticket
+                    // 2. Admin is NOT currently viewing this ticket on support page
                     const shouldIncrementUnread = !message.admin && !isViewingThisTicket;
 
                     return {
@@ -509,8 +546,9 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
             })
         }));
 
-        // Add notification if message is from business user (not admin) and not viewing that ticket
-        if (!message.admin && !isViewingThisTicket && ticket) {
+        // Add notification if message is from business user (not admin)
+        // Always show notification in header bell icon
+        if (!message.admin && ticket) {
             addNotification(ticketId, ticket.companyName, ticket.companyLogo);
         }
     },
@@ -568,6 +606,11 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
     // Clear all notifications
     clearNotifications: () => {
         set({ notifications: [], unreadNotificationCount: 0 });
+    },
+
+    // Set whether admin is viewing support page
+    setViewingSupport: (viewing: boolean) => {
+        set({ isViewingSupport: viewing });
     }
 }));
 
