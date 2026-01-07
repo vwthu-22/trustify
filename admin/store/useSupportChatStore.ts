@@ -130,6 +130,9 @@ const parseTimestamp = (timestamp: any): string => {
     return new Date().toISOString();
 };
 
+// Track subscribed rooms to prevent duplicate subscriptions
+const subscribedRooms = new Set<string>();
+
 export const useSupportChatStore = create<SupportChatState>((set, get) => ({
     // Initial state
     isConnected: false,
@@ -197,8 +200,13 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                 // Backend broadcasts to /topic/rooms/{roomId}
                 const { tickets } = get();
                 tickets.forEach(ticket => {
+                    if (subscribedRooms.has(ticket.id)) {
+                        console.log('Admin already subscribed to room:', ticket.id);
+                        return;
+                    }
                     console.log('Admin subscribing to room:', ticket.id);
                     client.subscribe(`/topic/rooms/${ticket.id}`, handleIncomingMessage(ticket.id, 'rooms'));
+                    subscribedRooms.add(ticket.id);
                 });
 
                 // Also subscribe to topic/rooms/0 for new room creation notifications
@@ -301,6 +309,7 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
         const { stompClient } = get();
         if (stompClient?.active) {
             stompClient.deactivate();
+            subscribedRooms.clear(); // Clear tracked subscriptions
             set({
                 stompClient: null,
                 isConnected: false,
@@ -442,6 +451,12 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                 const { stompClient } = get();
                 if (stompClient?.active) {
                     tickets.forEach(ticket => {
+                        // Skip if already subscribed
+                        if (subscribedRooms.has(ticket.id)) {
+                            console.log('Admin already subscribed to room (post-fetch):', ticket.id);
+                            return;
+                        }
+
                         // Helper to handle incoming message
                         const handleIncomingMessage = (ticketId: string, topic: string) => (message: IMessage) => {
                             try {
@@ -455,6 +470,7 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
 
                         console.log('Admin subscribing to room (post-fetch):', ticket.id);
                         stompClient.subscribe(`/topic/rooms/${ticket.id}`, handleIncomingMessage(ticket.id, 'rooms'));
+                        subscribedRooms.add(ticket.id);
                     });
                 }
             } else {

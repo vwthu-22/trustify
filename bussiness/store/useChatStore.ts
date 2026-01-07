@@ -106,6 +106,9 @@ const parseTimestamp = (timestamp: any): string => {
     return new Date().toISOString();
 };
 
+// Track if already subscribed to prevent duplicates
+let subscribedToRoom: string | number | null = null;
+
 export const useChatStore = create<ChatState>((set, get) => ({
     // Initial state
     isConnected: false,
@@ -227,6 +230,12 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
                 // Subscribe to room messages if we have a room
                 if (currentRoomId && currentRoomId !== 0) {
+                    // Skip if already subscribed to this room
+                    if (subscribedToRoom === currentRoomId) {
+                        console.log('🔔 Business already subscribed to room:', currentRoomId);
+                        return;
+                    }
+
                     console.log('🔔 Business subscribing to: /topic/rooms/' + currentRoomId);
 
                     const handleIncomingMessage = (message: IMessage) => {
@@ -242,6 +251,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
                     // Subscribe to room topic where backend broadcasts messages
                     // Backend sends to: /topic/rooms/{roomId}
                     client.subscribe(`/topic/rooms/${currentRoomId}`, handleIncomingMessage);
+                    subscribedToRoom = currentRoomId;
                     console.log('✅ Successfully subscribed to /topic/rooms/' + currentRoomId);
 
                     // Note: Message history is already loaded before WebSocket connection
@@ -347,6 +357,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
         const { stompClient } = get();
         if (stompClient?.active) {
             stompClient.deactivate();
+            subscribedToRoom = null; // Clear tracked subscription
             set({
                 stompClient: null,
                 isConnected: false,
@@ -524,21 +535,27 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
             // If roomId changed and we have an active connection, subscribe to the new room topics
             if (newRoomId !== state.roomId && state.stompClient?.active) {
-                const client = state.stompClient;
-                const handleIncomingMessage = (msg: IMessage) => {
-                    try {
-                        const data: ChatMessage = JSON.parse(msg.body);
-                        console.log('📨 Received message on new subscription:', data);
-                        get().addMessage(data);
-                    } catch (error) {
-                        console.error('Error parsing message:', error);
-                    }
-                };
+                // Skip if already subscribed
+                if (subscribedToRoom === newRoomId) {
+                    console.log('🔔 Already subscribed to room:', newRoomId);
+                } else {
+                    const client = state.stompClient;
+                    const handleIncomingMessage = (msg: IMessage) => {
+                        try {
+                            const data: ChatMessage = JSON.parse(msg.body);
+                            console.log('📨 Received message on new subscription:', data);
+                            get().addMessage(data);
+                        } catch (error) {
+                            console.error('Error parsing message:', error);
+                        }
+                    };
 
-                // Subscribe to the new room topic
-                // Backend broadcasts to /topic/rooms/{roomId}
-                client.subscribe(`/topic/rooms/${newRoomId}`, handleIncomingMessage);
-                console.log('🔔 Subscribed to room topic:', newRoomId);
+                    // Subscribe to the new room topic
+                    // Backend broadcasts to /topic/rooms/{roomId}
+                    client.subscribe(`/topic/rooms/${newRoomId}`, handleIncomingMessage);
+                    subscribedToRoom = newRoomId;
+                    console.log('🔔 Subscribed to room topic:', newRoomId);
+                }
             }
 
             return {
