@@ -219,15 +219,21 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                         const existingTicket = get().tickets.find(t => t.id === data.roomId.toString());
                         if (!existingTicket && data.roomId) {
                             // New room created - subscribe to it and reload tickets
-                            client.subscribe(`/topic/rooms/${data.roomId}`, (msg: IMessage) => {
-                                try {
-                                    const msgData: ChatMessage = JSON.parse(msg.body);
-                                    console.log('📨 Admin received message:', msgData);
-                                    get().addMessage(data.roomId.toString(), msgData);
-                                } catch (err) {
-                                    console.error('Error parsing message:', err);
-                                }
-                            });
+                            // Note: The fetchTickets call below will handle the subscription for this new ticket
+                            // if it's returned by the API. For immediate display, we add it here.
+                            if (!subscribedRooms.has(data.roomId.toString())) {
+                                client.subscribe(`/topic/rooms/${data.roomId}`, (msg: IMessage) => {
+                                    try {
+                                        const msgData: ChatMessage = JSON.parse(msg.body);
+                                        console.log('📨 Admin received message:', msgData);
+                                        get().addMessage(data.roomId.toString(), msgData);
+                                    } catch (err) {
+                                        console.error('Error parsing message:', err);
+                                    }
+                                });
+                                subscribedRooms.add(data.roomId.toString());
+                            }
+
 
                             // Add as new ticket
                             const newTicket: SupportTicket = {
@@ -591,8 +597,8 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
         // Find ticket to get company info for notification
         const ticket = tickets.find(t => t.id === ticketId);
 
-        set(state => ({
-            tickets: state.tickets.map(t => {
+        set(state => {
+            const updatedTickets = state.tickets.map(t => {
                 if (t.id === ticketId) {
                     // If this is a real message from backend (positive ID), check for optimistic message to replace
                     if (message.id > 0) {
@@ -654,8 +660,17 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                     };
                 }
                 return t;
-            })
-        }));
+            });
+
+            // Move the updated ticket to the top of the list
+            const ticketIndex = updatedTickets.findIndex(t => t.id === ticketId);
+            if (ticketIndex > 0) {
+                const [movedTicket] = updatedTickets.splice(ticketIndex, 1);
+                updatedTickets.unshift(movedTicket);
+            }
+
+            return { tickets: updatedTickets };
+        });
 
         console.log('🔔 Check notification trigger:', {
             isAdminMessage: message.admin,
