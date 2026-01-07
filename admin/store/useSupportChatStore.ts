@@ -133,6 +133,42 @@ const parseTimestamp = (timestamp: any): string => {
 // Track subscribed rooms to prevent duplicate subscriptions
 const subscribedRooms = new Set<string>();
 
+// localStorage key for notifications
+const NOTIFICATIONS_STORAGE_KEY = 'admin_support_notifications';
+
+// Helper to load notifications from localStorage
+const loadNotifications = (): { notifications: AdminNotification[], unreadCount: number } => {
+    if (typeof window === 'undefined') return { notifications: [], unreadCount: 0 };
+    try {
+        const stored = localStorage.getItem(NOTIFICATIONS_STORAGE_KEY);
+        if (stored) {
+            const data = JSON.parse(stored);
+            // Convert timestamp strings back to Date objects
+            const notifications = (data.notifications || []).map((n: AdminNotification) => ({
+                ...n,
+                timestamp: new Date(n.timestamp)
+            }));
+            return { notifications, unreadCount: data.unreadCount || 0 };
+        }
+    } catch (e) {
+        console.error('Error loading notifications from localStorage:', e);
+    }
+    return { notifications: [], unreadCount: 0 };
+};
+
+// Helper to save notifications to localStorage
+const saveNotifications = (notifications: AdminNotification[], unreadCount: number) => {
+    if (typeof window === 'undefined') return;
+    try {
+        localStorage.setItem(NOTIFICATIONS_STORAGE_KEY, JSON.stringify({ notifications, unreadCount }));
+    } catch (e) {
+        console.error('Error saving notifications to localStorage:', e);
+    }
+};
+
+// Load initial notifications
+const initialNotifications = loadNotifications();
+
 export const useSupportChatStore = create<SupportChatState>((set, get) => ({
     // Initial state
     isConnected: false,
@@ -142,8 +178,8 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
     selectedTicketId: null,
     isLoading: false,
     isViewingSupport: false,
-    notifications: [],
-    unreadNotificationCount: 0,
+    notifications: initialNotifications.notifications,
+    unreadNotificationCount: initialNotifications.unreadCount,
     isChatWidgetOpen: false,
     shouldOpenChatWithTicket: null,
     isTyping: false,
@@ -726,22 +762,32 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
             timestamp: new Date(),
             read: false
         };
-        set(state => ({
-            notifications: [notification, ...state.notifications].slice(0, 20), // Keep max 20 notifications
-            unreadNotificationCount: state.unreadNotificationCount + 1
-        }));
+        set(state => {
+            const newNotifications = [notification, ...state.notifications].slice(0, 20);
+            const newUnreadCount = state.unreadNotificationCount + 1;
+            saveNotifications(newNotifications, newUnreadCount);
+            return {
+                notifications: newNotifications,
+                unreadNotificationCount: newUnreadCount
+            };
+        });
     },
 
     // Mark all notifications as read
     markAllNotificationsAsRead: () => {
-        set(state => ({
-            notifications: state.notifications.map(n => ({ ...n, read: true })),
-            unreadNotificationCount: 0
-        }));
+        set(state => {
+            const newNotifications = state.notifications.map(n => ({ ...n, read: true }));
+            saveNotifications(newNotifications, 0);
+            return {
+                notifications: newNotifications,
+                unreadNotificationCount: 0
+            };
+        });
     },
 
     // Clear all notifications
     clearNotifications: () => {
+        saveNotifications([], 0);
         set({ notifications: [], unreadNotificationCount: 0 });
     },
 
@@ -749,9 +795,12 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
     clearNotificationsForTicket: (ticketId: string) => {
         set(state => {
             const notificationsToRemove = state.notifications.filter(n => n.ticketId === ticketId && !n.read);
+            const newNotifications = state.notifications.filter(n => n.ticketId !== ticketId);
+            const newUnreadCount = Math.max(0, state.unreadNotificationCount - notificationsToRemove.length);
+            saveNotifications(newNotifications, newUnreadCount);
             return {
-                notifications: state.notifications.filter(n => n.ticketId !== ticketId),
-                unreadNotificationCount: Math.max(0, state.unreadNotificationCount - notificationsToRemove.length)
+                notifications: newNotifications,
+                unreadNotificationCount: newUnreadCount
             };
         });
     },

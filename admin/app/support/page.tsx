@@ -19,7 +19,10 @@ export default function ChatWidget() {
         sendMessage,
         getSelectedTicket,
         addMessage,
-        unreadNotificationCount
+        unreadNotificationCount,
+        setViewingSupport,
+        clearNotificationsForTicket,
+        markMessagesAsRead
     } = useSupportChatStore();
 
     const [isOpen, setIsOpen] = useState(false);
@@ -36,6 +39,23 @@ export default function ChatWidget() {
             messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
         }
     }, [selectedTicketId, tickets, isOpen, isMinimized, showChat]);
+
+    // Track when admin is viewing a chat to prevent notifications
+    useEffect(() => {
+        const isViewingChat = isOpen && !isMinimized && showChat && selectedTicketId;
+        setViewingSupport(!!isViewingChat);
+
+        // Clear notifications and mark as read when viewing a specific chat
+        if (isViewingChat && selectedTicketId) {
+            clearNotificationsForTicket(selectedTicketId);
+            markMessagesAsRead(selectedTicketId);
+        }
+
+        // Cleanup: set not viewing when unmount or close
+        return () => {
+            setViewingSupport(false);
+        };
+    }, [isOpen, isMinimized, showChat, selectedTicketId, setViewingSupport, clearNotificationsForTicket, markMessagesAsRead]);
 
     const selectedTicket = getSelectedTicket();
 
