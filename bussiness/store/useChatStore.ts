@@ -174,18 +174,24 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
             if (roomsResponse.ok) {
                 const roomData = await roomsResponse.json();
+                console.log('🔍 my-room API response:', roomData);
                 if (roomData && roomData.id) {
                     effectiveRoomId = roomData.id;
-                    console.log('Found existing room:', effectiveRoomId);
+                    console.log('✅ Found existing room:', effectiveRoomId);
+                } else {
+                    console.log('⚠️ my-room returned but no id:', roomData);
                 }
             } else if (roomsResponse.status === 404) {
                 // No room exists yet, will be created when first message is sent
-                console.log('No existing room, will create on first message');
+                console.log('⚠️ No existing room (404), will create on first message');
+            } else {
+                console.log('⚠️ my-room API error:', roomsResponse.status);
             }
         } catch (error) {
-            console.log('Could not fetch room, using provided roomId:', error);
+            console.log('❌ Could not fetch room, using provided roomId:', error);
         }
 
+        console.log('🔍 Setting roomId to:', effectiveRoomId);
         set({ roomId: effectiveRoomId });
 
         // Load message history immediately if we have a room (doesn't depend on WebSocket)
@@ -217,15 +223,16 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 });
 
                 const currentRoomId = get().roomId;
+                console.log('🔍 onConnect - currentRoomId from store:', currentRoomId);
 
                 // Subscribe to room messages if we have a room
                 if (currentRoomId && currentRoomId !== 0) {
-                    console.log('Subscribing to room topics:', currentRoomId);
+                    console.log('🔔 Business subscribing to: /topic/rooms/' + currentRoomId);
 
                     const handleIncomingMessage = (message: IMessage) => {
                         try {
                             const data: ChatMessage = JSON.parse(message.body);
-                            console.log('📨 Received message:', data);
+                            console.log('📨 Business RECEIVED message from WebSocket:', data);
                             get().addMessage(data);
                         } catch (error) {
                             console.error('Error parsing message:', error);
@@ -235,12 +242,13 @@ export const useChatStore = create<ChatState>((set, get) => ({
                     // Subscribe to room topic where backend broadcasts messages
                     // Backend sends to: /topic/rooms/{roomId}
                     client.subscribe(`/topic/rooms/${currentRoomId}`, handleIncomingMessage);
+                    console.log('✅ Successfully subscribed to /topic/rooms/' + currentRoomId);
 
                     // Note: Message history is already loaded before WebSocket connection
                 } else {
                     // No room yet - subscribe to a temporary topic that will be resolved later
                     // We'll need to re-subscribe when room is created
-                    console.log('No room yet, will subscribe after first message');
+                    console.log('⚠️ No room yet (roomId=' + currentRoomId + '), subscribing to /topic/rooms/0');
 
                     // Subscribe to topic/rooms/0 as a catch-all for new room creation
                     // The backend should broadcast to this when creating a new room
