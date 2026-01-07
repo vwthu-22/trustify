@@ -447,6 +447,9 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                     })
                 );
 
+                // Sort tickets by lastMessageTime (newest first)
+                tickets.sort((a, b) => b.lastMessageTime.getTime() - a.lastMessageTime.getTime());
+
                 set({
                     tickets,
                     isLoading: false,
