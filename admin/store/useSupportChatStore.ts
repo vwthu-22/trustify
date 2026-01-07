@@ -599,8 +599,7 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                         const optimisticIndex = t.messages.findIndex(m =>
                             m.id < 0 && // Optimistic message has negative ID
                             m.message === message.message &&
-                            m.admin === message.admin &&
-                            Math.abs(new Date(m.timestamp).getTime() - new Date(message.timestamp).getTime()) < 5000
+                            m.admin === message.admin
                         );
 
                         if (optimisticIndex !== -1) {

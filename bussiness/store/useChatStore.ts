@@ -495,8 +495,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
             if (message.id > 0) {
                 const optimisticIndex = state.messages.findIndex(m =>
                     m.id < 0 && // Optimistic message has negative ID
-                    m.message === message.message &&
-                    Math.abs(new Date(m.timestamp).getTime() - new Date(message.timestamp).getTime()) < 5000
+                    m.message === message.message
                 );
 
                 if (optimisticIndex !== -1) {
