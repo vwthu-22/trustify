@@ -679,12 +679,13 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
             isAdminMessage: message.admin,
             ticketExists: !!ticket,
             ticketId,
-            shouldNotify: !message.admin && ticket
+            isViewingThisTicket,
+            shouldNotify: !message.admin && ticket && !isViewingThisTicket
         });
 
         // Add notification if message is from business user (not admin)
-        // Always show notification in header bell icon for incoming messages
-        if (!message.admin && ticket) {
+        // BUT only if admin is NOT currently viewing this specific chat
+        if (!message.admin && ticket && !isViewingThisTicket) {
             addNotification(ticketId, ticket.companyName, ticket.companyLogo);
         }
     },
