@@ -165,7 +165,7 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
         }
 
         const client = new Client({
-            webSocketFactory: () => new SockJS(`${WS_URL}${token ? ` ?token=${token}` : ''}`),
+            webSocketFactory: () => new SockJS(`${WS_URL}${token ? `?token=${token}` : ''}`),
             connectHeaders,
             debug: (str) => {
                 console.log('STOMP Debug:', str);
@@ -194,17 +194,11 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                 };
 
                 // Subscribe to all existing rooms for admin
+                // Backend broadcasts to /topic/rooms/{roomId}
                 const { tickets } = get();
                 tickets.forEach(ticket => {
                     console.log('Admin subscribing to room:', ticket.id);
-
-                    // Subscribe to multiple possible topics
                     client.subscribe(`/topic/rooms/${ticket.id}`, handleIncomingMessage(ticket.id, 'rooms'));
-
-                    // Redundancy subscriptions just in case
-                    client.subscribe(`/topic/business/${ticket.id}`, handleIncomingMessage(ticket.id, 'business'));
-                    client.subscribe(`/topic/chat/${ticket.id}`, handleIncomingMessage(ticket.id, 'chat'));
-                    client.subscribe(`/topic/admin/${ticket.id}`, handleIncomingMessage(ticket.id, 'admin'));
                 });
 
                 // Also subscribe to topic/rooms/0 for new room creation notifications
@@ -461,9 +455,6 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
 
                         console.log('Admin subscribing to room (post-fetch):', ticket.id);
                         stompClient.subscribe(`/topic/rooms/${ticket.id}`, handleIncomingMessage(ticket.id, 'rooms'));
-                        stompClient.subscribe(`/topic/business/${ticket.id}`, handleIncomingMessage(ticket.id, 'business'));
-                        stompClient.subscribe(`/topic/chat/${ticket.id}`, handleIncomingMessage(ticket.id, 'chat'));
-                        stompClient.subscribe(`/topic/admin/${ticket.id}`, handleIncomingMessage(ticket.id, 'admin'));
                     });
                 }
             } else {

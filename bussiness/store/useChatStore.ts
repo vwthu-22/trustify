@@ -232,11 +232,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
                         }
                     };
 
-                    // Subscribe to all possible topics where backend might broadcast
+                    // Subscribe to room topic where backend broadcasts messages
+                    // Backend sends to: /topic/rooms/{roomId}
                     client.subscribe(`/topic/rooms/${currentRoomId}`, handleIncomingMessage);
-                    client.subscribe(`/topic/business/${currentRoomId}`, handleIncomingMessage);
-                    client.subscribe(`/topic/chat/${currentRoomId}`, handleIncomingMessage);
-                    client.subscribe(`/topic/admin/${currentRoomId}`, handleIncomingMessage); // For admin messages
 
                     // Note: Message history is already loaded before WebSocket connection
                 } else {
@@ -529,12 +527,10 @@ export const useChatStore = create<ChatState>((set, get) => ({
                     }
                 };
 
-                // Subscribe to all topics for the new room
+                // Subscribe to the new room topic
+                // Backend broadcasts to /topic/rooms/{roomId}
                 client.subscribe(`/topic/rooms/${newRoomId}`, handleIncomingMessage);
-                client.subscribe(`/topic/business/${newRoomId}`, handleIncomingMessage);
-                client.subscribe(`/topic/chat/${newRoomId}`, handleIncomingMessage);
-                client.subscribe(`/topic/admin/${newRoomId}`, handleIncomingMessage);
-                console.log('🔔 Subscribed to topics for new room:', newRoomId);
+                console.log('🔔 Subscribed to room topic:', newRoomId);
             }
 
             return {
