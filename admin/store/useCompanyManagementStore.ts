@@ -15,6 +15,7 @@ export interface Company {
     plan: string;
     logoUrl: string;
     status: 'ACTIVE' | 'INACTIVE' | 'PENDING';
+    verifyStatus?: 'PENDING' | 'APPROVED' | 'REJECTED' | null;
 }
 
 export interface VerificationRequest {
@@ -55,6 +56,7 @@ interface CompanyManagementStore {
     // Actions
     fetchCompanies: (page?: number, size?: number) => Promise<void>;
     updateCompanyStatus: (companyId: number, status: UpdateCompanyStatusData['status']) => Promise<boolean>;
+    updateCompanyPlan: (companyId: number, plan: string) => Promise<boolean>;
     setSearchQuery: (query: string) => void;
     setCurrentPage: (page: number) => void;
     clearError: () => void;
@@ -183,6 +185,46 @@ const useCompanyManagementStore = create<CompanyManagementStore>()(
                     console.error('Update company status error:', error);
                     set({
                         error: error instanceof Error ? error.message : 'Failed to update company status',
+                        isLoading: false,
+                    });
+                    return false;
+                }
+            },
+
+            // Update company plan
+            // TODO: Backend API needed - PUT /admin/company/{id}/plan
+            updateCompanyPlan: async (companyId: number, plan: string) => {
+                set({ isLoading: true, error: null });
+                try {
+                    // TODO: Uncomment when backend API is ready
+                    // const response = await fetch(`${API_BASE_URL}/admin/company/${companyId}/plan`, {
+                    //     method: 'PUT',
+                    //     credentials: 'include',
+                    //     headers: {
+                    //         'Content-Type': 'application/json',
+                    //         'ngrok-skip-browser-warning': 'true',
+                    //     },
+                    //     body: JSON.stringify({ plan }),
+                    // });
+                    //
+                    // if (!response.ok) {
+                    //     throw new Error('Failed to update company plan');
+                    // }
+
+                    // For now, just update local state
+                    set((state) => ({
+                        companies: state.companies.map((company) =>
+                            company.id === companyId ? { ...company, plan } : company
+                        ),
+                        isLoading: false,
+                    }));
+
+                    console.log(`✅ Updated company ${companyId} plan to: ${plan}`);
+                    return true;
+                } catch (error) {
+                    console.error('Update company plan error:', error);
+                    set({
+                        error: error instanceof Error ? error.message : 'Failed to update company plan',
                         isLoading: false,
                     });
                     return false;

@@ -63,16 +63,22 @@ export default function VerificationPage() {
     }, [uploadedFiles]);
 
     const handleFileSelect = (files: FileList | null) => {
-        if (!files) return;
+        if (!files || files.length === 0) return;
 
-        const newFiles: UploadedFile[] = Array.from(files).map(file => ({
+        // Only take the first file (single file upload)
+        const file = files[0];
+
+        // Clear previous file
+        uploadedFiles.forEach(f => URL.revokeObjectURL(f.preview));
+
+        const newFile: UploadedFile = {
             file,
             preview: URL.createObjectURL(file),
             name: file.name,
             size: file.size
-        }));
+        };
 
-        setUploadedFiles(prev => [...prev, ...newFiles]);
+        setUploadedFiles([newFile]); // Replace, not append
         clearError();
     };
 
@@ -277,7 +283,6 @@ export default function VerificationPage() {
                         ref={fileInputRef}
                         type="file"
                         accept="image/*,.pdf"
-                        multiple
                         onChange={(e) => handleFileSelect(e.target.files)}
                         className="hidden"
                     />
@@ -298,7 +303,7 @@ export default function VerificationPage() {
                 {uploadedFiles.length > 0 && (
                     <div className="mt-6">
                         <p className="text-sm font-medium text-gray-700 mb-3">
-                            {t('selectedFiles') || 'Đã chọn'} ({uploadedFiles.length} {t('files') || 'tệp'}):
+                            {t('selectedFile') || 'Tệp đã chọn'}:
                         </p>
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                             {uploadedFiles.map((file, index) => (
@@ -350,15 +355,6 @@ export default function VerificationPage() {
                                     </div>
                                 </div>
                             ))}
-
-                            {/* Add more button */}
-                            <button
-                                onClick={() => fileInputRef.current?.click()}
-                                className="aspect-[4/3] flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-400 hover:bg-blue-50 transition-all"
-                            >
-                                <ImagePlus className="w-8 h-8 text-gray-400 mb-2" />
-                                <span className="text-sm text-gray-600">{t('addMore') || 'Thêm ảnh'}</span>
-                            </button>
                         </div>
                     </div>
                 )}

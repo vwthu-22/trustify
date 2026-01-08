@@ -381,7 +381,7 @@ export const useCompanyStore = create<CompanyStore>()(
             // Set verification status
             setVerificationStatus: (status) => set({ verificationStatus: status }),
 
-            // Upload verification documents (multiple files - sends each separately)
+            // Upload verification document (single file only)
             // API: POST /api/companies/{id}/upload-verification
             // Backend expects: @RequestParam("file") MultipartFile file
             uploadVerificationDocument: async (files: File | File[]) => {
@@ -391,42 +391,37 @@ export const useCompanyStore = create<CompanyStore>()(
                     return false;
                 }
 
-                // Ensure files is an array
-                const fileArray = Array.isArray(files) ? files : [files];
+                // Get the first file only
+                const file = Array.isArray(files) ? files[0] : files;
 
-                if (fileArray.length === 0) {
-                    set({ error: 'No files to upload.' });
+                if (!file) {
+                    set({ error: 'No file to upload.' });
                     return false;
                 }
 
                 set({ isUploadingVerification: true, error: null });
 
                 try {
-                    // Upload each file individually using FormData (multipart/form-data)
-                    for (const file of fileArray) {
-                        const formData = new FormData();
-                        formData.append('file', file);
+                    const formData = new FormData();
+                    formData.append('file', file);
 
-                        const response = await fetch(`${API_BASE_URL}/api/companies/${company.id}/upload-verification`, {
-                            method: 'POST',
-                            credentials: 'include',
-                            headers: {
-                                'ngrok-skip-browser-warning': 'true',
-                                // Don't set Content-Type - browser will set it with boundary for FormData
-                            },
-                            body: formData
-                        });
+                    const response = await fetch(`${API_BASE_URL}/api/companies/${company.id}/upload-verification`, {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: {
+                            'ngrok-skip-browser-warning': 'true',
+                        },
+                        body: formData
+                    });
 
-                        if (!response.ok) {
-                            const errorData = await response.text();
-                            throw new Error(errorData || `Upload failed with status ${response.status}`);
-                        }
-
-                        const result = await response.json();
-                        console.log(`✅ Uploaded: ${file.name}`, result);
+                    if (!response.ok) {
+                        const errorData = await response.text();
+                        throw new Error(errorData || `Upload failed with status ${response.status}`);
                     }
 
-                    console.log(`✅ All ${fileArray.length} verification document(s) uploaded`);
+                    const result = await response.json();
+                    console.log(`✅ Uploaded verification document:`, result);
+
                     set({ isUploadingVerification: false, verificationStatus: 'pending' });
 
                     // Refresh company profile to get updated verifyStatus
@@ -434,9 +429,9 @@ export const useCompanyStore = create<CompanyStore>()(
 
                     return true;
                 } catch (error) {
-                    console.error('Error uploading verification documents:', error);
+                    console.error('Error uploading verification document:', error);
                     set({
-                        error: error instanceof Error ? error.message : 'Failed to upload documents. Please try again.',
+                        error: error instanceof Error ? error.message : 'Failed to upload document. Please try again.',
                         isUploadingVerification: false
                     });
                     return false;

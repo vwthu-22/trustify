@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Search, Filter, Loader2, ChevronLeft, ChevronRight, Edit, X } from 'lucide-react'
+import { Search, Filter, Loader2, ChevronLeft, ChevronRight, Edit, X, ShieldCheck, ShieldX, ShieldQuestion } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import useCompanyManagementStore, { Company } from '@/store/useCompanyManagementStore'
 import Image from 'next/image'
@@ -19,7 +19,7 @@ export default function CompaniesPage() {
         error,
         searchQuery,
         fetchCompanies,
-        updateCompanyStatus,
+        updateCompanyPlan,
         setSearchQuery,
         clearError,
     } = useCompanyManagementStore()
@@ -29,10 +29,13 @@ export default function CompaniesPage() {
     // Modal states
     const [showEditModal, setShowEditModal] = useState(false)
     const [selectedCompany, setSelectedCompany] = useState<Company | null>(null)
-    const [editStatus, setEditStatus] = useState<'ACTIVE' | 'INACTIVE' | 'PENDING'>('ACTIVE')
+    const [editPlan, setEditPlan] = useState<string>('Free')
 
-    // Status filter
-    const [statusFilter, setStatusFilter] = useState<string>('all')
+    // Available plans
+    const availablePlans = ['Free', 'Basic', 'Pro', 'Enterprise']
+
+    // Verification filter (instead of status)
+    const [verifyFilter, setVerifyFilter] = useState<string>('all')
     const [showFilterDropdown, setShowFilterDropdown] = useState(false)
 
     // Fetch companies on mount and when page changes
@@ -40,30 +43,63 @@ export default function CompaniesPage() {
         fetchCompanies(currentPage, pageSize)
     }, [fetchCompanies, currentPage])
 
-    // Filter companies by status and search query
+    // Filter companies by verification and search query
     const filteredCompanies = companies.filter(company => {
-        // Status filter
-        const matchesStatus = statusFilter === 'all' || company.status === statusFilter
+        // Verification filter
+        const matchesVerify = verifyFilter === 'all' || company.verifyStatus === verifyFilter
 
         // Search filter (search in name and email)
         const matchesSearch = !searchQuery ||
             company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             company.contactEmail.toLowerCase().includes(searchQuery.toLowerCase())
 
-        return matchesStatus && matchesSearch
+        return matchesVerify && matchesSearch
     })
 
     // Handle save edit
     const handleSaveEdit = async () => {
         if (!selectedCompany) return
 
-        if (editStatus !== selectedCompany.status) {
-            await updateCompanyStatus(selectedCompany.id, editStatus)
+        if (editPlan !== selectedCompany.plan) {
+            await updateCompanyPlan(selectedCompany.id, editPlan)
         }
 
         setShowEditModal(false)
         setSelectedCompany(null)
         fetchCompanies(currentPage, pageSize)
+    }
+
+    // Get verification status badge
+    const getVerifyStatusBadge = (verifyStatus?: string | null) => {
+        switch (verifyStatus) {
+            case 'APPROVED':
+                return (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                        <ShieldCheck className="w-3 h-3" />
+                        Verified
+                    </span>
+                )
+            case 'REJECTED':
+                return (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
+                        <ShieldX className="w-3 h-3" />
+                        Rejected
+                    </span>
+                )
+            case 'PENDING':
+                return (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
+                        <ShieldQuestion className="w-3 h-3" />
+                        Pending
+                    </span>
+                )
+            default:
+                return (
+                    <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+                        Not submitted
+                    </span>
+                )
+        }
     }
 
     // Pagination
@@ -115,22 +151,25 @@ export default function CompaniesPage() {
                             className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2 text-gray-600"
                         >
                             <Filter className="w-4 h-4" />
-                            <span>{tCommon('filter')}: {statusFilter === 'all' ? tCommon('all') : statusFilter}</span>
+                            <span>{t('verification') || 'Verification'}: {verifyFilter === 'all' ? tCommon('all') :
+                                verifyFilter === 'APPROVED' ? 'Verified' :
+                                    verifyFilter === 'PENDING' ? 'Pending' :
+                                        verifyFilter === 'REJECTED' ? 'Rejected' : 'Not submitted'}</span>
                         </button>
                         {showFilterDropdown && (
-                            <div className="absolute right-0 top-full mt-1 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
-                                {['all', 'ACTIVE', 'INACTIVE', 'PENDING'].map((status) => (
+                            <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
+                                {['all', 'APPROVED', 'PENDING', 'REJECTED'].map((status) => (
                                     <button
                                         key={status}
                                         onClick={() => {
-                                            setStatusFilter(status)
+                                            setVerifyFilter(status)
                                             setShowFilterDropdown(false)
                                         }}
-                                        className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-50 ${statusFilter === status ? 'text-blue-600 font-medium' : 'text-gray-700'}`}
+                                        className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-50 ${verifyFilter === status ? 'text-blue-600 font-medium' : 'text-gray-700'}`}
                                     >
                                         {status === 'all' ? tCommon('all') :
-                                            status === 'ACTIVE' ? tCommon('active') :
-                                                status === 'INACTIVE' ? tCommon('inactive') : 'Pending'}
+                                            status === 'APPROVED' ? 'Verified' :
+                                                status === 'PENDING' ? 'Pending' : 'Rejected'}
                                     </button>
                                 ))}
                             </div>
@@ -150,7 +189,7 @@ export default function CompaniesPage() {
                                 <th className="px-6 py-3">{t('industry')}</th>
                                 <th className="px-6 py-3">{t('country')}</th>
                                 <th className="px-6 py-3">{t('plan')}</th>
-                                <th className="px-6 py-3">{t('status')}</th>
+                                <th className="px-6 py-3">{t('verification') || 'Verification'}</th>
                                 <th className="px-6 py-3 text-right">{t('actions')}</th>
                             </tr>
                         </thead>
@@ -190,24 +229,19 @@ export default function CompaniesPage() {
                                         <td className="px-6 py-4">
                                             <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium
                                                 ${company.plan === 'Enterprise' || company.plan === 'Pro' ? 'bg-purple-100 text-purple-700' :
-                                                    'bg-gray-100 text-gray-700'}`}>
-                                                {company.plan}
+                                                    company.plan === 'Basic' ? 'bg-blue-100 text-blue-700' :
+                                                        'bg-gray-100 text-gray-700'}`}>
+                                                {company.plan || 'Free'}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                ${company.status === 'ACTIVE' ? 'bg-green-100 text-green-700' :
-                                                    company.status === 'INACTIVE' ? 'bg-gray-100 text-gray-700' :
-                                                        'bg-yellow-100 text-yellow-700'}`}>
-                                                {company.status === 'ACTIVE' ? tCommon('active') :
-                                                    company.status === 'INACTIVE' ? tCommon('inactive') : 'Pending'}
-                                            </span>
+                                            {getVerifyStatusBadge(company.verifyStatus)}
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <button
                                                 onClick={() => {
                                                     setSelectedCompany(company)
-                                                    setEditStatus(company.status)
+                                                    setEditPlan(company.plan || 'Free')
                                                     setShowEditModal(true)
                                                 }}
                                                 className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
@@ -252,12 +286,12 @@ export default function CompaniesPage() {
                 </div>
             </div>
 
-            {/* Edit Company Status Modal */}
+            {/* Edit Company Plan Modal */}
             {showEditModal && selectedCompany && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
                     <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
                         <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-bold text-gray-900">{t('editStatus.title')}</h2>
+                            <h2 className="text-xl font-bold text-gray-900">{t('editPlan.title') || 'Edit Company Plan'}</h2>
                             <button
                                 onClick={() => {
                                     setShowEditModal(false)
@@ -270,27 +304,40 @@ export default function CompaniesPage() {
                         </div>
 
                         <div className="mb-6">
-                            <p className="text-gray-600 mb-2">
-                                <span className="font-medium">{selectedCompany.name}</span>
-                            </p>
-                            <p className="text-sm text-gray-500">{selectedCompany.contactEmail}</p>
+                            <div className="flex items-center gap-3 mb-2">
+                                <img
+                                    src={selectedCompany.logoUrl || '/default-company.png'}
+                                    alt={selectedCompany.name}
+                                    className="w-10 h-10 rounded object-cover"
+                                />
+                                <div>
+                                    <p className="font-medium text-gray-900">{selectedCompany.name}</p>
+                                    <p className="text-sm text-gray-500">{selectedCompany.contactEmail}</p>
+                                </div>
+                            </div>
+                            <div className="mt-3">
+                                {getVerifyStatusBadge(selectedCompany.verifyStatus)}
+                            </div>
                         </div>
 
                         <div className="space-y-4 mb-6">
-                            {/* Status Dropdown */}
+                            {/* Plan Dropdown */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    {t('status')}
+                                    {t('plan')}
                                 </label>
                                 <select
-                                    value={editStatus}
-                                    onChange={(e) => setEditStatus(e.target.value as 'ACTIVE' | 'INACTIVE' | 'PENDING')}
+                                    value={editPlan}
+                                    onChange={(e) => setEditPlan(e.target.value)}
                                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                                 >
-                                    <option value="ACTIVE">{tCommon('active')}</option>
-                                    <option value="INACTIVE">{tCommon('inactive')}</option>
-                                    <option value="PENDING">Pending</option>
+                                    {availablePlans.map(plan => (
+                                        <option key={plan} value={plan}>{plan}</option>
+                                    ))}
                                 </select>
+                                <p className="mt-1 text-xs text-gray-500">
+                                    {t('editPlan.hint') || 'Select the subscription plan for this company'}
+                                </p>
                             </div>
                         </div>
 
