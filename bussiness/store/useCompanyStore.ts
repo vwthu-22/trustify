@@ -9,7 +9,9 @@ export interface Company {
     email: string;
     logo?: string;
     plan: 'Free' | 'Pro' | 'Premium';
-    verified: boolean;
+    verified: boolean; // isVerified - email verification
+    verifyStatus?: 'PENDING' | 'APPROVED' | 'REJECTED'; // Document verification status
+    fileVerificationUrl?: string;
     website?: string;
     industry?: string;
     address?: string;
@@ -381,6 +383,7 @@ export const useCompanyStore = create<CompanyStore>()(
 
             // Upload verification documents (multiple files - sends each separately)
             // API: POST /api/companies/{id}/upload-verification
+            // Backend expects: @RequestParam("file") MultipartFile file
             uploadVerificationDocument: async (files: File | File[]) => {
                 const company = get().company;
                 if (!company?.id) {
@@ -399,31 +402,19 @@ export const useCompanyStore = create<CompanyStore>()(
                 set({ isUploadingVerification: true, error: null });
 
                 try {
-                    // Upload each file individually (API expects { file: string })
+                    // Upload each file individually using FormData (multipart/form-data)
                     for (const file of fileArray) {
-                        // Convert file to base64
-                        const base64File = await new Promise<string>((resolve, reject) => {
-                            const reader = new FileReader();
-                            reader.readAsDataURL(file);
-                            reader.onload = () => {
-                                const result = reader.result as string;
-                                const base64 = result.split(',')[1];
-                                resolve(base64);
-                            };
-                            reader.onerror = error => reject(error);
-                        });
+                        const formData = new FormData();
+                        formData.append('file', file);
 
-                        // Send file to API (one at a time)
                         const response = await fetch(`${API_BASE_URL}/api/companies/${company.id}/upload-verification`, {
                             method: 'POST',
                             credentials: 'include',
                             headers: {
-                                'Content-Type': 'application/json',
                                 'ngrok-skip-browser-warning': 'true',
+                                // Don't set Content-Type - browser will set it with boundary for FormData
                             },
-                            body: JSON.stringify({
-                                file: base64File // API expects { file: "base64string" }
-                            })
+                            body: formData
                         });
 
                         if (!response.ok) {
@@ -431,11 +422,16 @@ export const useCompanyStore = create<CompanyStore>()(
                             throw new Error(errorData || `Upload failed with status ${response.status}`);
                         }
 
-                        console.log(`✅ Uploaded: ${file.name}`);
+                        const result = await response.json();
+                        console.log(`✅ Uploaded: ${file.name}`, result);
                     }
 
                     console.log(`✅ All ${fileArray.length} verification document(s) uploaded`);
                     set({ isUploadingVerification: false, verificationStatus: 'pending' });
+
+                    // Refresh company profile to get updated verifyStatus
+                    get().fetchCompanyProfile();
+
                     return true;
                 } catch (error) {
                     console.error('Error uploading verification documents:', error);

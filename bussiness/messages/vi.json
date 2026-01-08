@@ -632,7 +632,9 @@
         "addMore": "Thêm ảnh",
         "uploading": "Đang tải lên...",
         "submitVerification": "Gửi yêu cầu xác minh",
-        "chooseFiles": "Chọn file"
+        "chooseFiles": "Chọn file",
+        "successTitle": "Gửi yêu cầu thành công!",
+        "successDesc": "Tài liệu của bạn đã được gửi. Chúng tôi sẽ xem xét trong 1-3 ngày làm việc."
     },
     "branches": {
         "title": "So sánh hiệu suất chi nhánh",

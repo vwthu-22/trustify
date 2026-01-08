@@ -114,6 +114,19 @@ export default function VerificationPage() {
                 </div>
             )}
 
+            {/* Debug Panel - Remove after testing */}
+            <details className="bg-gray-100 border border-gray-300 rounded-xl p-4">
+                <summary className="cursor-pointer font-medium text-gray-700">🔧 Debug Info (click to expand)</summary>
+                <div className="mt-3 text-xs">
+                    <p><strong>Total items:</strong> {pendingVerifications.length}</p>
+                    <p><strong>Loading:</strong> {isLoadingVerifications ? 'Yes' : 'No'}</p>
+                    <p><strong>Error:</strong> {error || 'None'}</p>
+                    <pre className="mt-2 bg-gray-800 text-green-400 p-3 rounded-lg overflow-auto max-h-60">
+                        {JSON.stringify(pendingVerifications, null, 2)}
+                    </pre>
+                </div>
+            </details>
+
             {pendingVerifications.length === 0 && !error ? (
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
                     <Check className="w-12 h-12 text-green-500 mx-auto mb-4" />

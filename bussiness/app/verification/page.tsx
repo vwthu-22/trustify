@@ -8,7 +8,6 @@ import {
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useCompanyStore } from '@/store/useCompanyStore';
-import Image from 'next/image';
 
 interface UploadedFile {
     file: File;
@@ -19,6 +18,7 @@ interface UploadedFile {
 
 export default function VerificationPage() {
     const t = useTranslations('verification');
+
     const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
     const [isDragging, setIsDragging] = useState(false);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -35,12 +35,25 @@ export default function VerificationPage() {
         clearError
     } = useCompanyStore();
 
-    // Set initial status from company.verified
+    // Sync verification status from company.verifyStatus
     useEffect(() => {
-        if (company?.verified) {
-            setVerificationStatus('verified');
+        if (company) {
+            console.log('📋 Company verification data:', {
+                verifyStatus: company.verifyStatus,
+                verified: company.verified
+            });
+
+            // Sync from backend verifyStatus
+            if (company.verifyStatus === 'APPROVED') {
+                setVerificationStatus('verified');
+            } else if (company.verifyStatus === 'PENDING') {
+                setVerificationStatus('pending');
+            } else if (company.verifyStatus === 'REJECTED') {
+                setVerificationStatus('rejected');
+            }
+            // If no verifyStatus, keep as 'not-started'
         }
-    }, [company, setVerificationStatus]);
+    }, [company?.verifyStatus, setVerificationStatus]);
 
     // Cleanup previews on unmount
     useEffect(() => {
@@ -111,8 +124,16 @@ export default function VerificationPage() {
         return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
     };
 
-    // Show verified state
-    if (verificationStatus === 'verified' || company?.verified) {
+    // Debug: log current status
+    console.log('🔍 Verification Debug:', {
+        verificationStatus,
+        companyVerifyStatus: company?.verifyStatus,
+        companyVerified: company?.verified,
+        companyId: company?.id
+    });
+
+    // Show verified state - check verifyStatus from backend
+    if (verificationStatus === 'verified' || company?.verifyStatus === 'APPROVED') {
         return (
             <div className="max-w-2xl mx-auto">
                 <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border border-green-200 p-8 text-center">
@@ -134,8 +155,8 @@ export default function VerificationPage() {
         );
     }
 
-    // Show pending state
-    if (verificationStatus === 'pending') {
+    // Show pending state - check verifyStatus from backend
+    if (verificationStatus === 'pending' || company?.verifyStatus === 'PENDING') {
         return (
             <div className="max-w-2xl mx-auto">
                 <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl border border-amber-200 p-8 text-center">

@@ -201,9 +201,11 @@ const useCompanyManagementStore = create<CompanyManagementStore>()(
             // ==================== Verification Actions ====================
 
             // Fetch pending verifications
+            // Backend should have: GET /admin/company/pending-verification OR similar
             fetchPendingVerifications: async (page = 0, size = 20) => {
                 set({ isLoadingVerifications: true, error: null });
                 try {
+                    // Try the admin endpoint for pending verifications
                     const response = await fetch(
                         `${API_BASE_URL}/admin/company/pending-verification?page=${page}&size=${size}`,
                         {
@@ -216,26 +218,87 @@ const useCompanyManagementStore = create<CompanyManagementStore>()(
                         }
                     );
 
+                    console.log('📡 Pending verifications response status:', response.status);
+
                     if (!response.ok) {
-                        throw new Error(`Failed to fetch: ${response.status}`);
+                        const errorText = await response.text();
+                        console.error('❌ API Error:', errorText);
+                        throw new Error(`Failed to fetch: ${response.status} - ${errorText}`);
                     }
 
                     const data = await response.json();
-                    console.log('Pending verifications:', data);
+                    console.log('📦 Raw pending verifications data:', JSON.stringify(data, null, 2));
 
                     // Handle different response formats
                     let verifications: VerificationRequest[] = [];
+
                     if (Array.isArray(data)) {
-                        verifications = data;
+                        // Direct array response
+                        verifications = data.map((item: any) => ({
+                            id: item.id,
+                            company: item.company || {
+                                id: item.companyId || item.id,
+                                name: item.companyName || item.name || `Company #${item.id}`,
+                                logoUrl: item.logoUrl || item.logo,
+                                contactEmail: item.contactEmail || item.email,
+                            },
+                            documentUrl: item.documentUrl || item.document,
+                            documents: item.documents || (item.documentUrl ? [item.documentUrl] : []),
+                            submittedAt: item.submittedAt || item.createdAt || new Date().toISOString(),
+                            status: item.status || 'PENDING',
+                        }));
                     } else if (data.content && Array.isArray(data.content)) {
-                        verifications = data.content;
+                        // Spring Page response
+                        verifications = data.content.map((item: any) => ({
+                            id: item.id,
+                            company: item.company || {
+                                id: item.companyId || item.id,
+                                name: item.companyName || item.name || `Company #${item.id}`,
+                                logoUrl: item.logoUrl || item.logo,
+                                contactEmail: item.contactEmail || item.email,
+                            },
+                            documentUrl: item.documentUrl || item.document,
+                            documents: item.documents || (item.documentUrl ? [item.documentUrl] : []),
+                            submittedAt: item.submittedAt || item.createdAt || new Date().toISOString(),
+                            status: item.status || 'PENDING',
+                        }));
                     } else if (data.data && Array.isArray(data.data)) {
-                        verifications = data.data;
+                        // Wrapped response
+                        verifications = data.data.map((item: any) => ({
+                            id: item.id,
+                            company: item.company || {
+                                id: item.companyId || item.id,
+                                name: item.companyName || item.name || `Company #${item.id}`,
+                                logoUrl: item.logoUrl || item.logo,
+                                contactEmail: item.contactEmail || item.email,
+                            },
+                            documentUrl: item.documentUrl || item.document,
+                            documents: item.documents || (item.documentUrl ? [item.documentUrl] : []),
+                            submittedAt: item.submittedAt || item.createdAt || new Date().toISOString(),
+                            status: item.status || 'PENDING',
+                        }));
+                    } else if (typeof data === 'object' && data !== null) {
+                        // Single object - might be the company itself
+                        console.log('⚠️ Received single object, treating as single verification');
+                        verifications = [{
+                            id: data.id,
+                            company: data.company || {
+                                id: data.companyId || data.id,
+                                name: data.companyName || data.name || `Company #${data.id}`,
+                                logoUrl: data.logoUrl || data.logo,
+                                contactEmail: data.contactEmail || data.email,
+                            },
+                            documentUrl: data.documentUrl || data.document,
+                            documents: data.documents || (data.documentUrl ? [data.documentUrl] : []),
+                            submittedAt: data.submittedAt || data.createdAt || new Date().toISOString(),
+                            status: data.status || 'PENDING',
+                        }];
                     }
 
+                    console.log('✅ Parsed verifications:', verifications.length, 'items');
                     set({ pendingVerifications: verifications, isLoadingVerifications: false });
                 } catch (error) {
-                    console.error('Error fetching verifications:', error);
+                    console.error('❌ Error fetching verifications:', error);
                     set({
                         error: error instanceof Error ? error.message : 'Failed to load verification requests',
                         isLoadingVerifications: false,
