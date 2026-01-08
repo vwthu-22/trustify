@@ -164,14 +164,24 @@ export default function VerificationPage() {
                         <Clock className="w-10 h-10 text-white" />
                     </div>
                     <h2 className="text-2xl font-bold text-amber-900 mb-2">
-                        {t('pendingTitle') || 'Đang chờ xác thực'}
+                        {t('pendingTitle')}
                     </h2>
                     <p className="text-amber-700 mb-6">
-                        {t('pendingDesc') || 'Chúng tôi đang xem xét tài liệu của bạn. Quá trình này thường mất 1-3 ngày làm việc.'}
+                        {t('pendingDesc')}
                     </p>
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-100 text-amber-700 rounded-full font-semibold">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-100 text-amber-700 rounded-full font-semibold mb-6">
                         <Clock className="w-5 h-5" />
-                        {t('pending') || 'Đang xử lý'}
+                        {t('pending')}
+                    </div>
+
+                    {/* Allow resubmit for testing */}
+                    <div className="mt-4 pt-4 border-t border-amber-200">
+                        <button
+                            onClick={() => setVerificationStatus('not-started')}
+                            className="text-amber-600 hover:text-amber-800 text-sm underline"
+                        >
+                            Gửi lại tài liệu khác
+                        </button>
                     </div>
                 </div>
             </div>
