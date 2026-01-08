@@ -17,6 +17,20 @@ export interface Company {
     status: 'ACTIVE' | 'INACTIVE' | 'PENDING';
 }
 
+export interface VerificationRequest {
+    id: number;
+    company: {
+        id: number;
+        name: string;
+        logoUrl?: string;
+        contactEmail?: string;
+    };
+    documentUrl?: string;
+    documents?: string[];
+    submittedAt: string;
+    status: 'PENDING' | 'APPROVED' | 'REJECTED';
+}
+
 export interface UpdateCompanyStatusData {
     status: 'ACTIVE' | 'INACTIVE' | 'PENDING';
 }
@@ -33,12 +47,22 @@ interface CompanyManagementStore {
     error: string | null;
     searchQuery: string;
 
+    // Verification State
+    pendingVerifications: VerificationRequest[];
+    isLoadingVerifications: boolean;
+    processingVerificationId: number | null;
+
     // Actions
     fetchCompanies: (page?: number, size?: number) => Promise<void>;
     updateCompanyStatus: (companyId: number, status: UpdateCompanyStatusData['status']) => Promise<boolean>;
     setSearchQuery: (query: string) => void;
     setCurrentPage: (page: number) => void;
     clearError: () => void;
+
+    // Verification Actions
+    fetchPendingVerifications: (page?: number, size?: number) => Promise<void>;
+    approveCompany: (companyId: number) => Promise<boolean>;
+    rejectCompany: (companyId: number, reason: string) => Promise<boolean>;
 }
 
 // ==================== Store Implementation ====================
@@ -54,6 +78,11 @@ const useCompanyManagementStore = create<CompanyManagementStore>()(
             isLoading: false,
             error: null,
             searchQuery: '',
+
+            // Verification State
+            pendingVerifications: [],
+            isLoadingVerifications: false,
+            processingVerificationId: null,
 
             // Fetch companies with pagination
             fetchCompanies: async (page = 0, size = 5) => {
@@ -168,6 +197,126 @@ const useCompanyManagementStore = create<CompanyManagementStore>()(
 
             // Clear error
             clearError: () => set({ error: null }),
+
+            // ==================== Verification Actions ====================
+
+            // Fetch pending verifications
+            fetchPendingVerifications: async (page = 0, size = 20) => {
+                set({ isLoadingVerifications: true, error: null });
+                try {
+                    const response = await fetch(
+                        `${API_BASE_URL}/admin/company/pending-verification?page=${page}&size=${size}`,
+                        {
+                            method: 'GET',
+                            credentials: 'include',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'ngrok-skip-browser-warning': 'true',
+                            },
+                        }
+                    );
+
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    console.log('Pending verifications:', data);
+
+                    // Handle different response formats
+                    let verifications: VerificationRequest[] = [];
+                    if (Array.isArray(data)) {
+                        verifications = data;
+                    } else if (data.content && Array.isArray(data.content)) {
+                        verifications = data.content;
+                    } else if (data.data && Array.isArray(data.data)) {
+                        verifications = data.data;
+                    }
+
+                    set({ pendingVerifications: verifications, isLoadingVerifications: false });
+                } catch (error) {
+                    console.error('Error fetching verifications:', error);
+                    set({
+                        error: error instanceof Error ? error.message : 'Failed to load verification requests',
+                        isLoadingVerifications: false,
+                    });
+                }
+            },
+
+            // Approve company verification
+            approveCompany: async (companyId: number) => {
+                set({ processingVerificationId: companyId, error: null });
+                try {
+                    const response = await fetch(`${API_BASE_URL}/admin/company/${companyId}/approve`, {
+                        method: 'PUT',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'ngrok-skip-browser-warning': 'true',
+                        },
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Approve failed: ${response.status}`);
+                    }
+
+                    // Remove from pending list
+                    set((state) => ({
+                        pendingVerifications: state.pendingVerifications.filter(
+                            (v) => v.company?.id !== companyId && v.id !== companyId
+                        ),
+                        processingVerificationId: null,
+                    }));
+
+                    return true;
+                } catch (error) {
+                    console.error('Error approving company:', error);
+                    set({
+                        error: error instanceof Error ? error.message : 'Failed to approve company',
+                        processingVerificationId: null,
+                    });
+                    return false;
+                }
+            },
+
+            // Reject company verification
+            rejectCompany: async (companyId: number, reason: string) => {
+                set({ processingVerificationId: companyId, error: null });
+                try {
+                    const response = await fetch(
+                        `${API_BASE_URL}/admin/company/${companyId}/reject?reason=${encodeURIComponent(reason)}`,
+                        {
+                            method: 'PUT',
+                            credentials: 'include',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'ngrok-skip-browser-warning': 'true',
+                            },
+                        }
+                    );
+
+                    if (!response.ok) {
+                        throw new Error(`Reject failed: ${response.status}`);
+                    }
+
+                    // Remove from pending list
+                    set((state) => ({
+                        pendingVerifications: state.pendingVerifications.filter(
+                            (v) => v.company?.id !== companyId && v.id !== companyId
+                        ),
+                        processingVerificationId: null,
+                    }));
+
+                    return true;
+                } catch (error) {
+                    console.error('Error rejecting company:', error);
+                    set({
+                        error: error instanceof Error ? error.message : 'Failed to reject company',
+                        processingVerificationId: null,
+                    });
+                    return false;
+                }
+            },
         }),
         { name: 'company-management-store' }
     )

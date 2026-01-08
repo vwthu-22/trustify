@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import {
-    Info, User, Star, Settings, ShieldCheck, Crown
+    Info, User, Star, Settings, ShieldCheck, Crown, PartyPopper, X
 } from 'lucide-react';
 
 import { usePathname, useRouter } from 'next/navigation';
@@ -49,6 +49,8 @@ export default function Header() {
 
     const [showHelpDropdown, setShowHelpDropdown] = useState(false);
     const [showCompanyDropdown, setShowCompanyDropdown] = useState(false);
+    const [showVerificationCelebration, setShowVerificationCelebration] = useState(false);
+    const previousVerifiedRef = useRef<boolean | undefined>(undefined);
 
     // Refs for click outside detection
     const helpDropdownRef = useRef<HTMLDivElement>(null);
@@ -64,6 +66,28 @@ export default function Header() {
             fetchCompanyProfile();
         }
     }, [company, fetchCompanyProfile, isPublicRoute]);
+
+    // Auto-refresh company profile every 30 seconds to catch verification updates
+    useEffect(() => {
+        if (isPublicRoute) return;
+
+        const interval = setInterval(() => {
+            fetchCompanyProfile();
+        }, 30000); // 30 seconds
+
+        return () => clearInterval(interval);
+    }, [fetchCompanyProfile, isPublicRoute]);
+
+    // Detect when company gets verified and show celebration
+    useEffect(() => {
+        if (company) {
+            // If previous state was false and now it's true, show celebration
+            if (previousVerifiedRef.current === false && company.verified === true) {
+                setShowVerificationCelebration(true);
+            }
+            previousVerifiedRef.current = company.verified;
+        }
+    }, [company?.verified]);
 
     // Click outside to close dropdowns
     useEffect(() => {
@@ -141,7 +165,7 @@ export default function Header() {
                                             className={`flex items-start gap-3 px-4 py-3 hover:bg-gray-50 border-b border-gray-100 cursor-pointer ${notification.read ? 'opacity-60' : ''}`}
                                         >
                                             <div className={`p-2 rounded-full flex-shrink-0 ${notification.type === 'admin_message' ? 'bg-purple-100' :
-                                                    notification.type === 'new_review' ? 'bg-yellow-100' : 'bg-gray-100'
+                                                notification.type === 'new_review' ? 'bg-yellow-100' : 'bg-gray-100'
                                                 }`}>
                                                 {notification.type === 'admin_message' ? (
                                                     <ShieldCheck className={`w-4 h-4 text-purple-600`} />
@@ -264,6 +288,59 @@ export default function Header() {
                     )}
                 </div>
             </div>
+
+            {/* Verification Celebration Modal */}
+            {showVerificationCelebration && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100]">
+                    <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md mx-4 text-center relative overflow-hidden">
+                        {/* Confetti animation background */}
+                        <div className="absolute inset-0 pointer-events-none">
+                            <div className="absolute top-0 left-1/4 w-3 h-3 bg-yellow-400 rounded-full animate-bounce" style={{ animationDelay: '0ms', animationDuration: '1s' }}></div>
+                            <div className="absolute top-0 left-1/2 w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '200ms', animationDuration: '1.2s' }}></div>
+                            <div className="absolute top-0 left-3/4 w-3 h-3 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '400ms', animationDuration: '0.8s' }}></div>
+                            <div className="absolute top-10 left-1/3 w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '100ms', animationDuration: '1.1s' }}></div>
+                            <div className="absolute top-10 left-2/3 w-2 h-2 bg-pink-400 rounded-full animate-bounce" style={{ animationDelay: '300ms', animationDuration: '0.9s' }}></div>
+                        </div>
+
+                        <button
+                            onClick={() => setShowVerificationCelebration(false)}
+                            className="absolute top-4 right-4 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+
+                        <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
+                            <ShieldCheck className="w-10 h-10 text-white" />
+                        </div>
+
+                        <div className="flex items-center justify-center gap-2 mb-4">
+                            <PartyPopper className="w-6 h-6 text-yellow-500" />
+                            <h2 className="text-2xl font-bold text-gray-900">
+                                {t('verificationSuccess') || 'Chúc mừng!'}
+                            </h2>
+                            <PartyPopper className="w-6 h-6 text-yellow-500 transform scale-x-[-1]" />
+                        </div>
+
+                        <p className="text-gray-600 mb-6">
+                            {t('verificationSuccessMessage') || 'Công ty của bạn đã được xác thực thành công! Bạn sẽ nhận được badge Verified trên trang công ty.'}
+                        </p>
+
+                        <div className="flex items-center justify-center gap-2 mb-6">
+                            <span className="px-3 py-1.5 bg-green-100 text-green-700 text-sm font-semibold rounded-full flex items-center gap-1">
+                                <ShieldCheck className="w-4 h-4" />
+                                {t('verified') || 'Đã xác thực'}
+                            </span>
+                        </div>
+
+                        <button
+                            onClick={() => setShowVerificationCelebration(false)}
+                            className="w-full py-3 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold rounded-xl hover:from-green-600 hover:to-green-700 transition-all"
+                        >
+                            {t('awesome') || 'Tuyệt vời!'}
+                        </button>
+                    </div>
+                </div>
+            )}
         </header>
     );
 }

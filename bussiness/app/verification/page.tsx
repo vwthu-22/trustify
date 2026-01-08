@@ -1,20 +1,35 @@
 'use client';
 
-import { useState } from 'react';
-import { ShieldCheck, Upload, Mail, FileText, CheckCircle, AlertCircle, Clock } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Upload, CheckCircle, AlertCircle, Clock, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-
-type VerificationStatus = 'not-started' | 'pending' | 'verified' | 'rejected';
+import { useCompanyStore } from '@/store/useCompanyStore';
 
 export default function VerificationPage() {
     const t = useTranslations('verification');
     const [verificationMethod, setVerificationMethod] = useState<'email' | 'document'>('email');
-    const [status, setStatus] = useState<VerificationStatus>('not-started');
     const [companyEmail, setCompanyEmail] = useState('');
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
+    const {
+        company,
+        verificationStatus,
+        isUploadingVerification,
+        error,
+        uploadVerificationDocument,
+        setVerificationStatus,
+        clearError
+    } = useCompanyStore();
+
+    // Set initial status from company.verified
+    useEffect(() => {
+        if (company?.verified) {
+            setVerificationStatus('verified');
+        }
+    }, [company, setVerificationStatus]);
+
     const handleEmailVerification = () => {
-        setStatus('pending');
+        setVerificationStatus('pending');
         // Simulate sending verification email
         setTimeout(() => {
             alert('Verification email sent! Please check your inbox.');
@@ -24,28 +39,36 @@ export default function VerificationPage() {
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             setUploadedFiles(Array.from(e.target.files));
+            clearError();
         }
     };
 
-    const handleDocumentSubmit = () => {
+    const handleDocumentSubmit = async () => {
         if (uploadedFiles.length === 0) {
             alert('Please upload at least one document');
             return;
         }
-        setStatus('pending');
-        alert('Documents submitted for review. We will verify within 2-3 business days.');
+
+        // Upload each file
+        let allSuccess = true;
+        for (const file of uploadedFiles) {
+            const success = await uploadVerificationDocument(file);
+            if (!success) {
+                allSuccess = false;
+                break;
+            }
+        }
+
+        if (allSuccess) {
+            alert('Documents submitted for review. We will verify within 2-3 business days.');
+            setUploadedFiles([]);
+        }
     };
 
     return (
         <div className="space-y-8">
-            {/* Header */}
-            {/* <div>
-                <h2 className="text-2xl font-bold text-gray-900">{t('title')}</h2>
-                <p className="text-gray-500 mt-1">{t('subtitle')}</p>
-            </div> */}
-
             {/* Status Banner */}
-            {status === 'verified' && (
+            {verificationStatus === 'verified' && (
                 <div className="bg-green-50 border border-green-200 rounded-xl p-6">
                     <div className="flex items-center gap-3">
                         <CheckCircle className="h-8 w-8 text-green-600" />
@@ -57,7 +80,7 @@ export default function VerificationPage() {
                 </div>
             )}
 
-            {status === 'pending' && (
+            {verificationStatus === 'pending' && (
                 <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
                     <div className="flex items-center gap-3">
                         <Clock className="h-8 w-8 text-yellow-600" />
@@ -69,7 +92,7 @@ export default function VerificationPage() {
                 </div>
             )}
 
-            {status === 'rejected' && (
+            {verificationStatus === 'rejected' && (
                 <div className="bg-red-50 border border-red-200 rounded-xl p-6">
                     <div className="flex items-center gap-3">
                         <AlertCircle className="h-8 w-8 text-red-600" />
@@ -77,6 +100,16 @@ export default function VerificationPage() {
                             <h3 className="text-lg font-bold text-red-900">{t('rejected')}</h3>
                             <p className="text-red-700">{t('rejectedDesc')}</p>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Error Banner */}
+            {error && (
+                <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+                    <div className="flex items-center gap-2">
+                        <AlertCircle className="h-5 w-5 text-red-600" />
+                        <p className="text-red-700">{error}</p>
                     </div>
                 </div>
             )}
@@ -128,7 +161,6 @@ export default function VerificationPage() {
                             : 'border-gray-200 hover:border-gray-300'
                             }`}
                     >
-
                         <h4 className="font-bold text-gray-900 mb-2">{t('emailVerification')}</h4>
                         <p className="text-sm text-gray-600">{t('emailVerificationDesc')}</p>
                         <p className="text-xs text-gray-500 mt-2">⚡ {t('emailFastest')}</p>
@@ -141,7 +173,6 @@ export default function VerificationPage() {
                             : 'border-gray-200 hover:border-gray-300'
                             }`}
                     >
-
                         <h4 className="font-bold text-gray-900 mb-2">{t('documentVerification')}</h4>
                         <p className="text-sm text-gray-600">{t('documentVerificationDesc')}</p>
                         <p className="text-xs text-gray-500 mt-2">⏱️ {t('documentTime')}</p>
@@ -175,7 +206,7 @@ export default function VerificationPage() {
 
                         <button
                             onClick={handleEmailVerification}
-                            disabled={!companyEmail || status === 'pending'}
+                            disabled={!companyEmail || verificationStatus === 'pending'}
                             className="w-full px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {t('sendVerificationEmail')}
@@ -249,39 +280,21 @@ export default function VerificationPage() {
 
                         <button
                             onClick={handleDocumentSubmit}
-                            disabled={uploadedFiles.length === 0 || status === 'pending'}
-                            className="w-full px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={uploadedFiles.length === 0 || verificationStatus === 'pending' || isUploadingVerification}
+                            className="w-full px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
-                            {t('submitVerification')}
+                            {isUploadingVerification ? (
+                                <>
+                                    <Loader2 className="h-5 w-5 animate-spin" />
+                                    Uploading...
+                                </>
+                            ) : (
+                                t('submitVerification')
+                            )}
                         </button>
                     </div>
                 )}
             </div>
-
-            {/* FAQ */}
-            {/* <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">{t('faq')}</h3>
-                <div className="space-y-4">
-                    <div>
-                        <h4 className="font-semibold text-gray-900 mb-1">{t('faqTimeTitle')}</h4>
-                        <p className="text-sm text-gray-600">
-                            {t('faqTimeAnswer')}
-                        </p>
-                    </div>
-                    <div>
-                        <h4 className="font-semibold text-gray-900 mb-1">{t('faqRejectedTitle')}</h4>
-                        <p className="text-sm text-gray-600">
-                            {t('faqRejectedAnswer')}
-                        </p>
-                    </div>
-                    <div>
-                        <h4 className="font-semibold text-gray-900 mb-1">{t('faqRequiredTitle')}</h4>
-                        <p className="text-sm text-gray-600">
-                            {t('faqRequiredAnswer')}
-                        </p>
-                    </div>
-                </div>
-            </div> */}
         </div>
     );
 }

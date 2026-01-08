@@ -26,6 +26,8 @@ interface CompanyStore {
     isLoading: boolean;
     error: string | null;
     magicLinkSent: boolean; // Track if magic link was sent
+    verificationStatus: 'not-started' | 'pending' | 'verified' | 'rejected';
+    isUploadingVerification: boolean;
 
     // Actions
     setCompany: (company: Company) => void;
@@ -41,6 +43,10 @@ interface CompanyStore {
     clearError: () => void;
     resetMagicLinkState: () => void;
     uploadLogo: (file: File) => Promise<string | null>;
+
+    // Verification actions
+    uploadVerificationDocument: (file: File) => Promise<boolean>;
+    setVerificationStatus: (status: 'not-started' | 'pending' | 'verified' | 'rejected') => void;
 }
 
 export const useCompanyStore = create<CompanyStore>()(
@@ -50,6 +56,8 @@ export const useCompanyStore = create<CompanyStore>()(
             isLoading: false,
             error: null,
             magicLinkSent: false,
+            verificationStatus: 'not-started' as const,
+            isUploadingVerification: false,
 
             setCompany: (company: Company) => set({ company, error: null }),
 
@@ -368,6 +376,63 @@ export const useCompanyStore = create<CompanyStore>()(
                 }
             },
 
+            // Set verification status
+            setVerificationStatus: (status) => set({ verificationStatus: status }),
+
+            // Upload verification document
+            // API: POST /api/companies/{id}/upload-verification
+            uploadVerificationDocument: async (file: File) => {
+                const company = get().company;
+                if (!company?.id) {
+                    set({ error: 'Company ID not found. Please login again.' });
+                    return false;
+                }
+
+                set({ isUploadingVerification: true, error: null });
+
+                try {
+                    // Convert file to base64
+                    const base64File = await new Promise<string>((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.readAsDataURL(file);
+                        reader.onload = () => {
+                            const result = reader.result as string;
+                            const base64 = result.split(',')[1];
+                            resolve(base64);
+                        };
+                        reader.onerror = error => reject(error);
+                    });
+
+                    const response = await fetch(`${API_BASE_URL}/api/companies/${company.id}/upload-verification`, {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'ngrok-skip-browser-warning': 'true',
+                        },
+                        body: JSON.stringify({
+                            file: base64File
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.text();
+                        throw new Error(errorData || `Upload failed with status ${response.status}`);
+                    }
+
+                    console.log(`✅ Uploaded verification document: ${file.name}`);
+                    set({ isUploadingVerification: false, verificationStatus: 'pending' });
+                    return true;
+                } catch (error) {
+                    console.error('Error uploading verification document:', error);
+                    set({
+                        error: error instanceof Error ? error.message : 'Failed to upload document. Please try again.',
+                        isUploadingVerification: false
+                    });
+                    return false;
+                }
+            },
+
             // Logout
             logout: async () => {
                 set({ isLoading: true, error: null });
@@ -379,7 +444,7 @@ export const useCompanyStore = create<CompanyStore>()(
                 } catch (error) {
                     console.error('Logout error:', error);
                 } finally {
-                    set({ company: null, isLoading: false, error: null, magicLinkSent: false });
+                    set({ company: null, isLoading: false, error: null, magicLinkSent: false, verificationStatus: 'not-started' });
                     // Clear access_token cookie
                     document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
                 }
