@@ -19,7 +19,6 @@ export default function VerificationPage() {
     const [showRejectModal, setShowRejectModal] = useState(false)
     const [rejectingId, setRejectingId] = useState<number | null>(null)
     const [rejectReason, setRejectReason] = useState('')
-    const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
     useEffect(() => {
         fetchPendingVerifications()
@@ -149,25 +148,29 @@ export default function VerificationPage() {
                                         </p>
                                         <div className="flex gap-2 flex-wrap">
                                             {request.documentUrl && (
-                                                <button
-                                                    onClick={() => request.documentUrl && setPreviewUrl(request.documentUrl)}
+                                                <a
+                                                    href={request.documentUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
                                                     className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded text-xs text-gray-600 hover:bg-gray-200 cursor-pointer transition-colors"
                                                 >
                                                     <FileText className="w-3 h-3" />
                                                     View Document
                                                     <ExternalLink className="w-3 h-3 ml-1" />
-                                                </button>
+                                                </a>
                                             )}
                                             {request.documents?.map((doc, index) => (
-                                                <button
+                                                <a
                                                     key={index}
-                                                    onClick={() => setPreviewUrl(doc)}
+                                                    href={doc}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
                                                     className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded text-xs text-gray-600 hover:bg-gray-200 cursor-pointer transition-colors"
                                                 >
                                                     <FileText className="w-3 h-3" />
                                                     Document {index + 1}
                                                     <ExternalLink className="w-3 h-3 ml-1" />
-                                                </button>
+                                                </a>
                                             ))}
                                         </div>
                                     </div>
@@ -241,39 +244,6 @@ export default function VerificationPage() {
                                 Confirm Reject
                             </button>
                         </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Document Preview Modal */}
-            {previewUrl && (
-                <div
-                    className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4"
-                    onClick={() => setPreviewUrl(null)}
-                >
-                    <button
-                        className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
-                        onClick={() => setPreviewUrl(null)}
-                    >
-                        <X className="w-8 h-8 text-white" />
-                    </button>
-
-                    <div
-                        className="max-w-5xl max-h-[90vh] w-full h-full flex items-center justify-center overflow-hidden"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        {/* Try to determine content type or just render img with error fallback */}
-                        <img
-                            src={previewUrl}
-                            alt="Document Preview"
-                            className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-                            onError={(e) => {
-                                // Fallback for non-image files (like PDF) - open in new tab
-                                e.currentTarget.style.display = 'none';
-                                window.open(previewUrl, '_blank');
-                                setPreviewUrl(null);
-                            }}
-                        />
                     </div>
                 </div>
             )}

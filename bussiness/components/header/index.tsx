@@ -50,7 +50,7 @@ export default function Header() {
     const [showHelpDropdown, setShowHelpDropdown] = useState(false);
     const [showCompanyDropdown, setShowCompanyDropdown] = useState(false);
     const [showVerificationCelebration, setShowVerificationCelebration] = useState(false);
-    const previousVerifyStatusRef = useRef<string | undefined>(undefined);
+    const previousVerifiedRef = useRef<boolean | undefined>(undefined);
 
     // Refs for click outside detection
     const helpDropdownRef = useRef<HTMLDivElement>(null);
@@ -60,32 +60,34 @@ export default function Header() {
     const publicRoutes = ['/login', '/auth', '/magic-link', '/verify'];
     const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
 
-    // Fetch company profile on mount and periodically
+    // Fetch company profile on mount if not already loaded (only on protected routes)
     useEffect(() => {
-        if (!isPublicRoute) {
+        if (!company && !isPublicRoute) {
             fetchCompanyProfile();
         }
+    }, [company, fetchCompanyProfile, isPublicRoute]);
 
-        // Poll for updates every 30 seconds
+    // Auto-refresh company profile every 30 seconds to catch verification updates
+    useEffect(() => {
+        if (isPublicRoute) return;
+
         const interval = setInterval(() => {
-            if (!isPublicRoute) {
-                fetchCompanyProfile();
-            }
+            fetchCompanyProfile();
         }, 30000); // 30 seconds
 
         return () => clearInterval(interval);
     }, [fetchCompanyProfile, isPublicRoute]);
 
-    // Detect when company gets verified (document verification) and show celebration
+    // Detect when company gets verified and show celebration
     useEffect(() => {
         if (company) {
-            // If previous status was not APPROVED and now it is, show celebration
-            if (previousVerifyStatusRef.current !== 'APPROVED' && company.verifyStatus === 'APPROVED') {
+            // If previous state was false and now it's true, show celebration
+            if (previousVerifiedRef.current === false && company.verified === true) {
                 setShowVerificationCelebration(true);
             }
-            previousVerifyStatusRef.current = company.verifyStatus;
+            previousVerifiedRef.current = company.verified;
         }
-    }, [company?.verifyStatus]);
+    }, [company?.verified]);
 
     // Click outside to close dropdowns
     useEffect(() => {
