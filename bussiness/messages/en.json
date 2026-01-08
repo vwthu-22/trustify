@@ -89,7 +89,10 @@
         "noNotifications": "No notifications",
         "hoursAgo": "hours ago",
         "dayAgo": "day ago",
-        "daysAgo": "days ago"
+        "daysAgo": "days ago",
+        "verificationSuccess": "Congratulations!",
+        "verificationSuccessMessage": "Your company has been verified! You will receive a Verified badge on your company page.",
+        "awesome": "Awesome!"
     },
     "sidebar": {
         "dashboard": "Dashboard",

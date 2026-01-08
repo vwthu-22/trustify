@@ -111,11 +111,15 @@ export default function VerificationPage() {
             // Clear files after successful upload
             uploadedFiles.forEach(f => URL.revokeObjectURL(f.preview));
             setUploadedFiles([]);
-            // Show success message
+            // Show success modal (user must click to dismiss)
             setShowSuccess(true);
-            // Auto hide after 5 seconds
-            setTimeout(() => setShowSuccess(false), 5000);
         }
+    };
+
+    // Handle complete button - close modal and show pending state
+    const handleComplete = () => {
+        setShowSuccess(false);
+        setVerificationStatus('pending');
     };
 
     const formatFileSize = (bytes: number) => {
@@ -429,6 +433,36 @@ export default function VerificationPage() {
                         className="max-w-full max-h-[90vh] object-contain rounded-lg"
                         onClick={(e) => e.stopPropagation()}
                     />
+                </div>
+            )}
+
+            {/* Success Modal */}
+            {showSuccess && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center relative overflow-hidden">
+                        {/* Confetti effect background */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-transparent pointer-events-none" />
+
+                        <div className="relative z-10">
+                            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <PartyPopper className="w-10 h-10 text-green-600" />
+                            </div>
+
+                            <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                                {t('successTitle')}
+                            </h3>
+                            <p className="text-gray-600 mb-8">
+                                {t('successDesc')}
+                            </p>
+
+                            <button
+                                onClick={handleComplete}
+                                className="w-full py-3 px-6 bg-gradient-to-r from-green-600 to-green-700 text-white font-semibold rounded-xl hover:from-green-700 hover:to-green-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                            >
+                                {t('complete') || 'Hoàn thành'}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

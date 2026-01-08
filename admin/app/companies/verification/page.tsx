@@ -19,6 +19,7 @@ export default function VerificationPage() {
     const [showRejectModal, setShowRejectModal] = useState(false)
     const [rejectingId, setRejectingId] = useState<number | null>(null)
     const [rejectReason, setRejectReason] = useState('')
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
     useEffect(() => {
         fetchPendingVerifications()
@@ -114,19 +115,6 @@ export default function VerificationPage() {
                 </div>
             )}
 
-            {/* Debug Panel - Remove after testing */}
-            <details className="bg-gray-100 border border-gray-300 rounded-xl p-4">
-                <summary className="cursor-pointer font-medium text-gray-700">🔧 Debug Info (click to expand)</summary>
-                <div className="mt-3 text-xs">
-                    <p><strong>Total items:</strong> {pendingVerifications.length}</p>
-                    <p><strong>Loading:</strong> {isLoadingVerifications ? 'Yes' : 'No'}</p>
-                    <p><strong>Error:</strong> {error || 'None'}</p>
-                    <pre className="mt-2 bg-gray-800 text-green-400 p-3 rounded-lg overflow-auto max-h-60">
-                        {JSON.stringify(pendingVerifications, null, 2)}
-                    </pre>
-                </div>
-            </details>
-
             {pendingVerifications.length === 0 && !error ? (
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
                     <Check className="w-12 h-12 text-green-500 mx-auto mb-4" />
@@ -161,29 +149,25 @@ export default function VerificationPage() {
                                         </p>
                                         <div className="flex gap-2 flex-wrap">
                                             {request.documentUrl && (
-                                                <a
-                                                    href={request.documentUrl}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
+                                                <button
+                                                    onClick={() => request.documentUrl && setPreviewUrl(request.documentUrl)}
                                                     className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded text-xs text-gray-600 hover:bg-gray-200 cursor-pointer transition-colors"
                                                 >
                                                     <FileText className="w-3 h-3" />
                                                     View Document
                                                     <ExternalLink className="w-3 h-3 ml-1" />
-                                                </a>
+                                                </button>
                                             )}
                                             {request.documents?.map((doc, index) => (
-                                                <a
+                                                <button
                                                     key={index}
-                                                    href={doc}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
+                                                    onClick={() => setPreviewUrl(doc)}
                                                     className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded text-xs text-gray-600 hover:bg-gray-200 cursor-pointer transition-colors"
                                                 >
                                                     <FileText className="w-3 h-3" />
                                                     Document {index + 1}
                                                     <ExternalLink className="w-3 h-3 ml-1" />
-                                                </a>
+                                                </button>
                                             ))}
                                         </div>
                                     </div>
@@ -257,6 +241,39 @@ export default function VerificationPage() {
                                 Confirm Reject
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Document Preview Modal */}
+            {previewUrl && (
+                <div
+                    className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4"
+                    onClick={() => setPreviewUrl(null)}
+                >
+                    <button
+                        className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
+                        onClick={() => setPreviewUrl(null)}
+                    >
+                        <X className="w-8 h-8 text-white" />
+                    </button>
+
+                    <div
+                        className="max-w-5xl max-h-[90vh] w-full h-full flex items-center justify-center overflow-hidden"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* Try to determine content type or just render img with error fallback */}
+                        <img
+                            src={previewUrl}
+                            alt="Document Preview"
+                            className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+                            onError={(e) => {
+                                // Fallback for non-image files (like PDF) - open in new tab
+                                e.currentTarget.style.display = 'none';
+                                window.open(previewUrl, '_blank');
+                                setPreviewUrl(null);
+                            }}
+                        />
                     </div>
                 </div>
             )}
