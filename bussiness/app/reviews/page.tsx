@@ -110,7 +110,7 @@ export default function BusinessReviewDashboard() {
     };
 
     const renderAllReviewsPage = () => (
-        <div className="space-y-6">
+        <div className="space-y-3 sm:space-y-4">
             {/* Stats Cards */}
             {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="bg-white rounded-lg shadow p-6">
@@ -149,36 +149,36 @@ export default function BusinessReviewDashboard() {
             </div> */}
 
             {/* Filter Bar */}
-            <div className="bg-white rounded-lg shadow p-4">
-                <div className="flex items-center gap-4 flex-wrap">
-                    <Filter size={20} className="text-gray-600" />
+            <div className="bg-white rounded-lg shadow p-2.5 sm:p-3">
+                <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                    <Filter size={16} className="text-gray-600" />
                     <button
                         onClick={() => setSelectedFilter('all')}
-                        className={`px-4 py-2 rounded-lg transition ${selectedFilter === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                        className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg transition text-xs sm:text-sm ${selectedFilter === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                     >
                         {t('all')}
                     </button>
                     <button
                         onClick={() => setSelectedFilter('pending')}
-                        className={`px-4 py-2 rounded-lg transition ${selectedFilter === 'pending' ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                        className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg transition text-xs sm:text-sm ${selectedFilter === 'pending' ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                     >
                         {t('pending')}
                     </button>
                     <button
                         onClick={() => setSelectedFilter('replied')}
-                        className={`px-4 py-2 rounded-lg transition ${selectedFilter === 'replied' ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                        className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg transition text-xs sm:text-sm ${selectedFilter === 'replied' ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                     >
                         {t('replied')}
                     </button>
                     <button
                         onClick={() => setSelectedFilter('positive')}
-                        className={`px-4 py-2 rounded-lg transition ${selectedFilter === 'positive' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                        className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg transition text-xs sm:text-sm ${selectedFilter === 'positive' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                     >
                         {t('positiveFilter')}
                     </button>
                     <button
                         onClick={() => setSelectedFilter('negative')}
-                        className={`px-4 py-2 rounded-lg transition ${selectedFilter === 'negative' ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                        className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg transition text-xs sm:text-sm ${selectedFilter === 'negative' ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                     >
                         {t('negativeFilter')}
                     </button>
@@ -218,69 +218,66 @@ export default function BusinessReviewDashboard() {
             )}
 
             {/* Reviews List */}
-            <div className="space-y-4">
+            <div className="space-y-2 sm:space-y-3">
                 {filteredReviews.map(review => (
-                    <div key={review.id} className="bg-white rounded-lg shadow p-6">
-                        <div className="flex items-start justify-between mb-4">
-                            <div className="flex items-start gap-3">
+                    <div key={review.id} className="bg-white rounded-lg shadow p-3 sm:p-4">
+                        <div className="flex items-start justify-between mb-2 sm:mb-3">
+                            <div className="flex items-start gap-2 sm:gap-3">
                                 {/* Avatar */}
                                 {review.user.avatarUrl ? (
                                     <img
                                         src={review.user.avatarUrl}
                                         alt={review.user.name}
-                                        className="w-10 h-10 rounded-full object-cover"
+                                        className="w-8 h-8 sm:w-9 sm:h-9 rounded-full object-cover"
                                     />
                                 ) : (
-                                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                        <span className="text-blue-600 font-semibold">
+                                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-blue-100 flex items-center justify-center">
+                                        <span className="text-blue-600 font-semibold text-xs sm:text-sm">
                                             {review.user.name?.charAt(0)?.toUpperCase() || 'U'}
                                         </span>
                                     </div>
                                 )}
                                 <div>
-                                    <h3 className="font-semibold text-gray-900">{review.user.name}</h3>
-                                    <div className="flex items-center gap-2 mt-1">
+                                    <h3 className="font-semibold text-gray-900 text-sm">{review.user.name}</h3>
+                                    <div className="flex items-center gap-1.5 mt-0.5">
                                         <div className="flex">{renderStars(review.rating)}</div>
-                                        <span className="text-sm text-gray-500">{formatDate(review.createdAt)}</span>
+                                        <span className="text-xs text-gray-500">{formatDate(review.createdAt)}</span>
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center">
                                 {review.status === 'pending' ? (
-                                    <span className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm flex items-center gap-1">
-                                        <Clock size={14} />
+                                    <span className="px-2 py-0.5 bg-orange-100 text-orange-700 rounded-full text-xs flex items-center gap-0.5">
+                                        <Clock size={12} />
                                         {t('pending')}
                                     </span>
                                 ) : (
-                                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm flex items-center gap-1">
-                                        <CheckCircle size={14} />
+                                    <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs flex items-center gap-0.5">
+                                        <CheckCircle size={12} />
                                         {t('replied')}
                                     </span>
                                 )}
                             </div>
                         </div>
 
-                        <p className="text-gray-700 mb-3">{review.comment}</p>
+                        <p className="text-gray-700 text-sm mb-2">{review.comment}</p>
 
                         {review.reply ? (
-                            <div className="bg-gray-50 rounded-lg p-4 mt-4 border-l-4 border-blue-500">
-                                <div className="flex items-start gap-3">
-                                    <MessageSquare size={16} className="text-blue-500 mt-1" />
+                            <div className="bg-gray-50 rounded-lg p-2.5 sm:p-3 mt-2 border-l-3 border-blue-500">
+                                <div className="flex items-start gap-2">
+                                    <MessageSquare size={14} className="text-blue-500 mt-0.5" />
                                     <div className="flex-1">
-                                        <p className="text-sm font-semibold text-gray-900 mb-1">{t('yourReply')}</p>
-                                        <p className="text-sm text-gray-700">{review.reply}</p>
-                                        {review.replyDate && (
-                                            <p className="text-xs text-gray-500 mt-2">{formatDate(review.replyDate)}</p>
-                                        )}
+                                        <p className="text-xs font-semibold text-gray-900 mb-0.5">{t('yourReply')}</p>
+                                        <p className="text-xs text-gray-700">{review.reply}</p>
                                     </div>
                                 </div>
                             </div>
                         ) : (
-                            <div className="bg-gray-50 rounded-lg p-4 mt-4">
-                                <label className="block text-sm font-semibold text-gray-900 mb-2">{t('replyToReview')}</label>
+                            <div className="bg-gray-50 rounded-lg p-2.5 sm:p-3 mt-2">
+                                <label className="block text-xs font-semibold text-gray-900 mb-1.5">{t('replyToReview')}</label>
                                 <textarea
-                                    className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    rows={3}
+                                    className="w-full border border-gray-300 rounded-lg p-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    rows={2}
                                     placeholder={t('writeReply')}
                                     value={replyText[review.id] || ''}
                                     onChange={(e) => setReplyText(prev => ({ ...prev, [review.id]: e.target.value }))}
@@ -288,7 +285,7 @@ export default function BusinessReviewDashboard() {
                                 <button
                                     onClick={() => handleReply(review.id)}
                                     disabled={isLoading || !replyText[review.id]?.trim()}
-                                    className="mt-3 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="mt-2 px-3 py-1.5 bg-blue-500 text-white text-xs rounded-lg hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {isLoading ? t('sending') : t('sendReply')}
                                 </button>
@@ -300,21 +297,21 @@ export default function BusinessReviewDashboard() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-                <div className="flex items-center justify-center gap-2 mt-6">
+                <div className="flex items-center justify-center gap-1.5 mt-4">
                     <button
                         onClick={() => handlePageChange(apiPage - 1)}
                         disabled={apiPage === 0}
-                        className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                        className="px-2.5 py-1 text-xs border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                     >
                         {t('previous')}
                     </button>
-                    <span className="px-4 py-2 text-gray-600">
-                        {t('page')} {apiPage + 1} {t('of')} {totalPages}
+                    <span className="px-2.5 py-1 text-xs text-gray-600">
+                        {apiPage + 1} / {totalPages}
                     </span>
                     <button
                         onClick={() => handlePageChange(apiPage + 1)}
                         disabled={apiPage >= totalPages - 1}
-                        className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                        className="px-2.5 py-1 text-xs border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                     >
                         {t('next')}
                     </button>
@@ -475,10 +472,10 @@ export default function BusinessReviewDashboard() {
 
     return (
         <div className="min-h-screen bg-gray-100 rounded-md" >
-            <div className="bg-linear-to-r from-blue-600 to-blue-800 text-white p-6 rounded-md">
+            <div className="bg-linear-to-r from-blue-600 to-blue-800 text-white p-3 sm:p-4 rounded-md">
                 <div className="max-w-7xl mx-auto">
-                    <h1 className="text-3xl font-bold mb-2">{t('title')}</h1>
-                    <p className="text-blue-100">{t('subtitle')}</p>
+                    <h1 className="text-lg sm:text-xl font-bold mb-1">{t('title')}</h1>
+                    <p className="text-blue-100 text-xs sm:text-sm">{t('subtitle')}</p>
                 </div>
             </div>
 
@@ -524,7 +521,7 @@ export default function BusinessReviewDashboard() {
                 </div>
             </div> */}
 
-            <div className="max-w-7xl mx-auto p-6">
+            <div className="max-w-7xl mx-auto p-3 sm:p-4">
                 {renderAllReviewsPage()}
             </div>
         </div>

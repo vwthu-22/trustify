@@ -227,11 +227,11 @@ export default function SettingsPage() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4">
             {/* Header */}
             <div>
-                <h2 className="text-2xl font-bold text-gray-900">{t('title')}</h2>
-                <p className="text-gray-500 mt-1">{t('subtitle')}</p>
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900">{t('title')}</h2>
+                <p className="text-gray-500 text-sm">{t('subtitle')}</p>
             </div>
 
             {/* Save Success Banner */}
@@ -245,14 +245,14 @@ export default function SettingsPage() {
             )}
 
             {/* Profile Section */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <div className="space-y-6">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-5">
+                <div className="space-y-4">
                     {/* Avatar/Logo Upload */}
-                    <div className="flex items-center gap-6 pb-6 border-b border-gray-200">
+                    <div className="flex items-center gap-4 pb-4 border-b border-gray-200">
                         <div className="relative group">
                             <div
                                 onClick={handleAvatarClick}
-                                className="w-20 h-20 rounded-full flex items-center justify-center text-white text-2xl font-bold cursor-pointer overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition"
+                                className="w-16 h-16 rounded-full flex items-center justify-center text-white text-xl font-bold cursor-pointer overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition"
                             >
                                 {avatarPreview ? (
                                     <img
@@ -281,103 +281,102 @@ export default function SettingsPage() {
                             />
                         </div>
                         <div>
-                            <h4 className="font-medium text-gray-900">{t('companyLogo')}</h4>
-                            <p className="text-sm text-gray-500">{t('clickToUpload')}</p>
-                            <p className="text-xs text-gray-400 mt-1">{t('maxFileSize')}</p>
+                            <h4 className="font-medium text-gray-900 text-sm">{t('companyLogo')}</h4>
+                            <p className="text-xs text-gray-500">{t('clickToUpload')}</p>
+                            <p className="text-xs text-gray-400">{t('maxFileSize')}</p>
                         </div>
                     </div>
 
                     {/* Profile Info */}
                     <div>
-                        <h3 className="text-lg font-bold text-gray-900 mb-4">{t('profileInfo')}</h3>
-                        <div className="space-y-4">
+                        <h3 className="text-base font-semibold text-gray-900 mb-3">{t('profileInfo')}</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-xs font-medium text-gray-700 mb-1">
                                     {t('fullName')}
                                 </label>
                                 <input
                                     type="text"
                                     value={profileData.name}
                                     onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     placeholder={t('enterName')}
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-xs font-medium text-gray-700 mb-1">
                                     {t('email')}
                                 </label>
                                 <input
                                     type="email"
                                     value={profileData.email}
                                     onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
+                                    className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
                                     disabled
                                 />
-                                <p className="text-xs text-gray-500 mt-1">{t('emailCannotChange')}</p>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-xs font-medium text-gray-700 mb-1">
                                     {t('phone')}
                                 </label>
                                 <input
                                     type="tel"
                                     value={profileData.phone}
                                     onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     placeholder={t('enterPhone')}
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    {t('detail')}
-                                </label>
-                                <input
-                                    type="text"
-                                    value={companyData.detail}
-                                    onChange={(e) => setCompanyData({ ...companyData, detail: e.target.value })}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    placeholder={t('enterDetail')}
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    {t('address')}
-                                </label>
-                                <textarea
-                                    rows={3}
-                                    value={companyData.address}
-                                    onChange={(e) => setCompanyData({ ...companyData, address: e.target.value })}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    placeholder={t('enterAddress')}
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-xs font-medium text-gray-700 mb-1">
                                     {t('website')}
                                 </label>
                                 <input
                                     type="url"
                                     value={companyData.website}
                                     onChange={(e) => setCompanyData({ ...companyData, website: e.target.value })}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     placeholder={t('enterWebsite')}
+                                />
+                            </div>
+
+                            <div className="sm:col-span-2">
+                                <label className="block text-xs font-medium text-gray-700 mb-1">
+                                    {t('detail')}
+                                </label>
+                                <input
+                                    type="text"
+                                    value={companyData.detail}
+                                    onChange={(e) => setCompanyData({ ...companyData, detail: e.target.value })}
+                                    className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder={t('enterDetail')}
+                                />
+                            </div>
+
+                            <div className="sm:col-span-2">
+                                <label className="block text-xs font-medium text-gray-700 mb-1">
+                                    {t('address')}
+                                </label>
+                                <textarea
+                                    rows={2}
+                                    value={companyData.address}
+                                    onChange={(e) => setCompanyData({ ...companyData, address: e.target.value })}
+                                    className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder={t('enterAddress')}
                                 />
                             </div>
                         </div>
                     </div>
 
                     {/* Save Button */}
-                    <div className="pt-6 border-t border-gray-200">
+                    <div className="pt-4 border-t border-gray-200">
                         <button
                             onClick={handleSave}
                             disabled={saving}
-                            className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {saving ? (
                                 <>
@@ -396,13 +395,13 @@ export default function SettingsPage() {
             </div>
 
             {/* Danger Zone */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">{t('dangerZone')}</h3>
-                <div className="p-4 bg-red-50 rounded-lg border border-red-200">
-                    <p className="text-sm text-red-700 mb-4">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-5">
+                <h3 className="text-base font-semibold text-gray-900 mb-3">{t('dangerZone')}</h3>
+                <div className="p-3 bg-red-50 rounded-lg border border-red-200">
+                    <p className="text-xs text-red-700 mb-3">
                         {t('dangerZoneDesc')}
                     </p>
-                    <button className="px-6 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors">
+                    <button className="px-4 py-1.5 text-sm bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors">
                         {t('deleteAccount')}
                     </button>
                 </div>

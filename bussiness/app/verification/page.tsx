@@ -135,19 +135,19 @@ export default function VerificationPage() {
     // Show verified state - check verifyStatus from backend
     if (verificationStatus === 'verified' || company?.verifyStatus === 'APPROVED') {
         return (
-            <div className="max-w-2xl mx-auto">
-                <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border border-green-200 p-8 text-center">
-                    <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <ShieldCheck className="w-10 h-10 text-white" />
+            <div className="max-w-xl mx-auto">
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-200 p-5 sm:p-6 text-center">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <ShieldCheck className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
                     </div>
-                    <h2 className="text-2xl font-bold text-green-900 mb-2">
+                    <h2 className="text-lg sm:text-xl font-bold text-green-900 mb-1">
                         {t('verifiedTitle') || 'Đã xác thực thành công!'}
                     </h2>
-                    <p className="text-green-700 mb-6">
+                    <p className="text-green-700 text-sm mb-4">
                         {t('verifiedDesc') || 'Công ty của bạn đã được xác thực. Badge Verified sẽ hiển thị trên trang công ty.'}
                     </p>
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-full font-semibold">
-                        <ShieldCheck className="w-5 h-5" />
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
+                        <ShieldCheck className="w-4 h-4" />
                         {t('verified') || 'Đã xác thực'}
                     </div>
                 </div>
@@ -158,27 +158,27 @@ export default function VerificationPage() {
     // Show pending state - check verifyStatus from backend
     if (verificationStatus === 'pending' || company?.verifyStatus === 'PENDING') {
         return (
-            <div className="max-w-2xl mx-auto">
-                <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl border border-amber-200 p-8 text-center">
-                    <div className="w-20 h-20 bg-amber-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <Clock className="w-10 h-10 text-white" />
+            <div className="max-w-xl mx-auto">
+                <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-xl border border-amber-200 p-5 sm:p-6 text-center">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 bg-amber-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Clock className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
                     </div>
-                    <h2 className="text-2xl font-bold text-amber-900 mb-2">
+                    <h2 className="text-lg sm:text-xl font-bold text-amber-900 mb-1">
                         {t('pendingTitle')}
                     </h2>
-                    <p className="text-amber-700 mb-6">
+                    <p className="text-amber-700 text-sm mb-4">
                         {t('pendingDesc')}
                     </p>
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-100 text-amber-700 rounded-full font-semibold mb-6">
-                        <Clock className="w-5 h-5" />
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-100 text-amber-700 rounded-full text-sm font-semibold mb-4">
+                        <Clock className="w-4 h-4" />
                         {t('pending')}
                     </div>
 
                     {/* Allow resubmit for testing */}
-                    <div className="mt-4 pt-4 border-t border-amber-200">
+                    <div className="mt-3 pt-3 border-t border-amber-200">
                         <button
                             onClick={() => setVerificationStatus('not-started')}
-                            className="text-amber-600 hover:text-amber-800 text-sm underline"
+                            className="text-amber-600 hover:text-amber-800 text-xs underline"
                         >
                             Gửi lại tài liệu khác
                         </button>
@@ -189,13 +189,13 @@ export default function VerificationPage() {
     }
 
     return (
-        <div className="max-w-3xl mx-auto space-y-6">
+        <div className="max-w-2xl mx-auto space-y-4">
             {/* Header */}
-            <div className="text-center mb-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <Building2 className="w-8 h-8 text-white" />
+            <div className="text-center mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+                    <Building2 className="w-6 h-6 text-white" />
                 </div>
-                <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                <h1 className="text-lg sm:text-xl font-bold text-gray-900 mb-1">
                     {t('title') || 'Xác thực doanh nghiệp'}
                 </h1>
                 <p className="text-gray-600">
@@ -205,13 +205,13 @@ export default function VerificationPage() {
 
             {/* Success Banner */}
             {showSuccess && (
-                <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3 animate-pulse">
-                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                        <CheckCircle className="w-6 h-6 text-green-600" />
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3 flex items-center gap-2.5 animate-pulse">
+                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <CheckCircle className="w-4 h-4 text-green-600" />
                     </div>
                     <div className="flex-1">
-                        <p className="font-semibold text-green-900">{t('successTitle') || 'Gửi yêu cầu thành công!'}</p>
-                        <p className="text-sm text-green-700">{t('successDesc') || 'Tài liệu của bạn đã được gửi. Chúng tôi sẽ xem xét trong 1-3 ngày làm việc.'}</p>
+                        <p className="font-semibold text-green-900 text-sm">{t('successTitle') || 'Gửi yêu cầu thành công!'}</p>
+                        <p className="text-xs text-green-700">{t('successDesc') || 'Tài liệu của bạn đã được gửi. Chúng tôi sẽ xem xét trong 1-3 ngày làm việc.'}</p>
                     </div>
                     <button onClick={() => setShowSuccess(false)} className="text-green-600 hover:text-green-700">
                         <X className="w-4 h-4" />
@@ -231,32 +231,32 @@ export default function VerificationPage() {
             )}
 
             {/* Upload Area */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-blue-600" />
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-1.5">
+                    <FileText className="w-4 h-4 text-blue-600" />
                     {t('uploadDocuments') || 'Tải lên tài liệu'}
                 </h3>
 
                 {/* Accepted documents info */}
-                <div className="bg-blue-50 rounded-xl p-4 mb-6">
-                    <p className="text-sm font-medium text-blue-900 mb-2">
+                <div className="bg-blue-50 rounded-lg p-3 mb-4">
+                    <p className="text-xs font-medium text-blue-900 mb-1.5">
                         {t('acceptedDocuments') || 'Tài liệu được chấp nhận:'}
                     </p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-blue-800">
-                        <div className="flex items-center gap-2">
-                            <CheckCircle className="w-4 h-4 text-blue-600" />
+                    <div className="grid grid-cols-2 gap-1.5 text-xs text-blue-800">
+                        <div className="flex items-center gap-1.5">
+                            <CheckCircle className="w-3 h-3 text-blue-600" />
                             {t('businessLicense') || 'Giấy phép kinh doanh'}
                         </div>
-                        <div className="flex items-center gap-2">
-                            <CheckCircle className="w-4 h-4 text-blue-600" />
+                        <div className="flex items-center gap-1.5">
+                            <CheckCircle className="w-3 h-3 text-blue-600" />
                             {t('taxCertificate') || 'Giấy đăng ký thuế'}
                         </div>
-                        <div className="flex items-center gap-2">
-                            <CheckCircle className="w-4 h-4 text-blue-600" />
+                        <div className="flex items-center gap-1.5">
+                            <CheckCircle className="w-3 h-3 text-blue-600" />
                             {t('companyCertificate') || 'Giấy chứng nhận đăng ký DN'}
                         </div>
-                        <div className="flex items-center gap-2">
-                            <CheckCircle className="w-4 h-4 text-blue-600" />
+                        <div className="flex items-center gap-1.5">
+                            <CheckCircle className="w-3 h-3 text-blue-600" />
                             {t('otherLegal') || 'Giấy tờ pháp lý khác'}
                         </div>
                     </div>

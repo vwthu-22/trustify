@@ -11,10 +11,9 @@ export default function DashboardPage() {
     const { reviews, stats, isLoading, error, fetchReviews } = useReviewStore();
 
     useEffect(() => {
-        fetchReviews(0, 50); // Fetch first 50 reviews for stats
+        fetchReviews(0, 50);
     }, [fetchReviews]);
 
-    // Calculate star distribution from actual data
     const starDistribution = stats?.ratingDistribution
         ? [5, 4, 3, 2, 1].map(stars => {
             const count = stats.ratingDistribution[stars] || 0;
@@ -25,10 +24,8 @@ export default function DashboardPage() {
         })
         : [];
 
-    // Get recent reviews (last 5)
     const recentReviews = reviews.slice(0, 5);
 
-    // Calculate response rate
     const responseRate = stats
         ? Math.round((stats.repliedCount / Math.max(stats.totalReviews, 1)) * 100)
         : 0;
@@ -70,20 +67,20 @@ export default function DashboardPage() {
 
     if (isLoading && reviews.length === 0) {
         return (
-            <div className="flex items-center justify-center h-96">
-                <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
+            <div className="flex items-center justify-center h-64">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="flex items-center justify-center h-96">
+            <div className="flex items-center justify-center h-64">
                 <div className="text-center">
-                    <p className="text-red-500 mb-4">{error}</p>
+                    <p className="text-red-500 mb-3 text-sm">{error}</p>
                     <button
                         onClick={() => fetchReviews(0, 50)}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                        className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
                     >
                         {t('retry') || 'Retry'}
                     </button>
@@ -93,21 +90,21 @@ export default function DashboardPage() {
     }
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-4 sm:space-y-6">
             {/* KPI Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 {kpiData.map((kpi, index) => {
                     const Icon = kpi.icon;
                     return (
-                        <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+                        <div key={index} className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 hover:shadow-md transition-shadow">
                             <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm font-medium text-gray-600">{t(kpi.titleKey)}</p>
-                                    <p className="text-3xl font-bold text-gray-900 mt-2">{kpi.value}</p>
-                                    <p className="text-sm text-green-600 mt-1">{kpi.changeKey ? t(kpi.changeKey) : kpi.change}</p>
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-xs font-medium text-gray-500 truncate">{t(kpi.titleKey)}</p>
+                                    <p className="text-xl sm:text-2xl font-bold text-gray-900 mt-1">{kpi.value}</p>
+                                    <p className="text-xs text-green-600 mt-0.5 truncate">{kpi.changeKey ? t(kpi.changeKey) : kpi.change}</p>
                                 </div>
-                                <div className={`p-3 rounded-full ${kpi.bgColor}`}>
-                                    <Icon className={`h-8 w-8 ${kpi.color}`} />
+                                <div className={`p-2 sm:p-2.5 rounded-full ${kpi.bgColor} flex-shrink-0`}>
+                                    <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${kpi.color}`} />
                                 </div>
                             </div>
                         </div>
@@ -116,61 +113,55 @@ export default function DashboardPage() {
             </div>
 
             {/* Charts Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
                 {/* Star Distribution */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <h2 className="text-xl font-bold text-gray-900 mb-6">{t('starDistribution')}</h2>
-                    <div className="space-y-4">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                    <h2 className="text-sm sm:text-base font-semibold text-gray-900 mb-3">{t('starDistribution')}</h2>
+                    <div className="space-y-2.5">
                         {starDistribution.length > 0 ? (
                             starDistribution.map((item) => (
-                                <div key={item.stars} className="space-y-2">
-                                    <div className="flex items-center justify-between text-sm">
-                                        <div className="flex items-center gap-2">
-                                            <span className="font-medium text-gray-700">{item.stars}★</span>
-                                        </div>
-                                        <span className="text-gray-600">{item.count} {t('reviews') || 'reviews'}</span>
+                                <div key={item.stars} className="space-y-1">
+                                    <div className="flex items-center justify-between text-xs">
+                                        <span className="font-medium text-gray-700">{item.stars}★</span>
+                                        <span className="text-gray-500">{item.count} {t('reviews') || 'reviews'}</span>
                                     </div>
-                                    <div className="w-full bg-gray-200 rounded-full h-3">
+                                    <div className="w-full bg-gray-100 rounded-full h-2">
                                         <div
-                                            className={`h-3 rounded-full transition-all ${getBarColor(item.stars)}`}
+                                            className={`h-2 rounded-full transition-all ${getBarColor(item.stars)}`}
                                             style={{ width: `${item.percentage}%` }}
                                         ></div>
                                     </div>
-                                    <span className="text-xs text-gray-500">{item.percentage}%</span>
                                 </div>
                             ))
                         ) : (
-                            <p className="text-gray-500 text-center py-8">{t('noData') || 'No data available'}</p>
+                            <p className="text-gray-400 text-center py-6 text-sm">{t('noData') || 'No data available'}</p>
                         )}
                     </div>
                 </div>
 
                 {/* Recent Reviews */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <h2 className="text-xl font-bold text-gray-900 mb-6">{t('recentReviews')}</h2>
-                    <div className="space-y-4">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                    <h2 className="text-sm sm:text-base font-semibold text-gray-900 mb-3">{t('recentReviews')}</h2>
+                    <div className="space-y-2">
                         {recentReviews.length > 0 ? (
                             recentReviews.map((review) => (
-                                <div key={review.id} className="p-4 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
-                                    <div className="flex items-start justify-between">
-                                        <div className="flex-1">
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <span className="font-medium text-gray-900">{review.user.name}</span>
-                                                <div className="flex">
+                                <div key={review.id} className="p-2.5 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <div className="flex items-start justify-between gap-2">
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-1.5 mb-0.5">
+                                                <span className="font-medium text-gray-900 text-xs truncate">{review.user.name}</span>
+                                                <div className="flex flex-shrink-0">
                                                     {[...Array(5)].map((_, i) => (
                                                         <Star
                                                             key={i}
-                                                            className={`h-4 w-4 ${getIndividualStarColor(i, review.rating)}`}
+                                                            className={`h-3 w-3 ${getIndividualStarColor(i, review.rating)}`}
                                                         />
                                                     ))}
                                                 </div>
                                             </div>
-                                            <p className="text-sm text-gray-600 line-clamp-2">{review.comment}</p>
-                                            <p className="text-xs text-gray-400 mt-1">
-                                                {new Date(review.createdAt).toLocaleDateString('vi-VN')}
-                                            </p>
+                                            <p className="text-xs text-gray-600 line-clamp-1">{review.comment}</p>
                                         </div>
-                                        <span className={`px-2 py-1 text-xs rounded-full ${review.status === 'replied'
+                                        <span className={`px-1.5 py-0.5 text-[10px] rounded-full flex-shrink-0 ${review.status === 'replied'
                                             ? 'bg-green-100 text-green-700'
                                             : 'bg-yellow-100 text-yellow-700'
                                             }`}>
@@ -180,31 +171,31 @@ export default function DashboardPage() {
                                 </div>
                             ))
                         ) : (
-                            <p className="text-gray-500 text-center py-8">{t('noReviews') || 'No reviews yet'}</p>
+                            <p className="text-gray-400 text-center py-6 text-sm">{t('noReviews') || 'No reviews yet'}</p>
                         )}
                     </div>
                 </div>
             </div>
 
             {/* Stats Summary */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6">{t('quickStats') || 'Quick Stats'}</h2>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="text-center p-4 bg-green-50 rounded-lg">
-                        <p className="text-2xl font-bold text-green-600">{stats?.repliedCount || 0}</p>
-                        <p className="text-sm text-gray-600 mt-1">{t('replied') || 'Replied'}</p>
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                <h2 className="text-sm sm:text-base font-semibold text-gray-900 mb-3">{t('quickStats') || 'Quick Stats'}</h2>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
+                    <div className="text-center p-3 bg-green-50 rounded-lg">
+                        <p className="text-lg sm:text-xl font-bold text-green-600">{stats?.repliedCount || 0}</p>
+                        <p className="text-xs text-gray-600">{t('replied') || 'Replied'}</p>
                     </div>
-                    <div className="text-center p-4 bg-yellow-50 rounded-lg">
-                        <p className="text-2xl font-bold text-yellow-600">{stats?.pendingCount || 0}</p>
-                        <p className="text-sm text-gray-600 mt-1">{t('pending') || 'Pending'}</p>
+                    <div className="text-center p-3 bg-yellow-50 rounded-lg">
+                        <p className="text-lg sm:text-xl font-bold text-yellow-600">{stats?.pendingCount || 0}</p>
+                        <p className="text-xs text-gray-600">{t('pending') || 'Pending'}</p>
                     </div>
-                    <div className="text-center p-4 bg-blue-50 rounded-lg">
-                        <p className="text-2xl font-bold text-blue-600">{stats?.totalReviews || 0}</p>
-                        <p className="text-sm text-gray-600 mt-1">{t('totalReviews')}</p>
+                    <div className="text-center p-3 bg-blue-50 rounded-lg">
+                        <p className="text-lg sm:text-xl font-bold text-blue-600">{stats?.totalReviews || 0}</p>
+                        <p className="text-xs text-gray-600">{t('totalReviews')}</p>
                     </div>
-                    <div className="text-center p-4 bg-purple-50 rounded-lg">
-                        <p className="text-2xl font-bold text-purple-600">{stats?.averageRating?.toFixed(1) || '0.0'}</p>
-                        <p className="text-sm text-gray-600 mt-1">{t('averageRating')}</p>
+                    <div className="text-center p-3 bg-purple-50 rounded-lg">
+                        <p className="text-lg sm:text-xl font-bold text-purple-600">{stats?.averageRating?.toFixed(1) || '0.0'}</p>
+                        <p className="text-xs text-gray-600">{t('averageRating')}</p>
                     </div>
                 </div>
             </div>

@@ -31,73 +31,73 @@ export default function WriteReviewPage() {
     return (
         <div className="min-h-screen bg-gray-50 ">
             {/* Hero Section */}
-            <div className="bg-gradient-to-br from-green-500 to-teal-600 text-white py-12 sm:py-16">
+            <div className="bg-gradient-to-br from-green-500 to-teal-600 text-white py-8 sm:py-12">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-full mb-6">
-                        <Star className="w-8 h-8" />
+                    <div className="inline-flex items-center justify-center w-12 h-12 bg-white/20 rounded-full mb-4">
+                        <Star className="w-6 h-6" />
                     </div>
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3">
                         {t('title')}
                     </h1>
-                    <p className="text-lg sm:text-xl text-green-100 max-w-2xl mx-auto">
+                    <p className="text-sm sm:text-base text-green-100 max-w-2xl mx-auto">
                         {t('subtitle')}
                     </p>
                 </div>
             </div>
 
             {/* Search Section */}
-            <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8">
-                <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
-                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
+            <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+                <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+                    <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-1">
                         {t('findCompany')}
                     </h2>
-                    <p className="text-gray-600 mb-6">
+                    <p className="text-gray-600 text-sm mb-4">
                         {t('searchCompany')}
                     </p>
 
                     <div className="relative">
-                        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                         <input
                             type="text"
                             placeholder={t('typeCompanyName')}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl text-base sm:text-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition"
+                            className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg text-sm sm:text-base focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition"
                         />
                     </div>
 
                     {/* Search Results */}
                     {searchQuery.length >= 2 && (
-                        <div className="mt-4">
+                        <div className="mt-3">
                             {isLoading ? (
-                                <div className="py-8 text-center">
-                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto mb-2"></div>
-                                    <p className="text-gray-600">{t('searching')}</p>
+                                <div className="py-6 text-center">
+                                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600 mx-auto mb-2"></div>
+                                    <p className="text-gray-600 text-sm">{t('searching')}</p>
                                 </div>
                             ) : companies.length > 0 ? (
-                                <div className="space-y-3 max-h-80 overflow-y-auto">
+                                <div className="space-y-2 max-h-64 overflow-y-auto">
                                     {companies.slice(0, 10).map((company) => (
                                         <button
                                             key={company.id}
                                             onClick={() => handleCompanyClick(company.id)}
-                                            className="w-full flex items-center gap-4 p-4 bg-gray-50 hover:bg-green-50 rounded-xl transition text-left group"
+                                            className="w-full flex items-center gap-3 p-3 bg-gray-50 hover:bg-green-50 rounded-lg transition text-left group"
                                         >
-                                            <div className="w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0 bg-gradient-to-br from-blue-500 to-blue-600">
+                                            <div className="w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0 bg-gradient-to-br from-blue-500 to-blue-600">
                                                 {company.logo ? (
                                                     <img src={company.logo} alt={company.name} className="w-full h-full object-cover" />
                                                 ) : (
-                                                    <span className="text-lg font-bold text-white">{company.name.charAt(0).toUpperCase()}</span>
+                                                    <span className="text-sm font-bold text-white">{company.name.charAt(0).toUpperCase()}</span>
                                                 )}
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <h3 className="font-semibold text-gray-900 group-hover:text-green-600 truncate">
+                                                <h3 className="font-semibold text-gray-900 text-sm group-hover:text-green-600 truncate">
                                                     {company.name}
                                                 </h3>
-                                                <p className="text-sm text-gray-500 truncate">
+                                                <p className="text-xs text-gray-500 truncate">
                                                     {company.industry || company.website}
                                                 </p>
                                             </div>
-                                            <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-green-600 group-hover:translate-x-1 transition flex-shrink-0" />
+                                            <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-green-600 group-hover:translate-x-1 transition flex-shrink-0" />
                                         </button>
                                     ))}
                                 </div>

@@ -87,18 +87,18 @@ export default function SendInvitationsPage() {
         .replace('{{branch}}', formData.branch === 'hanoi' ? 'Hà Nội' : formData.branch === 'hcm' ? 'TP.HCM' : 'Đà Nẵng');
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-4 sm:space-y-6">
             {/* Header */}
             <div>
-                <h2 className="text-2xl font-bold text-gray-900">{t('title')}</h2>
-                <p className="text-gray-500 mt-1">{t('subtitle')}</p>
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900">{t('title')}</h2>
+                <p className="text-gray-500 text-xs sm:text-sm">{t('subtitle')}</p>
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-2 border-b border-gray-200">
+            <div className="flex gap-1 border-b border-gray-200 overflow-x-auto">
                 <button
                     onClick={() => setActiveTab('single')}
-                    className={`px-6 py-3 font-medium transition-colors ${activeTab === 'single'
+                    className={`px-3 sm:px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap ${activeTab === 'single'
                         ? 'text-green-600 border-b-2 border-green-600'
                         : 'text-gray-600 hover:text-gray-900'
                         }`}
@@ -107,7 +107,7 @@ export default function SendInvitationsPage() {
                 </button>
                 <button
                     onClick={() => setActiveTab('bulk')}
-                    className={`px-6 py-3 font-medium transition-colors ${activeTab === 'bulk'
+                    className={`px-3 sm:px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap ${activeTab === 'bulk'
                         ? 'text-green-600 border-b-2 border-green-600'
                         : 'text-gray-600 hover:text-gray-900'
                         }`}
@@ -116,7 +116,7 @@ export default function SendInvitationsPage() {
                 </button>
                 <button
                     onClick={() => setActiveTab('auto')}
-                    className={`px-6 py-3 font-medium transition-colors ${activeTab === 'auto'
+                    className={`px-3 sm:px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap ${activeTab === 'auto'
                         ? 'text-green-600 border-b-2 border-green-600'
                         : 'text-gray-600 hover:text-gray-900'
                         }`}
@@ -127,11 +127,11 @@ export default function SendInvitationsPage() {
 
             {/* Single Send Tab */}
             {activeTab === 'single' && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     {/* Form */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                        <h3 className="text-lg font-bold text-gray-900 mb-6">{t('customerInfo')}</h3>
-                        <div className="space-y-4">
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                        <h3 className="text-sm font-semibold text-gray-900 mb-4">{t('customerInfo')}</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                     Customer Email <span className="text-red-500">*</span>

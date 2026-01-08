@@ -86,72 +86,72 @@ export default function CampaignsPage() {
     };
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-4 sm:space-y-6">
             {/* Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-900">{t('title')}</h2>
-                    <p className="text-gray-500 mt-1">{t('subtitle')}</p>
+                    <h2 className="text-lg sm:text-xl font-bold text-gray-900">{t('title')}</h2>
+                    <p className="text-gray-500 text-xs sm:text-sm">{t('subtitle')}</p>
                 </div>
                 <button
                     onClick={() => setShowNewCampaign(true)}
-                    className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors"
+                    className="flex items-center gap-1.5 px-3 sm:px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition-colors"
                 >
-                    <Plus className="h-5 w-5" />
+                    <Plus className="h-4 w-4" />
                     {t('newCampaign')}
                 </button>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <div className="flex items-center gap-3">
-                        <div className="p-3 bg-blue-50 rounded-lg">
-                            <Users className="h-6 w-6 text-blue-600" />
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4">
+                    <div className="flex items-center gap-2.5">
+                        <div className="p-2 bg-blue-50 rounded-lg">
+                            <Users className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
                         </div>
                         <div>
-                            <p className="text-sm text-gray-600">{t('totalCampaigns')}</p>
-                            <p className="text-2xl font-bold text-gray-900">{campaigns.length}</p>
+                            <p className="text-xs text-gray-600">{t('totalCampaigns')}</p>
+                            <p className="text-lg sm:text-xl font-bold text-gray-900">{campaigns.length}</p>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <div className="flex items-center gap-3">
-                        <div className="p-3 bg-green-50 rounded-lg">
-                            <Play className="h-6 w-6 text-green-600" />
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4">
+                    <div className="flex items-center gap-2.5">
+                        <div className="p-2 bg-green-50 rounded-lg">
+                            <Play className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
                         </div>
                         <div>
-                            <p className="text-sm text-gray-600">{t('active')}</p>
-                            <p className="text-2xl font-bold text-gray-900">
+                            <p className="text-xs text-gray-600">{t('active')}</p>
+                            <p className="text-lg sm:text-xl font-bold text-gray-900">
                                 {campaigns.filter(c => c.status === 'active').length}
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <div className="flex items-center gap-3">
-                        <div className="p-3 bg-purple-50 rounded-lg">
-                            <Mail className="h-6 w-6 text-purple-600" />
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4">
+                    <div className="flex items-center gap-2.5">
+                        <div className="p-2 bg-purple-50 rounded-lg">
+                            <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
                         </div>
                         <div>
-                            <p className="text-sm text-gray-600">{t('totalSent')}</p>
-                            <p className="text-2xl font-bold text-gray-900">
+                            <p className="text-xs text-gray-600">{t('totalSent')}</p>
+                            <p className="text-lg sm:text-xl font-bold text-gray-900">
                                 {campaigns.reduce((sum, c) => sum + c.sent, 0)}
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <div className="flex items-center gap-3">
-                        <div className="p-3 bg-orange-50 rounded-lg">
-                            <CheckCircle className="h-6 w-6 text-orange-600" />
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4">
+                    <div className="flex items-center gap-2.5">
+                        <div className="p-2 bg-orange-50 rounded-lg">
+                            <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600" />
                         </div>
                         <div>
-                            <p className="text-sm text-gray-600">{t('totalResponses')}</p>
-                            <p className="text-2xl font-bold text-gray-900">
+                            <p className="text-xs text-gray-600">{t('totalResponses')}</p>
+                            <p className="text-lg sm:text-xl font-bold text-gray-900">
                                 {campaigns.reduce((sum, c) => sum + c.responses, 0)}
                             </p>
                         </div>
@@ -160,25 +160,23 @@ export default function CampaignsPage() {
             </div>
 
             {/* Campaigns List */}
-            <div className="space-y-4">
+            <div className="space-y-2 sm:space-y-3">
                 {campaigns.map(campaign => (
-                    <div key={campaign.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-shadow">
-                        <div className="flex items-start justify-between mb-4">
+                    <div key={campaign.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 hover:shadow-md transition-shadow">
+                        <div className="flex items-start justify-between mb-2 sm:mb-3">
                             <div className="flex-1">
-                                <div className="flex items-center gap-3 mb-2">
-                                    <h3 className="text-xl font-bold text-gray-900">{campaign.name}</h3>
-                                    <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(campaign.status)}`}>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <h3 className="text-sm sm:text-base font-semibold text-gray-900">{campaign.name}</h3>
+                                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(campaign.status)}`}>
                                         {campaign.status.charAt(0).toUpperCase() + campaign.status.slice(1)}
                                     </span>
                                 </div>
-                                <div className="flex items-center gap-4 text-sm text-gray-600">
-                                    <div className="flex items-center gap-1">
-                                        <Calendar className="h-4 w-4" />
-                                        <span>{campaign.startDate} to {campaign.endDate}</span>
-                                    </div>
+                                <div className="flex items-center gap-2 text-xs text-gray-500">
+                                    <Calendar className="h-3 w-3" />
+                                    <span>{campaign.startDate} - {campaign.endDate}</span>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1">
                                 {campaign.status !== 'completed' && (
                                     <button
                                         onClick={() => toggleCampaignStatus(campaign.id)}

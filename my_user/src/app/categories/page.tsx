@@ -43,52 +43,52 @@ export default function CategoriesPage() {
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Hero Section */}
-            <div className="bg-gradient-to-br from-blue-600 to-blue-200 text-white py-12 sm:py-16">
+            <div className="bg-gradient-to-br from-blue-600 to-blue-200 text-white py-8 sm:py-12">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-center">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 text-center">
                         {t('title')}
                     </h1>
-                    <p className="text-lg sm:text-xl text-blue-100 text-center mb-8 max-w-2xl mx-auto">
+                    <p className="text-sm sm:text-base text-blue-100 text-center mb-6 max-w-2xl mx-auto">
                         {t('heroSubtitle')}
                     </p>
 
                     {/* Search Box */}
                     <div className="max-w-xl mx-auto relative">
-                        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                         <input
                             type="text"
                             placeholder={t('searchCategories')}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-12 pr-4 py-3 sm:py-4 rounded-full text-gray-900 text-base sm:text-lg ring-blue-200 ring-1 focus:ring-2 focus:ring-blue-100 focus:outline-none"
+                            className="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-full text-gray-900 text-sm sm:text-base ring-blue-200 ring-1 focus:ring-2 focus:ring-blue-100 focus:outline-none"
                         />
                     </div>
                 </div>
             </div>
 
             {/* Categories Grid */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
                     {filteredCategories.map((category) => (
                         <Link
                             key={category.slug}
                             href={`/category/${category.slug}`}
-                            className="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group"
+                            className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group"
                         >
-                            <div className="flex items-start gap-4">
-                                <span className="text-4xl sm:text-5xl">{category.icon}</span>
+                            <div className="flex items-start gap-3">
+                                <span className="text-2xl sm:text-3xl">{category.icon}</span>
                                 <div className="flex-1 min-w-0">
-                                    <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-1 group-hover:text-blue-600 transition">
+                                    <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-0.5 group-hover:text-blue-600 transition">
                                         {t(category.key)}
                                     </h3>
-                                    <p className="text-sm text-gray-600 leading-relaxed">
+                                    <p className="text-xs text-gray-600 leading-relaxed line-clamp-2">
                                         {t(category.descKey)}
                                     </p>
                                 </div>
                             </div>
-                            <div className="mt-4 flex items-center text-blue-600 text-sm font-medium">
+                            <div className="mt-3 flex items-center text-blue-600 text-xs font-medium">
                                 <span>{t('browseCompanies')}</span>
-                                <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition" />
+                                <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition" />
                             </div>
                         </Link>
                     ))}
@@ -102,19 +102,19 @@ export default function CategoriesPage() {
             </div>
 
             {/* CTA Section */}
-            <div className="bg-gradient-to-r from-pink-100 via-purple-100 to-blue-100 py-12 sm:py-16">
+            <div className="bg-gradient-to-r from-pink-100 via-purple-100 to-blue-100 py-8 sm:py-12">
                 <div className="max-w-4xl mx-auto px-4 text-center">
-                    <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">
                         {t('cantFind')}
                     </h2>
-                    <p className="text-gray-700 mb-6">
+                    <p className="text-gray-700 text-sm mb-5">
                         {t('searchDirectly')}
                     </p>
                     <Link
                         href="/write-review"
-                        className="inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white px-6 py-3 rounded-full font-medium transition"
+                        className="inline-flex items-center gap-1.5 bg-gray-900 hover:bg-gray-800 text-white px-5 py-2.5 rounded-full text-sm font-medium transition"
                     >
-                        <Star className="w-5 h-5" />
+                        <Star className="w-4 h-4" />
                         {tHeader('writeReview')}
                     </Link>
                 </div>

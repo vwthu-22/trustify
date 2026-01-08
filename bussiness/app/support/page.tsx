@@ -112,40 +112,40 @@ export default function SupportChatPage() {
     };
 
     return (
-        <div className="h-[calc(100vh-8rem)]">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full">
+        <div className="h-[calc(100vh-6rem)]">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full">
                 {/* Chat Header */}
-                <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-gray-50">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center">
-                            <ShieldCheck className="w-5 h-5 text-white" />
+                <div className="px-3 sm:px-4 py-2.5 border-b border-gray-200 flex items-center justify-between bg-gray-50">
+                    <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center">
+                            <ShieldCheck className="w-4 h-4 text-white" />
                         </div>
                         <div>
-                            <h3 className="font-semibold text-gray-900">{t('adminSupport')}</h3>
-                            <div className="flex items-center gap-2">
-                                <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                            <h3 className="font-semibold text-gray-900 text-sm">{t('adminSupport')}</h3>
+                            <div className="flex items-center gap-1.5">
+                                <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></span>
                                 <span className="text-xs text-gray-500">{isConnected ? t('connected') : t('disconnected')}</span>
                             </div>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <button className="p-2 hover:bg-gray-200 rounded-lg transition">
-                            <MoreVertical className="w-5 h-5 text-gray-600" />
+                    <div className="flex items-center gap-1">
+                        <button className="p-1.5 hover:bg-gray-200 rounded-lg transition">
+                            <MoreVertical className="w-4 h-4 text-gray-600" />
                         </button>
                     </div>
                 </div>
 
                 {/* Messages Area */}
-                <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50">
+                <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-4 bg-gray-50">
                     {isLoading ? (
                         <div className="flex items-center justify-center h-full">
-                            <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+                            <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
                         </div>
                     ) : messages.length === 0 ? (
-                        <div className="text-center py-12">
-                            <ShieldCheck className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                            <h3 className="text-lg font-medium text-gray-600 mb-2">{t('startConversation')}</h3>
-                            <p className="text-sm text-gray-500">{t('sendMessageToStart')}</p>
+                        <div className="text-center py-8">
+                            <ShieldCheck className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                            <h3 className="text-sm font-medium text-gray-600 mb-1">{t('startConversation')}</h3>
+                            <p className="text-xs text-gray-500">{t('sendMessageToStart')}</p>
                         </div>
                     ) : (
                         <>
@@ -232,13 +232,13 @@ export default function SupportChatPage() {
                 </div>
 
                 {/* Input Area */}
-                <div className="px-4 py-4 border-t border-gray-200 bg-white">
-                    <div className="flex items-center gap-3">
-                        <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition">
-                            <Paperclip className="w-5 h-5" />
+                <div className="px-3 py-3 border-t border-gray-200 bg-white">
+                    <div className="flex items-center gap-2">
+                        <button className="p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition">
+                            <Paperclip className="w-4 h-4" />
                         </button>
-                        <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition">
-                            <Smile className="w-5 h-5" />
+                        <button className="p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition">
+                            <Smile className="w-4 h-4" />
                         </button>
                         <input
                             ref={inputRef}
@@ -247,17 +247,17 @@ export default function SupportChatPage() {
                             onChange={(e) => setNewMessage(e.target.value)}
                             onKeyPress={handleKeyPress}
                             placeholder={t('typeMessage')}
-                            className="flex-1 px-4 py-2.5 bg-gray-100 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                            className="flex-1 px-3 py-2 bg-gray-100 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                         />
                         <button
                             onClick={handleSendMessage}
                             disabled={!newMessage.trim()}
-                            className="p-2.5 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            <Send className="w-5 h-5" />
+                            <Send className="w-4 h-4" />
                         </button>
                     </div>
-                    <p className="text-xs text-gray-500 mt-2 text-center">
+                    <p className="text-xs text-gray-500 mt-1.5 text-center">
                         {t('responseTime')}
                     </p>
                 </div>

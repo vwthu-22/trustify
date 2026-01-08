@@ -108,47 +108,47 @@ export default function IntegrationsPage() {
         : integrations.filter(i => i.category === selectedCategory);
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-4 sm:space-y-6">
             {/* Header */}
             {/* <div>
-                <h2 className="text-2xl font-bold text-gray-900">{t('title')}</h2>
-                <p className="text-gray-500 mt-1">{t('subtitle')}</p>
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900">{t('title')}</h2>
+                <p className="text-gray-500 text-xs sm:text-sm">{t('subtitle')}</p>
             </div> */}
 
             {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <div className="flex items-center gap-3">
-                        <div className="p-3 bg-blue-100 rounded-lg">
-                            <Puzzle className="h-6 w-6 text-blue-600" />
+            <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4">
+                    <div className="flex items-center gap-2">
+                        <div className="p-2 bg-blue-100 rounded-lg">
+                            <Puzzle className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-gray-600">{t('available')}</p>
-                            <p className="text-2xl font-bold text-gray-900">{integrations.length}</p>
+                            <p className="text-xs text-gray-600">{t('available')}</p>
+                            <p className="text-lg sm:text-xl font-bold text-gray-900">{integrations.length}</p>
                         </div>
                     </div>
                 </div>
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <div className="flex items-center gap-3">
-                        <div className="p-3 bg-green-100 rounded-lg">
-                            <CheckCircle className="h-6 w-6 text-green-600" />
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4">
+                    <div className="flex items-center gap-2">
+                        <div className="p-2 bg-green-100 rounded-lg">
+                            <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-gray-600">{t('connected')}</p>
-                            <p className="text-2xl font-bold text-gray-900">
+                            <p className="text-xs text-gray-600">{t('connected')}</p>
+                            <p className="text-lg sm:text-xl font-bold text-gray-900">
                                 {integrations.filter(i => i.isConnected).length}
                             </p>
                         </div>
                     </div>
                 </div>
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <div className="flex items-center gap-3">
-                        <div className="p-3 bg-purple-100 rounded-lg">
-                            <Zap className="h-6 w-6 text-purple-600" />
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4">
+                    <div className="flex items-center gap-2">
+                        <div className="p-2 bg-purple-100 rounded-lg">
+                            <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-gray-600">{t('proOnly')}</p>
-                            <p className="text-2xl font-bold text-gray-900">
+                            <p className="text-xs text-gray-600">{t('proOnly')}</p>
+                            <p className="text-lg sm:text-xl font-bold text-gray-900">
                                 {integrations.filter(i => i.isPro).length}
                             </p>
                         </div>
@@ -157,12 +157,12 @@ export default function IntegrationsPage() {
             </div>
 
             {/* Category Filter */}
-            <div className="flex gap-2 overflow-x-auto pb-2">
+            <div className="flex gap-1.5 overflow-x-auto pb-2">
                 {categories.map((category) => (
                     <button
                         key={category.id}
                         onClick={() => setSelectedCategory(category.id)}
-                        className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${selectedCategory === category.id
+                        className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap transition-colors ${selectedCategory === category.id
                             ? 'bg-blue-600 text-white'
                             : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
                             }`}
@@ -173,32 +173,32 @@ export default function IntegrationsPage() {
             </div>
 
             {/* Integrations Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {filteredIntegrations.map((integration) => (
                     <div
                         key={integration.id}
-                        className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-shadow"
+                        className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow"
                     >
-                        <div className="flex items-start justify-between mb-4">
-                            <div className="text-4xl">{integration.icon}</div>
+                        <div className="flex items-start justify-between mb-2">
+                            <div className="text-2xl sm:text-3xl">{integration.icon}</div>
                             {integration.isPro && (
-                                <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-full flex items-center gap-1">
-                                    <Lock className="h-3 w-3" />
+                                <span className="px-1.5 py-0.5 bg-purple-100 text-purple-700 text-xs font-semibold rounded-full flex items-center gap-0.5">
+                                    <Lock className="h-2.5 w-2.5" />
                                     PRO
                                 </span>
                             )}
                         </div>
-                        <h3 className="text-lg font-bold text-gray-900 mb-2">{integration.name}</h3>
-                        <p className="text-sm text-gray-600 mb-4">{integration.description}</p>
+                        <h3 className="text-sm font-semibold text-gray-900 mb-1">{integration.name}</h3>
+                        <p className="text-xs text-gray-600 mb-3">{integration.description}</p>
                         {integration.isConnected ? (
-                            <div className="flex items-center gap-2 text-green-600 text-sm font-medium">
-                                <CheckCircle className="h-4 w-4" />
+                            <div className="flex items-center gap-1.5 text-green-600 text-xs font-medium">
+                                <CheckCircle className="h-3.5 w-3.5" />
                                 {t('connected')}
                             </div>
                         ) : (
                             <button
                                 disabled={integration.isPro}
-                                className={`w-full py-2 px-4 rounded-lg font-medium transition-colors ${integration.isPro
+                                className={`w-full py-1.5 px-3 rounded-lg text-xs font-medium transition-colors ${integration.isPro
                                     ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                     : 'bg-blue-600 text-white hover:bg-blue-700'
                                     }`}
@@ -264,17 +264,17 @@ export default function IntegrationsPage() {
             </div>
 
             {/* Upgrade CTA */}
-            <div className="bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl p-8 text-white">
-                <div className="flex items-center gap-4">
-                    <div className="p-3 bg-white/20 rounded-lg">
-                        <Lock className="h-8 w-8" />
+            <div className="bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg p-4 sm:p-6 text-white">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-white/20 rounded-lg">
+                        <Lock className="h-5 w-5 sm:h-6 sm:w-6" />
                     </div>
                     <div className="flex-1">
-                        <h3 className="text-xl font-bold mb-2">{t('unlockPremium')}</h3>
-                        <p className="text-white/90 mb-4">
+                        <h3 className="text-base sm:text-lg font-bold mb-1">{t('unlockPremium')}</h3>
+                        <p className="text-white/90 text-xs sm:text-sm mb-3">
                             Upgrade to PRO to access Salesforce, HubSpot, Zapier and more
                         </p>
-                        <button className="px-6 py-3 bg-white text-purple-600 font-bold rounded-lg hover:bg-gray-100 transition-colors">
+                        <button className="px-4 py-2 text-sm bg-white text-purple-600 font-bold rounded-lg hover:bg-gray-100 transition-colors">
                             {t('upgradeToPro')}
                         </button>
                     </div>

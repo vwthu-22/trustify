@@ -123,24 +123,24 @@ export default function AIReviewAnalysisPage() {
     };
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-4 sm:space-y-6">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                        <Brain className="w-7 h-7 text-purple-600" />
+                    <h2 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2">
+                        <Brain className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
                         {t('aiTitle')}
                     </h2>
-                    <p className="text-gray-500 mt-1">
+                    <p className="text-gray-500 text-xs sm:text-sm">
                         {t('aiSubtitle')}
                     </p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-2">
                     {/* Date Range Selector */}
                     <select
                         value={dateRange}
                         onChange={(e) => setDateRange(e.target.value)}
-                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="px-2.5 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     >
                         <option value="7">{t('days7')}</option>
                         <option value="30">{t('days30')}</option>
@@ -153,7 +153,7 @@ export default function AIReviewAnalysisPage() {
                     <select
                         value={maxReviews}
                         onChange={(e) => setMaxReviews(Number(e.target.value))}
-                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="px-2.5 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     >
                         <option value="10">{t('reviewsCount', { count: 10 })}</option>
                         <option value="25">{t('reviewsCount', { count: 25 })}</option>
@@ -164,17 +164,17 @@ export default function AIReviewAnalysisPage() {
                     <button
                         onClick={() => handleAnalyze(false)}
                         disabled={isLoading || !company?.id}
-                        className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm font-semibold rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isLoading ? (
                             <>
-                                <RefreshCw className="w-5 h-5 animate-spin" />
-                                {t('analyzing')}
+                                <RefreshCw className="w-4 h-4 animate-spin" />
+                                <span className="hidden sm:inline">{t('analyzing')}</span>
                             </>
                         ) : (
                             <>
-                                <Sparkles className="w-5 h-5" />
-                                {t('analyzeWithAI')}
+                                <Sparkles className="w-4 h-4" />
+                                <span className="hidden sm:inline">{t('analyzeWithAI')}</span>
                             </>
                         )}
                     </button>
@@ -277,22 +277,22 @@ export default function AIReviewAnalysisPage() {
                     </div>
 
                     {/* Overview Stats */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center">
-                            <p className="text-4xl font-bold text-purple-600">{analysisResult.overallScore}</p>
-                            <p className="text-sm text-gray-600 mt-1">{t('overallScore')}</p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
+                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 text-center">
+                            <p className="text-2xl sm:text-3xl font-bold text-purple-600">{analysisResult.overallScore}</p>
+                            <p className="text-xs text-gray-600">{t('overallScore')}</p>
                         </div>
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center">
-                            <p className="text-4xl font-bold text-blue-600">{analysisResult.reviewsAnalyzed}</p>
-                            <p className="text-sm text-gray-600 mt-1">{t('reviewsAnalyzed')}</p>
+                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 text-center">
+                            <p className="text-2xl sm:text-3xl font-bold text-blue-600">{analysisResult.reviewsAnalyzed}</p>
+                            <p className="text-xs text-gray-600">{t('reviewsAnalyzed')}</p>
                         </div>
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center">
-                            <p className="text-4xl font-bold text-[#5aa5df]">{analysisResult.strengths?.length || 0}</p>
-                            <p className="text-sm text-gray-600 mt-1">{t('strengths')}</p>
+                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 text-center">
+                            <p className="text-2xl sm:text-3xl font-bold text-[#5aa5df]">{analysisResult.strengths?.length || 0}</p>
+                            <p className="text-xs text-gray-600">{t('strengths')}</p>
                         </div>
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center">
-                            <p className="text-4xl font-bold text-orange-600">{analysisResult.suggestions?.length || 0}</p>
-                            <p className="text-sm text-gray-600 mt-1">{t('suggestions')}</p>
+                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 text-center">
+                            <p className="text-2xl sm:text-3xl font-bold text-orange-600">{analysisResult.suggestions?.length || 0}</p>
+                            <p className="text-xs text-gray-600">{t('suggestions')}</p>
                         </div>
                     </div>
 

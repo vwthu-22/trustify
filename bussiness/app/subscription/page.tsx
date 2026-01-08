@@ -79,33 +79,33 @@ export default function SubscriptionPage() {
     const recommendedPlanId = getRecommendedPlanId();
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-4 sm:space-y-6">
             {/* Header */}
             <div className="text-center">
-                <h2 className="text-3xl font-bold text-gray-900">{t('choosePlan')}</h2>
-                <p className="text-gray-500 mt-2">{t('selectPlan')}</p>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">{t('choosePlan')}</h2>
+                <p className="text-gray-500 text-xs sm:text-sm">{t('selectPlan')}</p>
             </div>
 
             {/* Billing Toggle */}
-            <div className="flex items-center justify-center gap-4">
-                <span className={`font-medium ${billingPeriod === 'month' ? 'text-gray-900' : 'text-gray-500'}`}>
+            <div className="flex items-center justify-center gap-2 sm:gap-3">
+                <span className={`text-xs sm:text-sm font-medium ${billingPeriod === 'month' ? 'text-gray-900' : 'text-gray-500'}`}>
                     {t('monthly')}
                 </span>
                 <button
                     onClick={() => setBillingPeriod(billingPeriod === 'month' ? 'year' : 'month')}
-                    className={`relative w-14 h-7 rounded-full transition-colors ${billingPeriod === 'year' ? 'bg-green-600' : 'bg-gray-300'
+                    className={`relative w-12 h-6 rounded-full transition-colors ${billingPeriod === 'year' ? 'bg-green-600' : 'bg-gray-300'
                         }`}
                 >
                     <div
-                        className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform ${billingPeriod === 'year' ? 'translate-x-7' : 'translate-x-0'
+                        className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${billingPeriod === 'year' ? 'translate-x-6' : 'translate-x-0'
                             }`}
                     />
                 </button>
-                <span className={`font-medium ${billingPeriod === 'year' ? 'text-gray-900' : 'text-gray-500'}`}>
+                <span className={`text-xs sm:text-sm font-medium ${billingPeriod === 'year' ? 'text-gray-900' : 'text-gray-500'}`}>
                     {t('yearly')}
                 </span>
                 {billingPeriod === 'year' && (
-                    <span className="px-3 py-1 bg-green-100 text-green-700 text-sm font-semibold rounded-full">
+                    <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
                         {t('savePercent')}
                     </span>
                 )}
@@ -134,7 +134,7 @@ export default function SubscriptionPage() {
 
             {/* Plans Grid - Dynamic Layout */}
             {!isLoading && !error && plans.length > 0 && (
-                <div className={`grid gap-6 ${getGridClass()}`}>
+                <div className={`grid gap-3 sm:gap-4 ${getGridClass()}`}>
                     {plans.map((plan, index) => {
                         const isCurrentPlan = plan.id === currentPlanId;
                         const isRecommended = plan.id === recommendedPlanId;
@@ -142,43 +142,43 @@ export default function SubscriptionPage() {
                         return (
                             <div
                                 key={plan.id}
-                                className={`relative bg-white rounded-xl shadow-sm border-2 p-6 transition-all flex flex-col ${isRecommended
-                                    ? 'border-green-500 shadow-xl md:scale-105'
+                                className={`relative bg-white rounded-lg shadow-sm border-2 p-4 sm:p-5 transition-all flex flex-col ${isRecommended
+                                    ? 'border-green-500 shadow-lg md:scale-[1.02]'
                                     : isCurrentPlan
                                         ? 'border-blue-500'
                                         : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
                                     }`}
                             >
                                 {isRecommended && (
-                                    <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                                        <span className="px-4 py-1 bg-green-600 text-white text-sm font-bold rounded-full shadow-lg whitespace-nowrap">
+                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                                        <span className="px-3 py-0.5 bg-green-600 text-white text-xs font-bold rounded-full shadow whitespace-nowrap">
                                             {t('recommended')}
                                         </span>
                                     </div>
                                 )}
 
                                 {isCurrentPlan && (
-                                    <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                                        <span className="px-4 py-1 bg-blue-600 text-white text-sm font-bold rounded-full shadow-lg whitespace-nowrap">
+                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                                        <span className="px-3 py-0.5 bg-blue-600 text-white text-xs font-bold rounded-full shadow whitespace-nowrap">
                                             {t('currentPlan')}
                                         </span>
                                     </div>
                                 )}
 
-                                <div className="text-center mb-6">
-                                    <div className={`inline-flex p-3 rounded-full mb-4 ${getPlanColor(plan, index)}`}>
+                                <div className="text-center mb-4">
+                                    <div className={`inline-flex p-2 rounded-full mb-3 ${getPlanColor(plan, index)}`}>
                                         {getPlanIcon(plan, index)}
                                     </div>
-                                    <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
-                                    <p className="text-sm text-gray-600 mb-4 min-h-[40px]">{plan.description || 'Perfect for your needs'}</p>
-                                    <div className="mb-2">
-                                        <span className="text-4xl font-bold text-gray-900">{formatPrice(plan.price)}</span>
+                                    <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-1">{plan.name}</h3>
+                                    <p className="text-xs text-gray-600 mb-3 min-h-[32px]">{plan.description || 'Perfect for your needs'}</p>
+                                    <div className="mb-1">
+                                        <span className="text-2xl sm:text-3xl font-bold text-gray-900">{formatPrice(plan.price)}</span>
                                         {plan.price > 0 && (
-                                            <span className="text-gray-600">/{billingPeriod === 'month' ? 'month' : 'year'}</span>
+                                            <span className="text-gray-600 text-sm">/{billingPeriod === 'month' ? 'month' : 'year'}</span>
                                         )}
                                     </div>
                                     {getSavings(plan.price) && (
-                                        <p className="text-sm text-green-600 font-semibold">{getSavings(plan.price)}</p>
+                                        <p className="text-xs text-green-600 font-semibold">{getSavings(plan.price)}</p>
                                     )}
                                 </div>
 
