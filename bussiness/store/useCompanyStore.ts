@@ -379,7 +379,7 @@ export const useCompanyStore = create<CompanyStore>()(
             // Set verification status
             setVerificationStatus: (status) => set({ verificationStatus: status }),
 
-            // Upload verification documents (multiple files)
+            // Upload verification documents (multiple files - sends each separately)
             // API: POST /api/companies/{id}/upload-verification
             uploadVerificationDocument: async (files: File | File[]) => {
                 const company = get().company;
@@ -399,41 +399,42 @@ export const useCompanyStore = create<CompanyStore>()(
                 set({ isUploadingVerification: true, error: null });
 
                 try {
-                    // Convert all files to base64
-                    const base64Files = await Promise.all(
-                        fileArray.map(file =>
-                            new Promise<string>((resolve, reject) => {
-                                const reader = new FileReader();
-                                reader.readAsDataURL(file);
-                                reader.onload = () => {
-                                    const result = reader.result as string;
-                                    const base64 = result.split(',')[1];
-                                    resolve(base64);
-                                };
-                                reader.onerror = error => reject(error);
+                    // Upload each file individually (API expects { file: string })
+                    for (const file of fileArray) {
+                        // Convert file to base64
+                        const base64File = await new Promise<string>((resolve, reject) => {
+                            const reader = new FileReader();
+                            reader.readAsDataURL(file);
+                            reader.onload = () => {
+                                const result = reader.result as string;
+                                const base64 = result.split(',')[1];
+                                resolve(base64);
+                            };
+                            reader.onerror = error => reject(error);
+                        });
+
+                        // Send file to API (one at a time)
+                        const response = await fetch(`${API_BASE_URL}/api/companies/${company.id}/upload-verification`, {
+                            method: 'POST',
+                            credentials: 'include',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'ngrok-skip-browser-warning': 'true',
+                            },
+                            body: JSON.stringify({
+                                file: base64File // API expects { file: "base64string" }
                             })
-                        )
-                    );
+                        });
 
-                    // Send all files to API
-                    const response = await fetch(`${API_BASE_URL}/api/companies/${company.id}/upload-verification`, {
-                        method: 'POST',
-                        credentials: 'include',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'ngrok-skip-browser-warning': 'true',
-                        },
-                        body: JSON.stringify({
-                            files: base64Files // Send array of base64 strings
-                        })
-                    });
+                        if (!response.ok) {
+                            const errorData = await response.text();
+                            throw new Error(errorData || `Upload failed with status ${response.status}`);
+                        }
 
-                    if (!response.ok) {
-                        const errorData = await response.text();
-                        throw new Error(errorData || `Upload failed with status ${response.status}`);
+                        console.log(`✅ Uploaded: ${file.name}`);
                     }
 
-                    console.log(`✅ Uploaded ${fileArray.length} verification document(s)`);
+                    console.log(`✅ All ${fileArray.length} verification document(s) uploaded`);
                     set({ isUploadingVerification: false, verificationStatus: 'pending' });
                     return true;
                 } catch (error) {

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import {
     Upload, CheckCircle, AlertCircle, Clock, Loader2,
     ShieldCheck, FileImage, X, Eye, ImagePlus, Building2,
-    FileText, Camera
+    FileText, Camera, PartyPopper
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useCompanyStore } from '@/store/useCompanyStore';
@@ -22,6 +22,7 @@ export default function VerificationPage() {
     const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
     const [isDragging, setIsDragging] = useState(false);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
+    const [showSuccess, setShowSuccess] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const {
@@ -97,6 +98,10 @@ export default function VerificationPage() {
             // Clear files after successful upload
             uploadedFiles.forEach(f => URL.revokeObjectURL(f.preview));
             setUploadedFiles([]);
+            // Show success message
+            setShowSuccess(true);
+            // Auto hide after 5 seconds
+            setTimeout(() => setShowSuccess(false), 5000);
         }
     };
 
@@ -167,6 +172,22 @@ export default function VerificationPage() {
                 </p>
             </div>
 
+            {/* Success Banner */}
+            {showSuccess && (
+                <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3 animate-pulse">
+                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <CheckCircle className="w-6 h-6 text-green-600" />
+                    </div>
+                    <div className="flex-1">
+                        <p className="font-semibold text-green-900">{t('successTitle') || 'Gửi yêu cầu thành công!'}</p>
+                        <p className="text-sm text-green-700">{t('successDesc') || 'Tài liệu của bạn đã được gửi. Chúng tôi sẽ xem xét trong 1-3 ngày làm việc.'}</p>
+                    </div>
+                    <button onClick={() => setShowSuccess(false)} className="text-green-600 hover:text-green-700">
+                        <X className="w-4 h-4" />
+                    </button>
+                </div>
+            )}
+
             {/* Error Banner */}
             {error && (
                 <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center gap-3">
@@ -217,8 +238,8 @@ export default function VerificationPage() {
                     onDragLeave={handleDragLeave}
                     onClick={() => fileInputRef.current?.click()}
                     className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${isDragging
-                            ? 'border-blue-500 bg-blue-50'
-                            : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'
                         }`}
                 >
                     <input
