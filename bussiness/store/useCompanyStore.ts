@@ -45,7 +45,7 @@ interface CompanyStore {
     uploadLogo: (file: File) => Promise<string | null>;
 
     // Verification actions
-    uploadVerificationDocument: (file: File) => Promise<boolean>;
+    uploadVerificationDocument: (files: File | File[]) => Promise<boolean>;
     setVerificationStatus: (status: 'not-started' | 'pending' | 'verified' | 'rejected') => void;
 }
 
@@ -379,30 +379,43 @@ export const useCompanyStore = create<CompanyStore>()(
             // Set verification status
             setVerificationStatus: (status) => set({ verificationStatus: status }),
 
-            // Upload verification document
+            // Upload verification documents (multiple files)
             // API: POST /api/companies/{id}/upload-verification
-            uploadVerificationDocument: async (file: File) => {
+            uploadVerificationDocument: async (files: File | File[]) => {
                 const company = get().company;
                 if (!company?.id) {
                     set({ error: 'Company ID not found. Please login again.' });
                     return false;
                 }
 
+                // Ensure files is an array
+                const fileArray = Array.isArray(files) ? files : [files];
+
+                if (fileArray.length === 0) {
+                    set({ error: 'No files to upload.' });
+                    return false;
+                }
+
                 set({ isUploadingVerification: true, error: null });
 
                 try {
-                    // Convert file to base64
-                    const base64File = await new Promise<string>((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.readAsDataURL(file);
-                        reader.onload = () => {
-                            const result = reader.result as string;
-                            const base64 = result.split(',')[1];
-                            resolve(base64);
-                        };
-                        reader.onerror = error => reject(error);
-                    });
+                    // Convert all files to base64
+                    const base64Files = await Promise.all(
+                        fileArray.map(file =>
+                            new Promise<string>((resolve, reject) => {
+                                const reader = new FileReader();
+                                reader.readAsDataURL(file);
+                                reader.onload = () => {
+                                    const result = reader.result as string;
+                                    const base64 = result.split(',')[1];
+                                    resolve(base64);
+                                };
+                                reader.onerror = error => reject(error);
+                            })
+                        )
+                    );
 
+                    // Send all files to API
                     const response = await fetch(`${API_BASE_URL}/api/companies/${company.id}/upload-verification`, {
                         method: 'POST',
                         credentials: 'include',
@@ -411,7 +424,7 @@ export const useCompanyStore = create<CompanyStore>()(
                             'ngrok-skip-browser-warning': 'true',
                         },
                         body: JSON.stringify({
-                            file: base64File
+                            files: base64Files // Send array of base64 strings
                         })
                     });
 
@@ -420,13 +433,13 @@ export const useCompanyStore = create<CompanyStore>()(
                         throw new Error(errorData || `Upload failed with status ${response.status}`);
                     }
 
-                    console.log(`✅ Uploaded verification document: ${file.name}`);
+                    console.log(`✅ Uploaded ${fileArray.length} verification document(s)`);
                     set({ isUploadingVerification: false, verificationStatus: 'pending' });
                     return true;
                 } catch (error) {
-                    console.error('Error uploading verification document:', error);
+                    console.error('Error uploading verification documents:', error);
                     set({
-                        error: error instanceof Error ? error.message : 'Failed to upload document. Please try again.',
+                        error: error instanceof Error ? error.message : 'Failed to upload documents. Please try again.',
                         isUploadingVerification: false
                     });
                     return false;
