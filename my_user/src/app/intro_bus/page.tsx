@@ -58,7 +58,7 @@ export default function BusinessIntro() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 mt-14">
+    <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-[#0f1c2d] to-[#1a3a5c] text-white py-16 sm:py-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -72,21 +72,6 @@ export default function BusinessIntro() {
           <p className="text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto mb-8">
             {t('heroSubtitle')}
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="https://trustify-bussiness.vercel.app/login"
-              className="inline-flex items-center justify-center gap-2 bg-[#5aa5df] hover:bg-[#4a95cf] text-white px-8 py-3 rounded-full text-lg font-semibold transition"
-            >
-              {t('getStarted')}
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-            <Link
-              href="#features"
-              className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white px-8 py-3 rounded-full text-lg font-semibold transition"
-            >
-              {t('learnMore')}
-            </Link>
-          </div>
         </div>
       </section>
 
@@ -227,83 +212,6 @@ export default function BusinessIntro() {
               );
             })}
           </div>
-        </div>
-      </section>
-
-      {/* Pricing Preview */}
-      <section className="bg-white py-16 sm:py-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Pricing Card */}
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8">
-              <div className="flex items-center gap-3 mb-4">
-                <Crown className="w-8 h-8 text-yellow-500" />
-                <h2 className="text-2xl font-bold text-gray-900">{t('pricingTitle')}</h2>
-              </div>
-              <p className="text-gray-600 mb-6">{t('pricingDesc')}</p>
-              <div className="flex flex-wrap gap-3 mb-6">
-                <span className="px-3 py-1 bg-white rounded-full text-sm text-gray-700 shadow-sm">Free</span>
-                <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">Pro</span>
-                <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">Premium</span>
-              </div>
-              <Link
-                href="https://trustify-bussiness.vercel.app/subscription"
-                className="inline-flex items-center gap-2 bg-[#0f1c2d] hover:bg-[#1a3a5c] text-white px-6 py-3 rounded-full font-semibold transition"
-              >
-                {t('viewPlans')}
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-
-            {/* Support Card */}
-            <div className="bg-gradient-to-br from-[#5aa5df] to-[#4a95cf] rounded-2xl p-8 text-white">
-              <div className="flex items-center gap-3 mb-4">
-                <Headphones className="w-8 h-8" />
-                <h2 className="text-2xl font-bold">{t('supportTitle')}</h2>
-              </div>
-              <p className="text-blue-100 mb-6">{t('supportDesc')}</p>
-              <ul className="space-y-2 mb-6">
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5" />
-                  <span>{t('supportFeature1')}</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5" />
-                  <span>{t('supportFeature2')}</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5" />
-                  <span>{t('supportFeature3')}</span>
-                </li>
-              </ul>
-              <Link
-                href="https://trustify-bussiness.vercel.app/support"
-                className="inline-flex items-center gap-2 bg-white text-[#5aa5df] hover:bg-gray-100 px-6 py-3 rounded-full font-semibold transition"
-              >
-                {t('contactSupport')}
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="bg-[#0f1c2d] py-16 sm:py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <Building2 className="w-16 h-16 text-[#5aa5df] mx-auto mb-6" />
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
-            {t('ctaTitle')}
-          </h2>
-          <p className="text-gray-400 mb-8 max-w-2xl mx-auto">
-            {t('ctaDesc')}
-          </p>
-          <Link
-            href="https://trustify-bussiness.vercel.app/login"
-            className="inline-flex items-center gap-2 bg-[#5aa5df] hover:bg-[#4a95cf] text-white px-10 py-4 rounded-full text-lg font-semibold transition"
-          >
-            {t('startNow')}
-            <ArrowRight className="w-5 h-5" />
-          </Link>
         </div>
       </section>
     </div>

@@ -32,7 +32,7 @@ export default function AboutPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50 mt-14">
+        <div className="min-h-screen bg-gray-50">
             {/* Hero Section */}
             <section className="bg-gradient-to-br from-[#0f1c2d] to-[#1a3a5c] text-white py-12 sm:py-16">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
