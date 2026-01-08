@@ -138,6 +138,13 @@
         "country": "Country",
         "plan": "Plan",
         "verification": "Verification",
+        "verificationLabel": "Verification",
+        "verifyStatus": {
+            "approved": "Verified",
+            "pending": "Pending",
+            "rejected": "Rejected",
+            "none": "Not submitted"
+        },
         "status": "Status",
         "actions": "Actions",
         "showing": "Showing",

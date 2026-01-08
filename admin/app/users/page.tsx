@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Search, Filter, Trash2, Edit, Shield, Plus, X, Loader2, ChevronLeft, ChevronRight, UserPlus } from 'lucide-react'
+import { Search, Filter, Trash2, Edit, Shield, Plus, X, Loader2, ChevronLeft, ChevronRight, UserPlus, Star } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import useUserManagementStore, { User, CreateAdminData } from '@/store/useUserManagementStore'
 
@@ -198,11 +198,22 @@ export default function UsersPage() {
                                 filteredUsers.map((user) => (
                                     <tr key={user.id} className="hover:bg-gray-50 transition-colors">
                                         <td className="px-6 py-4">
-                                            <img
-                                                src={user.avatarUrl || '/default-avatar.png'}
-                                                alt={user.name}
-                                                className="w-10 h-10 rounded-full object-cover"
-                                            />
+                                            {user.role === 'ADMIN' ? (
+                                                <div className="relative w-10 h-10 flex items-center justify-center">
+                                                    <Shield className="w-10 h-10 text-[#5aa5df] fill-[#5aa5df]/10" strokeWidth={1.5} />
+                                                    <div className="absolute inset-0 flex items-center justify-center">
+                                                        <div className="w-8 h-8 rounded-full bg-[#5aa5df] flex items-center justify-center text-white shadow-sm ring-1 ring-[#5aa5df]/50">
+                                                            <Star className="w-4 h-4 fill-current" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <img
+                                                    src={user.avatarUrl || '/default-avatar.png'}
+                                                    alt={user.name}
+                                                    className="w-10 h-10 rounded-full object-cover border border-gray-200"
+                                                />
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 font-medium text-gray-900">{user.name}</td>
                                         <td className="px-6 py-4 text-gray-600">{user.email}</td>

@@ -8,6 +8,8 @@ import SearchHD from '@/components/search';
 import useAuthStore from '@/stores/userAuthStore/user';
 import { useTranslations } from 'next-intl';
 
+import BrandMarquee from '@/components/brand_marquee';
+
 export default function Home() {
   const { fetchUserInfo, isAuthenticated, user, isLoading } = useAuthStore();
   const t = useTranslations('home');
@@ -48,6 +50,7 @@ export default function Home() {
       <div className='px-4 sm:px-6 lg:px-32 xl:mx-16 2xl:mx-32'>
         <Suggest />
         <Bank />
+        <BrandMarquee />
         <Travel />
         <RecentReview />
       </div>

@@ -76,27 +76,27 @@ export default function CompaniesPage() {
                 return (
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
                         <ShieldCheck className="w-3 h-3" />
-                        Verified
+                        {t('verifyStatus.approved')}
                     </span>
                 )
             case 'REJECTED':
                 return (
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
                         <ShieldX className="w-3 h-3" />
-                        Rejected
+                        {t('verifyStatus.rejected')}
                     </span>
                 )
             case 'PENDING':
                 return (
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
                         <ShieldQuestion className="w-3 h-3" />
-                        Pending
+                        {t('verifyStatus.pending')}
                     </span>
                 )
             default:
                 return (
                     <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
-                        Not submitted
+                        {t('verifyStatus.none')}
                     </span>
                 )
         }
@@ -151,10 +151,10 @@ export default function CompaniesPage() {
                             className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2 text-gray-600"
                         >
                             <Filter className="w-4 h-4" />
-                            <span>{t('verification') || 'Verification'}: {verifyFilter === 'all' ? tCommon('all') :
-                                verifyFilter === 'APPROVED' ? 'Verified' :
-                                    verifyFilter === 'PENDING' ? 'Pending' :
-                                        verifyFilter === 'REJECTED' ? 'Rejected' : 'Not submitted'}</span>
+                            <span>{t('verificationLabel')}: {verifyFilter === 'all' ? tCommon('all') :
+                                verifyFilter === 'APPROVED' ? t('verifyStatus.approved') :
+                                    verifyFilter === 'PENDING' ? t('verifyStatus.pending') :
+                                        verifyFilter === 'REJECTED' ? t('verifyStatus.rejected') : t('verifyStatus.none')}</span>
                         </button>
                         {showFilterDropdown && (
                             <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
@@ -168,8 +168,8 @@ export default function CompaniesPage() {
                                         className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-50 ${verifyFilter === status ? 'text-blue-600 font-medium' : 'text-gray-700'}`}
                                     >
                                         {status === 'all' ? tCommon('all') :
-                                            status === 'APPROVED' ? 'Verified' :
-                                                status === 'PENDING' ? 'Pending' : 'Rejected'}
+                                            status === 'APPROVED' ? t('verifyStatus.approved') :
+                                                status === 'PENDING' ? t('verifyStatus.pending') : t('verifyStatus.rejected')}
                                     </button>
                                 ))}
                             </div>

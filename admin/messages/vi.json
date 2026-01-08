@@ -138,6 +138,13 @@
     "country": "Quốc gia",
     "plan": "Gói",
     "verification": "Xác thực",
+    "verificationLabel": "Trạng thái xác thực",
+    "verifyStatus": {
+      "approved": "Đã xác thực",
+      "pending": "Chờ duyệt",
+      "rejected": "Bị từ chối",
+      "none": "Chưa gửi"
+    },
     "status": "Trạng thái",
     "actions": "Hành động",
     "showing": "Hiển thị",

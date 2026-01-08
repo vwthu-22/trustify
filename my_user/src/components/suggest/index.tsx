@@ -135,9 +135,9 @@ export default function Suggest() {
                                 <Link
                                     key={category.slug}
                                     href={`/category/${category.slug}`}
-                                    className={`flex flex-col items-center justify-center gap-0.5 sm:gap-1 p-1.5 sm:p-2 rounded-lg transition ${isActive
-                                        ? 'bg-blue-50 text-blue-600'
-                                        : 'hover:bg-gray-50 text-gray-700'
+                                    className={`flex flex-col items-center justify-center gap-0.5 sm:gap-1 p-1.5 sm:p-2 rounded-xl transition-all duration-300 transform hover:-translate-y-1.5 hover:rotate-2 hover:shadow-md hover:bg-white border border-transparent hover:border-blue-100 ${isActive
+                                        ? 'bg-blue-50 text-blue-600 border-blue-100 shadow-sm'
+                                        : 'text-gray-700'
                                         }`}
                                 >
                                     <span className="text-lg sm:text-xl md:text-2xl">{category.icon}</span>
