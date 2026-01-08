@@ -89,7 +89,10 @@
         "noNotifications": "No notifications",
         "hoursAgo": "hours ago",
         "dayAgo": "day ago",
-        "daysAgo": "days ago"
+        "daysAgo": "days ago",
+        "verificationSuccess": "Congratulations!",
+        "verificationSuccessMessage": "Your business has been successfully verified!",
+        "awesome": "Awesome!"
     },
     "sidebar": {
         "dashboard": "Dashboard",

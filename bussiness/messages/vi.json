@@ -89,7 +89,10 @@
         "noNotifications": "Chưa có thông báo",
         "hoursAgo": "giờ trước",
         "dayAgo": "ngày trước",
-        "daysAgo": "ngày trước"
+        "daysAgo": "ngày trước",
+        "verificationSuccess": "Chúc mừng!",
+        "verificationSuccessMessage": "Doanh nghiệp của bạn đã được xác thực thành công!",
+        "awesome": "Tuyệt vời!"
     },
     "sidebar": {
         "dashboard": "Tổng quan",

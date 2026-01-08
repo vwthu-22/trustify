@@ -129,6 +129,9 @@ export const useCompanyStore = create<CompanyStore>()(
                             plan: companyData.plan?.name || companyData.planName || 'Free',
                             // API uses isVerified, not verified
                             verified: companyData.isVerified ?? companyData.verified ?? false,
+                            // Document verification status
+                            verifyStatus: companyData.verifyStatus || null,
+                            fileVerificationUrl: companyData.fileVerificationUrl || '',
                             // API uses websiteUrl, not website
                             website: companyData.websiteUrl || companyData.website || '',
                             industry: companyData.industry || '',

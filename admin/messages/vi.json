@@ -137,6 +137,7 @@
     "industry": "Ngành nghề",
     "country": "Quốc gia",
     "plan": "Gói",
+    "verification": "Xác thực",
     "status": "Trạng thái",
     "actions": "Hành động",
     "showing": "Hiển thị",
@@ -145,6 +146,10 @@
     "noCompanies": "Không tìm thấy doanh nghiệp",
     "editStatus": {
       "title": "Sửa trạng thái doanh nghiệp"
+    },
+    "editPlan": {
+      "title": "Sửa gói dịch vụ của doanh nghiệp",
+      "hint": "Chọn gói đăng ký cho doanh nghiệp này"
     }
   },
   "profile": {

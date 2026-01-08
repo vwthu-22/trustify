@@ -137,6 +137,7 @@
         "industry": "Industry",
         "country": "Country",
         "plan": "Plan",
+        "verification": "Verification",
         "status": "Status",
         "actions": "Actions",
         "showing": "Showing",
@@ -145,6 +146,10 @@
         "noCompanies": "No companies found",
         "editStatus": {
             "title": "Edit Company Status"
+        },
+        "editPlan": {
+            "title": "Edit Company Plan",
+            "hint": "Select the subscription plan for this company"
         }
     },
     "profile": {

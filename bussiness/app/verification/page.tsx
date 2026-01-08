@@ -32,8 +32,14 @@ export default function VerificationPage() {
         error,
         uploadVerificationDocument,
         setVerificationStatus,
+        fetchCompanyProfile,
         clearError
     } = useCompanyStore();
+
+    // Fetch profile on mount to get latest status
+    useEffect(() => {
+        fetchCompanyProfile();
+    }, [fetchCompanyProfile]);
 
     // Sync verification status from company.verifyStatus
     useEffect(() => {
