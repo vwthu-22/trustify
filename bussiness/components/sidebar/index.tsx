@@ -195,22 +195,6 @@ export default function Sidebar() {
             <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
                 {menuItems.map(item => renderMenuItem(item))}
             </nav>
-
-            {/* Bottom Section - Upgrade CTA */}
-            <div className="p-4 border-t border-white/10 mt-auto">
-                <Link
-                    href="/subscription"
-                    className="block mb-3 py-3 px-4 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-lg border border-blue-400/30 hover:from-blue-500/30 hover:to-purple-500/30 transition-all"
-                >
-                    <div className="flex items-center gap-2 mb-2">
-                        <Crown className="w-5 h-5 text-yellow-400" />
-                        <span className="text-sm font-semibold text-white">{t('upgradeToPro')}</span>
-                    </div>
-                    <p className="text-xs text-white/70">
-                        {t('unlockFeatures')}
-                    </p>
-                </Link>
-            </div>
         </aside>
     );
 }

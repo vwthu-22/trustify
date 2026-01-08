@@ -1,205 +1,203 @@
 'use client'
 import React from 'react';
-import { Star, TrendingUp, BarChart3, Shield, Lightbulb, Award, ArrowRight } from 'lucide-react';
+import {
+  Star, TrendingUp, BarChart3, Shield, MessageSquare, Mail,
+  Send, Crown, Headphones, Settings, ArrowRight, CheckCircle,
+  Sparkles, Users, Building2, Award
+} from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
 export default function BusinessIntro() {
   const t = useTranslations('introBusiness');
+
+  const features = [
+    {
+      icon: BarChart3,
+      color: 'bg-blue-100 text-blue-600',
+      titleKey: 'dashboardTitle',
+      descKey: 'dashboardDesc'
+    },
+    {
+      icon: MessageSquare,
+      color: 'bg-green-100 text-green-600',
+      titleKey: 'reviewsTitle',
+      descKey: 'reviewsDesc'
+    },
+    {
+      icon: Sparkles,
+      color: 'bg-purple-100 text-purple-600',
+      titleKey: 'aiAnalyticsTitle',
+      descKey: 'aiAnalyticsDesc'
+    },
+    {
+      icon: Mail,
+      color: 'bg-orange-100 text-orange-600',
+      titleKey: 'invitationsTitle',
+      descKey: 'invitationsDesc'
+    },
+    {
+      icon: Send,
+      color: 'bg-pink-100 text-pink-600',
+      titleKey: 'campaignsTitle',
+      descKey: 'campaignsDesc'
+    },
+    {
+      icon: Shield,
+      color: 'bg-teal-100 text-teal-600',
+      titleKey: 'verificationTitle',
+      descKey: 'verificationDesc'
+    }
+  ];
+
+  const benefits = [
+    { icon: TrendingUp, textKey: 'benefitGrowth' },
+    { icon: Users, textKey: 'benefitTrust' },
+    { icon: Award, textKey: 'benefitReputation' },
+    { icon: Sparkles, textKey: 'benefitInsights' }
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50 mt-14">
-      {/* Hero Section - Why consumers rely on Trustify */}
-      <section className="bg-white py-10 sm:py-12">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-xl sm:text-2xl font-bold text-center text-gray-900 mb-8 sm:mb-10">
-            {t('whyConsumersRely')}
-          </h2>
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-[#0f1c2d] to-[#1a3a5c] text-white py-16 sm:py-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full text-sm mb-6">
+            <Star className="w-4 h-4 text-yellow-400 fill-current" />
+            <span>{t('trustedPlatform')}</span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
+            {t('heroTitle')}
+          </h1>
+          <p className="text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto mb-8">
+            {t('heroSubtitle')}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="https://trustify-bussiness.vercel.app/login"
+              className="inline-flex items-center justify-center gap-2 bg-[#5aa5df] hover:bg-[#4a95cf] text-white px-8 py-3 rounded-full text-lg font-semibold transition"
+            >
+              {t('getStarted')}
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+            <Link
+              href="#features"
+              className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white px-8 py-3 rounded-full text-lg font-semibold transition"
+            >
+              {t('learnMore')}
+            </Link>
+          </div>
+        </div>
+      </section>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">+300m</div>
-              <p className="text-xs text-gray-600">
-                {t('reviewsCount')}
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">71%</div>
-              <p className="text-xs text-gray-600">
-                {t('consumersTrust')}
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">+6.5m</div>
-              <p className="text-xs text-gray-600">
-                {t('newReviews')}
-              </p>
+      {/* Stats Section */}
+      <section className="bg-white py-12 sm:py-16 -mt-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="text-center">
+                <div className="text-3xl sm:text-4xl font-bold text-[#0f1c2d] mb-2">1000+</div>
+                <p className="text-gray-600">{t('statBusinesses')}</p>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl sm:text-4xl font-bold text-[#0f1c2d] mb-2">50,000+</div>
+                <p className="text-gray-600">{t('statReviews')}</p>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl sm:text-4xl font-bold text-[#0f1c2d] mb-2">95%</div>
+                <p className="text-gray-600">{t('statSatisfaction')}</p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* New Gold Release Features */}
-      <section className="bg-gray-50 pt-10 sm:pt-12">
+      {/* Features Section */}
+      <section id="features" className="py-16 sm:py-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-xl sm:text-2xl font-bold text-center text-gray-900 mb-8 sm:mb-10">
-            {t('goldFeatures')}
-          </h2>
+          <div className="text-center mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
+              {t('featuresTitle')}
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              {t('featuresSubtitle')}
+            </p>
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 mb-6">
-            <div className="bg-white rounded-lg p-4 sm:p-5 shadow-sm hover:shadow-md transition">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 bg-pink-100 rounded-lg flex items-center justify-center mb-3">
-                <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-pink-600" />
-              </div>
-              <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-1.5">{t('enhancedInsights')}</h3>
-              <p className="text-xs text-gray-600">
-                {t('enhancedInsightsDesc')}
-              </p>
-            </div>
-
-            <div className="bg-white rounded-lg p-4 sm:p-5 shadow-sm hover:shadow-md transition">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
-                <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
-              </div>
-              <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-1.5">{t('customQueries')}</h3>
-              <p className="text-xs text-gray-600">
-                {t('customQueriesDesc')}
-              </p>
-            </div>
-
-            <div className="bg-white rounded-lg p-4 sm:p-5 shadow-sm hover:shadow-md transition">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 bg-yellow-100 rounded-lg flex items-center justify-center mb-3">
-                <Award className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600" />
-              </div>
-              <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-1.5">{t('awardCustomization')}</h3>
-              <p className="text-xs text-gray-600">
-                {t('awardCustomizationDesc')}
-              </p>
-            </div>
-
-            <div className="bg-white rounded-lg p-4 sm:p-5 shadow-sm hover:shadow-md transition">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gray-100 rounded-lg flex items-center justify-center mb-3">
-                <Star className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
-              </div>
-              <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-1.5">{t('followUpQuestions')}</h3>
-              <p className="text-xs text-gray-600">
-                {t('followUpQuestionsDesc')}
-              </p>
-            </div>
-
-            <div className="bg-white rounded-lg p-4 sm:p-5 shadow-sm hover:shadow-md transition">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 bg-teal-100 rounded-lg flex items-center justify-center mb-3">
-                <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5 text-teal-600" />
-              </div>
-              <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-1.5">{t('reviewHighlights')}</h3>
-              <p className="text-xs text-gray-600">
-                {t('reviewHighlightsDesc')}
-              </p>
-            </div>
-
-            <div className="bg-white rounded-lg p-4 sm:p-5 shadow-sm hover:shadow-md transition">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 bg-orange-100 rounded-lg flex items-center justify-center mb-3">
-                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" />
-              </div>
-              <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-1.5">{t('visitorInsights')}</h3>
-              <p className="text-xs text-gray-600">
-                {t('visitorInsightsDesc')}
-              </p>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {features.map((feature, index) => {
+              const Icon = feature.icon;
+              return (
+                <div
+                  key={index}
+                  className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-lg transition group"
+                >
+                  <div className={`w-12 h-12 ${feature.color} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition`}>
+                    <Icon className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    {t(feature.titleKey)}
+                  </h3>
+                  <p className="text-gray-600 text-sm">
+                    {t(feature.descKey)}
+                  </p>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* Go Further Section */}
-      <section className="bg-gray-50 py-10 sm:py-12">
+      {/* AI Analytics Highlight */}
+      <section className="bg-gradient-to-br from-purple-50 to-blue-50 py-16 sm:py-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 items-center">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-200 to-blue-400 rounded-full blur-3xl opacity-30"></div>
-              <div className="relative">
-                <svg viewBox="0 0 400 400" className="w-full max-w-sm mx-auto h-auto">
-                  <circle cx="200" cy="200" r="180" fill="#5aa5df" opacity="0.1" />
-                  <path d="M200 50 L250 150 L350 165 L275 240 L290 340 L200 285 L110 340 L125 240 L50 165 L150 150 Z" fill="#5aa5df" />
-                  <rect x="50" y="100" width="40" height="40" fill="#5aa5df" opacity="0.3" />
-                  <rect x="310" y="280" width="40" height="40" fill="#5aa5df" opacity="0.3" />
-                  <circle cx="80" cy="300" r="30" fill="#5aa5df" opacity="0.2" />
-                  <circle cx="340" cy="120" r="40" fill="#5aa5df" opacity="0.2" />
-                </svg>
-              </div>
-            </div>
-
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
-                {t('goFurther')}
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium mb-4">
+                <Sparkles className="w-4 h-4" />
+                {t('aiPowered')}
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
+                {t('aiSectionTitle')}
               </h2>
-              <ul className="space-y-3 mb-6">
-                <li className="flex items-start gap-2">
-                  <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-white text-[10px]">•</span>
-                  </div>
-                  <p className="text-sm text-gray-700">
-                    {t('verifyInfo')}
-                  </p>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-white text-[10px]">•</span>
-                  </div>
-                  <p className="text-sm text-gray-700">
-                    {t('getMoreReviews')}
-                  </p>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-white text-[10px]">•</span>
-                  </div>
-                  <p className="text-sm text-gray-700">
-                    {t('aiAnalytics')}
-                  </p>
-                </li>
+              <p className="text-gray-600 mb-6">
+                {t('aiSectionDesc')}
+              </p>
+              <ul className="space-y-3">
+                {['aiFeature1', 'aiFeature2', 'aiFeature3', 'aiFeature4'].map((key, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-700">{t(key)}</span>
+                  </li>
+                ))}
               </ul>
-              <p className="text-sm text-gray-600 mb-4">{t('wantLearnMore')}</p>
-              <Link
-                href="/business/signup"
-                className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-5 sm:px-6 py-2 sm:py-2.5 rounded-full text-sm font-semibold transition"
-              >
-                {t('bookDemo')}
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Trustify Data Solutions */}
-      <section className="bg-white py-10 sm:py-12">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 items-center">
-            <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">
-                {t('dataSolutions')}
-              </h2>
-              <p className="text-sm text-gray-700 leading-relaxed mb-4">
-                {t('dataSolutionsDesc')}
-              </p>
-              <button className="bg-gray-900 hover:bg-gray-800 text-white px-5 py-2 sm:py-2.5 rounded-full text-sm font-semibold transition">
-                {t('learnMore')}
-              </button>
             </div>
             <div className="relative">
-              <div className="bg-gradient-to-br from-blue-50 to-blue-50 rounded-xl p-5 sm:p-6">
-                <div className="bg-white rounded-lg shadow-lg p-4 sm:p-5">
-                  <div className="flex items-center gap-1.5 mb-3">
-                    <div className="flex">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#5aa5df] fill-current" />
-                      ))}
-                    </div>
-                    <span className="font-bold text-sm">5 stars</span>
+              <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <Sparkles className="w-5 h-5 text-purple-600" />
                   </div>
-                  <div className="space-y-1.5">
-                    <div className="h-1.5 bg-gray-200 rounded"></div>
-                    <div className="h-1.5 bg-gray-200 rounded w-4/5"></div>
-                    <div className="h-1.5 bg-gray-200 rounded w-3/4"></div>
+                  <div>
+                    <p className="font-semibold text-gray-900">{t('aiAnalysisTitle')}</p>
+                    <p className="text-sm text-gray-500">{t('aiAnalysisSubtitle')}</p>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                    <span className="text-sm text-gray-700">{t('sentiment')}</span>
+                    <span className="font-semibold text-green-600">85% {t('positive')}</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                    <span className="text-sm text-gray-700">{t('avgRating')}</span>
+                    <div className="flex items-center gap-1">
+                      <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                      <span className="font-semibold text-gray-900">4.7</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                    <span className="text-sm text-gray-700">{t('suggestions')}</span>
+                    <span className="font-semibold text-purple-600">5 {t('items')}</span>
                   </div>
                 </div>
               </div>
@@ -208,40 +206,106 @@ export default function BusinessIntro() {
         </div>
       </section>
 
-      {/* Pricing & Marketing Widgets */}
-      <section className="bg-white py-10 sm:py-12">
+      {/* Benefits Section */}
+      <section className="py-16 sm:py-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
-            <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
-                {t('findPricing')}
-              </h2>
-              <p className="text-sm text-gray-700 mb-5">
-                {t('findPricingDesc')}
-              </p>
+          <div className="text-center mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
+              {t('benefitsTitle')}
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {benefits.map((benefit, index) => {
+              const Icon = benefit.icon;
+              return (
+                <div key={index} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 text-center">
+                  <div className="w-14 h-14 bg-[#5aa5df]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Icon className="w-7 h-7 text-[#5aa5df]" />
+                  </div>
+                  <p className="text-gray-700 font-medium">{t(benefit.textKey)}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Preview */}
+      <section className="bg-white py-16 sm:py-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Pricing Card */}
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8">
+              <div className="flex items-center gap-3 mb-4">
+                <Crown className="w-8 h-8 text-yellow-500" />
+                <h2 className="text-2xl font-bold text-gray-900">{t('pricingTitle')}</h2>
+              </div>
+              <p className="text-gray-600 mb-6">{t('pricingDesc')}</p>
+              <div className="flex flex-wrap gap-3 mb-6">
+                <span className="px-3 py-1 bg-white rounded-full text-sm text-gray-700 shadow-sm">Free</span>
+                <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">Pro</span>
+                <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">Premium</span>
+              </div>
               <Link
-                href="/pricing"
-                className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-5 sm:px-6 py-2 sm:py-2.5 rounded-full text-sm font-semibold transition"
+                href="https://trustify-bussiness.vercel.app/subscription"
+                className="inline-flex items-center gap-2 bg-[#0f1c2d] hover:bg-[#1a3a5c] text-white px-6 py-3 rounded-full font-semibold transition"
               >
-                {t('viewPricing')}
+                {t('viewPlans')}
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
 
-            <div className="bg-gradient-to-br from-blue-400 to-blue-500 rounded-xl p-5 sm:p-6 text-white">
-              <h2 className="text-xl sm:text-2xl font-bold mb-4">
-                {t('marketingWidgets')}
-              </h2>
-              <p className="mb-5 text-blue-50 text-sm">
-                {t('marketingWidgetsDesc')}
-              </p>
-              <button className="bg-white hover:bg-gray-100 text-blue-600 px-5 sm:px-6 py-2 sm:py-2.5 rounded-full text-sm font-semibold transition">
-                {t('exploreWidgets')}
-              </button>
+            {/* Support Card */}
+            <div className="bg-gradient-to-br from-[#5aa5df] to-[#4a95cf] rounded-2xl p-8 text-white">
+              <div className="flex items-center gap-3 mb-4">
+                <Headphones className="w-8 h-8" />
+                <h2 className="text-2xl font-bold">{t('supportTitle')}</h2>
+              </div>
+              <p className="text-blue-100 mb-6">{t('supportDesc')}</p>
+              <ul className="space-y-2 mb-6">
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5" />
+                  <span>{t('supportFeature1')}</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5" />
+                  <span>{t('supportFeature2')}</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5" />
+                  <span>{t('supportFeature3')}</span>
+                </li>
+              </ul>
+              <Link
+                href="https://trustify-bussiness.vercel.app/support"
+                className="inline-flex items-center gap-2 bg-white text-[#5aa5df] hover:bg-gray-100 px-6 py-3 rounded-full font-semibold transition"
+              >
+                {t('contactSupport')}
+              </Link>
             </div>
           </div>
         </div>
       </section>
+
+      {/* CTA Section */}
+      <section className="bg-[#0f1c2d] py-16 sm:py-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <Building2 className="w-16 h-16 text-[#5aa5df] mx-auto mb-6" />
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+            {t('ctaTitle')}
+          </h2>
+          <p className="text-gray-400 mb-8 max-w-2xl mx-auto">
+            {t('ctaDesc')}
+          </p>
+          <Link
+            href="https://trustify-bussiness.vercel.app/login"
+            className="inline-flex items-center gap-2 bg-[#5aa5df] hover:bg-[#4a95cf] text-white px-10 py-4 rounded-full text-lg font-semibold transition"
+          >
+            {t('startNow')}
+            <ArrowRight className="w-5 h-5" />
+          </Link>
+        </div>
+      </section>
     </div>
   );
-};
+}

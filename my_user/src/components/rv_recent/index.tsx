@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import useReviewStore from '@/stores/reviewStore/review';
 import { getStarColor, STAR_COLORS } from '@/utils/ratingColors';
+import { useTranslations } from 'next-intl';
 
 export default function AboutReviews() {
     const { highRatedReviews, fetchHighRatedReviews } = useReviewStore();
@@ -65,6 +66,8 @@ export default function AboutReviews() {
         return colors[index % colors.length];
     };
 
+    const t = useTranslations('aboutSection');
+
     return (
         <div className="py-5 sm:py-8 md:py-10">
             <div className="max-w-7xl mx-auto px-0 sm:px-3 lg:px-6">
@@ -72,22 +75,22 @@ export default function AboutReviews() {
                 <div className="bg-gradient-to-br from-blue-200 to-blue-100 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 mb-6 sm:mb-10">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 items-center">
                         <div>
-                            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">We're Trustify</h2>
+                            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">{t('title')}</h2>
                             <p className="text-xs sm:text-sm md:text-base text-gray-800 mb-3 sm:mb-4 leading-relaxed">
-                                We're a review platform that's open to everyone. Our vision is to become the universal symbol of trust — by empowering people to shop with confidence, and helping companies improve.
+                                {t('description')}
                             </p>
-                            <button className="bg-gray-900 hover:bg-gray-800 text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition">
-                                What we do
-                            </button>
+                            <Link
+                                href="/about"
+                                className="inline-block bg-gray-900 hover:bg-gray-800 text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition"
+                            >
+                                {t('whatWeDo')}
+                            </Link>
                         </div>
                         <div className="bg-blue-900 text-white rounded-lg sm:rounded-xl p-4 sm:p-6 relative overflow-hidden">
                             <h3 className="text-sm sm:text-base md:text-lg font-bold mb-1.5 sm:mb-2 relative z-10">Our new Trust Report has landed!</h3>
                             <p className="mb-3 sm:mb-4 text-blue-50 text-xs sm:text-sm relative z-10">
-                                Find out which actions we've taken to protect you and promote trust on our platform.
+                                Find out which actions we've<br />taken to protect you and promote trust on our platform.
                             </p>
-                            <button className="border-2 border-white hover:bg-white hover:text-blue-900 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition relative z-10">
-                                Take a look
-                            </button>
                             <div className="absolute -right-3 -top-3 w-16 h-16 sm:w-24 sm:h-24 bg-blue-400 rounded-full"></div>
                             <div className="absolute right-5 sm:right-6 top-6 sm:top-8 w-12 h-12 sm:w-18 sm:h-18 bg-white rounded-full overflow-hidden border-3 border-blue-200">
                                 <div className="w-full h-full bg-gray-100"></div>
