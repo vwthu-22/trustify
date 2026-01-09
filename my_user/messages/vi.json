@@ -162,7 +162,14 @@
         "lowestRated": "Đánh giá thấp nhất",
         "reviews": "đánh giá",
         "saveChanges": "Lưu thay đổi",
-        "updating": "Đang cập nhật..."
+        "updating": "Đang cập nhật...",
+        "reportReview": "Báo cáo đánh giá",
+        "reportReason": "Lý do báo cáo",
+        "reportPlaceholder": "Mô tả lý do bạn muốn báo cáo đánh giá này...",
+        "reportSentSuccess": "Báo cáo đã được gửi thành công!",
+        "reportSentDesc": "Chúng tôi sẽ xem xét và xử lý báo cáo của bạn.",
+        "submitReport": "Gửi báo cáo",
+        "submittingReport": "Đang gửi..."
     },
     "categoryPage": {
         "bestIn": "Tốt nhất trong",

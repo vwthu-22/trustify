@@ -162,7 +162,14 @@
         "lowestRated": "Lowest rated",
         "reviews": "reviews",
         "saveChanges": "Save Changes",
-        "updating": "Updating..."
+        "updating": "Updating...",
+        "reportReview": "Report Review",
+        "reportReason": "Reason for reporting",
+        "reportPlaceholder": "Describe why you want to report this review...",
+        "reportSentSuccess": "Report sent successfully!",
+        "reportSentDesc": "We will review and process your report.",
+        "submitReport": "Submit Report",
+        "submittingReport": "Submitting..."
     },
     "categoryPage": {
         "bestIn": "Best in",
