@@ -65,7 +65,7 @@ export default function SettingsPage() {
     const handleSave = async () => {
         setSaving(true);
         try {
-            // Upload logo if a new file was selected
+            // Upload logo if a new file was selected (using existing POST /api/images/upload)
             let logoUrl = profileData.avatar;
             if (avatarFile) {
                 try {
@@ -80,11 +80,11 @@ export default function SettingsPage() {
                 }
             }
 
-            // Try to update company profile via API
-            // API: PUT /api/companies/update/{id}
             if (company?.id) {
+                // 1. Update company profile via PUT API (for avatar, phone, email, etc.)
+                // API: PUT /api/companies/update/{id}
                 try {
-                    const updateData = {
+                    const profileUpdateData = {
                         name: companyData.name,
                         websiteUrl: companyData.website,
                         avatarUrl: logoUrl,
@@ -92,13 +92,29 @@ export default function SettingsPage() {
                         industry: companyData.industry,
                         workEmail: profileData.email,
                         companySize: companyData.size,
-                        country: company.country || 'VN', // Add country to prevent null
+                        country: company.country || 'VN',
                     };
-                    console.log('Sending company update:', JSON.stringify(updateData, null, 2));
-                    await companyApi.updateProfile(company.id, updateData);
+                    console.log('Sending company profile update (PUT):', JSON.stringify(profileUpdateData, null, 2));
+                    await companyApi.updateProfile(company.id, profileUpdateData);
                 } catch (apiError) {
-                    console.warn('API update failed, updating local store only:', apiError);
-                    // Continue to update local store even if API fails
+                    console.warn('PUT updateProfile failed:', apiError);
+                }
+
+                // 2. Update company info via PATCH API (for name, address, description, etc.)
+                // API: PATCH /api/companies/update-info/{id}
+                try {
+                    const infoUpdateData = {
+                        name: companyData.name,
+                        websiteUrl: companyData.website,
+                        industry: companyData.industry,
+                        companySize: companyData.size,
+                        description: companyData.detail,
+                        address: companyData.address,
+                    };
+                    console.log('Sending company info update (PATCH):', JSON.stringify(infoUpdateData, null, 2));
+                    await companyApi.updateInfo(company.id, infoUpdateData);
+                } catch (apiError) {
+                    console.warn('PATCH updateInfo failed:', apiError);
                 }
             }
 

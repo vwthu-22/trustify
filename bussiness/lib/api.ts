@@ -236,6 +236,34 @@ export const companyApi = {
         return response.json();
     },
 
+    // Update company info (name, address, website, industry, size, description)
+    // API: PATCH /api/companies/update-info/{id}
+    updateInfo: async (companyId: string | number, data: {
+        name?: string;
+        address?: string;
+        websiteUrl?: string;
+        industry?: string;
+        companySize?: string;
+        description?: string;
+    }) => {
+        const response = await fetch(`${API_BASE_URL}/api/companies/update-info/${companyId}`, {
+            method: 'PATCH',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'ngrok-skip-browser-warning': 'true',
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({ error: 'Failed to update company info' }));
+            throw new Error(error.error || error.message || 'Failed to update company info');
+        }
+
+        return response.json();
+    },
+
     // Get all companies (pagination)
     getAll: async (page = 0, size = 10) => {
         const response = await fetch(`${API_BASE_URL}/api/companies?page=${page}&size=${size}`, {
