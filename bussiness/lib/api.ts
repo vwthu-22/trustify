@@ -203,23 +203,39 @@ export const companyApi = {
         return response.json();
     },
 
-    // Update company profile
+    // Update company avatar/logo only
     // API: PUT /api/companies/update/{id}
-    updateProfile: async (companyId: string | number, data: {
-        name?: string;
-        websiteUrl?: string;
-        avatarUrl?: string; // Note: Backend expects avatarUrl for update, returns logoUrl in response
-        jobTitle?: string;
-        contactPhone?: string;
-        industry?: string;
-        workEmail?: string;
-        companySize?: string;
-        foundedYear?: number;
-        country?: string;
-        annualRevenue?: string;
-    }) => {
+    updateAvatar: async (companyId: string | number, avatarUrl: string) => {
         const response = await fetch(`${API_BASE_URL}/api/companies/update/${companyId}`, {
             method: 'PUT',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'ngrok-skip-browser-warning': 'true',
+            },
+            body: JSON.stringify({ avatarUrl }),
+        });
+
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({ error: 'Failed to update avatar' }));
+            throw new Error(error.error || error.message || 'Failed to update avatar');
+        }
+
+        return response.json();
+    },
+
+    // Update company info (text fields only)
+    // API: PATCH /api/companies/update-info/{id}
+    updateInfo: async (companyId: string | number, data: {
+        name?: string;
+        address?: string;
+        websiteUrl?: string;
+        industry?: string;
+        companySize?: string;
+        description?: string;
+    }) => {
+        const response = await fetch(`${API_BASE_URL}/api/companies/update-info/${companyId}`, {
+            method: 'PATCH',
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
@@ -229,8 +245,8 @@ export const companyApi = {
         });
 
         if (!response.ok) {
-            const error = await response.json().catch(() => ({ error: 'Failed to update company profile' }));
-            throw new Error(error.error || error.message || 'Failed to update company profile');
+            const error = await response.json().catch(() => ({ error: 'Failed to update company info' }));
+            throw new Error(error.error || error.message || 'Failed to update company info');
         }
 
         return response.json();

@@ -80,25 +80,29 @@ export default function SettingsPage() {
                 }
             }
 
-            // Try to update company profile via API
-            // API: PUT /api/companies/update/{id}
             if (company?.id) {
+                // 1. Update logo via PUT /api/companies/update/{id}
                 try {
-                    const updateData = {
-                        name: companyData.name,
-                        websiteUrl: companyData.website,
-                        avatarUrl: logoUrl,
-                        contactPhone: profileData.phone,
-                        industry: companyData.industry,
-                        workEmail: profileData.email,
-                        companySize: companyData.size,
-                        country: company.country || 'VN', // Add country to prevent null
-                    };
-                    console.log('Sending company update:', JSON.stringify(updateData, null, 2));
-                    await companyApi.updateProfile(company.id, updateData);
+                    console.log('Sending logo update (PUT):', logoUrl);
+                    await companyApi.updateAvatar(company.id, logoUrl);
                 } catch (apiError) {
-                    console.warn('API update failed, updating local store only:', apiError);
-                    // Continue to update local store even if API fails
+                    console.warn('Logo update API failed:', apiError);
+                }
+
+                // 2. Update company info via PATCH /api/companies/update-info/{id}
+                try {
+                    const updateInfoData = {
+                        name: companyData.name,
+                        address: companyData.address,
+                        websiteUrl: companyData.website,
+                        industry: companyData.industry,
+                        companySize: companyData.size,
+                        description: companyData.detail,
+                    };
+                    console.log('Sending info update (PATCH):', JSON.stringify(updateInfoData, null, 2));
+                    await companyApi.updateInfo(company.id, updateInfoData);
+                } catch (apiError) {
+                    console.warn('Info update API failed:', apiError);
                 }
             }
 
