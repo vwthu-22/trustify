@@ -136,7 +136,7 @@ body {
 .animate-marquee {
   display: flex;
   width: max-content;
-  animation: marquee 13s linear infinite;
+  animation: marquee 1s linear infinite;
 }
 
 .animate-marquee:hover,

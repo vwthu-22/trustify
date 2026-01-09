@@ -11,11 +11,9 @@ export default function BrandMarquee() {
         fetchCompanies({ limit: 30 });
     }, [fetchCompanies]);
 
-    // Filter companies that have logos - duplicate for infinite seamless loop
+    // Filter companies that have logos - no duplicates
     const brandsList = useMemo(() => {
-        const withLogos = companies.filter(c => c.logo);
-        // Need to duplicate for seamless infinite scroll
-        return [...withLogos, ...withLogos];
+        return companies.filter(c => c.logo);
     }, [companies]);
 
     // Get unique companies (no duplicates) for display count
@@ -25,7 +23,7 @@ export default function BrandMarquee() {
 
     if (isLoading && brandsList.length === 0) {
         return (
-            <div className="w-full h-20 flex items-center justify-center bg-gray-50 rounded-xl my-4">
+            <div className="w-full h-20 flex items-center justify-center my-4">
                 <div className="animate-pulse flex space-x-12">
                     {[1, 2, 3, 4, 5].map((i) => (
                         <div key={i} className="h-10 w-24 bg-gray-200 rounded"></div>
@@ -38,7 +36,7 @@ export default function BrandMarquee() {
     if (uniqueCompanies.length === 0) return null;
 
     return (
-        <div className="brand-marquee-container w-full py-3 sm:py-4 overflow-hidden bg-gray-50 rounded-xl my-4 sm:my-6">
+        <div className="brand-marquee-container w-full py-3 sm:py-4 overflow-hidden my-4 sm:my-6">
             <div className="flex animate-marquee whitespace-nowrap gap-12 sm:gap-20 items-center">
                 {brandsList.map((brand, index) => (
                     <div
