@@ -15,6 +15,7 @@ interface EditReviewModalProps {
         rating: number;
         expDate: string;
         companyName?: string;
+        companyLogo?: string;
         userEmail?: string;
     } | null;
 }
@@ -98,10 +99,14 @@ export default function EditReviewModal({
                 <div className="px-4 py-4">
                     {/* Company Info - Compact */}
                     <div className="flex items-center gap-2.5 mb-4 pb-3 border-b border-gray-200">
-                        <div className="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
-                            <span className="text-gray-600 text-sm font-bold">
-                                {review.companyName?.charAt(0) || 'C'}
-                            </span>
+                        <div className="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                            {review.companyLogo ? (
+                                <img src={review.companyLogo} alt={review.companyName} className="w-full h-full object-cover" />
+                            ) : (
+                                <span className="text-gray-600 text-sm font-bold">
+                                    {review.companyName?.charAt(0) || 'C'}
+                                </span>
+                            )}
                         </div>
                         <div className="min-w-0">
                             <h3 className="text-sm font-bold text-gray-900 truncate">{review.companyName || 'Company'}</h3>

@@ -64,6 +64,7 @@ export default function CompanyReviewPage() {
         rating: number;
         expDate: string;
         companyName?: string;
+        companyLogo?: string;
         userEmail?: string;
     } | null>(null);
 
@@ -116,6 +117,7 @@ export default function CompanyReviewPage() {
             rating: review.rating,
             expDate: review.expDate,
             companyName: currentCompany?.name || review.companyName,
+            companyLogo: currentCompany?.logo,
             userEmail: user?.email || review.userEmail,
         });
         setIsEditModalOpen(true);
