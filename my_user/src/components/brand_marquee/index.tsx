@@ -37,11 +37,11 @@ export default function BrandMarquee() {
 
     return (
         <div className="brand-marquee-container w-full py-3 sm:py-4 overflow-hidden my-4 sm:my-6">
-            <div className="flex animate-marquee whitespace-nowrap gap-12 sm:gap-20 items-center">
+            <div className="flex animate-marquee whitespace-nowrap gap-6 sm:gap-10 items-center">
                 {brandsList.map((brand, index) => (
                     <div
                         key={`${brand.id}-${index}`}
-                        className="flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 hover:scale-110 cursor-pointer flex-shrink-0"
+                        className="flex items-center justify-center transition-all duration-300 hover:scale-110 cursor-pointer flex-shrink-0"
                         title={brand.name}
                     >
                         <img
