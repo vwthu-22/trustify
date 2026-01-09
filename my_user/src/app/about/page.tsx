@@ -37,7 +37,6 @@ export default function AboutPage() {
             <section className="bg-gradient-to-br from-[#0f1c2d] to-[#1a3a5c] text-white py-12 sm:py-16">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/10 rounded-full text-xs sm:text-sm mb-4">
-                        <Star className="w-3.5 h-3.5 text-yellow-400 fill-current" />
                         <span>{t('tagline')}</span>
                     </div>
                     <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">
@@ -171,7 +170,7 @@ export default function AboutPage() {
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                         <Link
-                            href="/cmt"
+                            href="/write_review"
                             className="inline-flex items-center justify-center gap-1.5 bg-[#5aa5df] hover:bg-[#4a95cf] text-white px-6 py-2.5 rounded-full text-sm font-semibold transition"
                         >
                             {t('writeReview')}

@@ -739,6 +739,8 @@ export default function CompanyReviewPage() {
                 companyName={currentCompany?.name || 'Company'}
                 companyId={currentCompany?.id}
                 companySlug={currentCompany?.slug}
+                companyLogo={currentCompany?.logo}
+                companyUrl={currentCompany?.website}
             />
             {reviewData && (
                 <ThankYouModal

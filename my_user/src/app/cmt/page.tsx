@@ -47,25 +47,15 @@ export default function WriteReviewModal({
         clearReviewError();
     };
 
-    // Generate suggested title from review text (max 30 characters)
     const generateSuggestedTitle = (text: string): string => {
         if (!text.trim()) return '';
-
-        // Get first sentence
         const firstSentence = text.split(/[.!?]/)[0].trim();
-
-        // Limit to 30 characters
-        if (firstSentence.length <= 30) {
-            return firstSentence;
-        }
-
-        // If too long, truncate at word boundary within 30 chars
+        if (firstSentence.length <= 30) return firstSentence;
         const truncated = firstSentence.substring(0, 27);
         const lastSpace = truncated.lastIndexOf(' ');
         return lastSpace > 10 ? truncated.substring(0, lastSpace) + '...' : truncated + '...';
     };
 
-    // Auto-suggest title when review text changes (if title hasn't been manually edited)
     useEffect(() => {
         if (!isTitleManuallyEdited && reviewText.trim()) {
             const suggested = generateSuggestedTitle(reviewText);
@@ -73,13 +63,11 @@ export default function WriteReviewModal({
         }
     }, [reviewText, isTitleManuallyEdited]);
 
-    // Handle title change
     const handleTitleChange = (value: string) => {
         setReviewTitle(value);
         setIsTitleManuallyEdited(true);
     };
 
-    // Suggest title button handler
     const handleSuggestTitle = () => {
         if (reviewText.trim()) {
             const suggested = generateSuggestedTitle(reviewText);
@@ -109,21 +97,11 @@ export default function WriteReviewModal({
             return;
         }
 
-        // Use slug if available, otherwise name for review creation
         const companyIdentifier = companyName;
-
-        // Submit rating first - using companyId (required by backend as Long)
         console.log('Submitting rating with companyId:', companyId);
         const ratingSuccess = await submitRating(companyId, rating);
 
-        if (!ratingSuccess) {
-            return;
-        }
-
-        // Then submit review - using companyName (backend expects this)
-        console.log('=== User Info ===');
-        console.log('User object:', user);
-        console.log('User email:', user.email);
+        if (!ratingSuccess) return;
 
         const reviewData = {
             title: reviewTitle,
@@ -134,19 +112,12 @@ export default function WriteReviewModal({
             expDate: new Date(experienceDate).toISOString(),
         };
 
-        console.log('Submitting review with data:', reviewData);
-        console.log('Email being sent:', reviewData.email);
         const reviewSuccess = await createReview(reviewData);
+        if (!reviewSuccess) return;
 
-        if (!reviewSuccess) {
-            return;
-        }
-
-        // Success!
         onSubmitSuccess(reviewData);
         onClose();
 
-        // Reset form
         setRating(0);
         setReviewText('');
         setReviewTitle('');
@@ -155,54 +126,58 @@ export default function WriteReviewModal({
     };
 
     return (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative shadow-2xl">
-                <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
-                    <h2 className="text-xl font-bold text-gray-900">{t('writeReview')}</h2>
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-3">
+            <div className="bg-white rounded-xl max-w-lg w-full max-h-[85vh] overflow-y-auto relative shadow-2xl">
+                {/* Header - Compact */}
+                <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between z-10">
+                    <h2 className="text-base font-bold text-gray-900">{t('writeReview')}</h2>
                     <button
                         onClick={onClose}
-                        className="p-1.5 hover:bg-gray-100 rounded-full transition"
+                        className="p-1 hover:bg-gray-100 rounded-full transition"
                         aria-label="Close"
                     >
-                        <X className="w-6 h-6 text-gray-600" />
+                        <X className="w-5 h-5 text-gray-500" />
                     </button>
                 </div>
 
-                <div className="px-6 py-6">
-                    <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-200">
-                        <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center flex-shrink-0">
+                <div className="px-4 py-4">
+                    {/* Company Info - Compact */}
+                    <div className="flex items-center gap-2.5 mb-4 pb-3 border-b border-gray-200">
+                        <div className="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
                             {companyLogo ? (
-                                <img src={companyLogo} alt={companyName} className="w-full h-full object-cover rounded" />
+                                <img src={companyLogo} alt={companyName} className="w-full h-full object-cover" />
                             ) : (
-                                <span className="text-gray-600 text-lg font-bold">
+                                <span className="text-gray-600 text-sm font-bold">
                                     {companyName?.charAt(0) || 'C'}
                                 </span>
                             )}
                         </div>
-                        <div>
-                            <h3 className="text-lg font-bold text-gray-900">{companyName || 'Company'}</h3>
-                            {companyUrl && <p className="text-sm text-gray-600">{companyUrl}</p>}
+                        <div className="min-w-0">
+                            <h3 className="text-sm font-bold text-gray-900 truncate">{companyName || 'Company'}</h3>
+                            {companyUrl && <p className="text-xs text-gray-500 truncate">{companyUrl}</p>}
                         </div>
                     </div>
 
+                    {/* Error/Success Messages */}
                     {error && (
-                        <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center justify-between">
+                        <div className="mb-3 bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg flex items-center justify-between text-sm">
                             <span>{error}</span>
-                            <button onClick={clearError} className="text-red-700 hover:text-red-900">
-                                <X size={16} />
+                            <button onClick={clearError} className="text-red-700 hover:text-red-900 ml-2">
+                                <X size={14} />
                             </button>
                         </div>
                     )}
 
                     {successMessage && (
-                        <div className="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+                        <div className="mb-3 bg-green-50 border border-green-200 text-green-700 px-3 py-2 rounded-lg text-sm">
                             {successMessage}
                         </div>
                     )}
 
                     <form onSubmit={handleSubmit}>
-                        <div className="mb-5">
-                            <div className="flex gap-1 mb-3">
+                        {/* Star Rating - Smaller */}
+                        <div className="mb-4">
+                            <div className="flex gap-0.5 justify-center">
                                 {[1, 2, 3, 4, 5].map((star) => (
                                     <button
                                         key={star}
@@ -210,15 +185,23 @@ export default function WriteReviewModal({
                                         onClick={() => setRating(star)}
                                         onMouseEnter={() => setHoverRating(star)}
                                         onMouseLeave={() => setHoverRating(0)}
-                                        className="focus:outline-none transition-transform hover:scale-110"
+                                        className="focus:outline-none group p-1"
                                         disabled={isLoading}
                                     >
                                         <svg
-                                            className={`w-10 h-10 ${star <= (hoverRating || rating)
-                                                ? 'text-[#5aa5df] fill-current'
-                                                : 'text-gray-300 fill-current'
-                                                }`}
+                                            className={`w-8 h-8 transition-all duration-200 ease-out
+                                                ${star <= (hoverRating || rating)
+                                                    ? 'text-[#5aa5df] fill-current'
+                                                    : 'text-gray-300 fill-current'
+                                                }
+                                                ${star <= hoverRating
+                                                    ? 'animate-[bounce-rotate_0.3s_ease-out]'
+                                                    : ''
+                                                }
+                                                group-hover:scale-125 group-hover:-translate-y-1 group-hover:rotate-12
+                                            `}
                                             viewBox="0 0 24 24"
+                                            style={{ animationDelay: `${(star - 1) * 50}ms` }}
                                         >
                                             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                                         </svg>
@@ -227,8 +210,9 @@ export default function WriteReviewModal({
                             </div>
                         </div>
 
-                        <div className="mb-5">
-                            <label className="block text-base font-semibold text-gray-900 mb-2">
+                        {/* Review Text */}
+                        <div className="mb-3">
+                            <label className="block text-sm font-medium text-gray-900 mb-1.5">
                                 {t('tellUsMore')}
                             </label>
                             <textarea
@@ -236,15 +220,16 @@ export default function WriteReviewModal({
                                 onChange={(e) => setReviewText(e.target.value)}
                                 placeholder={t('whatDidYouLike')}
                                 required
-                                rows={6}
+                                rows={4}
                                 disabled={isLoading}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none text-sm disabled:bg-gray-100"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none text-sm disabled:bg-gray-100"
                             />
                         </div>
 
-                        <div className="mb-5">
-                            <div className="flex items-center justify-between mb-2">
-                                <label className="block text-base font-semibold text-gray-900">
+                        {/* Title */}
+                        <div className="mb-3">
+                            <div className="flex items-center justify-between mb-1.5">
+                                <label className="block text-sm font-medium text-gray-900">
                                     {t('giveTitle')}
                                 </label>
                                 {reviewText.trim() && (
@@ -252,7 +237,7 @@ export default function WriteReviewModal({
                                         type="button"
                                         onClick={handleSuggestTitle}
                                         disabled={isLoading || !reviewText.trim()}
-                                        className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 disabled:text-gray-400 transition"
+                                        className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 disabled:text-gray-400"
                                     >
                                         <Sparkles className="w-3 h-3" />
                                         {t('suggestTitle')}
@@ -267,57 +252,48 @@ export default function WriteReviewModal({
                                     placeholder={t('titlePlaceholder')}
                                     required
                                     disabled={isLoading}
-                                    className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm disabled:bg-gray-100"
+                                    className="w-full px-3 py-2 pr-14 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm disabled:bg-gray-100"
                                 />
                                 {!isTitleManuallyEdited && reviewTitle && (
-                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
+                                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">
                                         {t('auto')}
                                     </span>
                                 )}
                             </div>
-                            {!reviewText.trim() && (
-                                <p className="text-xs text-gray-500 mt-1">
-                                    {t('writeExperienceFirst')}
-                                </p>
-                            )}
                         </div>
 
-                        <div className="mb-5">
-                            <label className="flex items-center gap-2 text-base font-semibold text-gray-900 mb-2">
+                        {/* Experience Date */}
+                        <div className="mb-3">
+                            <label className="flex items-center gap-1.5 text-sm font-medium text-gray-900 mb-1.5">
                                 {t('dateOfExperience')}
-                                <button type="button" className="p-1 hover:bg-gray-100 rounded-full transition">
-                                    <Info className="w-4 h-4 text-gray-500" />
-                                </button>
+                                <Info className="w-3.5 h-3.5 text-gray-400" />
                             </label>
                             <input
                                 type="date"
                                 value={experienceDate}
                                 onChange={(e) => setExperienceDate(e.target.value)}
-                                placeholder="dd/mm/yyyy"
                                 required
                                 disabled={isLoading}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm disabled:bg-gray-100"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm disabled:bg-gray-100"
                             />
                         </div>
 
-                        <div className="mb-5">
-                            <p className="text-xs text-gray-600">
-                                {t('submissionConfirm')}{' '}
-                                <a href="#" className="text-blue-600 hover:underline">
-                                    {t('genuineExperience')}
-                                </a>{' '}
-                                {t('noIncentive')}
-                            </p>
-                        </div>
+                        {/* Terms */}
+                        <p className="text-[11px] text-gray-500 mb-4">
+                            {t('submissionConfirm')}{' '}
+                            <a href="#" className="text-blue-600 hover:underline">{t('genuineExperience')}</a>{' '}
+                            {t('noIncentive')}
+                        </p>
 
+                        {/* Submit Button */}
                         <button
                             type="submit"
                             disabled={rating === 0 || isLoading}
-                            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white py-3 rounded-lg font-semibold transition flex items-center justify-center gap-2"
+                            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white py-2.5 rounded-lg text-sm font-semibold transition flex items-center justify-center gap-2"
                         >
                             {isLoading ? (
                                 <>
-                                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
@@ -341,9 +317,9 @@ export function WriteReviewButton() {
         <>
             <button
                 onClick={() => setIsModalOpen(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-semibold transition flex items-center gap-2"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full text-sm font-semibold transition flex items-center gap-2"
             >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                 </svg>
                 Write a review
