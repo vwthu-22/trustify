@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import {
-    Home, MessageSquare, Send, BarChart3, Settings,
+    Home, MessageSquare, Puzzle, BarChart3, Settings,
     ChevronDown, ChevronRight, Mail, ShieldCheck,
     Crown, Headphones, X
 } from 'lucide-react';
@@ -55,10 +55,10 @@ export default function Sidebar({ isOpen = false, onClose, isMobile = false }: S
             title: t('titleSendInvitations')
         },
         {
-            href: '/campaigns',
-            label: t('labelCampaigns'),
-            icon: Send,
-            title: t('titleCampaigns')
+            href: '/integrations',
+            label: t('labelIntegrations'),
+            icon: Puzzle,
+            title: t('titleIntegrations')
         },
         {
             href: '/verification',
