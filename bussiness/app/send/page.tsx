@@ -86,7 +86,7 @@ export default function SendInvitationsPage() {
     return (
         <div className="max-w-2xl mx-auto">
             {/* Compact Header */}
-            <div className="bg-gradient-to-r from-[#0f1c2d] to-[#1a3a5c] rounded-lg p-4 text-white mb-4">
+            <div className="bg-gradient-to-r from-[#0f1c2d] to-[#1a3a5c] rounded-lg p-3 text-white mb-4">
                 <div className="flex items-center gap-3">
                     <div className="p-1.5 bg-white/10 rounded-lg">
                         <Mail className="h-5 w-5" />
