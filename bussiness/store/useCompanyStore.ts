@@ -142,7 +142,7 @@ export const useCompanyStore = create<CompanyStore>()(
                             country: companyData.country || '',
                             // API uses companySize, not size
                             size: companyData.companySize || companyData.size || '',
-                            detail: companyData.taxId || companyData.detail || '',
+                            detail: companyData.description || companyData.detail || '',
                             position: companyData.position || '',
                             createdAt: companyData.createdAt || '',
                         };
@@ -367,7 +367,7 @@ export const useCompanyStore = create<CompanyStore>()(
                                 phone: companyData.contactPhone || companyData.phone || '',
                                 country: companyData.country || '',
                                 size: companyData.companySize || companyData.size || '',
-                                detail: companyData.taxId || companyData.detail || '',
+                                detail: companyData.description || companyData.taxId || companyData.detail || '',
                                 position: companyData.position || '',
                                 createdAt: companyData.createdAt || '',
                             };

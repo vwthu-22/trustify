@@ -360,11 +360,11 @@ export default function SettingsPage() {
                                 <label className="block text-xs font-medium text-gray-700 mb-1">
                                     {t('detail')}
                                 </label>
-                                <textarea
-                                    rows={3}
+                                <input
+                                    type="text"
                                     value={companyData.detail}
                                     onChange={(e) => setCompanyData({ ...companyData, detail: e.target.value })}
-                                    className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                    className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     placeholder={t('enterDetail')}
                                 />
                             </div>
