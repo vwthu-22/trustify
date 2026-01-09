@@ -63,7 +63,6 @@ export default function BusinessIntro() {
       <section className="bg-gradient-to-br from-[#0f1c2d] to-[#1a3a5c] text-white py-16 sm:py-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full text-sm mb-6">
-            <Star className="w-4 h-4 text-yellow-400 fill-current" />
             <span>{t('trustedPlatform')}</span>
           </div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">

@@ -1,284 +1,420 @@
 'use client';
 
 import { useState } from 'react';
-import { Puzzle, Code, Zap, CheckCircle, ExternalLink, Lock } from 'lucide-react';
+import { Code, Copy, CheckCircle, ExternalLink, Terminal, Zap, FileJson, Mail } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-
-interface Integration {
-    id: string;
-    name: string;
-    description: string;
-    icon: string;
-    category: 'ecommerce' | 'crm' | 'email' | 'analytics' | 'other';
-    isConnected: boolean;
-    isPro: boolean;
-}
-
-const integrations: Integration[] = [
-    {
-        id: 'shopify',
-        name: 'Shopify',
-        description: 'Automatically collect reviews from Shopify orders',
-        icon: '🛍️',
-        category: 'ecommerce',
-        isConnected: false,
-        isPro: false
-    },
-    {
-        id: 'woocommerce',
-        name: 'WooCommerce',
-        description: 'Integrate with your WooCommerce store',
-        icon: '🛒',
-        category: 'ecommerce',
-        isConnected: false,
-        isPro: false
-    },
-    {
-        id: 'salesforce',
-        name: 'Salesforce',
-        description: 'Sync customer data with Salesforce CRM',
-        icon: '☁️',
-        category: 'crm',
-        isConnected: false,
-        isPro: true
-    },
-    {
-        id: 'hubspot',
-        name: 'HubSpot',
-        description: 'Connect with HubSpot for marketing automation',
-        icon: '🎯',
-        category: 'crm',
-        isConnected: false,
-        isPro: true
-    },
-    {
-        id: 'mailchimp',
-        name: 'Mailchimp',
-        description: 'Send review invitations via Mailchimp',
-        icon: '📧',
-        category: 'email',
-        isConnected: false,
-        isPro: false
-    },
-    {
-        id: 'google-analytics',
-        name: 'Google Analytics',
-        description: 'Track review widget performance',
-        icon: '📊',
-        category: 'analytics',
-        isConnected: true,
-        isPro: false
-    },
-    {
-        id: 'zapier',
-        name: 'Zapier',
-        description: 'Connect with 3000+ apps via Zapier',
-        icon: '⚡',
-        category: 'other',
-        isConnected: false,
-        isPro: true
-    },
-    {
-        id: 'slack',
-        name: 'Slack',
-        description: 'Get notifications for new reviews in Slack',
-        icon: '💬',
-        category: 'other',
-        isConnected: false,
-        isPro: false
-    }
-];
+import { useCompanyStore } from '@/store/useCompanyStore';
 
 export default function IntegrationsPage() {
     const t = useTranslations('integrations');
-    const [selectedCategory, setSelectedCategory] = useState<string>('all');
-    const [showApiDocs, setShowApiDocs] = useState(false);
+    const { company } = useCompanyStore();
+    const [copiedEndpoint, setCopiedEndpoint] = useState<string | null>(null);
+    const [activeTab, setActiveTab] = useState<'overview' | 'rating' | 'reviews' | 'invite'>('overview');
 
-    const categories = [
-        { id: 'all', name: 'All Integrations', count: integrations.length },
-        { id: 'ecommerce', name: 'E-commerce', count: integrations.filter(i => i.category === 'ecommerce').length },
-        { id: 'crm', name: 'CRM', count: integrations.filter(i => i.category === 'crm').length },
-        { id: 'email', name: 'Email', count: integrations.filter(i => i.category === 'email').length },
-        { id: 'analytics', name: 'Analytics', count: integrations.filter(i => i.category === 'analytics').length },
-        { id: 'other', name: 'Other', count: integrations.filter(i => i.category === 'other').length }
+    const companyId = company?.id || '{YOUR_COMPANY_ID}';
+    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://api.trustify.com';
+
+    const handleCopy = (text: string, endpoint: string) => {
+        navigator.clipboard.writeText(text);
+        setCopiedEndpoint(endpoint);
+        setTimeout(() => setCopiedEndpoint(null), 2000);
+    };
+
+    const endpoints = [
+        {
+            id: 'overview',
+            method: 'GET',
+            name: 'Integration Manifest',
+            path: `/integration/companies/${companyId}`,
+            description: 'Lấy thông tin tổng quan API và rating hiện tại',
+            icon: FileJson,
+            color: 'blue'
+        },
+        {
+            id: 'rating',
+            method: 'GET',
+            name: 'Company Rating',
+            path: `/integration/companies/${companyId}/rating`,
+            description: 'Lấy thống kê đánh giá (điểm TB, phân bố sao)',
+            icon: Zap,
+            color: 'green'
+        },
+        {
+            id: 'reviews',
+            method: 'GET',
+            name: 'Company Reviews',
+            path: `/integration/companies/${companyId}/reviews`,
+            description: 'Lấy danh sách đánh giá (có phân trang)',
+            icon: Terminal,
+            color: 'purple'
+        },
+        {
+            id: 'invite',
+            method: 'POST',
+            name: 'Send Invitation',
+            path: `/integration/companies/${companyId}/send-invite`,
+            description: 'Gửi email mời khách hàng đánh giá',
+            icon: Mail,
+            color: 'orange'
+        }
     ];
 
-    const filteredIntegrations = selectedCategory === 'all'
-        ? integrations
-        : integrations.filter(i => i.category === selectedCategory);
+    const getColorClasses = (color: string) => {
+        const colors: Record<string, { bg: string; text: string; border: string; light: string }> = {
+            blue: { bg: 'bg-blue-500', text: 'text-blue-600', border: 'border-blue-500', light: 'bg-blue-50' },
+            green: { bg: 'bg-green-500', text: 'text-green-600', border: 'border-green-500', light: 'bg-green-50' },
+            purple: { bg: 'bg-purple-500', text: 'text-purple-600', border: 'border-purple-500', light: 'bg-purple-50' },
+            orange: { bg: 'bg-orange-500', text: 'text-orange-600', border: 'border-orange-500', light: 'bg-orange-50' }
+        };
+        return colors[color] || colors.blue;
+    };
 
-    return (
-        <div className="space-y-4 sm:space-y-6">
-            {/* Header */}
-            {/* <div>
-                <h2 className="text-lg sm:text-xl font-bold text-gray-900">{t('title')}</h2>
-                <p className="text-gray-500 text-xs sm:text-sm">{t('subtitle')}</p>
-            </div> */}
-
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-2 sm:gap-4">
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4">
-                    <div className="flex items-center gap-2">
-                        <div className="p-2 bg-blue-100 rounded-lg">
-                            <Puzzle className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
-                        </div>
-                        <div>
-                            <p className="text-xs text-gray-600">{t('available')}</p>
-                            <p className="text-lg sm:text-xl font-bold text-gray-900">{integrations.length}</p>
-                        </div>
-                    </div>
-                </div>
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4">
-                    <div className="flex items-center gap-2">
-                        <div className="p-2 bg-green-100 rounded-lg">
-                            <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
-                        </div>
-                        <div>
-                            <p className="text-xs text-gray-600">{t('connected')}</p>
-                            <p className="text-lg sm:text-xl font-bold text-gray-900">
-                                {integrations.filter(i => i.isConnected).length}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4">
-                    <div className="flex items-center gap-2">
-                        <div className="p-2 bg-purple-100 rounded-lg">
-                            <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
-                        </div>
-                        <div>
-                            <p className="text-xs text-gray-600">{t('proOnly')}</p>
-                            <p className="text-lg sm:text-xl font-bold text-gray-900">
-                                {integrations.filter(i => i.isPro).length}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Category Filter */}
-            <div className="flex gap-1.5 overflow-x-auto pb-2">
-                {categories.map((category) => (
-                    <button
-                        key={category.id}
-                        onClick={() => setSelectedCategory(category.id)}
-                        className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap transition-colors ${selectedCategory === category.id
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-                            }`}
-                    >
-                        {category.name} ({category.count})
-                    </button>
-                ))}
-            </div>
-
-            {/* Integrations Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                {filteredIntegrations.map((integration) => (
-                    <div
-                        key={integration.id}
-                        className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow"
-                    >
-                        <div className="flex items-start justify-between mb-2">
-                            <div className="text-2xl sm:text-3xl">{integration.icon}</div>
-                            {integration.isPro && (
-                                <span className="px-1.5 py-0.5 bg-purple-100 text-purple-700 text-xs font-semibold rounded-full flex items-center gap-0.5">
-                                    <Lock className="h-2.5 w-2.5" />
-                                    PRO
-                                </span>
-                            )}
-                        </div>
-                        <h3 className="text-sm font-semibold text-gray-900 mb-1">{integration.name}</h3>
-                        <p className="text-xs text-gray-600 mb-3">{integration.description}</p>
-                        {integration.isConnected ? (
-                            <div className="flex items-center gap-1.5 text-green-600 text-xs font-medium">
-                                <CheckCircle className="h-3.5 w-3.5" />
-                                {t('connected')}
-                            </div>
-                        ) : (
-                            <button
-                                disabled={integration.isPro}
-                                className={`w-full py-1.5 px-3 rounded-lg text-xs font-medium transition-colors ${integration.isPro
-                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                    : 'bg-blue-600 text-white hover:bg-blue-700'
-                                    }`}
-                            >
-                                {integration.isPro ? t('upgradeToConnect') : t('connect')}
-                            </button>
-                        )}
-                    </div>
-                ))}
-            </div>
-
-            {/* API Documentation */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <div className="flex items-center justify-between mb-6">
-                    <div>
-                        <h3 className="text-lg font-bold text-gray-900">{t('apiDocumentation')}</h3>
-                        <p className="text-sm text-gray-600 mt-1">{t('buildCustom')}</p>
-                    </div>
-                    <button
-                        onClick={() => setShowApiDocs(!showApiDocs)}
-                        className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
-                    >
-                        <Code className="h-4 w-4" />
-                        {t('viewApiDocs')}
-                    </button>
-                </div>
-
-                {showApiDocs && (
+    const renderApiContent = () => {
+        switch (activeTab) {
+            case 'overview':
+                return (
                     <div className="space-y-4">
-                        <div className="p-4 bg-gray-50 rounded-lg">
-                            <p className="text-sm font-medium text-gray-900 mb-2">API Endpoint</p>
-                            <code className="text-sm text-blue-600">https://api.trustify.com/v1/</code>
+                        <div className="flex items-center gap-2 mb-4">
+                            <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded">GET</span>
+                            <code className="text-sm text-gray-700 flex-1">/integration/companies/{companyId}</code>
+                            <button
+                                onClick={() => handleCopy(`${baseUrl}/integration/companies/${companyId}`, 'overview')}
+                                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                            >
+                                {copiedEndpoint === 'overview' ? <CheckCircle className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4 text-gray-400" />}
+                            </button>
                         </div>
-
-                        <div className="p-4 bg-gray-50 rounded-lg">
-                            <p className="text-sm font-medium text-gray-900 mb-2">Authentication</p>
-                            <code className="text-sm text-gray-700">
-                                Authorization: Bearer YOUR_API_KEY
-                            </code>
-                        </div>
-
-                        <div className="p-4 bg-gray-50 rounded-lg">
-                            <p className="text-sm font-medium text-gray-900 mb-3">Example: Get Reviews</p>
-                            <pre className="text-sm text-gray-700 overflow-x-auto">
-                                {`GET /reviews
-{
-  "limit": 10,
-  "offset": 0,
-  "branch": "hanoi"
+                        <p className="text-sm text-gray-600">
+                            Trả về thông tin tổng quan về các API endpoint có sẵn và rating hiện tại của công ty.
+                        </p>
+                        <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
+                            <p className="text-xs text-gray-400 mb-2">Response</p>
+                            <pre className="text-sm text-green-400">
+                                {`{
+  "sendInviteApi": "/integration/companies/${companyId}/send-invite",
+  "ratingApi": "/integration/companies/${companyId}/rating",
+  "reviewsApi": "/integration/companies/${companyId}/reviews",
+  "companyRating": {
+    "id": ${companyId},
+    "averageRating": 4.5,
+    "totalReviews": 128,
+    "fiveStarCount": 80,
+    "fourStarCount": 30,
+    "threeStarCount": 10,
+    "twoStarCount": 5,
+    "oneStarCount": 3
+  }
 }`}
                             </pre>
                         </div>
+                    </div>
+                );
 
-                        <a
-                            href="#"
-                            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
+            case 'rating':
+                return (
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-2 mb-4">
+                            <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded">GET</span>
+                            <code className="text-sm text-gray-700 flex-1">/integration/companies/{companyId}/rating</code>
+                            <button
+                                onClick={() => handleCopy(`${baseUrl}/integration/companies/${companyId}/rating`, 'rating')}
+                                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                            >
+                                {copiedEndpoint === 'rating' ? <CheckCircle className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4 text-gray-400" />}
+                            </button>
+                        </div>
+                        <p className="text-sm text-gray-600">
+                            Lấy thống kê chi tiết về đánh giá của công ty: điểm trung bình, tổng số đánh giá, phân bố theo số sao.
+                        </p>
+                        <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
+                            <p className="text-xs text-gray-400 mb-2">Response</p>
+                            <pre className="text-sm text-green-400">
+                                {`{
+  "id": ${companyId},
+  "averageRating": 4.5,
+  "totalReviews": 128,
+  "fiveStarCount": 80,
+  "fourStarCount": 30,
+  "threeStarCount": 10,
+  "twoStarCount": 5,
+  "oneStarCount": 3
+}`}
+                            </pre>
+                        </div>
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <p className="text-sm font-medium text-blue-800 mb-2">💡 Gợi ý sử dụng</p>
+                            <p className="text-sm text-blue-700">
+                                Sử dụng API này để hiển thị badge đánh giá trên website của bạn, ví dụ: "⭐ 4.5/5 (128 đánh giá)"
+                            </p>
+                        </div>
+                    </div>
+                );
+
+            case 'reviews':
+                return (
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-2 mb-4">
+                            <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded">GET</span>
+                            <code className="text-sm text-gray-700 flex-1">/integration/companies/{companyId}/reviews</code>
+                            <button
+                                onClick={() => handleCopy(`${baseUrl}/integration/companies/${companyId}/reviews?page=0&size=10`, 'reviews')}
+                                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                            >
+                                {copiedEndpoint === 'reviews' ? <CheckCircle className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4 text-gray-400" />}
+                            </button>
+                        </div>
+                        <p className="text-sm text-gray-600">
+                            Lấy danh sách đánh giá của công ty với hỗ trợ phân trang.
+                        </p>
+                        <div className="bg-gray-50 rounded-lg p-4 border">
+                            <p className="text-sm font-medium text-gray-700 mb-2">Query Parameters</p>
+                            <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                    <code className="px-2 py-1 bg-gray-200 rounded text-xs">page</code>
+                                    <span className="text-sm text-gray-600">Số trang (mặc định: 0)</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <code className="px-2 py-1 bg-gray-200 rounded text-xs">size</code>
+                                    <span className="text-sm text-gray-600">Số lượng mỗi trang (mặc định: 20)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
+                            <p className="text-xs text-gray-400 mb-2">Response</p>
+                            <pre className="text-sm text-green-400">
+                                {`{
+  "content": [
+    {
+      "id": 1,
+      "rating": 5,
+      "title": "Dịch vụ tuyệt vời!",
+      "comment": "Rất hài lòng với chất lượng...",
+      "userName": "Nguyễn Văn A",
+      "createdAt": "2024-01-09T10:30:00"
+    },
+    {
+      "id": 2,
+      "rating": 4,
+      "title": "Tốt",
+      "comment": "Sản phẩm chất lượng...",
+      "userName": "Trần Thị B",
+      "createdAt": "2024-01-08T15:20:00"
+    }
+  ],
+  "totalElements": 128,
+  "totalPages": 13,
+  "size": 10,
+  "number": 0
+}`}
+                            </pre>
+                        </div>
+                    </div>
+                );
+
+            case 'invite':
+                return (
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-2 mb-4">
+                            <span className="px-2 py-1 bg-orange-100 text-orange-700 text-xs font-bold rounded">POST</span>
+                            <code className="text-sm text-gray-700 flex-1">/integration/companies/{companyId}/send-invite</code>
+                            <button
+                                onClick={() => handleCopy(`${baseUrl}/integration/companies/${companyId}/send-invite?to=customer@email.com`, 'invite')}
+                                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                            >
+                                {copiedEndpoint === 'invite' ? <CheckCircle className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4 text-gray-400" />}
+                            </button>
+                        </div>
+                        <p className="text-sm text-gray-600">
+                            Gửi email mời khách hàng để lại đánh giá. Email sẽ chứa link để khách hàng đánh giá công ty của bạn.
+                        </p>
+                        <div className="bg-gray-50 rounded-lg p-4 border">
+                            <p className="text-sm font-medium text-gray-700 mb-2">Query Parameters</p>
+                            <div className="space-y-2">
+                                <div className="flex items-start gap-2">
+                                    <code className="px-2 py-1 bg-gray-200 rounded text-xs">to</code>
+                                    <div>
+                                        <span className="text-sm text-gray-600">Email người nhận</span>
+                                        <span className="ml-2 px-1.5 py-0.5 bg-red-100 text-red-600 text-xs rounded">Bắt buộc</span>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <code className="px-2 py-1 bg-gray-200 rounded text-xs">subject</code>
+                                    <span className="text-sm text-gray-600">Tiêu đề email (tùy chọn)</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <code className="px-2 py-1 bg-gray-200 rounded text-xs">body</code>
+                                    <span className="text-sm text-gray-600">Nội dung tùy chỉnh (tùy chọn)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
+                            <p className="text-xs text-gray-400 mb-2">Example Request</p>
+                            <pre className="text-sm text-yellow-400 mb-4">
+                                {`POST /integration/companies/${companyId}/send-invite
+     ?to=customer@email.com
+     &subject=Xin hãy đánh giá dịch vụ của chúng tôi`}
+                            </pre>
+                            <p className="text-xs text-gray-400 mb-2">Response</p>
+                            <pre className="text-sm text-green-400">
+                                {`{
+  "status": "sent",
+  "to": "customer@email.com",
+  "reviewLink": "https://trustify.com/review?companyId=${companyId}"
+}`}
+                            </pre>
+                        </div>
+                    </div>
+                );
+        }
+    };
+
+    return (
+        <div className="space-y-6">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-[#0f1c2d] to-[#1a3a5c] rounded-xl p-6 text-white">
+                <div className="flex items-center gap-3 mb-3">
+                    <div className="p-2 bg-white/10 rounded-lg">
+                        <Code className="h-6 w-6" />
+                    </div>
+                    <div>
+                        <h1 className="text-xl font-bold">API Documentation</h1>
+                        <p className="text-white/70 text-sm">Tích hợp đánh giá vào website của bạn</p>
+                    </div>
+                </div>
+                <div className="mt-4 p-3 bg-white/10 rounded-lg">
+                    <p className="text-xs text-white/60 mb-1">Base URL</p>
+                    <div className="flex items-center gap-2">
+                        <code className="text-sm text-white flex-1">{baseUrl}/integration/companies</code>
+                        <button
+                            onClick={() => handleCopy(`${baseUrl}/integration/companies`, 'base')}
+                            className="p-1.5 hover:bg-white/10 rounded transition-colors"
                         >
-                            <ExternalLink className="h-4 w-4" />
-                            {t('viewFullDocs')}
-                        </a>
+                            {copiedEndpoint === 'base' ? <CheckCircle className="h-4 w-4 text-green-400" /> : <Copy className="h-4 w-4 text-white/60" />}
+                        </button>
+                    </div>
+                </div>
+                {company && (
+                    <div className="mt-3 p-3 bg-green-500/20 border border-green-400/30 rounded-lg">
+                        <p className="text-xs text-green-300">✓ Company ID của bạn: <span className="font-mono font-bold">{company.id}</span></p>
                     </div>
                 )}
             </div>
 
-            {/* Upgrade CTA */}
-            <div className="bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg p-4 sm:p-6 text-white">
-                <div className="flex items-center gap-3">
-                    <div className="p-2 bg-white/20 rounded-lg">
-                        <Lock className="h-5 w-5 sm:h-6 sm:w-6" />
-                    </div>
-                    <div className="flex-1">
-                        <h3 className="text-base sm:text-lg font-bold mb-1">{t('unlockPremium')}</h3>
-                        <p className="text-white/90 text-xs sm:text-sm mb-3">
-                            Upgrade to PRO to access Salesforce, HubSpot, Zapier and more
-                        </p>
-                        <button className="px-4 py-2 text-sm bg-white text-purple-600 font-bold rounded-lg hover:bg-gray-100 transition-colors">
-                            {t('upgradeToPro')}
+            {/* API Endpoints Navigation */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {endpoints.map((endpoint) => {
+                    const colors = getColorClasses(endpoint.color);
+                    const Icon = endpoint.icon;
+                    const isActive = activeTab === endpoint.id;
+
+                    return (
+                        <button
+                            key={endpoint.id}
+                            onClick={() => setActiveTab(endpoint.id as typeof activeTab)}
+                            className={`p-4 rounded-xl border-2 transition-all text-left ${isActive
+                                ? `${colors.border} ${colors.light} shadow-md`
+                                : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'
+                                }`}
+                        >
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className={`p-1.5 rounded-lg ${isActive ? colors.bg : 'bg-gray-100'}`}>
+                                    <Icon className={`h-4 w-4 ${isActive ? 'text-white' : 'text-gray-500'}`} />
+                                </div>
+                                <span className={`px-1.5 py-0.5 text-xs font-bold rounded ${endpoint.method === 'GET'
+                                    ? 'bg-green-100 text-green-700'
+                                    : 'bg-orange-100 text-orange-700'
+                                    }`}>
+                                    {endpoint.method}
+                                </span>
+                            </div>
+                            <p className={`text-sm font-semibold ${isActive ? colors.text : 'text-gray-900'}`}>
+                                {endpoint.name}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1 line-clamp-2">{endpoint.description}</p>
                         </button>
-                    </div>
+                    );
+                })}
+            </div>
+
+            {/* API Detail */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                {renderApiContent()}
+            </div>
+
+            {/* Code Example */}
+            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                <div className="bg-gray-100 px-4 py-3 border-b border-gray-200 flex items-center gap-2">
+                    <Terminal className="h-4 w-4 text-gray-500" />
+                    <span className="text-sm font-medium text-gray-700">Ví dụ tích hợp JavaScript</span>
                 </div>
+                <div className="bg-gray-900 p-4 overflow-x-auto">
+                    <pre className="text-sm text-green-400">
+                        {`// Lấy và hiển thị reviews trên website của bạn
+const COMPANY_ID = ${companyId};
+const API_BASE = '${baseUrl}';
+
+// 1. Lấy rating tổng quan
+async function fetchRating() {
+  const res = await fetch(\`\${API_BASE}/integration/companies/\${COMPANY_ID}/rating\`);
+  const data = await res.json();
+  
+  document.getElementById('rating-badge').innerHTML = \`
+    ⭐ \${data.averageRating.toFixed(1)}/5 (\${data.totalReviews} đánh giá)
+  \`;
+}
+
+// 2. Lấy và hiển thị reviews
+async function fetchReviews(page = 0, size = 5) {
+  const res = await fetch(
+    \`\${API_BASE}/integration/companies/\${COMPANY_ID}/reviews?page=\${page}&size=\${size}\`
+  );
+  const data = await res.json();
+  
+  const reviewsHtml = data.content.map(review => \`
+    <div class="review-card">
+      <div class="stars">\${'⭐'.repeat(review.rating)}</div>
+      <h4>\${review.title}</h4>
+      <p>\${review.comment}</p>
+      <span class="author">\${review.userName}</span>
+    </div>
+  \`).join('');
+  
+  document.getElementById('reviews-container').innerHTML = reviewsHtml;
+}
+
+// Khởi chạy
+fetchRating();
+fetchReviews();`}
+                    </pre>
+                </div>
+            </div>
+
+            {/* Quick Links */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <a
+                    href="#"
+                    className="flex items-center gap-3 p-4 bg-blue-50 border border-blue-200 rounded-xl hover:bg-blue-100 transition-colors"
+                >
+                    <div className="p-2 bg-blue-500 rounded-lg">
+                        <ExternalLink className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                        <p className="text-sm font-semibold text-blue-900">Xem tài liệu đầy đủ</p>
+                        <p className="text-xs text-blue-600">Hướng dẫn chi tiết và ví dụ nâng cao</p>
+                    </div>
+                </a>
+                <a
+                    href="#"
+                    className="flex items-center gap-3 p-4 bg-purple-50 border border-purple-200 rounded-xl hover:bg-purple-100 transition-colors"
+                >
+                    <div className="p-2 bg-purple-500 rounded-lg">
+                        <Code className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                        <p className="text-sm font-semibold text-purple-900">Widget sẵn sàng sử dụng</p>
+                        <p className="text-xs text-purple-600">Nhúng widget đánh giá với 1 dòng code</p>
+                    </div>
+                </a>
             </div>
         </div>
     );
