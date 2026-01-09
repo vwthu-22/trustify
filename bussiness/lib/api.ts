@@ -203,9 +203,21 @@ export const companyApi = {
         return response.json();
     },
 
-    // Update company avatar/logo only
+    // Update company profile
     // API: PUT /api/companies/update/{id}
-    updateAvatar: async (companyId: string | number, avatarUrl: string) => {
+    updateProfile: async (companyId: string | number, data: {
+        name?: string;
+        websiteUrl?: string;
+        avatarUrl?: string; // Note: Backend expects avatarUrl for update, returns logoUrl in response
+        jobTitle?: string;
+        contactPhone?: string;
+        industry?: string;
+        workEmail?: string;
+        companySize?: string;
+        foundedYear?: number;
+        country?: string;
+        annualRevenue?: string;
+    }) => {
         const response = await fetch(`${API_BASE_URL}/api/companies/update/${companyId}`, {
             method: 'PUT',
             credentials: 'include',
@@ -213,12 +225,12 @@ export const companyApi = {
                 'Content-Type': 'application/json',
                 'ngrok-skip-browser-warning': 'true',
             },
-            body: JSON.stringify({ avatarUrl }),
+            body: JSON.stringify(data),
         });
 
         if (!response.ok) {
-            const error = await response.json().catch(() => ({ error: 'Failed to update avatar' }));
-            throw new Error(error.error || error.message || 'Failed to update avatar');
+            const error = await response.json().catch(() => ({ error: 'Failed to update company profile' }));
+            throw new Error(error.error || error.message || 'Failed to update company profile');
         }
 
         return response.json();
