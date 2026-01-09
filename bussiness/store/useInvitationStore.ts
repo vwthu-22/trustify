@@ -56,6 +56,12 @@ interface InvitationStore {
     // Actions
     fetchInvitations: () => Promise<void>;
     sendInvitation: (emails: string[], templateId: string) => Promise<boolean>;
+    sendSingleInvite: (data: {
+        to: string;
+        productLink: string;
+        subject?: string;
+        body?: string;
+    }) => Promise<{ status: string; to: string; productLink: string }>;
     fetchCampaigns: () => Promise<void>;
     createCampaign: (campaign: Partial<Campaign>) => Promise<boolean>;
     updateCampaign: (id: string, updates: Partial<Campaign>) => Promise<boolean>;
@@ -137,6 +143,54 @@ export const useInvitationStore = create<InvitationStore>((set, get) => ({
         } catch (error) {
             set({ error: error instanceof Error ? error.message : 'Failed to send invitations', isLoading: false });
             return false;
+        }
+    },
+
+    // New: Send single invite using real API
+    sendSingleInvite: async (data: {
+        to: string;
+        productLink: string;
+        subject?: string;
+        body?: string;
+    }) => {
+        set({ isLoading: true, error: null });
+        try {
+            const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://trustify.io.vn';
+            const response = await fetch(`${API_BASE_URL}/integration/companies/invite`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true',
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || 'Failed to send invitation');
+            }
+
+            const result = await response.json();
+
+            // Add to invitations list
+            const newInvitation: Invitation = {
+                id: `invite-${Date.now()}`,
+                customerEmail: data.to,
+                customerName: data.to.split('@')[0],
+                status: 'sent',
+                sentAt: new Date().toISOString(),
+            };
+
+            set({
+                invitations: [newInvitation, ...get().invitations],
+                isLoading: false
+            });
+
+            return result;
+        } catch (error) {
+            set({ error: error instanceof Error ? error.message : 'Failed to send invitation', isLoading: false });
+            throw error;
         }
     },
 

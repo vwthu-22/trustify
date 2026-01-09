@@ -357,9 +357,94 @@ export const reviewApi = {
     },
 };
 
+// ==================== Integration API ====================
+
+export const integrationApi = {
+    // Send invite email to customer
+    sendInvite: async (data: {
+        to: string;
+        productLink: string;
+        subject?: string;
+        body?: string;
+    }) => {
+        const response = await fetch(`${API_BASE_URL}/integration/companies/invite`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'ngrok-skip-browser-warning': 'true',
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            const error = await response.text();
+            throw new Error(error || 'Failed to send invitation');
+        }
+
+        return response.json();
+    },
+
+    // Get company rating
+    getCompanyRating: async (companyId: number) => {
+        const response = await fetch(`${API_BASE_URL}/integration/companies/${companyId}/rating`, {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'ngrok-skip-browser-warning': 'true',
+            },
+        });
+
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({ message: 'Failed to fetch rating' }));
+            throw new Error(error.message || 'Failed to fetch rating');
+        }
+
+        return response.json();
+    },
+
+    // Get integration manifest
+    getManifest: async (companyId: number) => {
+        const response = await fetch(`${API_BASE_URL}/integration/companies/${companyId}`, {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'ngrok-skip-browser-warning': 'true',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch integration manifest');
+        }
+
+        return response.json();
+    },
+
+    // Get company reviews (paginated)
+    getCompanyReviews: async (companyId: number, page = 0, size = 20) => {
+        const response = await fetch(`${API_BASE_URL}/integration/companies/${companyId}/reviews?page=${page}&size=${size}`, {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'ngrok-skip-browser-warning': 'true',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch reviews');
+        }
+
+        return response.json();
+    },
+};
+
 export default {
     auth: authApi,
     company: companyApi,
     plan: planApi,
     review: reviewApi,
+    integration: integrationApi,
 };
