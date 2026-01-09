@@ -271,7 +271,7 @@ export default function IntegrationsPage() {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="bg-gradient-to-r from-[#0f1c2d] to-[#1a3a5c] rounded-xl p-6 text-white">
+            <div className="bg-gradient-to-r from-[#0f1c2d] to-[#1a3a5c] rounded-xl p-4 text-white">
                 <div className="flex items-center gap-3 mb-3">
                     <div className="p-2 bg-white/10 rounded-lg">
                         <Code className="h-6 w-6" />
