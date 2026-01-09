@@ -93,7 +93,7 @@ export default function SubscriptionPage() {
                 </span>
                 <button
                     onClick={() => setBillingPeriod(billingPeriod === 'month' ? 'year' : 'month')}
-                    className={`relative w-12 h-6 rounded-full transition-colors ${billingPeriod === 'year' ? 'bg-green-600' : 'bg-gray-300'
+                    className={`relative w-12 h-6 rounded-full transition-colors ${billingPeriod === 'year' ? 'bg-blue-600' : 'bg-gray-300'
                         }`}
                 >
                     <div
@@ -105,7 +105,7 @@ export default function SubscriptionPage() {
                     {t('yearly')}
                 </span>
                 {billingPeriod === 'year' && (
-                    <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
+                    <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">
                         {t('savePercent')}
                     </span>
                 )}
@@ -143,7 +143,7 @@ export default function SubscriptionPage() {
                             <div
                                 key={plan.id}
                                 className={`relative bg-white rounded-lg shadow-sm border-2 p-4 sm:p-5 transition-all flex flex-col ${isRecommended
-                                    ? 'border-green-500 shadow-lg md:scale-[1.02]'
+                                    ? 'border-blue-500 shadow-lg md:scale-[1.02]'
                                     : isCurrentPlan
                                         ? 'border-blue-500'
                                         : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
@@ -151,7 +151,7 @@ export default function SubscriptionPage() {
                             >
                                 {isRecommended && (
                                     <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                                        <span className="px-3 py-0.5 bg-green-600 text-white text-xs font-bold rounded-full shadow whitespace-nowrap">
+                                        <span className="px-3 py-0.5 bg-blue-600 text-white text-xs font-bold rounded-full shadow whitespace-nowrap">
                                             {t('recommended')}
                                         </span>
                                     </div>
@@ -178,7 +178,7 @@ export default function SubscriptionPage() {
                                         )}
                                     </div>
                                     {getSavings(plan.price) && (
-                                        <p className="text-xs text-green-600 font-semibold">{getSavings(plan.price)}</p>
+                                        <p className="text-xs text-blue-600 font-semibold">{getSavings(plan.price)}</p>
                                     )}
                                 </div>
 
@@ -188,7 +188,7 @@ export default function SubscriptionPage() {
                                     className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors mb-6 ${isCurrentPlan
                                         ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                         : isRecommended
-                                            ? 'bg-green-600 text-white hover:bg-green-700'
+                                            ? 'bg-blue-600 text-white hover:bg-blue-700'
                                             : plan.price === 0
                                                 ? 'bg-gray-200 text-gray-800 hover:bg-gray-300'
                                                 : 'bg-gray-900 text-white hover:bg-gray-800'
@@ -202,7 +202,7 @@ export default function SubscriptionPage() {
                                     {plan.features && plan.features.length > 0 ? (
                                         plan.features.map((feature) => (
                                             <div key={feature.id} className="flex items-start gap-2">
-                                                <Check className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                                                <Check className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
                                                 <span className="text-sm text-gray-700">{feature.name}</span>
                                             </div>
                                         ))

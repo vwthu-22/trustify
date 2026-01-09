@@ -252,12 +252,12 @@ export default function Header({ onMenuClick, isMobile = false }: HeaderProps) {
                                 <div className="mt-2 flex items-center gap-1.5">
                                     <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${company?.plan === 'Premium' ? 'bg-purple-100 text-purple-700' :
                                         company?.plan === 'Pro' ? 'bg-blue-100 text-blue-700' :
-                                            'bg-green-100 text-green-700'
+                                            'bg-blue-100 text-blue-700'
                                         }`}>
                                         {company?.plan || 'Free'}
                                     </span>
                                     {company?.verified && (
-                                        <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full flex items-center gap-0.5">
+                                        <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-medium rounded-full flex items-center gap-0.5">
                                             <ShieldCheck className="w-3 h-3" />
                                             {t('verified')}
                                         </span>
