@@ -81,21 +81,19 @@ export default function SettingsPage() {
             }
 
             // Try to update company profile via API
-            // API: PUT /api/companies/update/{id}
+            // API: PATCH /api/companies/update-info/{id}
             if (company?.id) {
                 try {
                     const updateData = {
                         name: companyData.name,
+                        address: companyData.address,
                         websiteUrl: companyData.website,
-                        avatarUrl: logoUrl,
-                        contactPhone: profileData.phone,
                         industry: companyData.industry,
-                        workEmail: profileData.email,
                         companySize: companyData.size,
-                        country: company.country || 'VN', // Add country to prevent null
+                        description: companyData.detail,
                     };
                     console.log('Sending company update:', JSON.stringify(updateData, null, 2));
-                    await companyApi.updateProfile(company.id, updateData);
+                    await companyApi.updateInfo(company.id, updateData);
                 } catch (apiError) {
                     console.warn('API update failed, updating local store only:', apiError);
                     // Continue to update local store even if API fails

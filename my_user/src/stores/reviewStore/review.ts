@@ -38,6 +38,7 @@ interface Review {
     };
     companyName?: string;
     companyId?: string;
+    companyLogo?: string; // Company logo URL
     createdAt?: string;
     // Reply fields
     reply?: string;
@@ -459,6 +460,7 @@ const useReviewStore = create<ReviewState>()(
                         userAvatar: review.userAvatar || review.avatarUrl || review.user?.avatarUrl || review.user?.avatar,
                         companyName: review.companyName || review.nameCompany || review.company?.name,
                         companyId: review.companyId || review.company?.id,
+                        companyLogo: review.companyLogo || review.company?.logoUrl || review.company?.logo,
                     }));
 
                     set({
