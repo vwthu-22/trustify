@@ -15,6 +15,7 @@ export default function SettingsPage() {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
+    const isInitialLoad = useRef(true); // Flag to track if it's the first load
 
     // Local state for form editing
     const [profileData, setProfileData] = useState({
@@ -39,10 +40,10 @@ export default function SettingsPage() {
         fetchCompanyProfile();
     }, [fetchCompanyProfile]);
 
-    // Populate form when company data is loaded
+    // Populate form when company data is loaded (only on initial load)
     useEffect(() => {
-        if (company) {
-            console.log('Settings - company data loaded:', company);
+        if (company && isInitialLoad.current) {
+            console.log('Settings - company data loaded (initial):', company);
             setProfileData({
                 name: company.name || '',
                 email: company.email || '',
@@ -59,6 +60,7 @@ export default function SettingsPage() {
                 size: company.size || ''
             });
             setAvatarPreview(company.logo || null);
+            isInitialLoad.current = false; // Mark as loaded
         }
     }, [company]);
 
@@ -96,7 +98,7 @@ export default function SettingsPage() {
             if (company?.id) {
                 try {
                     const updateData = {
-                        name: companyData.name,
+                        name: profileData.name, // Use profileData since that's what the form edits
                         address: companyData.address,
                         websiteUrl: companyData.website,
                         industry: companyData.industry,
@@ -112,7 +114,7 @@ export default function SettingsPage() {
 
             // Update local store (always works)
             updateCompany({
-                name: companyData.name,
+                name: profileData.name,
                 email: profileData.email,
                 phone: profileData.phone,
                 position: profileData.position,
