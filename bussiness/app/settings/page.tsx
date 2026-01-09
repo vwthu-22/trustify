@@ -80,25 +80,33 @@ export default function SettingsPage() {
                 }
             }
 
-            // Try to update company profile via API
-            // API: PUT /api/companies/update/{id}
+            // 1. Update avatar/logo via PUT API if logo changed
+            if (company?.id && logoUrl && logoUrl !== company.logo) {
+                try {
+                    await companyApi.updateProfile(company.id, {
+                        avatarUrl: logoUrl,
+                    });
+                    console.log('Logo updated successfully');
+                } catch (apiError) {
+                    console.warn('Logo update failed:', apiError);
+                }
+            }
+
+            // 2. Update company info via PATCH API
             if (company?.id) {
                 try {
                     const updateData = {
                         name: companyData.name,
+                        address: companyData.address,
                         websiteUrl: companyData.website,
-                        avatarUrl: logoUrl,
-                        contactPhone: profileData.phone,
                         industry: companyData.industry,
-                        workEmail: profileData.email,
                         companySize: companyData.size,
-                        country: company.country || 'VN', // Add country to prevent null
+                        description: companyData.detail,
                     };
-                    console.log('Sending company update:', JSON.stringify(updateData, null, 2));
-                    await companyApi.updateProfile(company.id, updateData);
+                    console.log('Sending company info update:', JSON.stringify(updateData, null, 2));
+                    await companyApi.updateInfo(company.id, updateData);
                 } catch (apiError) {
-                    console.warn('API update failed, updating local store only:', apiError);
-                    // Continue to update local store even if API fails
+                    console.warn('Company info update failed, updating local store only:', apiError);
                 }
             }
 
@@ -350,7 +358,7 @@ export default function SettingsPage() {
                                 />
                             </div>
 
-                            <div className="sm:col-span-2">
+                            {/* <div className="sm:col-span-2">
                                 <label className="block text-xs font-medium text-gray-700 mb-1">
                                     {t('address')}
                                 </label>
@@ -361,7 +369,7 @@ export default function SettingsPage() {
                                     className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     placeholder={t('enterAddress')}
                                 />
-                            </div>
+                            </div> */}
                         </div>
                     </div>
 
