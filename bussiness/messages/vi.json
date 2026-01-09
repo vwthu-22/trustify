@@ -455,8 +455,8 @@
         "improveRankings": "Cải thiện thứ hạng tìm kiếm"
     },
     "integrations": {
-        "title": "Tích hợp & API",
-        "subtitle": "Kết nối Trustify với các công cụ yêu thích",
+        "title": "Tài liệu API",
+        "subtitle": "Tích hợp đánh giá vào website của bạn",
         "available": "Có sẵn",
         "connected": "Đã kết nối",
         "proOnly": "Chỉ PRO",
@@ -476,7 +476,57 @@
         "exampleGetReviews": "Ví dụ: Lấy đánh giá",
         "viewFullDocs": "Xem tài liệu đầy đủ",
         "unlockPremium": "Mở khóa tích hợp Premium",
-        "upgradeToPro": "Nâng cấp lên PRO"
+        "upgradeToPro": "Nâng cấp lên PRO",
+        "baseUrl": "Base URL",
+        "yourCompanyId": "Company ID của bạn",
+        "response": "Response",
+        "exampleRequest": "Ví dụ Request",
+        "queryParameters": "Query Parameters",
+        "required": "Bắt buộc",
+        "optional": "Tùy chọn",
+        "jsIntegrationExample": "Ví dụ tích hợp JavaScript",
+        "endpoints": {
+            "overview": {
+                "name": "Integration Manifest",
+                "description": "Lấy thông tin tổng quan API và rating hiện tại"
+            },
+            "rating": {
+                "name": "Company Rating",
+                "description": "Lấy thống kê đánh giá (điểm TB, phân bố sao)"
+            },
+            "reviews": {
+                "name": "Company Reviews",
+                "description": "Lấy danh sách đánh giá (có phân trang)"
+            },
+            "invite": {
+                "name": "Send Invitation",
+                "description": "Gửi email mời khách hàng đánh giá"
+            }
+        },
+        "apiDescriptions": {
+            "overviewDesc": "Trả về thông tin tổng quan về các API endpoint có sẵn và rating hiện tại của công ty.",
+            "ratingDesc": "Lấy thống kê chi tiết về đánh giá của công ty: điểm trung bình, tổng số đánh giá, phân bố theo số sao.",
+            "reviewsDesc": "Lấy danh sách đánh giá của công ty với hỗ trợ phân trang.",
+            "inviteDesc": "Gửi email mời khách hàng để lại đánh giá. Email sẽ chứa link để khách hàng đánh giá công ty của bạn."
+        },
+        "params": {
+            "page": "Số trang (mặc định: 0)",
+            "size": "Số lượng mỗi trang (mặc định: 20)",
+            "to": "Email người nhận",
+            "subject": "Tiêu đề email (tùy chọn)",
+            "body": "Nội dung tùy chỉnh (tùy chọn)"
+        },
+        "tips": {
+            "title": "Gợi ý sử dụng",
+            "ratingTip": "Sử dụng API này để hiển thị badge đánh giá trên website của bạn, ví dụ: \"4.5/5 (128 đánh giá)\""
+        },
+        "codeComments": {
+            "fetchAndDisplay": "Lấy và hiển thị reviews trên website của bạn",
+            "getRatingOverview": "1. Lấy rating tổng quan",
+            "getAndDisplayReviews": "2. Lấy và hiển thị reviews",
+            "initialize": "Khởi chạy",
+            "reviews": "đánh giá"
+        }
     },
     "manage": {
         "title": "Quản lý đánh giá",

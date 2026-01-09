@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Code, Copy, CheckCircle, ExternalLink, Terminal, Zap, FileJson, Mail } from 'lucide-react';
+import { Code, Copy, CheckCircle, Terminal, Zap, FileJson, Mail } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useCompanyStore } from '@/store/useCompanyStore';
 
@@ -24,36 +24,36 @@ export default function IntegrationsPage() {
         {
             id: 'overview',
             method: 'GET',
-            name: 'Integration Manifest',
+            name: t('endpoints.overview.name'),
             path: `/integration/companies/${companyId}`,
-            description: 'Lấy thông tin tổng quan API và rating hiện tại',
+            description: t('endpoints.overview.description'),
             icon: FileJson,
             color: 'blue'
         },
         {
             id: 'rating',
             method: 'GET',
-            name: 'Company Rating',
+            name: t('endpoints.rating.name'),
             path: `/integration/companies/${companyId}/rating`,
-            description: 'Lấy thống kê đánh giá (điểm TB, phân bố sao)',
+            description: t('endpoints.rating.description'),
             icon: Zap,
             color: 'green'
         },
         {
             id: 'reviews',
             method: 'GET',
-            name: 'Company Reviews',
+            name: t('endpoints.reviews.name'),
             path: `/integration/companies/${companyId}/reviews`,
-            description: 'Lấy danh sách đánh giá (có phân trang)',
+            description: t('endpoints.reviews.description'),
             icon: Terminal,
             color: 'purple'
         },
         {
             id: 'invite',
             method: 'POST',
-            name: 'Send Invitation',
+            name: t('endpoints.invite.name'),
             path: `/integration/companies/${companyId}/send-invite`,
-            description: 'Gửi email mời khách hàng đánh giá',
+            description: t('endpoints.invite.description'),
             icon: Mail,
             color: 'orange'
         }
@@ -85,10 +85,10 @@ export default function IntegrationsPage() {
                             </button>
                         </div>
                         <p className="text-sm text-gray-600">
-                            Trả về thông tin tổng quan về các API endpoint có sẵn và rating hiện tại của công ty.
+                            {t('apiDescriptions.overviewDesc')}
                         </p>
                         <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                            <p className="text-xs text-gray-400 mb-2">Response</p>
+                            <p className="text-xs text-gray-400 mb-2">{t('response')}</p>
                             <pre className="text-sm text-green-400">
                                 {`{
   "sendInviteApi": "/integration/companies/${companyId}/send-invite",
@@ -124,10 +124,10 @@ export default function IntegrationsPage() {
                             </button>
                         </div>
                         <p className="text-sm text-gray-600">
-                            Lấy thống kê chi tiết về đánh giá của công ty: điểm trung bình, tổng số đánh giá, phân bố theo số sao.
+                            {t('apiDescriptions.ratingDesc')}
                         </p>
                         <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                            <p className="text-xs text-gray-400 mb-2">Response</p>
+                            <p className="text-xs text-gray-400 mb-2">{t('response')}</p>
                             <pre className="text-sm text-green-400">
                                 {`{
   "id": ${companyId},
@@ -142,9 +142,9 @@ export default function IntegrationsPage() {
                             </pre>
                         </div>
                         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                            <p className="text-sm font-medium text-blue-800 mb-2">💡 Gợi ý sử dụng</p>
+                            <p className="text-sm font-medium text-blue-800 mb-2">💡 {t('tips.title')}</p>
                             <p className="text-sm text-blue-700">
-                                Sử dụng API này để hiển thị badge đánh giá trên website của bạn, ví dụ: "⭐ 4.5/5 (128 đánh giá)"
+                                {t('tips.ratingTip')}
                             </p>
                         </div>
                     </div>
@@ -164,40 +164,40 @@ export default function IntegrationsPage() {
                             </button>
                         </div>
                         <p className="text-sm text-gray-600">
-                            Lấy danh sách đánh giá của công ty với hỗ trợ phân trang.
+                            {t('apiDescriptions.reviewsDesc')}
                         </p>
                         <div className="bg-gray-50 rounded-lg p-4 border">
-                            <p className="text-sm font-medium text-gray-700 mb-2">Query Parameters</p>
+                            <p className="text-sm font-medium text-gray-700 mb-2">{t('queryParameters')}</p>
                             <div className="space-y-2">
                                 <div className="flex items-center gap-2">
                                     <code className="px-2 py-1 bg-gray-200 rounded text-xs">page</code>
-                                    <span className="text-sm text-gray-600">Số trang (mặc định: 0)</span>
+                                    <span className="text-sm text-gray-600">{t('params.page')}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <code className="px-2 py-1 bg-gray-200 rounded text-xs">size</code>
-                                    <span className="text-sm text-gray-600">Số lượng mỗi trang (mặc định: 20)</span>
+                                    <span className="text-sm text-gray-600">{t('params.size')}</span>
                                 </div>
                             </div>
                         </div>
                         <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                            <p className="text-xs text-gray-400 mb-2">Response</p>
+                            <p className="text-xs text-gray-400 mb-2">{t('response')}</p>
                             <pre className="text-sm text-green-400">
                                 {`{
   "content": [
     {
       "id": 1,
       "rating": 5,
-      "title": "Dịch vụ tuyệt vời!",
-      "comment": "Rất hài lòng với chất lượng...",
-      "userName": "Nguyễn Văn A",
+      "title": "Excellent service!",
+      "comment": "Very satisfied with the quality...",
+      "userName": "John Doe",
       "createdAt": "2024-01-09T10:30:00"
     },
     {
       "id": 2,
       "rating": 4,
-      "title": "Tốt",
-      "comment": "Sản phẩm chất lượng...",
-      "userName": "Trần Thị B",
+      "title": "Good",
+      "comment": "Quality product...",
+      "userName": "Jane Smith",
       "createdAt": "2024-01-08T15:20:00"
     }
   ],
@@ -225,36 +225,36 @@ export default function IntegrationsPage() {
                             </button>
                         </div>
                         <p className="text-sm text-gray-600">
-                            Gửi email mời khách hàng để lại đánh giá. Email sẽ chứa link để khách hàng đánh giá công ty của bạn.
+                            {t('apiDescriptions.inviteDesc')}
                         </p>
                         <div className="bg-gray-50 rounded-lg p-4 border">
-                            <p className="text-sm font-medium text-gray-700 mb-2">Query Parameters</p>
+                            <p className="text-sm font-medium text-gray-700 mb-2">{t('queryParameters')}</p>
                             <div className="space-y-2">
                                 <div className="flex items-start gap-2">
                                     <code className="px-2 py-1 bg-gray-200 rounded text-xs">to</code>
                                     <div>
-                                        <span className="text-sm text-gray-600">Email người nhận</span>
-                                        <span className="ml-2 px-1.5 py-0.5 bg-red-100 text-red-600 text-xs rounded">Bắt buộc</span>
+                                        <span className="text-sm text-gray-600">{t('params.to')}</span>
+                                        <span className="ml-2 px-1.5 py-0.5 bg-red-100 text-red-600 text-xs rounded">{t('required')}</span>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <code className="px-2 py-1 bg-gray-200 rounded text-xs">subject</code>
-                                    <span className="text-sm text-gray-600">Tiêu đề email (tùy chọn)</span>
+                                    <span className="text-sm text-gray-600">{t('params.subject')}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <code className="px-2 py-1 bg-gray-200 rounded text-xs">body</code>
-                                    <span className="text-sm text-gray-600">Nội dung tùy chỉnh (tùy chọn)</span>
+                                    <span className="text-sm text-gray-600">{t('params.body')}</span>
                                 </div>
                             </div>
                         </div>
                         <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                            <p className="text-xs text-gray-400 mb-2">Example Request</p>
+                            <p className="text-xs text-gray-400 mb-2">{t('exampleRequest')}</p>
                             <pre className="text-sm text-yellow-400 mb-4">
                                 {`POST /integration/companies/${companyId}/send-invite
      ?to=customer@email.com
-     &subject=Xin hãy đánh giá dịch vụ của chúng tôi`}
+     &subject=Please review our service`}
                             </pre>
-                            <p className="text-xs text-gray-400 mb-2">Response</p>
+                            <p className="text-xs text-gray-400 mb-2">{t('response')}</p>
                             <pre className="text-sm text-green-400">
                                 {`{
   "status": "sent",
@@ -277,12 +277,12 @@ export default function IntegrationsPage() {
                         <Code className="h-6 w-6" />
                     </div>
                     <div>
-                        <h1 className="text-xl font-bold">API Documentation</h1>
-                        <p className="text-white/70 text-sm">Tích hợp đánh giá vào website của bạn</p>
+                        <h1 className="text-xl font-bold">{t('title')}</h1>
+                        <p className="text-white/70 text-sm">{t('subtitle')}</p>
                     </div>
                 </div>
                 <div className="mt-4 p-3 bg-white/10 rounded-lg">
-                    <p className="text-xs text-white/60 mb-1">Base URL</p>
+                    <p className="text-xs text-white/60 mb-1">{t('baseUrl')}</p>
                     <div className="flex items-center gap-2">
                         <code className="text-sm text-white flex-1">{baseUrl}/integration/companies</code>
                         <button
@@ -295,7 +295,7 @@ export default function IntegrationsPage() {
                 </div>
                 {company && (
                     <div className="mt-3 p-3 bg-green-500/20 border border-green-400/30 rounded-lg">
-                        <p className="text-xs text-green-300">✓ Company ID của bạn: <span className="font-mono font-bold">{company.id}</span></p>
+                        <p className="text-xs text-green-300">✓ {t('yourCompanyId')}: <span className="font-mono font-bold">{company.id}</span></p>
                     </div>
                 )}
             </div>
@@ -345,25 +345,25 @@ export default function IntegrationsPage() {
             <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
                 <div className="bg-gray-100 px-4 py-3 border-b border-gray-200 flex items-center gap-2">
                     <Terminal className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm font-medium text-gray-700">Ví dụ tích hợp JavaScript</span>
+                    <span className="text-sm font-medium text-gray-700">{t('jsIntegrationExample')}</span>
                 </div>
                 <div className="bg-gray-900 p-4 overflow-x-auto">
                     <pre className="text-sm text-green-400">
-                        {`// Lấy và hiển thị reviews trên website của bạn
+                        {`// ${t('codeComments.fetchAndDisplay')}
 const COMPANY_ID = ${companyId};
 const API_BASE = '${baseUrl}';
 
-// 1. Lấy rating tổng quan
+// ${t('codeComments.getRatingOverview')}
 async function fetchRating() {
   const res = await fetch(\`\${API_BASE}/integration/companies/\${COMPANY_ID}/rating\`);
   const data = await res.json();
   
   document.getElementById('rating-badge').innerHTML = \`
-    ⭐ \${data.averageRating.toFixed(1)}/5 (\${data.totalReviews} đánh giá)
+    \${data.averageRating.toFixed(1)}/5 (\${data.totalReviews} ${t('codeComments.reviews')})
   \`;
 }
 
-// 2. Lấy và hiển thị reviews
+// ${t('codeComments.getAndDisplayReviews')}
 async function fetchReviews(page = 0, size = 5) {
   const res = await fetch(
     \`\${API_BASE}/integration/companies/\${COMPANY_ID}/reviews?page=\${page}&size=\${size}\`
@@ -372,7 +372,7 @@ async function fetchReviews(page = 0, size = 5) {
   
   const reviewsHtml = data.content.map(review => \`
     <div class="review-card">
-      <div class="stars">\${'⭐'.repeat(review.rating)}</div>
+      <div class="stars">\${'★'.repeat(review.rating)}</div>
       <h4>\${review.title}</h4>
       <p>\${review.comment}</p>
       <span class="author">\${review.userName}</span>
@@ -382,39 +382,11 @@ async function fetchReviews(page = 0, size = 5) {
   document.getElementById('reviews-container').innerHTML = reviewsHtml;
 }
 
-// Khởi chạy
+// ${t('codeComments.initialize')}
 fetchRating();
 fetchReviews();`}
                     </pre>
                 </div>
-            </div>
-
-            {/* Quick Links */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <a
-                    href="#"
-                    className="flex items-center gap-3 p-4 bg-blue-50 border border-blue-200 rounded-xl hover:bg-blue-100 transition-colors"
-                >
-                    <div className="p-2 bg-blue-500 rounded-lg">
-                        <ExternalLink className="h-5 w-5 text-white" />
-                    </div>
-                    <div>
-                        <p className="text-sm font-semibold text-blue-900">Xem tài liệu đầy đủ</p>
-                        <p className="text-xs text-blue-600">Hướng dẫn chi tiết và ví dụ nâng cao</p>
-                    </div>
-                </a>
-                <a
-                    href="#"
-                    className="flex items-center gap-3 p-4 bg-purple-50 border border-purple-200 rounded-xl hover:bg-purple-100 transition-colors"
-                >
-                    <div className="p-2 bg-purple-500 rounded-lg">
-                        <Code className="h-5 w-5 text-white" />
-                    </div>
-                    <div>
-                        <p className="text-sm font-semibold text-purple-900">Widget sẵn sàng sử dụng</p>
-                        <p className="text-xs text-purple-600">Nhúng widget đánh giá với 1 dòng code</p>
-                    </div>
-                </a>
             </div>
         </div>
     );

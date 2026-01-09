@@ -455,8 +455,8 @@
         "improveRankings": "Improve search rankings"
     },
     "integrations": {
-        "title": "Integrations & API",
-        "subtitle": "Connect Trustify with your favorite tools",
+        "title": "API Documentation",
+        "subtitle": "Integrate reviews into your website",
         "available": "Available",
         "connected": "Connected",
         "proOnly": "PRO Only",
@@ -476,7 +476,57 @@
         "exampleGetReviews": "Example: Get Reviews",
         "viewFullDocs": "View Full Documentation",
         "unlockPremium": "Unlock Premium Integrations",
-        "upgradeToPro": "Upgrade to PRO"
+        "upgradeToPro": "Upgrade to PRO",
+        "baseUrl": "Base URL",
+        "yourCompanyId": "Your Company ID",
+        "response": "Response",
+        "exampleRequest": "Example Request",
+        "queryParameters": "Query Parameters",
+        "required": "Required",
+        "optional": "Optional",
+        "jsIntegrationExample": "JavaScript Integration Example",
+        "endpoints": {
+            "overview": {
+                "name": "Integration Manifest",
+                "description": "Get API overview and current rating information"
+            },
+            "rating": {
+                "name": "Company Rating",
+                "description": "Get rating statistics (average, star distribution)"
+            },
+            "reviews": {
+                "name": "Company Reviews",
+                "description": "Get list of reviews (with pagination)"
+            },
+            "invite": {
+                "name": "Send Invitation",
+                "description": "Send email inviting customers to leave reviews"
+            }
+        },
+        "apiDescriptions": {
+            "overviewDesc": "Returns overview information about available API endpoints and current company rating.",
+            "ratingDesc": "Get detailed rating statistics: average score, total reviews, star distribution.",
+            "reviewsDesc": "Get list of company reviews with pagination support.",
+            "inviteDesc": "Send email inviting customers to leave reviews. The email will contain a link to review your company."
+        },
+        "params": {
+            "page": "Page number (default: 0)",
+            "size": "Items per page (default: 20)",
+            "to": "Recipient email",
+            "subject": "Email subject (optional)",
+            "body": "Custom content (optional)"
+        },
+        "tips": {
+            "title": "Usage Tips",
+            "ratingTip": "Use this API to display a rating badge on your website, e.g.: \"4.5/5 (128 reviews)\""
+        },
+        "codeComments": {
+            "fetchAndDisplay": "Fetch and display reviews on your website",
+            "getRatingOverview": "1. Get rating overview",
+            "getAndDisplayReviews": "2. Get and display reviews",
+            "initialize": "Initialize",
+            "reviews": "reviews"
+        }
     },
     "manage": {
         "title": "Manage Reviews",
