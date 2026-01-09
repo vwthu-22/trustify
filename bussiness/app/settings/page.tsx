@@ -85,7 +85,7 @@ export default function SettingsPage() {
                 // API: PUT /api/companies/update/{id}
                 try {
                     const profileUpdateData = {
-                        name: companyData.name,
+                        name: profileData.name,
                         websiteUrl: companyData.website,
                         avatarUrl: logoUrl,
                         contactPhone: profileData.phone,
@@ -104,7 +104,7 @@ export default function SettingsPage() {
                 // API: PATCH /api/companies/update-info/{id}
                 try {
                     const infoUpdateData = {
-                        name: companyData.name,
+                        name: profileData.name,
                         websiteUrl: companyData.website,
                         industry: companyData.industry,
                         companySize: companyData.size,
@@ -120,7 +120,7 @@ export default function SettingsPage() {
 
             // Update local store (always works)
             updateCompany({
-                name: companyData.name,
+                name: profileData.name,
                 email: profileData.email,
                 phone: profileData.phone,
                 position: profileData.position,
