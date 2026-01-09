@@ -81,21 +81,7 @@ export default function SettingsPage() {
             }
 
             if (company?.id) {
-                // 1. Update logo via PUT /api/companies/update/{id}
-                try {
-                    const updateProfileData = {
-                        avatarUrl: logoUrl,
-                        contactPhone: profileData.phone,
-                        workEmail: profileData.email,
-                        country: company.country || 'VN',
-                    };
-                    console.log('Sending logo update (PUT):', JSON.stringify(updateProfileData, null, 2));
-                    await companyApi.updateProfile(company.id, updateProfileData);
-                } catch (apiError) {
-                    console.warn('Logo update API failed:', apiError);
-                }
-
-                // 2. Update company info via PATCH /api/companies/update-info/{id}
+                // Update company info via PATCH /api/companies/update-info/{id}
                 try {
                     const updateInfoData = {
                         name: companyData.name,
