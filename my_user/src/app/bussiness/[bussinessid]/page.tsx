@@ -418,7 +418,7 @@ export default function CompanyReviewPage() {
                             <div className="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 mb-3 sm:mb-4">
                                 <h4 className="font-bold text-sm sm:text-base mb-1.5">{t('about')} {currentCompany.name}</h4>
                                 <p className="text-xs text-gray-500 mb-2 sm:mb-3">{t('writtenByCompany')}</p>
-                                <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">
+                                <p className="text-xs sm:text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
                                     {currentCompany.description || t('noDescription')}
                                 </p>
                             </div>
