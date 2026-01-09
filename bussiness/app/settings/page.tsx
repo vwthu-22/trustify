@@ -15,7 +15,6 @@ export default function SettingsPage() {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
-    const isInitialLoad = useRef(true); // Flag to track if it's the first load
 
     // Local state for form editing
     const [profileData, setProfileData] = useState({
@@ -40,10 +39,10 @@ export default function SettingsPage() {
         fetchCompanyProfile();
     }, [fetchCompanyProfile]);
 
-    // Populate form when company data is loaded (only on initial load)
+    // Populate form when company data is loaded
     useEffect(() => {
-        if (company && isInitialLoad.current) {
-            console.log('Settings - company data loaded (initial):', company);
+        if (company) {
+            console.log('Settings - company data loaded:', company);
             setProfileData({
                 name: company.name || '',
                 email: company.email || '',
@@ -60,7 +59,6 @@ export default function SettingsPage() {
                 size: company.size || ''
             });
             setAvatarPreview(company.logo || null);
-            isInitialLoad.current = false; // Mark as loaded
         }
     }, [company]);
 
@@ -82,39 +80,31 @@ export default function SettingsPage() {
                 }
             }
 
-            // 1. Update avatar/logo via PUT API if logo changed
-            if (company?.id && logoUrl && logoUrl !== company.logo) {
-                try {
-                    await companyApi.updateProfile(company.id, {
-                        avatarUrl: logoUrl,
-                    });
-                    console.log('Logo updated successfully');
-                } catch (apiError) {
-                    console.warn('Logo update failed:', apiError);
-                }
-            }
-
-            // 2. Update company info via PATCH API
+            // Try to update company profile via API
+            // API: PUT /api/companies/update/{id}
             if (company?.id) {
                 try {
                     const updateData = {
-                        name: profileData.name, // Use profileData since that's what the form edits
-                        address: companyData.address,
+                        name: companyData.name,
                         websiteUrl: companyData.website,
+                        avatarUrl: logoUrl,
+                        contactPhone: profileData.phone,
                         industry: companyData.industry,
+                        workEmail: profileData.email,
                         companySize: companyData.size,
-                        description: companyData.detail,
+                        country: company.country || 'VN', // Add country to prevent null
                     };
-                    console.log('Sending company info update:', JSON.stringify(updateData, null, 2));
-                    await companyApi.updateInfo(company.id, updateData);
+                    console.log('Sending company update:', JSON.stringify(updateData, null, 2));
+                    await companyApi.updateProfile(company.id, updateData);
                 } catch (apiError) {
-                    console.warn('Company info update failed, updating local store only:', apiError);
+                    console.warn('API update failed, updating local store only:', apiError);
+                    // Continue to update local store even if API fails
                 }
             }
 
             // Update local store (always works)
             updateCompany({
-                name: profileData.name,
+                name: companyData.name,
                 email: profileData.email,
                 phone: profileData.phone,
                 position: profileData.position,
