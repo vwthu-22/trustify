@@ -228,12 +228,6 @@ export default function SettingsPage() {
 
     return (
         <div className="space-y-4">
-            {/* Header */}
-            <div>
-                <h2 className="text-lg sm:text-xl font-bold text-gray-900">{t('title')}</h2>
-                <p className="text-gray-500 text-sm">{t('subtitle')}</p>
-            </div>
-
             {/* Save Success Banner */}
             {saved && (
                 <div className="bg-green-50 border border-green-200 rounded-xl p-4">
@@ -391,19 +385,6 @@ export default function SettingsPage() {
                             )}
                         </button>
                     </div>
-                </div>
-            </div>
-
-            {/* Danger Zone */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-5">
-                <h3 className="text-base font-semibold text-gray-900 mb-3">{t('dangerZone')}</h3>
-                <div className="p-3 bg-red-50 rounded-lg border border-red-200">
-                    <p className="text-xs text-red-700 mb-3">
-                        {t('dangerZoneDesc')}
-                    </p>
-                    <button className="px-4 py-1.5 text-sm bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors">
-                        {t('deleteAccount')}
-                    </button>
                 </div>
             </div>
         </div>
