@@ -11,40 +11,45 @@ export default function BrandMarquee() {
         fetchCompanies({ limit: 30 });
     }, [fetchCompanies]);
 
-    // Filter companies that have logos and duplicate for infinite effect
+    // Filter companies that have logos - duplicate for infinite seamless loop
     const brandsList = useMemo(() => {
         const withLogos = companies.filter(c => c.logo);
-        // If we don't have enough companies, just return whatever we have duplicated
+        // Need to duplicate for seamless infinite scroll
         return [...withLogos, ...withLogos];
+    }, [companies]);
+
+    // Get unique companies (no duplicates) for display count
+    const uniqueCompanies = useMemo(() => {
+        return companies.filter(c => c.logo);
     }, [companies]);
 
     if (isLoading && brandsList.length === 0) {
         return (
-            <div className="w-full h-32 flex items-center justify-center bg-white/50 backdrop-blur-sm rounded-2xl border border-gray-100 my-8">
-                <div className="animate-pulse flex space-x-8">
-                    {[1, 2, 3, 4, 5, 6].map((i) => (
-                        <div key={i} className="h-12 w-32 bg-gray-200 rounded-lg"></div>
+            <div className="w-full h-20 flex items-center justify-center bg-gray-50 rounded-xl my-4">
+                <div className="animate-pulse flex space-x-12">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                        <div key={i} className="h-10 w-24 bg-gray-200 rounded"></div>
                     ))}
                 </div>
             </div>
         );
     }
 
-    if (brandsList.length === 0) return null;
+    if (uniqueCompanies.length === 0) return null;
 
     return (
-        <div className="w-full py-3 sm:py-4 overflow-hidden bg-white rounded-xl sm:rounded-2xl border border-gray-100 my-4 sm:my-6 shadow-sm">
-            <div className="flex animate-marquee whitespace-nowrap gap-8 sm:gap-14 items-center">
+        <div className="brand-marquee-container w-full py-3 sm:py-4 overflow-hidden bg-gray-50 rounded-xl my-4 sm:my-6">
+            <div className="flex animate-marquee whitespace-nowrap gap-12 sm:gap-20 items-center">
                 {brandsList.map((brand, index) => (
                     <div
                         key={`${brand.id}-${index}`}
-                        className="flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-500 hover:scale-105 cursor-pointer px-1"
+                        className="flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 hover:scale-110 cursor-pointer flex-shrink-0"
                         title={brand.name}
                     >
                         <img
                             src={brand.logo}
                             alt={brand.name}
-                            className="h-6 sm:h-8 w-auto max-w-[100px] object-contain transition-opacity opacity-70 hover:opacity-100"
+                            className="h-10 sm:h-12 w-auto max-w-[140px] object-contain opacity-60 hover:opacity-100 transition-opacity"
                             onError={(e) => {
                                 (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(brand.name)}&background=random&color=fff`;
                             }}

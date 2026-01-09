@@ -136,9 +136,10 @@ body {
 .animate-marquee {
   display: flex;
   width: max-content;
-  animation: marquee 40s linear infinite;
+  animation: marquee 13s linear infinite;
 }
 
-.animate-marquee:hover {
+.animate-marquee:hover,
+.brand-marquee-container:hover .animate-marquee {
   animation-play-state: paused;
 }
