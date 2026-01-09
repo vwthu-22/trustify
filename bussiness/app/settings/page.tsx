@@ -132,6 +132,9 @@ export default function SettingsPage() {
                 logo: logoUrl,
             });
 
+            // Refresh data from server to show updated info
+            await fetchCompanyProfile();
+
             setSaved(true);
             setTimeout(() => setSaved(false), 3000);
         } catch (error) {
