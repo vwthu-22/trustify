@@ -104,13 +104,6 @@ export default function SendInvitationsPage() {
                         <p className="text-white/80 text-sm">{t('subtitle')}</p>
                     </div>
                 </div>
-                {company && (
-                    <div className="mt-4 p-3 bg-white/10 rounded-lg">
-                        <p className="text-sm text-white/80">
-                            Sending as: <span className="font-semibold text-white">{company.name}</span>
-                        </p>
-                    </div>
-                )}
             </div>
 
             {/* Form */}

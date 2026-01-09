@@ -40,6 +40,7 @@ export default function Header({ onMenuClick, isMobile = false }: HeaderProps) {
             '/subscription': t('pageSubscription'),
             '/settings': t('pageSettings'),
             '/connect': t('pageConnect'),
+            '/send': t('pageSend'),
             '/support': t('pageSupport') || 'Hỗ trợ'
         };
 

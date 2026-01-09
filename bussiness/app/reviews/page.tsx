@@ -472,7 +472,7 @@ export default function BusinessReviewDashboard() {
 
     return (
         <div className="min-h-screen bg-gray-100 rounded-md" >
-            <div className="bg-linear-to-r from-blue-600 to-blue-800 text-white p-3 sm:p-4 rounded-md">
+            <div className="bg-gradient-to-r from-[#0f1c2d] to-[#1a3a5c] text-white p-3 sm:p-4 rounded-md">
                 <div className="max-w-7xl mx-auto">
                     <h1 className="text-lg sm:text-xl font-bold mb-1">{t('title')}</h1>
                     <p className="text-blue-100 text-xs sm:text-sm">{t('subtitle')}</p>
