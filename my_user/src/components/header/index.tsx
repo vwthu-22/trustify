@@ -20,6 +20,7 @@ export default function Header() {
     const pathname = usePathname();
     const router = useRouter();
     const t = useTranslations('header');
+    const tSearch = useTranslations('search');
 
     const { user, isAuthenticated, logout, fetchUserInfo } = useAuthStore();
     const { notifications, unreadCount, fetchNotifications, markAsRead, markAllAsRead } = useNotificationStore();
@@ -176,7 +177,7 @@ export default function Header() {
                                             {isSearching ? (
                                                 <div className="py-8 text-center">
                                                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                                                    <p className="text-gray-600 text-sm">Đang tìm kiếm...</p>
+                                                    <p className="text-gray-600 text-sm">{tSearch('searching')}</p>
                                                 </div>
                                             ) : searchResults.length > 0 ? (
                                                 <div className="p-2">
@@ -208,7 +209,7 @@ export default function Header() {
                                             ) : (
                                                 <div className="py-8 text-center">
                                                     <Building2 className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-                                                    <p className="text-gray-600 text-sm">Không tìm thấy "{searchQuery}"</p>
+                                                    <p className="text-gray-600 text-sm">{tSearch('noResults')} "{searchQuery}"</p>
                                                 </div>
                                             )}
                                         </div>
@@ -401,7 +402,7 @@ export default function Header() {
                                         {isSearching ? (
                                             <div className="py-6 text-center">
                                                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                                                <p className="text-gray-600 text-sm">Đang tìm kiếm...</p>
+                                                <p className="text-gray-600 text-sm">{tSearch('searching')}</p>
                                             </div>
                                         ) : searchResults.length > 0 ? (
                                             <div className="p-2">
@@ -436,7 +437,7 @@ export default function Header() {
                                         ) : (
                                             <div className="py-6 text-center">
                                                 <Building2 className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                                                <p className="text-gray-600 text-sm">Không tìm thấy "{searchQuery}"</p>
+                                                <p className="text-gray-600 text-sm">{tSearch('noResults')} "{searchQuery}"</p>
                                             </div>
                                         )}
                                     </div>
