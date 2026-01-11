@@ -1,15 +1,35 @@
 'use client'
 
-import { useEffect } from 'react'
-import { Flag, Trash2, CheckCircle, RefreshCw } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Flag, Trash2, CheckCircle, RefreshCw, MessageSquare, Star, AlertCircle } from 'lucide-react'
 import { useModerationStore } from '@/store/useModerationStore'
 
+type TabType = 'pending' | 'reports'
+
 export default function ModerationPage() {
-    const { reports, isLoading, error, fetchReports, dismissReport, deleteReview } = useModerationStore();
+    const {
+        reports,
+        pendingReviews,
+        isLoading,
+        isPendingLoading,
+        error,
+        fetchReports,
+        dismissReport,
+        deleteReview,
+        fetchPendingReviews,
+        approveReview,
+        rejectReview
+    } = useModerationStore();
+
+    const [activeTab, setActiveTab] = useState<TabType>('pending')
 
     useEffect(() => {
-        fetchReports();
-    }, []);
+        if (activeTab === 'pending') {
+            fetchPendingReviews();
+        } else {
+            fetchReports();
+        }
+    }, [activeTab]);
 
     // Format time ago
     const formatTimeAgo = (dateString: string) => {
@@ -25,9 +45,23 @@ export default function ModerationPage() {
         return `${diffDays} ngày trước`;
     };
 
+    // Render stars
+    const renderStars = (rating: number) => {
+        return (
+            <div className="flex gap-0.5">
+                {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                        key={star}
+                        className={`w-4 h-4 ${star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
+                            }`}
+                    />
+                ))}
+            </div>
+        );
+    };
+
     // Filter reports by status
     const pendingReports = reports.filter(r => r.status === 'PENDING');
-    const resolvedReports = reports.filter(r => r.status === 'RESOLVED' || r.status === 'DISMISSED');
 
     // Sort pending reports by number of reports (descending)
     const sortedPendingReports = [...pendingReports].sort((a, b) => {
@@ -36,138 +70,217 @@ export default function ModerationPage() {
         return countB - countA; // More reports first
     });
 
+    const handleRefresh = () => {
+        if (activeTab === 'pending') {
+            fetchPendingReviews();
+        } else {
+            fetchReports();
+        }
+    };
+
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                    <Flag className="w-5 h-5 text-red-500" />
-                    Chờ xử lý
-                    <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs rounded-full">
-                        {pendingReports.length}
-                    </span>
-                </h2>
-                <div className="flex gap-3">
-                    <button
-                        onClick={fetchReports}
-                        className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
-                    >
-                        <RefreshCw className="w-4 h-4" />
-                        Làm mới
-                    </button>
+            {/* Header with Tabs */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div className="border-b border-gray-200">
+                    <div className="flex items-center justify-between px-6 py-4">
+                        <div className="flex gap-1">
+                            <button
+                                onClick={() => setActiveTab('pending')}
+                                className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${activeTab === 'pending'
+                                    ? 'bg-blue-50 text-blue-600 shadow-sm'
+                                    : 'text-gray-600 hover:bg-gray-50'
+                                    }`}
+                            >
+                                <MessageSquare className="w-4 h-4" />
+                                Duyệt bình luận
+                                {pendingReviews.length > 0 && (
+                                    <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">
+                                        {pendingReviews.length}
+                                    </span>
+                                )}
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('reports')}
+                                className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${activeTab === 'reports'
+                                    ? 'bg-red-50 text-red-600 shadow-sm'
+                                    : 'text-gray-600 hover:bg-gray-50'
+                                    }`}
+                            >
+                                <Flag className="w-4 h-4" />
+                                Báo cáo vi phạm
+                                {pendingReports.length > 0 && (
+                                    <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs rounded-full">
+                                        {pendingReports.length}
+                                    </span>
+                                )}
+                            </button>
+                        </div>
+                        <button
+                            onClick={handleRefresh}
+                            disabled={isLoading || isPendingLoading}
+                            className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2 disabled:opacity-50"
+                        >
+                            <RefreshCw className={`w-4 h-4 ${(isLoading || isPendingLoading) ? 'animate-spin' : ''}`} />
+                            Làm mới
+                        </button>
+                    </div>
+                </div>
+
+                {/* Error Message */}
+                {error && (
+                    <div className="mx-6 mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center gap-2">
+                        <AlertCircle className="w-5 h-5" />
+                        <span>{error}</span>
+                    </div>
+                )}
+
+                {/* Tab Content */}
+                <div className="p-6">
+                    {/* Pending Reviews Tab */}
+                    {activeTab === 'pending' && (
+                        <div className="space-y-4">
+                            {isPendingLoading ? (
+                                <div className="flex items-center justify-center h-64">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                                </div>
+                            ) : pendingReviews.length === 0 ? (
+                                <div className="bg-gray-50 rounded-xl p-12 text-center">
+                                    <MessageSquare className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                                    <p className="text-gray-500 text-lg font-medium">Không có bình luận nào chờ duyệt</p>
+                                    <p className="text-gray-400 text-sm mt-1">Tất cả bình luận đã được xử lý</p>
+                                </div>
+                            ) : (
+                                pendingReviews.map((review) => (
+                                    <div key={review.id} className="bg-white rounded-xl border-2 border-blue-100 hover:border-blue-200 transition-all p-5 shadow-sm">
+                                        <div className="flex justify-between items-start mb-3">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold">
+                                                    {review.userName.charAt(0).toUpperCase()}
+                                                </div>
+                                                <div>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="font-semibold text-gray-900">{review.userName}</span>
+                                                        <span className="text-gray-400 text-sm">đánh giá</span>
+                                                        <span className="font-semibold text-blue-600">{review.companyName}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                        {renderStars(review.rating)}
+                                                        <span className="text-xs text-gray-500">{formatTimeAgo(review.createdAt)}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <span className="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-medium rounded-full">
+                                                Chờ duyệt
+                                            </span>
+                                        </div>
+
+                                        <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-lg mb-4">
+                                            <p className="font-semibold text-gray-900 mb-2">"{review.title}"</p>
+                                            <p className="text-gray-700 text-sm whitespace-pre-wrap leading-relaxed">
+                                                {review.description}
+                                            </p>
+                                        </div>
+
+                                        <div className="flex gap-3 pt-3 border-t border-gray-100">
+                                            <button
+                                                onClick={() => approveReview(review.id)}
+                                                className="flex-1 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 rounded-lg transition-all flex items-center justify-center gap-2 shadow-sm"
+                                            >
+                                                <CheckCircle className="w-4 h-4" /> Phê duyệt
+                                            </button>
+                                            <button
+                                                onClick={() => rejectReview(review.id)}
+                                                className="flex-1 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-lg transition-all flex items-center justify-center gap-2 shadow-sm"
+                                            >
+                                                <Trash2 className="w-4 h-4" /> Từ chối
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    )}
+
+                    {/* Reports Tab */}
+                    {activeTab === 'reports' && (
+                        <div className="space-y-4">
+                            {isLoading ? (
+                                <div className="flex items-center justify-center h-64">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
+                                </div>
+                            ) : pendingReports.length === 0 ? (
+                                <div className="bg-gray-50 rounded-xl p-12 text-center">
+                                    <Flag className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                                    <p className="text-gray-500 text-lg font-medium">Không có báo cáo nào chờ xử lý</p>
+                                    <p className="text-gray-400 text-sm mt-1">Tất cả báo cáo đã được giải quyết</p>
+                                </div>
+                            ) : (
+                                sortedPendingReports.map((report) => (
+                                    <div key={report.id} className="bg-white rounded-xl border-2 border-red-100 hover:border-red-200 transition-all p-5 shadow-sm">
+                                        <div className="flex justify-between items-start mb-3">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center">
+                                                    <Flag className="w-5 h-5 text-white" />
+                                                </div>
+                                                <div>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="font-semibold text-gray-900">
+                                                            {report.reviewerName || report.reviewerEmail || 'Người dùng ẩn danh'}
+                                                        </span>
+                                                        <span className="text-gray-400 text-sm">đánh giá</span>
+                                                        <span className="font-semibold text-blue-600">{report.companyName}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                        {renderStars(report.reviewRating)}
+                                                        <span className="text-xs text-gray-500">{formatTimeAgo(report.createdAt)}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <span className="px-3 py-1 bg-red-100 text-red-700 text-xs font-medium rounded-full flex items-center gap-1">
+                                                    <Flag className="w-3 h-3" />
+                                                    {reports.filter(r => r.reviewId === report.reviewId).length} báo cáo
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-gradient-to-br from-red-50 to-orange-50 p-4 rounded-lg mb-3 border border-red-100">
+                                            <p className="font-semibold text-gray-900 mb-2">"{report.reviewTitle}"</p>
+                                            <p className="text-gray-700 text-sm whitespace-pre-wrap leading-relaxed">
+                                                {report.reviewContent}
+                                            </p>
+                                        </div>
+
+                                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <AlertCircle className="w-4 h-4 text-yellow-600" />
+                                                <span className="text-xs font-semibold text-yellow-800">Lý do báo cáo:</span>
+                                            </div>
+                                            <p className="text-sm text-yellow-900 ml-6">{report.reason}</p>
+                                        </div>
+
+                                        <div className="flex gap-3 pt-3 border-t border-gray-100">
+                                            <button
+                                                onClick={() => dismissReport(report)}
+                                                className="flex-1 py-2.5 text-sm font-semibold text-gray-700 bg-white border-2 border-gray-300 hover:bg-gray-50 rounded-lg transition-all flex items-center justify-center gap-2"
+                                            >
+                                                <CheckCircle className="w-4 h-4" /> Giữ lại bình luận
+                                            </button>
+                                            <button
+                                                onClick={() => deleteReview(report)}
+                                                className="flex-1 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-lg transition-all flex items-center justify-center gap-2 shadow-sm"
+                                            >
+                                                <Trash2 className="w-4 h-4" /> Xóa bình luận
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
-
-            {isLoading ? (
-                <div className="flex items-center justify-center h-64">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                </div>
-            ) : error ? (
-                <div className="bg-red-50 text-red-600 p-4 rounded-lg text-center">
-                    {error}
-                    <button onClick={fetchReports} className="ml-2 underline">Thử lại</button>
-                </div>
-            ) : (
-                <div className="max-w-5xl mx-auto">
-                    {/* Pending Reports */}
-                    <div className="space-y-4">
-
-
-                        {pendingReports.length === 0 ? (
-                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center text-gray-500">
-                                <Flag className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                                <p>Không có báo cáo nào đang chờ xử lý</p>
-                            </div>
-                        ) : (
-                            sortedPendingReports.map((report) => (
-                                <div key={report.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-                                    <div className="flex justify-between items-start mb-3">
-                                        <div className="flex items-center gap-2">
-                                            <span className="font-medium text-gray-900">
-                                                {report.reviewerName || report.reviewerEmail || 'Người dùng ẩn danh'}
-                                            </span>
-                                            <span className="text-gray-400 text-sm">đánh giá</span>
-                                            <span className="font-medium text-blue-600">{report.companyName}</span>
-                                        </div>
-                                        <span className="text-xs text-gray-500">{formatTimeAgo(report.createdAt)}</span>
-                                    </div>
-
-                                    <div className="bg-gray-50 p-3 rounded-lg mb-3 text-sm text-gray-700 italic">
-                                        <p className="font-medium mb-1">"{report.reviewTitle}"</p>
-                                        <div className="text-gray-800 whitespace-pre-wrap">"{report.reviewContent}"</div>
-                                    </div>
-
-                                    <div className="flex flex-wrap items-center gap-2 mb-4 text-xs">
-                                        <span className="px-2 py-1 bg-red-50 text-red-700 rounded font-medium border border-red-100">
-                                            Lý do: {report.reason}
-                                        </span>
-                                        <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded font-medium border border-gray-200">
-                                            {reports.filter(r => r.reviewId === report.reviewId).length} lượt báo cáo
-                                        </span>
-                                    </div>
-
-                                    <div className="flex gap-2 pt-3 border-t border-gray-100">
-                                        <button
-                                            onClick={() => dismissReport(report)}
-                                            className="flex-1 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded transition-colors flex items-center justify-center gap-1"
-                                        >
-                                            <CheckCircle className="w-4 h-4" /> Giữ lại
-                                        </button>
-                                        <button
-                                            onClick={() => deleteReview(report)}
-                                            className="flex-1 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded transition-colors flex items-center justify-center gap-1"
-                                        >
-                                            <Trash2 className="w-4 h-4" /> Xóa đánh giá
-                                        </button>
-                                    </div>
-                                </div>
-                            ))
-                        )}
-                    </div>
-
-                    {/* Resolved Reports - Hidden temporarily as requested
-                    <div className="space-y-4">
-                        <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                            <CheckCircle className="w-5 h-5 text-green-500" />
-                            Đã xử lý
-                            <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">
-                                {resolvedReports.length}
-                            </span>
-                        </h2>
-
-                        {resolvedReports.length === 0 ? (
-                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center text-gray-500">
-                                <CheckCircle className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                                <p>Chưa có báo cáo nào được xử lý</p>
-                            </div>
-                        ) : (
-                            resolvedReports.slice(0, 5).map((report) => (
-                                <div key={report.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-5 opacity-75">
-                                    <div className="flex justify-between items-start mb-3">
-                                        <div className="flex items-center gap-2">
-                                            <span className="font-medium text-gray-900">
-                                                {report.reviewerName || 'User'}
-                                            </span>
-                                            <span className="text-gray-400 text-sm">đánh giá</span>
-                                            <span className="font-medium text-blue-600">{report.companyName}</span>
-                                        </div>
-                                        <span className={`text-xs px-2 py-0.5 rounded-full ${report.status === 'RESOLVED'
-                                            ? 'bg-red-100 text-red-700'
-                                            : 'bg-green-100 text-green-700'
-                                            }`}>
-                                            {report.status === 'RESOLVED' ? 'Đã xóa' : 'Đã giữ lại'}
-                                        </span>
-                                    </div>
-
-                                    <div className="bg-gray-50 p-3 rounded-lg text-sm text-gray-700 italic">
-                                        "{report.reviewTitle}"
-                                    </div>
-                                </div>
-                            ))
-                        )}
-                    </div>
-                    */}
-                </div>
-            )}
         </div>
     )
 }
