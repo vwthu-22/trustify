@@ -273,7 +273,7 @@ export default function ChatWidget() {
                                         <div
                                             key={ticket.id}
                                             onClick={() => handleSelectTicket(ticket.id)}
-                                            className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors border-b border-gray-50 ${ticket.unreadCount > 0 ? 'bg-blue-50/50' : ''}`}
+                                            className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors border-b border-gray-50 ${ticket.unreadCount > 0 ? 'bg-blue-50/70 border-l-4 border-l-blue-600' : ''}`}
                                         >
                                             {/* Avatar */}
                                             <div className="w-12 h-12 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600 relative">
@@ -292,17 +292,24 @@ export default function ChatWidget() {
 
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex justify-between items-center">
-                                                    <span className={`font-semibold text-sm ${ticket.unreadCount > 0 ? 'text-gray-900' : 'text-gray-700'}`}>
+                                                    <span className={`font-bold text-sm ${ticket.unreadCount > 0 ? 'text-blue-700' : 'text-gray-700'}`}>
                                                         {ticket.companyName}
                                                     </span>
-                                                    <span className="text-xs text-gray-400">{formatTime(ticket.lastMessageTime)}</span>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className={`text-[11px] ${ticket.unreadCount > 0 ? 'text-blue-600 font-bold' : 'text-gray-400'}`}>
+                                                            {formatTime(ticket.lastMessageTime)}
+                                                        </span>
+                                                        {ticket.unreadCount > 0 && (
+                                                            <span className="w-2 h-2 bg-blue-600 rounded-full animate-pulse shadow-[0_0_8px_rgba(37,99,235,0.5)]"></span>
+                                                        )}
+                                                    </div>
                                                 </div>
                                                 <div className="flex justify-between items-center mt-0.5">
-                                                    <p className={`text-sm truncate pr-2 ${ticket.unreadCount > 0 ? 'text-gray-900 font-medium' : 'text-gray-500'}`}>
+                                                    <p className={`text-sm truncate pr-2 ${ticket.unreadCount > 0 ? 'text-gray-900 font-bold' : 'text-gray-500'}`}>
                                                         {ticket.lastMessage}
                                                     </p>
                                                     {ticket.unreadCount > 0 && (
-                                                        <span className="w-5 h-5 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">
+                                                        <span className="min-w-[20px] h-5 px-1.5 bg-blue-600 text-white text-[10px] font-black rounded-full flex items-center justify-center flex-shrink-0 shadow-sm border border-white">
                                                             {ticket.unreadCount}
                                                         </span>
                                                     )}
