@@ -21,6 +21,7 @@ export default function UsersPage() {
         createAdmin,
         updateUserStatus,
         deleteUser,
+        resetReportCount,
         setSearchQuery,
         clearError,
     } = useUserManagementStore()
@@ -176,6 +177,7 @@ export default function UsersPage() {
                                 <th className="px-6 py-3">{t('email')}</th>
                                 <th className="px-6 py-3">{t('country')}</th>
                                 <th className="px-6 py-3">{t('role')}</th>
+                                <th className="px-6 py-3">{t('reports')}</th>
                                 <th className="px-6 py-3">{t('status')}</th>
                                 <th className="px-6 py-3 text-right">{t('actions')}</th>
                             </tr>
@@ -183,14 +185,14 @@ export default function UsersPage() {
                         <tbody className="divide-y divide-gray-200">
                             {isLoading && users.length === 0 ? (
                                 <tr>
-                                    <td colSpan={7} className="px-6 py-12 text-center">
+                                    <td colSpan={8} className="px-6 py-12 text-center">
                                         <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-2" />
                                         <span className="text-gray-500">{tCommon('loading')}</span>
                                     </td>
                                 </tr>
                             ) : filteredUsers.length === 0 ? (
                                 <tr>
-                                    <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
+                                    <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
                                         {t('noUsers')}
                                     </td>
                                 </tr>
@@ -229,6 +231,14 @@ export default function UsersPage() {
                                         </td>
                                         <td className="px-6 py-4">
                                             <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium
+                                                ${user.numberOfReport >= 5 ? 'bg-red-100 text-red-700' :
+                                                    user.numberOfReport >= 3 ? 'bg-yellow-100 text-yellow-700' :
+                                                        'bg-gray-100 text-gray-700'}`}>
+                                                {user.numberOfReport} {user.numberOfReport === 1 ? 'report' : 'reports'}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium
                                                 ${user.status === 'ACTIVE' ? 'bg-green-100 text-green-700' :
                                                     user.status === 'INACTIVE' ? 'bg-gray-100 text-gray-700' :
                                                         'bg-red-100 text-red-700'}`}>
@@ -237,22 +247,39 @@ export default function UsersPage() {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            {user.role !== 'ADMIN' && (
-                                                <button
-                                                    onClick={() => {
-                                                        setSelectedUser(user)
-                                                        setEditForm({
-                                                            status: user.status === 'INACTIVE' ? 'ACTIVE' : user.status as 'ACTIVE' | 'SUSPENDED',
-                                                            role: user.role
-                                                        })
-                                                        setShowEditModal(true)
-                                                    }}
-                                                    className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                    title={tCommon('edit')}
-                                                >
-                                                    <Edit className="w-4 h-4" />
-                                                </button>
-                                            )}
+                                            <div className="flex items-center justify-end gap-2">
+                                                {user.role !== 'ADMIN' && (
+                                                    <>
+                                                        <button
+                                                            onClick={() => {
+                                                                setSelectedUser(user)
+                                                                setEditForm({
+                                                                    status: user.status === 'INACTIVE' ? 'ACTIVE' : user.status as 'ACTIVE' | 'SUSPENDED',
+                                                                    role: user.role
+                                                                })
+                                                                setShowEditModal(true)
+                                                            }}
+                                                            className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                            title={tCommon('edit')}
+                                                        >
+                                                            <Edit className="w-4 h-4" />
+                                                        </button>
+                                                        {user.numberOfReport > 0 && (
+                                                            <button
+                                                                onClick={async () => {
+                                                                    if (confirm(`Reset report count for ${user.name}?`)) {
+                                                                        await resetReportCount(user.id)
+                                                                    }
+                                                                }}
+                                                                className="p-1.5 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                                                title="Reset Reports"
+                                                            >
+                                                                <Shield className="w-4 h-4" />
+                                                            </button>
+                                                        )}
+                                                    </>
+                                                )}
+                                            </div>
                                         </td>
                                     </tr>
                                 ))

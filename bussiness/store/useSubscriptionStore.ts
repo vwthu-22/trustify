@@ -156,7 +156,7 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
         try {
             const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://trustify.io.vn';
 
-            // Fetch company's latest successful transaction to get current plan
+            // Try to fetch company's latest successful transaction to get current plan
             const response = await fetch(`${API_BASE_URL}/api/payment/my-transactions`, {
                 method: 'GET',
                 credentials: 'include',
@@ -165,6 +165,13 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
                     'ngrok-skip-browser-warning': 'true',
                 },
             });
+
+            // If endpoint doesn't exist (404), we'll fallback to company.plan later
+            if (response.status === 404) {
+                console.warn('⚠️ Transactions endpoint not found (404). Will use company.plan as fallback.');
+                set({ isLoading: false });
+                return;
+            }
 
             if (!response.ok) {
                 throw new Error('Failed to fetch subscription');
@@ -227,7 +234,8 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
             }
         } catch (error) {
             console.error('Fetch subscription error:', error);
-            set({ error: error instanceof Error ? error.message : 'Failed to fetch subscription', isLoading: false });
+            // Don't set error state, just log it and let header use company.plan as fallback
+            set({ isLoading: false });
         }
     },
 

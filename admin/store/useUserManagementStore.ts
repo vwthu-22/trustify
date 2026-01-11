@@ -13,6 +13,7 @@ export interface User {
     avatarUrl: string;
     role: string;
     status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+    numberOfReport: number; // Số lượng report
 }
 
 export interface CreateAdminData {
@@ -43,6 +44,7 @@ interface UserManagementStore {
     createAdmin: (data: CreateAdminData) => Promise<boolean>;
     updateUserStatus: (userId: number, status: UpdateUserStatusData['status']) => Promise<boolean>;
     deleteUser: (userId: number) => Promise<boolean>;
+    resetReportCount: (userId: number) => Promise<boolean>;
     setSearchQuery: (query: string) => void;
     setCurrentPage: (page: number) => void;
     clearError: () => void;
@@ -309,6 +311,49 @@ const useUserManagementStore = create<UserManagementStore>()(
 
             // Set current page
             setCurrentPage: (page: number) => set({ currentPage: page }),
+
+            // Reset report count
+            resetReportCount: async (userId: number) => {
+                set({ isLoading: true, error: null });
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}/reset-reports`, {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'ngrok-skip-browser-warning': 'true',
+                        },
+                    });
+
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            throw new Error('Unauthorized. Please login again.');
+                        } else if (response.status === 403) {
+                            throw new Error('You do not have permission to reset report count');
+                        } else if (response.status === 404) {
+                            throw new Error('User not found');
+                        }
+                        throw new Error('Failed to reset report count');
+                    }
+
+                    // Update local state
+                    set((state) => ({
+                        users: state.users.map((user) =>
+                            user.id === userId ? { ...user, numberOfReport: 0 } : user
+                        ),
+                        isLoading: false,
+                    }));
+
+                    return true;
+                } catch (error) {
+                    console.error('Reset report count error:', error);
+                    set({
+                        error: error instanceof Error ? error.message : 'Failed to reset report count',
+                        isLoading: false,
+                    });
+                    return false;
+                }
+            },
 
             // Clear error
             clearError: () => set({ error: null }),
