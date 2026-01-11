@@ -56,8 +56,10 @@ export default function VerificationPage() {
                 setVerificationStatus('pending');
             } else if (company.verifyStatus === 'REJECTED') {
                 setVerificationStatus('rejected');
+            } else {
+                // If no verifyStatus or null, reset to 'not-started' to clear old localStorage
+                setVerificationStatus('not-started');
             }
-            // If no verifyStatus, keep as 'not-started'
         }
     }, [company?.verifyStatus, setVerificationStatus]);
 

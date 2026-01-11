@@ -50,7 +50,7 @@ export default function Header({ onMenuClick, isMobile = false }: HeaderProps) {
 
     const pageTitle = getPageTitle(pathname);
 
-    const { company, fetchCompanyProfile, logout } = useCompanyStore();
+    const { company, fetchCompanyProfile, logout, verificationStatus } = useCompanyStore();
     const { notifications, unreadNotifications, markAllNotificationsAsRead } = useChatStore();
     const { currentSubscription, fetchCurrentSubscription, clearSubscription } = useSubscriptionStore();
 
@@ -264,7 +264,7 @@ export default function Header({ onMenuClick, isMobile = false }: HeaderProps) {
                                         }`}>
                                         {currentSubscription?.planName || company?.plan || 'Free'}
                                     </span>
-                                    {company?.verifyStatus === 'APPROVED' && (
+                                    {company?.verifyStatus === 'APPROVED' && verificationStatus !== 'not-started' && (
                                         <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full flex items-center gap-0.5">
                                             <ShieldCheck className="w-3 h-3" />
                                             {t('verified')}
