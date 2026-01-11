@@ -292,7 +292,7 @@ export default function ChatWidget() {
 
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex justify-between items-center">
-                                                    <span className={`font-bold text-sm ${ticket.unreadCount > 0 ? 'text-blue-700' : 'text-gray-700'}`}>
+                                                    <span className={`font-bold text-sm ${ticket.unreadCount > 0 ? 'text-gray-900' : 'text-gray-700'}`}>
                                                         {ticket.companyName}
                                                     </span>
                                                     <div className="flex items-center gap-2">
