@@ -153,9 +153,79 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
     fetchCurrentSubscription: async () => {
         set({ isLoading: true, error: null });
         try {
-            await new Promise(resolve => setTimeout(resolve, 500));
-            set({ currentSubscription: mockSubscription, isLoading: false });
+            const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://trustify.io.vn';
+
+            // Fetch company's latest successful transaction to get current plan
+            const response = await fetch(`${API_BASE_URL}/api/payment/my-transactions`, {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch subscription');
+            }
+
+            const transactions = await response.json();
+
+            // Find the latest successful transaction
+            const successfulTransactions = Array.isArray(transactions)
+                ? transactions.filter((t: any) => t.status === 'SUCCESS')
+                : [];
+
+            if (successfulTransactions.length > 0) {
+                // Sort by createdAt descending to get the latest
+                const latestTransaction = successfulTransactions.sort((a: any, b: any) =>
+                    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+                )[0];
+
+                // Fetch plan details to get plan name
+                const planResponse = await fetch(`${API_BASE_URL}/api/plans/${latestTransaction.planId}`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': 'true',
+                    },
+                });
+
+                let planName: 'Free' | 'Pro' | 'Premium' = 'Free';
+                if (planResponse.ok) {
+                    const planData = await planResponse.json();
+                    planName = planData.name || 'Free';
+                }
+
+                const subscription: CompanySubscription = {
+                    planId: latestTransaction.planId.toString(),
+                    planName: planName,
+                    status: 'active',
+                    billingCycle: 'monthly', // Default, can be enhanced later
+                    currentPeriodStart: latestTransaction.createdAt,
+                    currentPeriodEnd: new Date(new Date(latestTransaction.createdAt).getTime() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    cancelAtPeriodEnd: false
+                };
+
+                set({ currentSubscription: subscription, isLoading: false });
+            } else {
+                // No successful transactions = Free plan
+                set({
+                    currentSubscription: {
+                        planId: 'free',
+                        planName: 'Free',
+                        status: 'active',
+                        billingCycle: 'monthly',
+                        currentPeriodStart: new Date().toISOString(),
+                        currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+                        cancelAtPeriodEnd: false
+                    },
+                    isLoading: false
+                });
+            }
         } catch (error) {
+            console.error('Fetch subscription error:', error);
             set({ error: error instanceof Error ? error.message : 'Failed to fetch subscription', isLoading: false });
         }
     },

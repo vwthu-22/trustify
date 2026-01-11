@@ -7,6 +7,7 @@ import {
 import { usePathname, useRouter } from 'next/navigation';
 import { useCompanyStore } from '@/store/useCompanyStore';
 import { useChatStore } from '@/store/useChatStore';
+import { useSubscriptionStore } from '@/store/useSubscriptionStore';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useTranslations } from 'next-intl';
 
@@ -51,6 +52,7 @@ export default function Header({ onMenuClick, isMobile = false }: HeaderProps) {
 
     const { company, fetchCompanyProfile, logout } = useCompanyStore();
     const { notifications, unreadNotifications, markAllNotificationsAsRead } = useChatStore();
+    const { currentSubscription, fetchCurrentSubscription } = useSubscriptionStore();
 
     const [showHelpDropdown, setShowHelpDropdown] = useState(false);
     const [showCompanyDropdown, setShowCompanyDropdown] = useState(false);
@@ -67,7 +69,11 @@ export default function Header({ onMenuClick, isMobile = false }: HeaderProps) {
         if (!company && !isPublicRoute) {
             fetchCompanyProfile();
         }
-    }, [company, fetchCompanyProfile, isPublicRoute]);
+        // Fetch subscription when company is loaded
+        if (company && !isPublicRoute) {
+            fetchCurrentSubscription();
+        }
+    }, [company, fetchCompanyProfile, fetchCurrentSubscription, isPublicRoute]);
 
     useEffect(() => {
         if (isPublicRoute) return;
@@ -251,14 +257,14 @@ export default function Header({ onMenuClick, isMobile = false }: HeaderProps) {
                                     </div>
                                 </div>
                                 <div className="mt-2 flex items-center gap-1.5">
-                                    <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${company?.plan === 'Premium' ? 'bg-purple-100 text-purple-700' :
-                                        company?.plan === 'Pro' ? 'bg-blue-100 text-blue-700' :
-                                            'bg-blue-100 text-blue-700'
+                                    <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${currentSubscription?.planName === 'Premium' ? 'bg-purple-100 text-purple-700' :
+                                        currentSubscription?.planName === 'Pro' ? 'bg-blue-100 text-blue-700' :
+                                            'bg-gray-100 text-gray-700'
                                         }`}>
-                                        {company?.plan || 'Free'}
+                                        {currentSubscription?.planName || company?.plan || 'Free'}
                                     </span>
-                                    {company?.verified && (
-                                        <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-medium rounded-full flex items-center gap-0.5">
+                                    {company?.verifyStatus === 'APPROVED' && (
+                                        <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full flex items-center gap-0.5">
                                             <ShieldCheck className="w-3 h-3" />
                                             {t('verified')}
                                         </span>
