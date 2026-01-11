@@ -52,7 +52,7 @@ export default function Header({ onMenuClick, isMobile = false }: HeaderProps) {
 
     const { company, fetchCompanyProfile, logout } = useCompanyStore();
     const { notifications, unreadNotifications, markAllNotificationsAsRead } = useChatStore();
-    const { currentSubscription, fetchCurrentSubscription } = useSubscriptionStore();
+    const { currentSubscription, fetchCurrentSubscription, clearSubscription } = useSubscriptionStore();
 
     const [showHelpDropdown, setShowHelpDropdown] = useState(false);
     const [showCompanyDropdown, setShowCompanyDropdown] = useState(false);
@@ -109,6 +109,7 @@ export default function Header({ onMenuClick, isMobile = false }: HeaderProps) {
     }, []);
 
     const handleLogout = async () => {
+        clearSubscription(); // Clear subscription data
         await logout();
         router.push('/login');
     };

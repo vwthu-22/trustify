@@ -144,8 +144,11 @@ export default function VerificationPage() {
         companyId: company?.id
     });
 
-    // Show verified state - check verifyStatus from backend
-    if (verificationStatus === 'verified' || company?.verifyStatus === 'APPROVED') {
+    // Determine actual status from backend (company.verifyStatus takes priority)
+    const actualStatus = company?.verifyStatus || verificationStatus;
+
+    // Show verified state - ONLY check backend verifyStatus
+    if (actualStatus === 'APPROVED') {
         return (
             <div className="max-w-xl mx-auto">
                 <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-200 p-5 sm:p-6 text-center">
@@ -167,8 +170,8 @@ export default function VerificationPage() {
         );
     }
 
-    // Show pending state - check verifyStatus from backend
-    if (verificationStatus === 'pending' || company?.verifyStatus === 'PENDING') {
+    // Show pending state - ONLY check backend verifyStatus
+    if (actualStatus === 'PENDING') {
         return (
             <div className="max-w-xl mx-auto">
                 <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-xl border border-amber-200 p-5 sm:p-6 text-center">
@@ -195,6 +198,31 @@ export default function VerificationPage() {
                             Gửi lại tài liệu khác
                         </button>
                     </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Show rejected state if backend says REJECTED
+    if (actualStatus === 'REJECTED') {
+        return (
+            <div className="max-w-xl mx-auto">
+                <div className="bg-gradient-to-br from-red-50 to-rose-50 rounded-xl border border-red-200 p-5 sm:p-6 text-center">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <AlertCircle className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
+                    </div>
+                    <h2 className="text-lg sm:text-xl font-bold text-red-900 mb-1">
+                        {t('rejectedTitle') || 'Yêu cầu bị từ chối'}
+                    </h2>
+                    <p className="text-red-700 text-sm mb-4">
+                        {t('rejectedDesc') || 'Tài liệu xác thực của bạn không đạt yêu cầu. Vui lòng gửi lại tài liệu hợp lệ.'}
+                    </p>
+                    <button
+                        onClick={() => setVerificationStatus('not-started')}
+                        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+                    >
+                        {t('resubmit') || 'Gửi lại tài liệu'}
+                    </button>
                 </div>
             </div>
         );

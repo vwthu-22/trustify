@@ -51,6 +51,7 @@ interface SubscriptionStore {
     cancelSubscription: () => Promise<boolean>;
     resumeSubscription: () => Promise<boolean>;
     clearError: () => void;
+    clearSubscription: () => void;
 }
 
 // Mock data
@@ -307,4 +308,11 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
     },
 
     clearError: () => set({ error: null }),
+
+    clearSubscription: () => set({
+        currentSubscription: null,
+        plans: [],
+        invoices: [],
+        error: null
+    }),
 }));

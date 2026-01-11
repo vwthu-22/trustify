@@ -308,7 +308,7 @@ export const useCompanyStore = create<CompanyStore>()(
 
                     // JWT is set via HttpOnly cookie (access_token) by the server
 
-                    set({ isLoading: false, magicLinkSent: false });
+                    set({ isLoading: false, magicLinkSent: false, verificationStatus: 'not-started' });
 
                     // Fetch company profile after successful auth
                     await get().fetchCompanyProfile();
@@ -455,6 +455,12 @@ export const useCompanyStore = create<CompanyStore>()(
                     set({ company: null, isLoading: false, error: null, magicLinkSent: false, verificationStatus: 'not-started' });
                     // Clear access_token cookie
                     document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+                    // Clear persisted store data
+                    localStorage.removeItem('company-storage');
+
+                    // Clear subscription store (import at top if needed)
+                    // Note: We can't directly import useSubscriptionStore here due to circular dependency
+                    // Instead, we'll rely on the subscription store being cleared when company changes to null
                 }
             },
         }),
