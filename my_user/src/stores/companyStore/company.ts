@@ -349,8 +349,11 @@ const useCompanyStore = create<CompanyState>()(
                 set({ isSearching: true, error: null });
 
                 try {
-                    // First try the search endpoint
-                    const searchResponse = await fetch(`${API_BASE_URL}/api/companies/search?q=${encodeURIComponent(query)}`, {
+                    // Use the new search endpoint with keyword parameter
+                    const url = `${API_BASE_URL}/api/companies/search?keyword=${encodeURIComponent(query)}&page=0&size=50`;
+                    console.log('Fetching from:', url);
+
+                    const response = await fetch(url, {
                         method: 'GET',
                         credentials: 'include',
                         headers: {
@@ -360,49 +363,32 @@ const useCompanyStore = create<CompanyState>()(
                         },
                     });
 
-                    if (searchResponse.ok) {
-                        const data = await searchResponse.json();
-                        console.log('Search Response Data:', data);
-                        const results = data.companies || data.results || data.content || data;
-                        set({
-                            searchResults: Array.isArray(results) ? results : [],
-                            isSearching: false
-                        });
-                        return;
+                    console.log('Response Status:', response.status);
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        console.error('Response Error:', errorData);
+                        throw new Error(errorData.message || errorData.error || 'Failed to search companies');
                     }
 
-                    // If search endpoint doesn't exist (404), fallback to fetching all and filtering
-                    console.log('Search endpoint not available, using fallback...');
+                    const data = await response.json();
+                    console.log('Search Response Data:', data);
 
-                    const fallbackResponse = await fetch(`${API_BASE_URL}/api/companies?page=0&size=100`, {
-                        method: 'GET',
-                        credentials: 'include',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'ngrok-skip-browser-warning': 'true',
-                            'bypass-tunnel-reminder': 'true',
-                        },
-                    });
+                    // Handle paginated response (Page<Company>)
+                    const results = data.content || data.companies || data;
 
-                    if (!fallbackResponse.ok) {
-                        throw new Error('Failed to fetch companies for search');
-                    }
+                    // Map logoUrl to logo for display
+                    const mappedResults = (Array.isArray(results) ? results : []).map((c: any) => ({
+                        ...c,
+                        id: String(c.id),
+                        logo: c.logoUrl || c.logo || '',
+                    }));
 
-                    const allData = await fallbackResponse.json();
-                    const allCompanies = allData.content || allData.companies || allData;
-
-                    // Filter companies by name (case-insensitive)
-                    const queryLower = query.toLowerCase();
-                    const filteredResults = allCompanies.filter((company: any) =>
-                        company.name?.toLowerCase().includes(queryLower) ||
-                        company.industry?.toLowerCase().includes(queryLower) ||
-                        company.website?.toLowerCase().includes(queryLower)
-                    );
-
-                    console.log('Fallback Search Results:', filteredResults.length);
+                    console.log('Search Results Count:', mappedResults.length);
+                    console.log('=== Search Companies Success ===');
 
                     set({
-                        searchResults: filteredResults,
+                        searchResults: mappedResults,
                         isSearching: false
                     });
                 } catch (error) {

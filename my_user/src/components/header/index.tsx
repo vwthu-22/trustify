@@ -1,10 +1,11 @@
 "use client"
-import React, { useState, useEffect } from 'react';
-import { Search, Bell, ChevronDown, Menu, X, MessageSquare } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Search, Bell, ChevronDown, Menu, X, MessageSquare, Building2, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import useAuthStore from '@/stores/userAuthStore/user';
 import useNotificationStore from '@/stores/notificationStore/notification';
+import useCompanyStore from '@/stores/companyStore/company';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useTranslations } from 'next-intl';
 
@@ -13,12 +14,16 @@ export default function Header() {
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [showMobileMenu, setShowMobileMenu] = useState(false);
     const [showNotifications, setShowNotifications] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [showSearchDropdown, setShowSearchDropdown] = useState(false);
+    const searchDropdownRef = useRef<HTMLDivElement>(null);
     const pathname = usePathname();
     const router = useRouter();
     const t = useTranslations('header');
 
     const { user, isAuthenticated, logout, fetchUserInfo } = useAuthStore();
     const { notifications, unreadCount, fetchNotifications, markAsRead, markAllAsRead } = useNotificationStore();
+    const { searchResults, isSearching, searchCompanies, clearSearchResults } = useCompanyStore();
 
     // Verify session with backend on mount
     useEffect(() => {
@@ -63,10 +68,27 @@ export default function Header() {
             if (!target.closest('.notification-dropdown')) {
                 setShowNotifications(false);
             }
+            if (searchDropdownRef.current && !searchDropdownRef.current.contains(target)) {
+                setShowSearchDropdown(false);
+            }
         };
         document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside);
     }, []);
+
+    // Debounced search
+    useEffect(() => {
+        if (searchQuery.length >= 2) {
+            const timer = setTimeout(() => {
+                searchCompanies(searchQuery);
+                setShowSearchDropdown(true);
+            }, 300);
+            return () => clearTimeout(timer);
+        } else {
+            setShowSearchDropdown(false);
+            clearSearchResults();
+        }
+    }, [searchQuery, searchCompanies, clearSearchResults]);
 
     const isBusinessIntro = pathname === '/intro_bus';
     const isBusinessSignup = pathname === '/intro_bus/register_bussiness';
@@ -112,6 +134,13 @@ export default function Header() {
         return date.toLocaleDateString();
     };
 
+    const handleCompanyClick = (companyId: string) => {
+        setShowSearchDropdown(false);
+        setSearchQuery('');
+        clearSearchResults();
+        router.push(`/bussiness/${companyId}`);
+    };
+
     return (
         <>
             <header className="bg-[#191919] text-white top-0 fixed w-full z-50">
@@ -128,15 +157,62 @@ export default function Header() {
                         {/* Search Bar - Desktop */}
                         {shouldShowSearchBar && (
                             <div className="hidden lg:flex flex-1 max-w-xl mx-4">
-                                <div className="relative w-full">
+                                <div className="relative w-full" ref={searchDropdownRef}>
                                     <input
                                         type="text"
-                                        placeholder="Search company or category"
+                                        placeholder={t('searchPlaceholder')}
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        onFocus={() => searchQuery.length >= 2 && setShowSearchDropdown(true)}
                                         className="w-full px-4 py-2 rounded-full border-2 border-gray-600 focus:border-blue-500 focus:outline-none text-sm bg-gray-800 text-white placeholder-gray-400"
                                     />
                                     <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#5e5eff] hover:bg-[#4d4dff] text-white p-1.5 rounded-full transition">
                                         <Search className="w-4 h-4" />
                                     </button>
+
+                                    {/* Search Results Dropdown */}
+                                    {showSearchDropdown && searchQuery.length >= 2 && (
+                                        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 max-h-96 overflow-y-auto z-50">
+                                            {isSearching ? (
+                                                <div className="py-8 text-center">
+                                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                                                    <p className="text-gray-600 text-sm">Đang tìm kiếm...</p>
+                                                </div>
+                                            ) : searchResults.length > 0 ? (
+                                                <div className="p-2">
+                                                    {searchResults.slice(0, 8).map((company) => (
+                                                        <button
+                                                            key={company.id}
+                                                            onClick={() => handleCompanyClick(company.id)}
+                                                            className="w-full flex items-center gap-3 p-3 hover:bg-blue-50 rounded-lg transition text-left group"
+                                                        >
+                                                            <div className="w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0 bg-gradient-to-br from-blue-500 to-blue-600">
+                                                                {company.logo ? (
+                                                                    <img src={company.logo} alt={company.name} className="w-full h-full object-cover" />
+                                                                ) : (
+                                                                    <span className="text-sm font-bold text-white">{company.name.charAt(0).toUpperCase()}</span>
+                                                                )}
+                                                            </div>
+                                                            <div className="flex-1 min-w-0">
+                                                                <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 truncate text-sm">
+                                                                    {company.name}
+                                                                </h3>
+                                                                <p className="text-xs text-gray-500 truncate">
+                                                                    {company.industry || company.website}
+                                                                </p>
+                                                            </div>
+                                                            <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition flex-shrink-0" />
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <div className="py-8 text-center">
+                                                    <Building2 className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+                                                    <p className="text-gray-600 text-sm">Không tìm thấy "{searchQuery}"</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -307,10 +383,64 @@ export default function Header() {
                     <div className="lg:hidden bg-[#191919] border-t border-gray-700">
                         <div className="px-4 py-4 space-y-4">
                             <div className="relative">
-                                <input type="text" placeholder={t('searchPlaceholder')} className="w-full px-4 py-3 rounded-full border-2 border-gray-600 focus:border-blue-500 focus:outline-none text-sm bg-gray-800 text-white placeholder-gray-400" />
+                                <input
+                                    type="text"
+                                    placeholder={t('searchPlaceholder')}
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onFocus={() => searchQuery.length >= 2 && setShowSearchDropdown(true)}
+                                    className="w-full px-4 py-3 rounded-full border-2 border-gray-600 focus:border-blue-500 focus:outline-none text-sm bg-gray-800 text-white placeholder-gray-400"
+                                />
                                 <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#5e5eff] hover:bg-[#4d4dff] text-white p-2 rounded-full transition">
                                     <Search className="w-4 h-4" />
                                 </button>
+
+                                {/* Mobile Search Results Dropdown */}
+                                {showSearchDropdown && searchQuery.length >= 2 && (
+                                    <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 max-h-80 overflow-y-auto z-50">
+                                        {isSearching ? (
+                                            <div className="py-6 text-center">
+                                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                                                <p className="text-gray-600 text-sm">Đang tìm kiếm...</p>
+                                            </div>
+                                        ) : searchResults.length > 0 ? (
+                                            <div className="p-2">
+                                                {searchResults.slice(0, 6).map((company) => (
+                                                    <button
+                                                        key={company.id}
+                                                        onClick={() => {
+                                                            handleCompanyClick(company.id);
+                                                            setShowMobileMenu(false);
+                                                        }}
+                                                        className="w-full flex items-center gap-2 p-2 hover:bg-blue-50 rounded-lg transition text-left group"
+                                                    >
+                                                        <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0 bg-gradient-to-br from-blue-500 to-blue-600">
+                                                            {company.logo ? (
+                                                                <img src={company.logo} alt={company.name} className="w-full h-full object-cover" />
+                                                            ) : (
+                                                                <span className="text-xs font-bold text-white">{company.name.charAt(0).toUpperCase()}</span>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 truncate text-xs">
+                                                                {company.name}
+                                                            </h3>
+                                                            <p className="text-xs text-gray-500 truncate">
+                                                                {company.industry || company.website}
+                                                            </p>
+                                                        </div>
+                                                        <ArrowRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition flex-shrink-0" />
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="py-6 text-center">
+                                                <Building2 className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                                                <p className="text-gray-600 text-sm">Không tìm thấy "{searchQuery}"</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
 
                             <div className="space-y-2">

@@ -10,7 +10,7 @@ import { useTranslations } from 'next-intl';
 export default function WriteReviewPage() {
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState('');
-    const { companies, isLoading, searchCompanies } = useCompanyStore();
+    const { searchResults, isSearching, searchCompanies, clearSearchResults } = useCompanyStore();
     const t = useTranslations('writeReview');
     const tCat = useTranslations('categories');
     const tCommon = useTranslations('common');
@@ -21,8 +21,10 @@ export default function WriteReviewPage() {
                 searchCompanies(searchQuery);
             }, 300);
             return () => clearTimeout(timer);
+        } else {
+            clearSearchResults();
         }
-    }, [searchQuery, searchCompanies]);
+    }, [searchQuery, searchCompanies, clearSearchResults]);
 
     const handleCompanyClick = (companyId: string) => {
         router.push(`/bussiness/${companyId}`);
@@ -69,14 +71,14 @@ export default function WriteReviewPage() {
                     {/* Search Results */}
                     {searchQuery.length >= 2 && (
                         <div className="mt-3">
-                            {isLoading ? (
+                            {isSearching ? (
                                 <div className="py-6 text-center">
                                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600 mx-auto mb-2"></div>
                                     <p className="text-gray-600 text-sm">{t('searching')}</p>
                                 </div>
-                            ) : companies.length > 0 ? (
+                            ) : searchResults.length > 0 ? (
                                 <div className="space-y-2 max-h-64 overflow-y-auto">
-                                    {companies.slice(0, 10).map((company) => (
+                                    {searchResults.slice(0, 10).map((company) => (
                                         <button
                                             key={company.id}
                                             onClick={() => handleCompanyClick(company.id)}
