@@ -321,6 +321,10 @@
         "redirecting": "Redirecting to Dashboard...",
         "lookForButton": "Look for this button at the bottom right",
         "clickToChat": "Click to open chat",
+        "systemOperational": "System Operational",
+        "connecting": "Connecting...",
+        "online": "Online",
+        "back": "Back to list",
         "priority": {
             "high": "High",
             "medium": "Medium",
@@ -361,5 +365,37 @@
         "hoursAgo": "{count} hours ago",
         "daysAgo": "{count} days ago",
         "justNow": "Just now"
+    },
+    "verification": {
+        "description": "Review and approve business verification documents",
+        "pending": "{count} Pending",
+        "errorDismiss": "Dismiss",
+        "empty": {
+            "title": "All caught up!",
+            "description": "No pending verification requests"
+        },
+        "noEmail": "No email",
+        "submitted": "Submitted {time}",
+        "viewDocument": "View Document",
+        "documentNumber": "Document {index}",
+        "reject": "Reject",
+        "approve": "Approve",
+        "rejectModal": {
+            "title": "Reject Verification",
+            "description": "Please provide a reason for rejection:",
+            "placeholder": "Enter rejection reason...",
+            "cancel": "Cancel",
+            "confirm": "Confirm Reject"
+        },
+        "success": {
+            "approve": "Company approved successfully!",
+            "reject": "Company rejected successfully!"
+        },
+        "timeAgo": {
+            "unknown": "Unknown",
+            "minsAgo": "{count} minutes ago",
+            "hoursAgo": "{count} hours ago",
+            "daysAgo": "{count} days ago"
+        }
     }
 }

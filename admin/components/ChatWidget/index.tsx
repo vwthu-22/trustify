@@ -121,7 +121,9 @@ export default function ChatWidget() {
         return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
     };
 
-    const totalUnread = tickets.reduce((sum, t) => sum + t.unreadCount, 0);
+    // Use unreadNotificationCount as the primary source for the global badge to avoid double-counting
+    // (unreadNotificationCount is persistent via localStorage and synced with ticket unread counts)
+    const displayCount = unreadNotificationCount;
 
     if (!isChatWidgetOpen) {
         return (
@@ -130,9 +132,9 @@ export default function ChatWidget() {
                 className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center z-50 hover:scale-110"
             >
                 <MessageSquare className="w-6 h-6 text-white" />
-                {(totalUnread > 0 || unreadNotificationCount > 0) && (
+                {displayCount > 0 && (
                     <span className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
-                        {totalUnread + unreadNotificationCount > 9 ? '9+' : totalUnread + unreadNotificationCount}
+                        {displayCount > 9 ? '9+' : displayCount}
                     </span>
                 )}
             </button>
@@ -147,9 +149,9 @@ export default function ChatWidget() {
                     <div className="flex items-center gap-3 flex-1 overflow-hidden">
                         <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center relative">
                             <MessageSquare className="w-5 h-5 text-white" />
-                            {(totalUnread > 0 || unreadNotificationCount > 0) && (
+                            {displayCount > 0 && (
                                 <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border border-white">
-                                    {totalUnread + unreadNotificationCount > 9 ? '9+' : totalUnread + unreadNotificationCount}
+                                    {displayCount > 9 ? '9+' : displayCount}
                                 </span>
                             )}
                         </div>
@@ -157,7 +159,7 @@ export default function ChatWidget() {
                             <span className="font-bold text-base leading-tight">{t('tickets') || "Support Tickets"}</span>
                             <span className="text-xs opacity-90 font-medium flex items-center gap-1">
                                 <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-green-300' : 'bg-red-300'}`}></span>
-                                {isConnected ? 'System Operational' : 'Connecting...'}
+                                {isConnected ? t('systemOperational') : t('connecting')}
                             </span>
                         </div>
                     </div>
@@ -186,7 +188,7 @@ export default function ChatWidget() {
                         <button
                             onClick={handleBackToList}
                             className="p-2 -ml-1 text-white hover:bg-white/20 rounded-full transition-all flex-shrink-0"
-                            title={t('back') || "Back to list"}
+                            title={t('back')}
                         >
                             <ArrowLeft className="w-5 h-5" />
                         </button>
@@ -216,7 +218,7 @@ export default function ChatWidget() {
                             </span>
                             <span className="text-xs opacity-90 leading-tight flex items-center gap-1">
                                 <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-green-300' : 'bg-red-300'}`}></span>
-                                {isConnected ? 'Online' : 'Offline'}
+                                {isConnected ? t('online') : t('offline')}
                             </span>
                         </div>
                     </div>

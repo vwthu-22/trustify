@@ -304,7 +304,10 @@
     "closed": "Đã đóng",
     "pending": "Đang chờ",
     "live": "Trực tuyến",
+    "online": "Trực tuyến",
     "offline": "Ngoại tuyến",
+    "systemOperational": "Hệ thống đang hoạt động",
+    "connecting": "Đang kết nối...",
     "noTickets": "Không có yêu cầu nào",
     "noConversation": "Chưa chọn cuộc trò chuyện",
     "selectTicket": "Chọn một yêu cầu từ danh sách để xem tin nhắn",
@@ -362,5 +365,37 @@
     "hoursAgo": "{count} giờ trước",
     "daysAgo": "{count} ngày trước",
     "justNow": "Vừa xong"
+  },
+  "verification": {
+    "description": "Xem xét và phê duyệt các tài liệu xác minh doanh nghiệp",
+    "pending": "{count} Đang chờ",
+    "errorDismiss": "Bỏ qua",
+    "empty": {
+      "title": "Hoàn tất!",
+      "description": "Không có yêu cầu xác minh nào đang chờ xử lý"
+    },
+    "noEmail": "Không có email",
+    "submitted": "Đã gửi {time}",
+    "viewDocument": "Xem tài liệu",
+    "documentNumber": "Tài liệu {index}",
+    "reject": "Từ chối",
+    "approve": "Phê duyệt",
+    "rejectModal": {
+      "title": "Từ chối xác minh",
+      "description": "Vui lòng cung cấp lý do từ chối:",
+      "placeholder": "Nhập lý do từ chối...",
+      "cancel": "Hủy",
+      "confirm": "Xác nhận từ chối"
+    },
+    "success": {
+      "approve": "Phê duyệt công ty thành công!",
+      "reject": "Từ chối công ty thành công!"
+    },
+    "timeAgo": {
+      "unknown": "Không xác định",
+      "minsAgo": "{count} phút trước",
+      "hoursAgo": "{count} giờ trước",
+      "daysAgo": "{count} ngày trước"
+    }
   }
 }

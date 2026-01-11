@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react'
 import { FileText, Check, X, ExternalLink, Clock, Loader2, AlertCircle, RefreshCw } from 'lucide-react'
 import useCompanyManagementStore, { VerificationRequest } from '@/store/useCompanyManagementStore'
+import { useTranslations } from 'next-intl'
 
 export default function VerificationPage() {
+    const t = useTranslations('verification')
     const {
         pendingVerifications,
         isLoadingVerifications,
@@ -35,7 +37,7 @@ export default function VerificationPage() {
     const handleApprove = async (companyId: number) => {
         const success = await approveCompany(companyId)
         if (success) {
-            alert('Company approved successfully!')
+            alert(t('success.approve'))
         }
     }
 
@@ -47,13 +49,13 @@ export default function VerificationPage() {
         if (success) {
             setShowRejectModal(false)
             setRejectingId(null)
-            alert('Company rejected successfully!')
+            alert(t('success.reject'))
         }
     }
 
     // Format timestamp
     const formatTime = (timestamp: string) => {
-        if (!timestamp) return 'Unknown'
+        if (!timestamp) return t('timeAgo.unknown')
         const date = new Date(timestamp)
         const now = new Date()
         const diffMs = now.getTime() - date.getTime()
@@ -61,9 +63,9 @@ export default function VerificationPage() {
         const diffHours = Math.floor(diffMins / 60)
         const diffDays = Math.floor(diffHours / 24)
 
-        if (diffMins < 60) return `${diffMins} minutes ago`
-        if (diffHours < 24) return `${diffHours} hours ago`
-        return `${diffDays} days ago`
+        if (diffMins < 60) return t('timeAgo.minsAgo', { count: diffMins })
+        if (diffHours < 24) return t('timeAgo.hoursAgo', { count: diffHours })
+        return t('timeAgo.daysAgo', { count: diffDays })
     }
 
     // Get company ID from request
@@ -88,7 +90,7 @@ export default function VerificationPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <p className="text-gray-500 mt-1">Review and approve business verification documents</p>
+                    <p className="text-gray-500 mt-1">{t('description')}</p>
                 </div>
                 <div className="flex gap-2">
                     <button
@@ -99,7 +101,7 @@ export default function VerificationPage() {
                     </button>
                     <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium flex items-center gap-2">
                         <Clock className="w-4 h-4" />
-                        {pendingVerifications.length} Pending
+                        {t('pending', { count: pendingVerifications.length })}
                     </span>
                 </div>
             </div>
@@ -109,7 +111,7 @@ export default function VerificationPage() {
                     <AlertCircle className="w-5 h-5 text-red-600" />
                     <p className="text-red-700">{error}</p>
                     <button onClick={clearError} className="ml-auto text-red-600 hover:underline text-sm">
-                        Dismiss
+                        {t('errorDismiss')}
                     </button>
                 </div>
             )}
@@ -117,8 +119,8 @@ export default function VerificationPage() {
             {pendingVerifications.length === 0 && !error ? (
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
                     <Check className="w-12 h-12 text-green-500 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">All caught up!</h3>
-                    <p className="text-gray-500">No pending verification requests</p>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('empty.title')}</h3>
+                    <p className="text-gray-500">{t('empty.description')}</p>
                 </div>
             ) : (
                 <div className="grid gap-4">
@@ -144,7 +146,7 @@ export default function VerificationPage() {
                                     <div>
                                         <h3 className="font-semibold text-gray-900 text-lg">{companyName}</h3>
                                         <p className="text-gray-600 text-sm mb-2">
-                                            {request.company?.contactEmail || 'No email'} • Submitted {formatTime(request.submittedAt)}
+                                            {request.company?.contactEmail || t('noEmail')} • {t('submitted', { time: formatTime(request.submittedAt) })}
                                         </p>
                                         <div className="flex gap-2 flex-wrap">
                                             {request.documentUrl && (
@@ -155,7 +157,7 @@ export default function VerificationPage() {
                                                     className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded text-xs text-gray-600 hover:bg-gray-200 cursor-pointer transition-colors"
                                                 >
                                                     <FileText className="w-3 h-3" />
-                                                    View Document
+                                                    {t('viewDocument')}
                                                     <ExternalLink className="w-3 h-3 ml-1" />
                                                 </a>
                                             )}
@@ -168,7 +170,7 @@ export default function VerificationPage() {
                                                     className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded text-xs text-gray-600 hover:bg-gray-200 cursor-pointer transition-colors"
                                                 >
                                                     <FileText className="w-3 h-3" />
-                                                    Document {index + 1}
+                                                    {t('documentNumber', { index: index + 1 })}
                                                     <ExternalLink className="w-3 h-3 ml-1" />
                                                 </a>
                                             ))}
@@ -187,7 +189,7 @@ export default function VerificationPage() {
                                         ) : (
                                             <X className="w-4 h-4" />
                                         )}
-                                        Reject
+                                        {t('reject')}
                                     </button>
                                     <button
                                         onClick={() => handleApprove(companyId)}
@@ -199,7 +201,7 @@ export default function VerificationPage() {
                                         ) : (
                                             <Check className="w-4 h-4" />
                                         )}
-                                        Approve
+                                        {t('approve')}
                                     </button>
                                 </div>
                             </div>
@@ -212,12 +214,12 @@ export default function VerificationPage() {
             {showRejectModal && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md mx-4">
-                        <h3 className="text-lg font-bold text-gray-900 mb-4">Reject Verification</h3>
-                        <p className="text-gray-600 mb-4">Please provide a reason for rejection:</p>
+                        <h3 className="text-lg font-bold text-gray-900 mb-4">{t('rejectModal.title')}</h3>
+                        <p className="text-gray-600 mb-4">{t('rejectModal.description')}</p>
                         <textarea
                             value={rejectReason}
                             onChange={(e) => setRejectReason(e.target.value)}
-                            placeholder="Enter rejection reason..."
+                            placeholder={t('rejectModal.placeholder')}
                             rows={3}
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent mb-4"
                         />
@@ -229,7 +231,7 @@ export default function VerificationPage() {
                                 }}
                                 className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                             >
-                                Cancel
+                                {t('rejectModal.cancel')}
                             </button>
                             <button
                                 onClick={handleReject}
@@ -241,7 +243,7 @@ export default function VerificationPage() {
                                 ) : (
                                     <X className="w-4 h-4" />
                                 )}
-                                Confirm Reject
+                                {t('rejectModal.confirm')}
                             </button>
                         </div>
                     </div>
