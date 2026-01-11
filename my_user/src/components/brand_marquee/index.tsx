@@ -41,7 +41,7 @@ export default function BrandMarquee() {
                 {brandsList.map((brand, index) => (
                     <div
                         key={`${brand.id}-${index}`}
-                        className="flex items-center justify-center transition-all duration-300 hover:scale-110 cursor-pointer flex-shrink-0"
+                        className="flex items-center justify-center rounded-md transition-all duration-300 hover:scale-110 cursor-pointer flex-shrink-0"
                         title={brand.name}
                     >
                         <img
