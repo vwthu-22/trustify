@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { Flag, Trash2, CheckCircle, RefreshCw, MessageSquare, Star, AlertCircle, CheckSquare, Square } from 'lucide-react'
 import { useModerationStore } from '@/store/useModerationStore'
 import { useTranslations } from 'next-intl'
+import { getIndividualStarColor } from '@/utils/ratingColors'
 
 type TabType = 'pending' | 'reports'
 
@@ -59,11 +60,10 @@ export default function ModerationPage() {
     const renderStars = (rating: number) => {
         return (
             <div className="flex gap-0.5">
-                {[1, 2, 3, 4, 5].map((star) => (
+                {[0, 1, 2, 3, 4].map((starIndex) => (
                     <Star
-                        key={star}
-                        className={`w-4 h-4 ${star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
-                            }`}
+                        key={starIndex}
+                        className={`w-4 h-4 ${getIndividualStarColor(starIndex, rating)}`}
                     />
                 ))}
             </div>
