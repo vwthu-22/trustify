@@ -689,7 +689,11 @@
         "submitVerification": "Submit Verification Request",
         "chooseFiles": "Choose Files",
         "successTitle": "Request Submitted Successfully!",
-        "successDesc": "Your documents have been submitted. We will review them within 1-3 business days."
+        "successDesc": "Your documents have been submitted. We will review them within 1-3 business days.",
+        "rejectedTitle": "Request Rejected",
+        "resubmit": "Resubmit Documents",
+        "resubmitDifferent": "Submit Different Documents",
+        "selectedFile": "Selected file"
     },
     "branches": {
         "title": "Branch Performance Comparison",

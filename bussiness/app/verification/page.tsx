@@ -38,30 +38,40 @@ export default function VerificationPage() {
 
     // Fetch profile on mount to get latest status
     useEffect(() => {
+        // Force clear verification status from localStorage first
+        setVerificationStatus('not-started');
+
+        // Then fetch fresh data from backend
         fetchCompanyProfile();
-    }, [fetchCompanyProfile]);
+    }, [fetchCompanyProfile, setVerificationStatus]);
 
     // Sync verification status from company.verifyStatus
     useEffect(() => {
         if (company) {
             console.log('📋 Company verification data:', {
                 verifyStatus: company.verifyStatus,
-                verified: company.verified
+                verified: company.verified,
+                currentLocalStatus: verificationStatus
             });
 
-            // Sync from backend verifyStatus
+            // ALWAYS sync from backend, ignore localStorage
+            // This ensures we always show the correct status from the server
             if (company.verifyStatus === 'APPROVED') {
+                console.log('✅ Setting status to verified (from backend APPROVED)');
                 setVerificationStatus('verified');
             } else if (company.verifyStatus === 'PENDING') {
+                console.log('⏳ Setting status to pending (from backend PENDING)');
                 setVerificationStatus('pending');
             } else if (company.verifyStatus === 'REJECTED') {
+                console.log('❌ Setting status to rejected (from backend REJECTED)');
                 setVerificationStatus('rejected');
             } else {
                 // If no verifyStatus or null, reset to 'not-started' to clear old localStorage
+                console.log('🔄 Resetting status to not-started (backend has no verifyStatus)');
                 setVerificationStatus('not-started');
             }
         }
-    }, [company?.verifyStatus, setVerificationStatus]);
+    }, [company?.verifyStatus, company?.id, setVerificationStatus]); // Add company.id to force re-sync on company change
 
     // Cleanup previews on unmount
     useEffect(() => {
@@ -197,7 +207,7 @@ export default function VerificationPage() {
                             onClick={() => setVerificationStatus('not-started')}
                             className="text-amber-600 hover:text-amber-800 text-xs underline"
                         >
-                            Gửi lại tài liệu khác
+                            {t('resubmitDifferent')}
                         </button>
                     </div>
                 </div>
@@ -223,7 +233,7 @@ export default function VerificationPage() {
                         onClick={() => setVerificationStatus('not-started')}
                         className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
                     >
-                        {t('resubmit') || 'Gửi lại tài liệu'}
+                        {t('resubmit')}
                     </button>
                 </div>
             </div>
