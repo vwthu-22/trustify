@@ -42,7 +42,7 @@ export default function UsersPage() {
 
     // Edit form
     const [editForm, setEditForm] = useState<{
-        status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED'
+        status: 'ACTIVE' | 'SUSPENDED'
         role: string
     }>({
         status: 'ACTIVE',
@@ -242,7 +242,7 @@ export default function UsersPage() {
                                                     onClick={() => {
                                                         setSelectedUser(user)
                                                         setEditForm({
-                                                            status: user.status,
+                                                            status: user.status === 'INACTIVE' ? 'ACTIVE' : user.status as 'ACTIVE' | 'SUSPENDED',
                                                             role: user.role
                                                         })
                                                         setShowEditModal(true)
@@ -431,11 +431,10 @@ export default function UsersPage() {
                                 </label>
                                 <select
                                     value={editForm.status}
-                                    onChange={(e) => setEditForm({ ...editForm, status: e.target.value as 'ACTIVE' | 'INACTIVE' | 'SUSPENDED' })}
+                                    onChange={(e) => setEditForm({ ...editForm, status: e.target.value as 'ACTIVE' | 'SUSPENDED' })}
                                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                                 >
                                     <option value="ACTIVE">{tCommon('active')}</option>
-                                    <option value="INACTIVE">{tCommon('inactive')}</option>
                                     <option value="SUSPENDED">{tCommon('suspended')}</option>
                                 </select>
                             </div>

@@ -34,20 +34,42 @@ export interface Report {
     originalReview: ReviewReport;
 }
 
+// Pending review for approval
+export interface PendingReview {
+    id: number;
+    title: string;
+    description: string;
+    rating: number;
+    userName: string;
+    userEmail: string;
+    companyName: string;
+    createdAt: string;
+    status: 'pending' | 'approved' | 'rejected';
+}
+
 interface ModerationState {
     reports: Report[];
+    pendingReviews: PendingReview[];
     isLoading: boolean;
+    isPendingLoading: boolean;
     error: string | null;
 
-    // Actions
+    // Actions for reports
     fetchReports: () => Promise<void>;
     dismissReport: (report: Report) => Promise<void>;
     deleteReview: (report: Report) => Promise<void>;
+
+    // Actions for pending reviews
+    fetchPendingReviews: () => Promise<void>;
+    approveReview: (reviewId: number) => Promise<void>;
+    rejectReview: (reviewId: number) => Promise<void>;
 }
 
 export const useModerationStore = create<ModerationState>((set, get) => ({
     reports: [],
+    pendingReviews: [],
     isLoading: false,
+    isPendingLoading: false,
     error: null,
 
     fetchReports: async () => {
@@ -188,6 +210,133 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
         } catch (err) {
             console.error('Error deleting review:', err);
             set({ error: 'Error deleting review' });
+        }
+    },
+
+    // Fetch pending reviews (status = 'pending')
+    fetchPendingReviews: async () => {
+        set({ isPendingLoading: true, error: null });
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/review/allReports?page=0&size=100`, {
+                credentials: 'include',
+                headers: {
+                    'ngrok-skip-browser-warning': 'true'
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+
+                // Handle different response formats
+                let reviewList: ReviewReport[] = [];
+                if (Array.isArray(data)) {
+                    reviewList = data;
+                } else if (data.content && Array.isArray(data.content)) {
+                    reviewList = data.content;
+                } else if (data.reviews && Array.isArray(data.reviews)) {
+                    reviewList = data.reviews;
+                } else {
+                    reviewList = Object.values(data).filter(item => typeof item === 'object' && item !== null) as ReviewReport[];
+                }
+
+                // Filter only pending reviews (status = 'pending')
+                const pendingReviews: PendingReview[] = reviewList
+                    .filter(r => r.status === 'pending')
+                    .map(r => ({
+                        id: r.id,
+                        title: r.title,
+                        description: r.description,
+                        rating: r.rating,
+                        userName: r.userName || r.email?.split('@')[0] || 'User',
+                        userEmail: r.userEmail || r.email || '',
+                        companyName: r.companyName || '',
+                        createdAt: r.expDate || new Date().toISOString(),
+                        status: 'pending' as const
+                    }));
+
+                set({ pendingReviews, isPendingLoading: false });
+            } else {
+                set({ error: 'Failed to fetch pending reviews', isPendingLoading: false });
+            }
+        } catch (err) {
+            console.error('Error fetching pending reviews:', err);
+            set({ error: 'Error loading pending reviews', isPendingLoading: false });
+        }
+    },
+
+    // Approve review
+    approveReview: async (reviewId: number) => {
+        try {
+            const review = get().pendingReviews.find(r => r.id === reviewId);
+            if (!review) return;
+
+            const response = await fetch(`${API_BASE_URL}/api/review/${reviewId}`, {
+                method: 'PUT',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true'
+                },
+                body: JSON.stringify({
+                    id: reviewId,
+                    title: review.title,
+                    description: review.description,
+                    rating: review.rating,
+                    email: review.userEmail,
+                    companyName: review.companyName,
+                    expDate: review.createdAt,
+                    status: 'approved'
+                })
+            });
+
+            if (response.ok) {
+                set(state => ({
+                    pendingReviews: state.pendingReviews.filter(r => r.id !== reviewId)
+                }));
+            } else {
+                set({ error: 'Failed to approve review' });
+            }
+        } catch (err) {
+            console.error('Error approving review:', err);
+            set({ error: 'Error approving review' });
+        }
+    },
+
+    // Reject review
+    rejectReview: async (reviewId: number) => {
+        try {
+            const review = get().pendingReviews.find(r => r.id === reviewId);
+            if (!review) return;
+
+            const response = await fetch(`${API_BASE_URL}/api/review/${reviewId}`, {
+                method: 'PUT',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true'
+                },
+                body: JSON.stringify({
+                    id: reviewId,
+                    title: review.title,
+                    description: review.description,
+                    rating: review.rating,
+                    email: review.userEmail,
+                    companyName: review.companyName,
+                    expDate: review.createdAt,
+                    status: 'rejected'
+                })
+            });
+
+            if (response.ok) {
+                set(state => ({
+                    pendingReviews: state.pendingReviews.filter(r => r.id !== reviewId)
+                }));
+            } else {
+                set({ error: 'Failed to reject review' });
+            }
+        } catch (err) {
+            console.error('Error rejecting review:', err);
+            set({ error: 'Error rejecting review' });
         }
     }
 }));
