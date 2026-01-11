@@ -63,6 +63,8 @@ interface ModerationState {
     fetchPendingReviews: () => Promise<void>;
     approveReview: (reviewId: number) => Promise<void>;
     rejectReview: (reviewId: number) => Promise<void>;
+    bulkApproveReviews: (reviewIds: number[]) => Promise<void>;
+    bulkRejectReviews: (reviewIds: number[]) => Promise<void>;
 }
 
 export const useModerationStore = create<ModerationState>((set, get) => ({
@@ -337,6 +339,100 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
         } catch (err) {
             console.error('Error rejecting review:', err);
             set({ error: 'Error rejecting review' });
+        }
+    },
+
+    // Bulk approve reviews
+    bulkApproveReviews: async (reviewIds: number[]) => {
+        try {
+            const reviews = get().pendingReviews.filter(r => reviewIds.includes(r.id));
+
+            // Process all approvals in parallel
+            const promises = reviews.map(review =>
+                fetch(`${API_BASE_URL}/api/review/${review.id}`, {
+                    method: 'PUT',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': 'true'
+                    },
+                    body: JSON.stringify({
+                        id: review.id,
+                        title: review.title,
+                        description: review.description,
+                        rating: review.rating,
+                        email: review.userEmail,
+                        companyName: review.companyName,
+                        expDate: review.createdAt,
+                        status: 'approved'
+                    })
+                })
+            );
+
+            const results = await Promise.allSettled(promises);
+            const successfulIds = reviewIds.filter((_, index) =>
+                results[index].status === 'fulfilled' && (results[index] as PromiseFulfilledResult<Response>).value.ok
+            );
+
+            if (successfulIds.length > 0) {
+                set(state => ({
+                    pendingReviews: state.pendingReviews.filter(r => !successfulIds.includes(r.id))
+                }));
+            }
+
+            if (successfulIds.length < reviewIds.length) {
+                set({ error: `Đã duyệt ${successfulIds.length}/${reviewIds.length} bình luận` });
+            }
+        } catch (err) {
+            console.error('Error bulk approving reviews:', err);
+            set({ error: 'Error bulk approving reviews' });
+        }
+    },
+
+    // Bulk reject reviews
+    bulkRejectReviews: async (reviewIds: number[]) => {
+        try {
+            const reviews = get().pendingReviews.filter(r => reviewIds.includes(r.id));
+
+            // Process all rejections in parallel
+            const promises = reviews.map(review =>
+                fetch(`${API_BASE_URL}/api/review/${review.id}`, {
+                    method: 'PUT',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': 'true'
+                    },
+                    body: JSON.stringify({
+                        id: review.id,
+                        title: review.title,
+                        description: review.description,
+                        rating: review.rating,
+                        email: review.userEmail,
+                        companyName: review.companyName,
+                        expDate: review.createdAt,
+                        status: 'rejected'
+                    })
+                })
+            );
+
+            const results = await Promise.allSettled(promises);
+            const successfulIds = reviewIds.filter((_, index) =>
+                results[index].status === 'fulfilled' && (results[index] as PromiseFulfilledResult<Response>).value.ok
+            );
+
+            if (successfulIds.length > 0) {
+                set(state => ({
+                    pendingReviews: state.pendingReviews.filter(r => !successfulIds.includes(r.id))
+                }));
+            }
+
+            if (successfulIds.length < reviewIds.length) {
+                set({ error: `Đã từ chối ${successfulIds.length}/${reviewIds.length} bình luận` });
+            }
+        } catch (err) {
+            console.error('Error bulk rejecting reviews:', err);
+            set({ error: 'Error bulk rejecting reviews' });
         }
     }
 }));

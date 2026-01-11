@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Flag, Trash2, CheckCircle, RefreshCw, MessageSquare, Star, AlertCircle } from 'lucide-react'
+import { Flag, Trash2, CheckCircle, RefreshCw, MessageSquare, Star, AlertCircle, CheckSquare, Square } from 'lucide-react'
 import { useModerationStore } from '@/store/useModerationStore'
 
 type TabType = 'pending' | 'reports'
@@ -18,12 +18,17 @@ export default function ModerationPage() {
         deleteReview,
         fetchPendingReviews,
         approveReview,
-        rejectReview
+        rejectReview,
+        bulkApproveReviews,
+        bulkRejectReviews
     } = useModerationStore();
 
     const [activeTab, setActiveTab] = useState<TabType>('pending')
+    const [selectedReviews, setSelectedReviews] = useState<number[]>([])
+
 
     useEffect(() => {
+        setSelectedReviews([]); // Reset selection when switching tabs
         if (activeTab === 'pending') {
             fetchPendingReviews();
         } else {
@@ -76,6 +81,35 @@ export default function ModerationPage() {
         } else {
             fetchReports();
         }
+    };
+
+    // Bulk selection handlers
+    const toggleSelectReview = (reviewId: number) => {
+        setSelectedReviews(prev =>
+            prev.includes(reviewId)
+                ? prev.filter(id => id !== reviewId)
+                : [...prev, reviewId]
+        );
+    };
+
+    const toggleSelectAll = () => {
+        if (selectedReviews.length === pendingReviews.length) {
+            setSelectedReviews([]);
+        } else {
+            setSelectedReviews(pendingReviews.map(r => r.id));
+        }
+    };
+
+    const handleBulkApprove = async () => {
+        if (selectedReviews.length === 0) return;
+        await bulkApproveReviews(selectedReviews);
+        setSelectedReviews([]);
+    };
+
+    const handleBulkReject = async () => {
+        if (selectedReviews.length === 0) return;
+        await bulkRejectReviews(selectedReviews);
+        setSelectedReviews([]);
     };
 
     return (
@@ -151,53 +185,109 @@ export default function ModerationPage() {
                                     <p className="text-gray-400 text-sm mt-1">Tất cả bình luận đã được xử lý</p>
                                 </div>
                             ) : (
-                                pendingReviews.map((review) => (
-                                    <div key={review.id} className="bg-white rounded-xl border-2 border-blue-100 hover:border-blue-200 transition-all p-5 shadow-sm">
-                                        <div className="flex justify-between items-start mb-3">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold">
-                                                    {review.userName.charAt(0).toUpperCase()}
-                                                </div>
-                                                <div>
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="font-semibold text-gray-900">{review.userName}</span>
-                                                        <span className="text-gray-400 text-sm">đánh giá</span>
-                                                        <span className="font-semibold text-blue-600">{review.companyName}</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-2 mt-1">
-                                                        {renderStars(review.rating)}
-                                                        <span className="text-xs text-gray-500">{formatTimeAgo(review.createdAt)}</span>
-                                                    </div>
-                                                </div>
+                                <>
+                                    {/* Bulk Action Bar */}
+                                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-4 flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <button
+                                                onClick={toggleSelectAll}
+                                                className="flex items-center gap-2 px-3 py-2 bg-white border-2 border-blue-300 rounded-lg hover:bg-blue-50 transition-all"
+                                            >
+                                                {selectedReviews.length === pendingReviews.length ? (
+                                                    <CheckSquare className="w-5 h-5 text-blue-600" />
+                                                ) : (
+                                                    <Square className="w-5 h-5 text-gray-400" />
+                                                )}
+                                                <span className="text-sm font-medium text-gray-700">
+                                                    {selectedReviews.length === pendingReviews.length ? 'Bỏ chọn tất cả' : 'Chọn tất cả'}
+                                                </span>
+                                            </button>
+                                            {selectedReviews.length > 0 && (
+                                                <span className="px-3 py-1 bg-blue-600 text-white text-sm font-semibold rounded-full">
+                                                    {selectedReviews.length} đã chọn
+                                                </span>
+                                            )}
+                                        </div>
+                                        {selectedReviews.length > 0 && (
+                                            <div className="flex gap-2">
+                                                <button
+                                                    onClick={handleBulkApprove}
+                                                    className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 rounded-lg transition-all flex items-center gap-2 shadow-md"
+                                                >
+                                                    <CheckCircle className="w-4 h-4" />
+                                                    Duyệt hàng loạt ({selectedReviews.length})
+                                                </button>
+                                                <button
+                                                    onClick={handleBulkReject}
+                                                    className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-lg transition-all flex items-center gap-2 shadow-md"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                    Từ chối hàng loạt ({selectedReviews.length})
+                                                </button>
                                             </div>
-                                            <span className="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-medium rounded-full">
-                                                Chờ duyệt
-                                            </span>
-                                        </div>
-
-                                        <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-lg mb-4">
-                                            <p className="font-semibold text-gray-900 mb-2">"{review.title}"</p>
-                                            <p className="text-gray-700 text-sm whitespace-pre-wrap leading-relaxed">
-                                                {review.description}
-                                            </p>
-                                        </div>
-
-                                        <div className="flex gap-3 pt-3 border-t border-gray-100">
-                                            <button
-                                                onClick={() => approveReview(review.id)}
-                                                className="flex-1 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 rounded-lg transition-all flex items-center justify-center gap-2 shadow-sm"
-                                            >
-                                                <CheckCircle className="w-4 h-4" /> Phê duyệt
-                                            </button>
-                                            <button
-                                                onClick={() => rejectReview(review.id)}
-                                                className="flex-1 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-lg transition-all flex items-center justify-center gap-2 shadow-sm"
-                                            >
-                                                <Trash2 className="w-4 h-4" /> Từ chối
-                                            </button>
-                                        </div>
+                                        )}
                                     </div>
-                                ))
+
+                                    {/* Review Cards */}
+                                    {pendingReviews.map((review) => (
+                                        <div key={review.id} className="bg-white rounded-xl border-2 border-blue-100 hover:border-blue-200 transition-all p-5 shadow-sm">
+                                            <div className="flex justify-between items-start mb-3">
+                                                <div className="flex items-center gap-3">
+                                                    {/* Checkbox */}
+                                                    <button
+                                                        onClick={() => toggleSelectReview(review.id)}
+                                                        className="flex-shrink-0"
+                                                    >
+                                                        {selectedReviews.includes(review.id) ? (
+                                                            <CheckSquare className="w-6 h-6 text-blue-600" />
+                                                        ) : (
+                                                            <Square className="w-6 h-6 text-gray-300 hover:text-blue-400 transition-colors" />
+                                                        )}
+                                                    </button>
+                                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold">
+                                                        {review.userName.charAt(0).toUpperCase()}
+                                                    </div>
+                                                    <div>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="font-semibold text-gray-900">{review.userName}</span>
+                                                            <span className="text-gray-400 text-sm">đánh giá</span>
+                                                            <span className="font-semibold text-blue-600">{review.companyName}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2 mt-1">
+                                                            {renderStars(review.rating)}
+                                                            <span className="text-xs text-gray-500">{formatTimeAgo(review.createdAt)}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <span className="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-medium rounded-full">
+                                                    Chờ duyệt
+                                                </span>
+                                            </div>
+
+                                            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-lg mb-4">
+                                                <p className="font-semibold text-gray-900 mb-2">"{review.title}"</p>
+                                                <p className="text-gray-700 text-sm whitespace-pre-wrap leading-relaxed">
+                                                    {review.description}
+                                                </p>
+                                            </div>
+
+                                            <div className="flex gap-3 pt-3 border-t border-gray-100">
+                                                <button
+                                                    onClick={() => approveReview(review.id)}
+                                                    className="flex-1 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 rounded-lg transition-all flex items-center justify-center gap-2 shadow-sm"
+                                                >
+                                                    <CheckCircle className="w-4 h-4" /> Phê duyệt
+                                                </button>
+                                                <button
+                                                    onClick={() => rejectReview(review.id)}
+                                                    className="flex-1 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-lg transition-all flex items-center justify-center gap-2 shadow-sm"
+                                                >
+                                                    <Trash2 className="w-4 h-4" /> Từ chối
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </>
                             )}
                         </div>
                     )}
