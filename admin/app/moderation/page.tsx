@@ -3,10 +3,14 @@
 import { useEffect, useState } from 'react'
 import { Flag, Trash2, CheckCircle, RefreshCw, MessageSquare, Star, AlertCircle, CheckSquare, Square } from 'lucide-react'
 import { useModerationStore } from '@/store/useModerationStore'
+import { useTranslations } from 'next-intl'
 
 type TabType = 'pending' | 'reports'
 
 export default function ModerationPage() {
+    const t = useTranslations('moderation');
+    const tCommon = useTranslations('common');
+
     const {
         reports,
         pendingReviews,
@@ -45,9 +49,10 @@ export default function ModerationPage() {
         const diffHours = Math.floor(diffMs / 3600000);
         const diffDays = Math.floor(diffMs / 86400000);
 
-        if (diffMins < 60) return `${diffMins} phút trước`;
-        if (diffHours < 24) return `${diffHours} giờ trước`;
-        return `${diffDays} ngày trước`;
+        if (diffMins < 1) return t('justNow');
+        if (diffMins < 60) return t('minsAgo', { count: diffMins });
+        if (diffHours < 24) return t('hoursAgo', { count: diffHours });
+        return t('daysAgo', { count: diffDays });
     };
 
     // Render stars
@@ -127,7 +132,7 @@ export default function ModerationPage() {
                                     }`}
                             >
                                 <MessageSquare className="w-4 h-4" />
-                                Duyệt bình luận
+                                {t('pendingTab')}
                                 {pendingReviews.length > 0 && (
                                     <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">
                                         {pendingReviews.length}
@@ -142,7 +147,7 @@ export default function ModerationPage() {
                                     }`}
                             >
                                 <Flag className="w-4 h-4" />
-                                Báo cáo vi phạm
+                                {t('reportsTab')}
                                 {pendingReports.length > 0 && (
                                     <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs rounded-full">
                                         {pendingReports.length}
@@ -156,7 +161,7 @@ export default function ModerationPage() {
                             className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2 disabled:opacity-50"
                         >
                             <RefreshCw className={`w-4 h-4 ${(isLoading || isPendingLoading) ? 'animate-spin' : ''}`} />
-                            Làm mới
+                            {t('refresh')}
                         </button>
                     </div>
                 </div>
@@ -181,8 +186,8 @@ export default function ModerationPage() {
                             ) : pendingReviews.length === 0 ? (
                                 <div className="bg-gray-50 rounded-xl p-12 text-center">
                                     <MessageSquare className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                                    <p className="text-gray-500 text-lg font-medium">Không có bình luận nào chờ duyệt</p>
-                                    <p className="text-gray-400 text-sm mt-1">Tất cả bình luận đã được xử lý</p>
+                                    <p className="text-gray-500 text-lg font-medium">{t('noPendingReviews')}</p>
+                                    <p className="text-gray-400 text-sm mt-1">{t('allProcessed')}</p>
                                 </div>
                             ) : (
                                 <>
@@ -199,12 +204,12 @@ export default function ModerationPage() {
                                                     <Square className="w-5 h-5 text-gray-400" />
                                                 )}
                                                 <span className="text-sm font-medium text-gray-700">
-                                                    {selectedReviews.length === pendingReviews.length ? 'Bỏ chọn tất cả' : 'Chọn tất cả'}
+                                                    {selectedReviews.length === pendingReviews.length ? t('deselectAll') : t('selectAll')}
                                                 </span>
                                             </button>
                                             {selectedReviews.length > 0 && (
                                                 <span className="px-3 py-1 bg-blue-600 text-white text-sm font-semibold rounded-full">
-                                                    {selectedReviews.length} đã chọn
+                                                    {t('selectedCount', { count: selectedReviews.length })}
                                                 </span>
                                             )}
                                         </div>
@@ -215,14 +220,14 @@ export default function ModerationPage() {
                                                     className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 rounded-lg transition-all flex items-center gap-2 shadow-md"
                                                 >
                                                     <CheckCircle className="w-4 h-4" />
-                                                    Duyệt hàng loạt ({selectedReviews.length})
+                                                    {t('bulkApprove', { count: selectedReviews.length })}
                                                 </button>
                                                 <button
                                                     onClick={handleBulkReject}
                                                     className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-lg transition-all flex items-center gap-2 shadow-md"
                                                 >
                                                     <Trash2 className="w-4 h-4" />
-                                                    Từ chối hàng loạt ({selectedReviews.length})
+                                                    {t('bulkReject', { count: selectedReviews.length })}
                                                 </button>
                                             </div>
                                         )}
@@ -250,7 +255,8 @@ export default function ModerationPage() {
                                                     <div>
                                                         <div className="flex items-center gap-2">
                                                             <span className="font-semibold text-gray-900">{review.userName}</span>
-                                                            <span className="text-gray-400 text-sm">đánh giá</span>
+                                                            <span className="text-gray-400 text-sm">{t('review')}</span>
+                                                            <span className="text-gray-400 text-sm">{t('on')}</span>
                                                             <span className="font-semibold text-blue-600">{review.companyName}</span>
                                                         </div>
                                                         <div className="flex items-center gap-2 mt-1">
@@ -260,7 +266,7 @@ export default function ModerationPage() {
                                                     </div>
                                                 </div>
                                                 <span className="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-medium rounded-full">
-                                                    Chờ duyệt
+                                                    {t('pendingStatus')}
                                                 </span>
                                             </div>
 
@@ -276,13 +282,13 @@ export default function ModerationPage() {
                                                     onClick={() => approveReview(review.id)}
                                                     className="flex-1 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 rounded-lg transition-all flex items-center justify-center gap-2 shadow-sm"
                                                 >
-                                                    <CheckCircle className="w-4 h-4" /> Phê duyệt
+                                                    <CheckCircle className="w-4 h-4" /> {t('approve')}
                                                 </button>
                                                 <button
                                                     onClick={() => rejectReview(review.id)}
                                                     className="flex-1 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-lg transition-all flex items-center justify-center gap-2 shadow-sm"
                                                 >
-                                                    <Trash2 className="w-4 h-4" /> Từ chối
+                                                    <Trash2 className="w-4 h-4" /> {t('reject')}
                                                 </button>
                                             </div>
                                         </div>
@@ -302,8 +308,8 @@ export default function ModerationPage() {
                             ) : pendingReports.length === 0 ? (
                                 <div className="bg-gray-50 rounded-xl p-12 text-center">
                                     <Flag className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                                    <p className="text-gray-500 text-lg font-medium">Không có báo cáo nào chờ xử lý</p>
-                                    <p className="text-gray-400 text-sm mt-1">Tất cả báo cáo đã được giải quyết</p>
+                                    <p className="text-gray-500 text-lg font-medium">{t('noReports')}</p>
+                                    <p className="text-gray-400 text-sm mt-1">{t('allResolved')}</p>
                                 </div>
                             ) : (
                                 sortedPendingReports.map((report) => (
@@ -316,9 +322,10 @@ export default function ModerationPage() {
                                                 <div>
                                                     <div className="flex items-center gap-2">
                                                         <span className="font-semibold text-gray-900">
-                                                            {report.reviewerName || report.reviewerEmail || 'Người dùng ẩn danh'}
+                                                            {report.reviewerName || report.reviewerEmail || t('anonymousUser')}
                                                         </span>
-                                                        <span className="text-gray-400 text-sm">đánh giá</span>
+                                                        <span className="text-gray-400 text-sm">{t('review')}</span>
+                                                        <span className="text-gray-400 text-sm">{t('on')}</span>
                                                         <span className="font-semibold text-blue-600">{report.companyName}</span>
                                                     </div>
                                                     <div className="flex items-center gap-2 mt-1">
@@ -330,7 +337,7 @@ export default function ModerationPage() {
                                             <div className="flex gap-2">
                                                 <span className="px-3 py-1 bg-red-100 text-red-700 text-xs font-medium rounded-full flex items-center gap-1">
                                                     <Flag className="w-3 h-3" />
-                                                    {reports.filter(r => r.reviewId === report.reviewId).length} báo cáo
+                                                    {t('reportsCount', { count: reports.filter(r => r.reviewId === report.reviewId).length })}
                                                 </span>
                                             </div>
                                         </div>
@@ -345,7 +352,7 @@ export default function ModerationPage() {
                                         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
                                             <div className="flex items-center gap-2 mb-1">
                                                 <AlertCircle className="w-4 h-4 text-yellow-600" />
-                                                <span className="text-xs font-semibold text-yellow-800">Lý do báo cáo:</span>
+                                                <span className="text-xs font-semibold text-yellow-800">{t('reasonLabel')}</span>
                                             </div>
                                             <p className="text-sm text-yellow-900 ml-6">{report.reason}</p>
                                         </div>
@@ -355,13 +362,13 @@ export default function ModerationPage() {
                                                 onClick={() => dismissReport(report)}
                                                 className="flex-1 py-2.5 text-sm font-semibold text-gray-700 bg-white border-2 border-gray-300 hover:bg-gray-50 rounded-lg transition-all flex items-center justify-center gap-2"
                                             >
-                                                <CheckCircle className="w-4 h-4" /> Giữ lại bình luận
+                                                <CheckCircle className="w-4 h-4" /> {t('keepReview')}
                                             </button>
                                             <button
                                                 onClick={() => deleteReview(report)}
                                                 className="flex-1 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-lg transition-all flex items-center justify-center gap-2 shadow-sm"
                                             >
-                                                <Trash2 className="w-4 h-4" /> Xóa bình luận
+                                                <Trash2 className="w-4 h-4" /> {t('deleteReview')}
                                             </button>
                                         </div>
                                     </div>
@@ -374,3 +381,4 @@ export default function ModerationPage() {
         </div>
     )
 }
+

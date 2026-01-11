@@ -249,35 +249,20 @@ export default function UsersPage() {
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2">
                                                 {user.role !== 'ADMIN' && (
-                                                    <>
-                                                        <button
-                                                            onClick={() => {
-                                                                setSelectedUser(user)
-                                                                setEditForm({
-                                                                    status: user.status === 'INACTIVE' ? 'ACTIVE' : user.status as 'ACTIVE' | 'SUSPENDED',
-                                                                    role: user.role
-                                                                })
-                                                                setShowEditModal(true)
-                                                            }}
-                                                            className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                            title={tCommon('edit')}
-                                                        >
-                                                            <Edit className="w-4 h-4" />
-                                                        </button>
-                                                        {user.numberOfReport > 0 && (
-                                                            <button
-                                                                onClick={async () => {
-                                                                    if (confirm(`Reset report count for ${user.name}?`)) {
-                                                                        await resetReportCount(user.id)
-                                                                    }
-                                                                }}
-                                                                className="p-1.5 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                                                                title="Reset Reports"
-                                                            >
-                                                                <Shield className="w-4 h-4" />
-                                                            </button>
-                                                        )}
-                                                    </>
+                                                    <button
+                                                        onClick={() => {
+                                                            setSelectedUser(user)
+                                                            setEditForm({
+                                                                status: user.status === 'INACTIVE' ? 'ACTIVE' : user.status as 'ACTIVE' | 'SUSPENDED',
+                                                                role: user.role
+                                                            })
+                                                            setShowEditModal(true)
+                                                        }}
+                                                        className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                        title={tCommon('edit')}
+                                                    >
+                                                        <Edit className="w-4 h-4" />
+                                                    </button>
                                                 )}
                                             </div>
                                         </td>
@@ -465,6 +450,38 @@ export default function UsersPage() {
                                     <option value="SUSPENDED">{tCommon('suspended')}</option>
                                 </select>
                             </div>
+
+                            {/* Report Count Info */}
+                            {selectedUser.numberOfReport > 0 && (
+                                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-sm font-medium text-yellow-800">
+                                            Report Count: {selectedUser.numberOfReport}
+                                        </span>
+                                        <span className={`text-xs px-2 py-0.5 rounded-full ${selectedUser.numberOfReport >= 5 ? 'bg-red-100 text-red-700' :
+                                                selectedUser.numberOfReport >= 3 ? 'bg-yellow-100 text-yellow-700' :
+                                                    'bg-gray-100 text-gray-700'
+                                            }`}>
+                                            {selectedUser.numberOfReport >= 5 ? 'Critical' :
+                                                selectedUser.numberOfReport >= 3 ? 'Warning' : 'Low'}
+                                        </span>
+                                    </div>
+                                    <button
+                                        onClick={async () => {
+                                            if (confirm(`Reset report count for ${selectedUser.name}?`)) {
+                                                const success = await resetReportCount(selectedUser.id)
+                                                if (success) {
+                                                    setShowEditModal(false)
+                                                    setSelectedUser(null)
+                                                }
+                                            }
+                                        }}
+                                        className="w-full mt-2 px-3 py-1.5 bg-yellow-600 hover:bg-yellow-700 text-white text-sm rounded-lg transition-colors"
+                                    >
+                                        Reset Report Count
+                                    </button>
+                                </div>
+                            )}
                         </div>
 
                         <div className="flex gap-3">

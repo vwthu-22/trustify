@@ -332,5 +332,35 @@
       "closed": "Đã đóng",
       "pending": "Đang chờ"
     }
+  },
+  "moderation": {
+    "title": "Kiểm duyệt",
+    "pendingTab": "Duyệt bình luận",
+    "reportsTab": "Báo cáo vi phạm",
+    "refresh": "Làm mới",
+    "noPendingReviews": "Không có bình luận nào chờ duyệt",
+    "allProcessed": "Tất cả bình luận đã được xử lý",
+    "noReports": "Không có báo cáo nào chờ xử lý",
+    "allResolved": "Tất cả báo cáo đã được giải quyết",
+    "bulkActions": "Hành động hàng loạt",
+    "selectAll": "Chọn tất cả",
+    "deselectAll": "Bỏ chọn tất cả",
+    "selectedCount": "{count} đã chọn",
+    "bulkApprove": "Duyệt hàng loạt ({count})",
+    "bulkReject": "Từ chối hàng loạt ({count})",
+    "review": "đánh giá",
+    "on": "về",
+    "pendingStatus": "Chờ duyệt",
+    "approve": "Phê duyệt",
+    "reject": "Từ chối",
+    "reasonLabel": "Lý do báo cáo:",
+    "keepReview": "Giữ lại bình luận",
+    "deleteReview": "Xóa bình luận",
+    "reportsCount": "{count} báo cáo",
+    "anonymousUser": "Người dùng ẩn danh",
+    "minsAgo": "{count} phút trước",
+    "hoursAgo": "{count} giờ trước",
+    "daysAgo": "{count} ngày trước",
+    "justNow": "Vừa xong"
   }
 }

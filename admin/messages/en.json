@@ -331,5 +331,35 @@
             "closed": "Closed",
             "pending": "Pending"
         }
+    },
+    "moderation": {
+        "title": "Moderation",
+        "pendingTab": "Review Approval",
+        "reportsTab": "Reported Violations",
+        "refresh": "Refresh",
+        "noPendingReviews": "No reviews pending approval",
+        "allProcessed": "All reviews have been processed",
+        "noReports": "No reports pending resolution",
+        "allResolved": "All reports have been resolved",
+        "bulkActions": "Bulk Actions",
+        "selectAll": "Select All",
+        "deselectAll": "Deselect All",
+        "selectedCount": "{count} selected",
+        "bulkApprove": "Bulk Approve ({count})",
+        "bulkReject": "Bulk Reject ({count})",
+        "review": "review",
+        "on": "on",
+        "pendingStatus": "Pending",
+        "approve": "Approve",
+        "reject": "Reject",
+        "reasonLabel": "Reason for report:",
+        "keepReview": "Keep Review",
+        "deleteReview": "Delete Review",
+        "reportsCount": "{count} reports",
+        "anonymousUser": "Anonymous User",
+        "minsAgo": "{count} minutes ago",
+        "hoursAgo": "{count} hours ago",
+        "daysAgo": "{count} days ago",
+        "justNow": "Just now"
     }
 }
