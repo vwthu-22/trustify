@@ -491,5 +491,11 @@
         "ctaDesc": "Tham gia cộng đồng Trustify và chia sẻ trải nghiệm của bạn ngay hôm nay",
         "writeReview": "Viết đánh giá",
         "forBusinesses": "Dành cho doanh nghiệp"
+    },
+    "suspension": {
+        "title": "Tài khoản bị đình chỉ",
+        "message": "Tài khoản của bạn đã bị đình chỉ **7 ngày** do nội dung bình luận có số lượng báo cáo vượt mức cho phép. Vui lòng quay lại khi thời gian đình chỉ kết thúc.",
+        "timeLeft": "Thời gian còn lại:",
+        "reportBlocked": "Tài khoản của bạn đang bị đình chỉ. Bạn không thể thực hiện báo cáo đánh giá trong thời gian này."
     }
 }

@@ -11,6 +11,7 @@ import useReviewStore from '@/stores/reviewStore/review';
 import useAuthStore from '@/stores/userAuthStore/user';
 import { getStarColor, getBarColor, getRatingLabel, STAR_COLORS } from '@/utils/ratingColors';
 import { useTranslations } from 'next-intl';
+import SuspensionBanner from '@/components/SuspensionBanner';
 
 export default function CompanyReviewPage() {
     const params = useParams();
@@ -19,6 +20,7 @@ export default function CompanyReviewPage() {
     const tReview = useTranslations('review');
     const tHeader = useTranslations('header');
     const tCommon = useTranslations('common');
+    const tSuspension = useTranslations('suspension');
 
     const { currentCompany, isLoading, error, fetchCompanyById } = useCompanyStore();
     const {
@@ -74,12 +76,19 @@ export default function CompanyReviewPage() {
     const [reportReason, setReportReason] = useState('');
     const [isSubmittingReport, setIsSubmittingReport] = useState(false);
     const [reportSuccess, setReportSuccess] = useState(false);
+    const [reportModalError, setReportModalError] = useState<string | null>(null);
 
     // Handle report review
     const handleReportReview = async () => {
         if (!reportingReview || !reportReason.trim()) return;
 
+        if (user?.status === 'SUSPENDED') {
+            setReportModalError('ACCOUNT_SUSPENDED');
+            return;
+        }
+
         setIsSubmittingReport(true);
+        setReportModalError(null);
         try {
             const success = await reportReview(reportingReview, reportReason.trim());
 
@@ -91,7 +100,17 @@ export default function CompanyReviewPage() {
                     setReportReason('');
                     setReportSuccess(false);
                 }, 2000);
+            } else {
+                // If the store failed but we didn't throw, check if it's because of suspension
+                if (user?.status === 'SUSPENDED') {
+                    setReportModalError('ACCOUNT_SUSPENDED');
+                } else {
+                    setReportModalError('Failed to submit report. Please try again.');
+                }
             }
+        } catch (err: any) {
+            console.error('Report error in UI:', err);
+            setReportModalError(err.message || 'An unexpected error occurred.');
         } finally {
             setIsSubmittingReport(false);
         }
@@ -773,6 +792,7 @@ export default function CompanyReviewPage() {
                                 setIsReportModalOpen(false);
                                 setReportingReview(null);
                                 setReportReason('');
+                                setReportModalError(null);
                             }}
                             className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
                         >
@@ -783,6 +803,17 @@ export default function CompanyReviewPage() {
                             <Flag className="w-5 h-5 text-red-500" />
                             <h3 className="text-lg font-bold text-gray-900">{tReview('reportReview')}</h3>
                         </div>
+
+                        {(user?.status === 'SUSPENDED' || reportModalError === 'ACCOUNT_SUSPENDED') ? (
+                            <SuspensionBanner
+                                suspendedAt={user?.suspendedAt}
+                                message={tSuspension('reportBlocked')}
+                            />
+                        ) : reportModalError && (
+                            <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg text-sm">
+                                {reportModalError}
+                            </div>
+                        )}
 
                         {reportSuccess ? (
                             <div className="text-center py-8">
@@ -824,7 +855,7 @@ export default function CompanyReviewPage() {
                                     </button>
                                     <button
                                         onClick={handleReportReview}
-                                        disabled={!reportReason.trim() || isSubmittingReport}
+                                        disabled={!reportReason.trim() || isSubmittingReport || user?.status === 'SUSPENDED'}
                                         className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         {isSubmittingReport ? tReview('submittingReport') : tReview('submitReport')}

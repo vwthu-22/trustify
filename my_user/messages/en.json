@@ -491,5 +491,11 @@
         "ctaDesc": "Join the Trustify community and share your experience today",
         "writeReview": "Write a review",
         "forBusinesses": "For businesses"
+    },
+    "suspension": {
+        "title": "Account Suspended",
+        "message": "Your account has been suspended for **7 days** due to excessive reports on your comments. Please return when the suspension period ends.",
+        "timeLeft": "Time remaining:",
+        "reportBlocked": "Your account is currently suspended. You cannot report reviews at this time."
     }
 }

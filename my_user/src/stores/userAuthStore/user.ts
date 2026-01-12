@@ -10,6 +10,8 @@ interface User {
   email: string;
   avatar?: string;
   country?: string;
+  status?: string;
+  suspendedAt?: string | null;
 }
 
 interface AuthState {
@@ -134,6 +136,8 @@ const useAuthStore = create<AuthState>()(
             email: userData.email,
             avatar: userData.avatarUrl || userData.avatar || '',
             country: userData.country || '',
+            status: userData.status || 'ACTIVE',
+            suspendedAt: userData.suspendedAt || null,
           };
 
           console.log('Processed User:', user);

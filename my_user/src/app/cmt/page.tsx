@@ -5,6 +5,7 @@ import useRatingStore from '@/stores/ratingStore/rating';
 import useReviewStore from '@/stores/reviewStore/review';
 import useUserAuthStore from '@/stores/userAuthStore/user';
 import { useTranslations } from 'next-intl';
+import SuspensionBanner from '@/components/SuspensionBanner';
 
 interface WriteReviewModalProps {
     isOpen: boolean;
@@ -62,6 +63,17 @@ export default function WriteReviewModal({
             setReviewTitle(suggested);
         }
     }, [reviewText, isTitleManuallyEdited]);
+
+    // Proactively check for suspension when modal opens
+    useEffect(() => {
+        if (isOpen && user?.status === 'SUSPENDED') {
+            const { error: currentError } = useReviewStore.getState();
+            if (!currentError || !currentError.includes('SUSPENDED')) {
+                // Set a manual error to trigger the banner if not already present
+                useReviewStore.setState({ error: 'ACCOUNT_SUSPENDED' });
+            }
+        }
+    }, [isOpen, user?.status]);
 
     const handleTitleChange = (value: string) => {
         setReviewTitle(value);
@@ -160,16 +172,26 @@ export default function WriteReviewModal({
 
                     {/* Error/Success Messages */}
                     {error && (
-                        <div className="mb-3 bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg flex items-center justify-between text-sm">
-                            <span>{error}</span>
-                            <button onClick={clearError} className="text-red-700 hover:text-red-900 ml-2">
-                                <X size={14} />
-                            </button>
-                        </div>
+                        error.includes('SUSPENDED') ? (
+                            <SuspensionBanner
+                                suspendedAt={user?.suspendedAt}
+                                onClear={clearError}
+                            />
+                        ) : (
+                            <div className="mb-3 bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg flex items-center justify-between text-sm shadow-sm">
+                                <div className="flex items-center gap-2">
+                                    <Info className="w-4 h-4" />
+                                    <span>{error}</span>
+                                </div>
+                                <button onClick={clearError} className="text-red-700 hover:text-red-900 ml-2">
+                                    <X size={14} />
+                                </button>
+                            </div>
+                        )
                     )}
 
                     {successMessage && (
-                        <div className="mb-3 bg-green-50 border border-green-200 text-green-700 px-3 py-2 rounded-lg text-sm">
+                        <div className="mb-3 bg-green-50 border border-green-200 text-green-700 px-3 py-2 rounded-lg text-sm shadow-sm">
                             {successMessage}
                         </div>
                     )}
@@ -283,7 +305,7 @@ export default function WriteReviewModal({
                         {/* Submit Button */}
                         <button
                             type="submit"
-                            disabled={rating === 0 || isLoading}
+                            disabled={rating === 0 || isLoading || user?.status === 'SUSPENDED'}
                             className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white py-2.5 rounded-lg text-sm font-semibold transition flex items-center justify-center gap-2"
                         >
                             {isLoading ? (

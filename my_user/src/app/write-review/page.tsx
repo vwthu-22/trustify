@@ -2,12 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, Star, Building2, ArrowRight } from 'lucide-react';
+import { Search, Star, Building2, ArrowRight, Info, X } from 'lucide-react';
 import Link from 'next/link';
 import useCompanyStore from '@/stores/companyStore/company';
+import useUserAuthStore from '@/stores/userAuthStore/user';
+import SuspensionBanner from '@/components/SuspensionBanner';
 import { useTranslations } from 'next-intl';
 
 export default function WriteReviewPage() {
+    const { user } = useUserAuthStore();
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState('');
     const { searchResults, isSearching, searchCompanies, clearSearchResults } = useCompanyStore();
@@ -49,6 +52,9 @@ export default function WriteReviewPage() {
 
             {/* Search Section */}
             <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+                {user?.status === 'SUSPENDED' && (
+                    <SuspensionBanner suspendedAt={user.suspendedAt} />
+                )}
                 <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
                     <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-1">
                         {t('findCompany')}
