@@ -363,7 +363,7 @@ export default function CompanyReviewPage() {
         <div className="min-h-screen bg-white">
             <div className="mx-auto px-4 sm:px-8 lg:px-52 py-4 sm:py-8">
                 {/* First Grid - Company Info and Rating Sidebar */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mt-16 sm:mt-20">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mt-4 sm:mt-8">
                     {/* Left Column */}
                     <div className="lg:col-span-2">
                         {/* Company Header */}
@@ -534,7 +534,7 @@ export default function CompanyReviewPage() {
                 </div>
 
                 {/* Second Grid - Reviews Section */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 mt-8 sm:mt-12">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 mt-8  sm:mt-12">
                     {/* Left Sidebar - Filters */}
                     <div className="lg:col-span-1">
                         {/* Rating Header */}
