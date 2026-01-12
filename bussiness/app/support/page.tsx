@@ -30,22 +30,12 @@ export default function SupportChatPage() {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
-    // Connect to WebSocket and load message history when component mounts
+    // Load message history when component mounts or roomId changes
     useEffect(() => {
-        const initChat = async () => {
-            // Start WebSocket connection (credentials are sent via HttpOnly cookie)
-            await connect('', company?.id || 0);
-
-            // Load message history via REST API (works even if WebSocket fails)
-            const { roomId, loadMessageHistory } = useChatStore.getState();
-            if (roomId && roomId !== 0) {
-                loadMessageHistory(roomId, '');
-            }
-        };
-
-        initChat();
-        return () => disconnect();
-    }, [company?.id]);
+        if (roomId && roomId !== 0) {
+            useChatStore.getState().loadMessageHistory(roomId, '');
+        }
+    }, [roomId, company?.id]);
 
     // Check if admin has replied (excluding System bot messages)
     useEffect(() => {

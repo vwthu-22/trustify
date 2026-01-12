@@ -51,13 +51,28 @@ export default function Header({ onMenuClick, isMobile = false }: HeaderProps) {
     const pageTitle = getPageTitle(pathname);
 
     const { company, fetchCompanyProfile, logout, verificationStatus } = useCompanyStore();
-    const { notifications, unreadNotifications, markAllNotificationsAsRead } = useChatStore();
+    const {
+        notifications,
+        unreadNotifications,
+        markAllNotificationsAsRead,
+        connect,
+        isConnected,
+        connectionStatus
+    } = useChatStore();
     const { currentSubscription, fetchCurrentSubscription, clearSubscription } = useSubscriptionStore();
 
     const [showHelpDropdown, setShowHelpDropdown] = useState(false);
     const [showCompanyDropdown, setShowCompanyDropdown] = useState(false);
     const [showVerificationCelebration, setShowVerificationCelebration] = useState(false);
     const previousVerifiedRef = useRef<boolean | undefined>(undefined);
+
+    // Global chat connection for notifications
+    useEffect(() => {
+        if (company?.id && !isConnected && connectionStatus !== 'connecting') {
+            console.log('🔔 Establishing global chat connection for notifications...');
+            connect('', company.id);
+        }
+    }, [company?.id, isConnected, connectionStatus, connect]);
 
     const helpDropdownRef = useRef<HTMLDivElement>(null);
     const companyDropdownRef = useRef<HTMLDivElement>(null);
