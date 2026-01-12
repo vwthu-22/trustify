@@ -89,14 +89,17 @@ export default function UsersPage() {
         console.log('📍 New status:', editForm.status);
 
         // Update status if changed
-        // Treat null/undefined as 'ACTIVE' for comparison
-        const currentStatus = selectedUser.status || 'ACTIVE';
-        if (editForm.status !== currentStatus) {
+        // If current status is null/undefined, we ALWAYS update to ensure DB is consistent
+        const isStatusMissing = selectedUser.status === null || selectedUser.status === undefined;
+        const isStatusChanged = editForm.status !== selectedUser.status;
+
+        if (isStatusMissing || isStatusChanged) {
+            console.log('🚀 Triggering API call because:', isStatusMissing ? 'Original status is MISSING' : 'Status has CHANGED');
             const success = await updateUserStatus(selectedUser.email, editForm.status)
             console.log('✅ Update status success:', success);
             if (!success) return // Don't close modal if it failed
         } else {
-            console.log('ℹ️ Status unchanged (Normalizing null to ACTIVE), skipping API call');
+            console.log('ℹ️ Status is already set and unchanged, skipping API call');
         }
 
         setShowEditModal(false)
