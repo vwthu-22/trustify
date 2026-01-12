@@ -16,8 +16,8 @@
         "previous": "Previous",
         "all": "All",
         "active": "Active",
-        "inactive": "Temporary Suspension (7 days)",
-        "suspended": "Permanent Suspension",
+        "inactive": "Inactive",
+        "suspended": "Suspended",
         "login": "Login",
         "logout": "Logout",
         "profile": "Profile",
@@ -93,6 +93,7 @@
     },
     "users": {
         "title": "User Management",
+        "all": "All",
         "addNewAdmin": "Add New Admin",
         "searchPlaceholder": "Search users by name or email...",
         "avatar": "Avatar",

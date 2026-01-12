@@ -17,8 +17,8 @@
     "previous": "Trước",
     "all": "Tất cả",
     "active": "Hoạt động",
-    "inactive": "Đình chỉ tạm thời (7 ngày)",
-    "suspended": "Đình chỉ vĩnh viễn",
+    "inactive": "Tạm ngừng",
+    "suspended": "Đình chỉ",
     "login": "Đăng nhập",
     "logout": "Đăng xuất",
     "profile": "Hồ sơ",
@@ -93,6 +93,7 @@
   },
   "users": {
     "title": "Quản lý người dùng",
+    "all": "Tất cả",
     "addNewAdmin": "Thêm Admin mới",
     "searchPlaceholder": "Tìm kiếm người dùng theo tên hoặc email...",
     "avatar": "Ảnh đại diện",
