@@ -16,6 +16,14 @@ export interface ReviewReport {
     expDate?: string;
     userName?: string;
     userEmail?: string;
+    user?: {
+        name?: string;
+        fullName?: string;
+        email?: string;
+    };
+    fullName?: string;
+    name?: string;
+    nameUser?: string;
 }
 
 // Transformed format for display
@@ -117,7 +125,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
                         reviewTitle: r.title,
                         reviewContent: r.description,
                         reviewRating: r.rating,
-                        reviewerName: r.userName || r.email?.split('@')[0] || 'User',
+                        reviewerName: r.userName || r.user?.name || r.user?.fullName || r.fullName || r.name || r.nameUser || (r.userEmail || r.email || '').split('@')[0] || 'User',
                         reviewerEmail: r.userEmail || r.email || '',
                         companyName: r.companyName || '',
                         reason: r.contendReport,
@@ -238,8 +246,8 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
                     title: r.title,
                     description: r.description,
                     rating: r.rating,
-                    userName: r.userName || r.user?.name || r.nameUser || 'User',
-                    userEmail: r.userEmail || r.user?.email || '',
+                    userName: r.userName || r.user?.name || r.user?.fullName || r.fullName || r.name || r.nameUser || (r.userEmail || r.email || '').split('@')[0] || 'User',
+                    userEmail: r.userEmail || r.user?.email || r.email || '',
                     companyName: r.companyName || r.company?.name || '',
                     createdAt: r.createdAt || r.expDate || new Date().toISOString(),
                     status: 'pending' as const
