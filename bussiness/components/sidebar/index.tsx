@@ -9,6 +9,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
+import { useChatStore } from '@/store/useChatStore';
+
 interface MenuItem {
     href: string;
     label: string;
@@ -28,6 +30,7 @@ export default function Sidebar({ isOpen = false, onClose, isMobile = false }: S
     const pathname = usePathname();
     const [expandedItems, setExpandedItems] = useState<string[]>(['/reviews', '/analytics']);
     const t = useTranslations('sidebar');
+    const { unreadCount } = useChatStore();
 
     const menuItems: MenuItem[] = [
         {
@@ -76,7 +79,8 @@ export default function Sidebar({ isOpen = false, onClose, isMobile = false }: S
             href: '/support',
             label: t('support') || 'Hỗ trợ',
             icon: Headphones,
-            title: t('titleSupport') || 'Chat với hỗ trợ'
+            title: t('titleSupport') || 'Chat với hỗ trợ',
+            badge: unreadCount > 0 ? unreadCount : undefined
         },
         {
             href: '/settings',
