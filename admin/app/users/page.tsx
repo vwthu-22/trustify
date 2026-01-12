@@ -154,7 +154,24 @@ export default function UsersPage() {
                             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                         />
                     </div>
-                    <div className="relative">
+                    <div className="flex items-center gap-2">
+                        <div className="flex bg-gray-100 p-1 rounded-lg mr-2">
+                            {['all', 'ACTIVE', 'SUSPENDED', 'INACTIVE'].map((status) => (
+                                <button
+                                    key={status}
+                                    onClick={() => setStatusFilter(status)}
+                                    className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${statusFilter === status
+                                        ? 'bg-white text-blue-600 shadow-sm'
+                                        : 'text-gray-500 hover:text-gray-700'
+                                        }`}
+                                >
+                                    {status === 'all' ? t('all') || 'All' :
+                                        status === 'ACTIVE' ? tCommon('active') :
+                                            status === 'SUSPENDED' ? tCommon('suspended') :
+                                                tCommon('inactive')}
+                                </button>
+                            ))}
+                        </div>
                         <div className="flex items-center justify-end">
                             <button
                                 onClick={() => setShowCreateModal(true)}
@@ -164,249 +181,246 @@ export default function UsersPage() {
                                 <span>{t('addNewAdmin')}</span>
                             </button>
                         </div>
-
-                        {/* Error Message */}
-                        {error && (
-                            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center justify-between">
-                                <span>{error}</span>
-                                <button onClick={clearError} className="text-red-500 hover:text-red-700">
-                                    <X className="w-4 h-4" />
-                                </button>
-                            </div>
-                        )}
                     </div>
+                    {/* Error Message */}
+                    {error && (
+                        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center justify-between">
+                            <span>{error}</span>
+                            <button onClick={clearError} className="text-red-500 hover:text-red-700">
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+                    )}
                 </div>
+            </div>
 
-                {/* Table */}
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm">
-                        <thead className="bg-gray-50 text-gray-600 font-medium border-b border-gray-200">
+            {/* Table */}
+            <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm">
+                    <thead className="bg-gray-50 text-gray-600 font-medium border-b border-gray-200">
+                        <tr>
+                            <th className="px-6 py-3">{t('avatar')}</th>
+                            <th className="px-6 py-3">{t('name')}</th>
+                            <th className="px-6 py-3">{t('email')}</th>
+                            <th className="px-6 py-3">{t('country')}</th>
+                            <th className="px-6 py-3">{t('role')}</th>
+                            <th className="px-6 py-3">{t('reports')}</th>
+                            <th className="px-6 py-3">{t('status')}</th>
+                            <th className="px-6 py-3 text-right">{t('actions')}</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                        {isLoading && users.length === 0 ? (
                             <tr>
-                                <th className="px-6 py-3">{t('avatar')}</th>
-                                <th className="px-6 py-3">{t('name')}</th>
-                                <th className="px-6 py-3">{t('email')}</th>
-                                <th className="px-6 py-3">{t('country')}</th>
-                                <th className="px-6 py-3">{t('role')}</th>
-                                <th className="px-6 py-3">{t('reports')}</th>
-                                <th className="px-6 py-3">{t('status')}</th>
-                                <th className="px-6 py-3 text-right">{t('actions')}</th>
+                                <td colSpan={8} className="px-6 py-12 text-center">
+                                    <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-2" />
+                                    <span className="text-gray-500">{tCommon('loading')}</span>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200">
-                            {isLoading && users.length === 0 ? (
-                                <tr>
-                                    <td colSpan={8} className="px-6 py-12 text-center">
-                                        <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-2" />
-                                        <span className="text-gray-500">{tCommon('loading')}</span>
-                                    </td>
-                                </tr>
-                            ) : filteredUsers.length === 0 ? (
-                                <tr>
-                                    <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
-                                        {t('noUsers')}
-                                    </td>
-                                </tr>
-                            ) : (
-                                filteredUsers.map((user) => (
-                                    <tr key={user.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-6 py-4">
-                                            {user.role === 'ADMIN' ? (
-                                                <div className="relative w-10 h-10 flex items-center justify-center">
-                                                    <Shield className="w-10 h-10 text-[#5aa5df] fill-[#5aa5df]/10" strokeWidth={1.5} />
-                                                    <div className="absolute inset-0 flex items-center justify-center">
-                                                        <div className="w-8 h-8 rounded-full bg-[#5aa5df] flex items-center justify-center text-white shadow-sm ring-1 ring-[#5aa5df]/50">
-                                                            <Star className="w-4 h-4 fill-current" />
-                                                        </div>
+                        ) : filteredUsers.length === 0 ? (
+                            <tr>
+                                <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
+                                    {t('noUsers')}
+                                </td>
+                            </tr>
+                        ) : (
+                            filteredUsers.map((user) => (
+                                <tr key={user.id} className="hover:bg-gray-50 transition-colors">
+                                    <td className="px-6 py-4">
+                                        {user.role === 'ADMIN' ? (
+                                            <div className="relative w-10 h-10 flex items-center justify-center">
+                                                <Shield className="w-10 h-10 text-[#5aa5df] fill-[#5aa5df]/10" strokeWidth={1.5} />
+                                                <div className="absolute inset-0 flex items-center justify-center">
+                                                    <div className="w-8 h-8 rounded-full bg-[#5aa5df] flex items-center justify-center text-white shadow-sm ring-1 ring-[#5aa5df]/50">
+                                                        <Star className="w-4 h-4 fill-current" />
                                                     </div>
                                                 </div>
-                                            ) : (
-                                                <img
-                                                    src={user.avatarUrl || '/default-avatar.png'}
-                                                    alt={user.name}
-                                                    className="w-10 h-10 rounded-full object-cover border border-gray-200"
-                                                />
-                                            )}
-                                        </td>
-                                        <td className="px-6 py-4 font-medium text-gray-900">{user.name}</td>
-                                        <td className="px-6 py-4 text-gray-600">{user.email}</td>
-                                        <td className="px-6 py-4 text-gray-600">{user.country}</td>
-                                        <td className="px-6 py-4">
-                                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                ${user.role === 'ADMIN' ? 'bg-purple-100 text-purple-700' :
-                                                    user.role === 'BUSINESS' ? 'bg-blue-100 text-blue-700' :
-                                                        'bg-gray-100 text-gray-700'}`}>
-                                                {user.role === 'ADMIN' && <Shield className="w-3 h-3" />}
-                                                {user.role}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                ${user.numberOfReport >= 5 ? 'bg-red-100 text-red-700' :
-                                                    user.numberOfReport >= 3 ? 'bg-yellow-100 text-yellow-700' :
-                                                        'bg-gray-100 text-gray-700'}`}>
-                                                {user.numberOfReport} {user.numberOfReport === 1 ? 'report' : 'reports'}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                ${user.status === 'ACTIVE' ? 'bg-green-100 text-green-700' :
-                                                    user.status === 'INACTIVE' ? 'bg-gray-100 text-gray-700' :
-                                                        'bg-red-100 text-red-700'}`}>
-                                                {user.status === 'ACTIVE' ? tCommon('active') :
-                                                    user.status === 'INACTIVE' ? tCommon('inactive') : tCommon('suspended')}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 text-right">
-                                            <div className="flex items-center justify-end gap-2">
-                                                {user.role !== 'ADMIN' && (
-                                                    <button
-                                                        onClick={() => {
-                                                            setSelectedUser(user)
-                                                            // Fallback to ACTIVE if status is null or undefined
-                                                            const initialStatus = (user.status || 'ACTIVE') as 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
-                                                            console.log('📂 Opening edit modal for:', user.email, 'Initial status set to:', initialStatus);
-                                                            setEditForm({
-                                                                status: initialStatus
-                                                            })
-                                                            setShowEditModal(true)
-                                                        }}
-                                                        className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                        title={tCommon('edit')}
-                                                    >
-                                                        <Edit className="w-4 h-4" />
-                                                    </button>
-                                                )}
                                             </div>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+                                        ) : (
+                                            <img
+                                                src={user.avatarUrl || '/default-avatar.png'}
+                                                alt={user.name}
+                                                className="w-10 h-10 rounded-full object-cover border border-gray-200"
+                                            />
+                                        )}
+                                    </td>
+                                    <td className="px-6 py-4 font-medium text-gray-900">{user.name}</td>
+                                    <td className="px-6 py-4 text-gray-600">{user.email}</td>
+                                    <td className="px-6 py-4 text-gray-600">{user.country}</td>
+                                    <td className="px-6 py-4">
+                                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium
+                                                ${user.role === 'ADMIN' ? 'bg-purple-100 text-purple-700' :
+                                                user.role === 'BUSINESS' ? 'bg-blue-100 text-blue-700' :
+                                                    'bg-gray-100 text-gray-700'}`}>
+                                            {user.role === 'ADMIN' && <Shield className="w-3 h-3" />}
+                                            {user.role}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium
+                                                ${user.numberOfReport >= 5 ? 'bg-red-100 text-red-700' :
+                                                user.numberOfReport >= 3 ? 'bg-yellow-100 text-yellow-700' :
+                                                    'bg-gray-100 text-gray-700'}`}>
+                                            {user.numberOfReport} {user.numberOfReport === 1 ? 'report' : 'reports'}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium
+                                                ${user.status === 'ACTIVE' ? 'bg-green-100 text-green-700' :
+                                                user.status === 'INACTIVE' ? 'bg-yellow-100 text-yellow-700' :
+                                                    'bg-red-100 text-red-700'}`}>
+                                            {user.status === 'ACTIVE' ? tCommon('active') :
+                                                user.status === 'INACTIVE' ? tCommon('inactive') : tCommon('suspended')}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4 text-right">
+                                        <div className="flex items-center justify-end gap-2">
+                                            {user.role !== 'ADMIN' && (
+                                                <button
+                                                    onClick={() => {
+                                                        setSelectedUser(user)
+                                                        // Fallback to ACTIVE if status is null or undefined
+                                                        const initialStatus = (user.status || 'ACTIVE') as 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+                                                        console.log('📂 Opening edit modal for:', user.email, 'Initial status set to:', initialStatus);
+                                                        setEditForm({
+                                                            status: initialStatus
+                                                        })
+                                                        setShowEditModal(true)
+                                                    }}
+                                                    className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                    title={tCommon('edit')}
+                                                >
+                                                    <Edit className="w-4 h-4" />
+                                                </button>
+                                            )}
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
+            </div>
 
-                {/* Pagination */}
-                <div className="p-4 border-t border-gray-200 flex items-center justify-between text-sm text-gray-500">
-                    <span>
-                        {t('showing')} {startItem} {t('to')} {endItem} {t('of')} {totalUsers}
+            {/* Pagination */}
+            <div className="p-4 border-t border-gray-200 flex items-center justify-between text-sm text-gray-500">
+                <span>
+                    {t('showing')} {startItem} {t('to')} {endItem} {t('of')} {totalUsers}
+                </span>
+                <div className="flex gap-2">
+                    <button
+                        onClick={handlePrevPage}
+                        disabled={currentPage === 0 || isLoading}
+                        className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                    >
+                        <ChevronLeft className="w-4 h-4" />
+                        {tCommon('previous')}
+                    </button>
+                    <span className="px-3 py-1 text-gray-700">
+                        {currentPage + 1} / {totalPages || 1}
                     </span>
-                    <div className="flex gap-2">
-                        <button
-                            onClick={handlePrevPage}
-                            disabled={currentPage === 0 || isLoading}
-                            className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
-                        >
-                            <ChevronLeft className="w-4 h-4" />
-                            {tCommon('previous')}
-                        </button>
-                        <span className="px-3 py-1 text-gray-700">
-                            {currentPage + 1} / {totalPages || 1}
-                        </span>
-                        <button
-                            onClick={handleNextPage}
-                            disabled={currentPage >= totalPages - 1 || isLoading}
-                            className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
-                        >
-                            {tCommon('next')}
-                            <ChevronRight className="w-4 h-4" />
-                        </button>
-                    </div>
+                    <button
+                        onClick={handleNextPage}
+                        disabled={currentPage >= totalPages - 1 || isLoading}
+                        className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                    >
+                        {tCommon('next')}
+                        <ChevronRight className="w-4 h-4" />
+                    </button>
                 </div>
             </div>
 
             {/* Create Admin Modal */}
-            {
-                showCreateModal && (
-                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
-                            <div className="flex items-center justify-between mb-6">
-                                <h2 className="text-xl font-bold text-gray-900">{t('createAdmin.title')}</h2>
-                                <button
-                                    onClick={() => setShowCreateModal(false)}
-                                    className="text-gray-400 hover:text-gray-600 transition"
-                                >
-                                    <X className="w-6 h-6" />
-                                </button>
+            {showCreateModal && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-xl font-bold text-gray-900">{t('createAdmin.title')}</h2>
+                            <button
+                                onClick={() => setShowCreateModal(false)}
+                                className="text-gray-400 hover:text-gray-600 transition"
+                            >
+                                <X className="w-6 h-6" />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleCreateAdmin} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    {t('createAdmin.fullName')} *
+                                </label>
+                                <input
+                                    type="text"
+                                    value={createForm.fullName}
+                                    onChange={(e) => setCreateForm({ ...createForm, fullName: e.target.value })}
+                                    placeholder={t('createAdmin.fullNamePlaceholder')}
+                                    required
+                                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                />
                             </div>
 
-                            <form onSubmit={handleCreateAdmin} className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        {t('createAdmin.fullName')} *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={createForm.fullName}
-                                        onChange={(e) => setCreateForm({ ...createForm, fullName: e.target.value })}
-                                        placeholder={t('createAdmin.fullNamePlaceholder')}
-                                        required
-                                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                                    />
-                                </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    {t('createAdmin.email')} *
+                                </label>
+                                <input
+                                    type="email"
+                                    value={createForm.email}
+                                    onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
+                                    placeholder={t('createAdmin.emailPlaceholder')}
+                                    required
+                                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                />
+                            </div>
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        {t('createAdmin.email')} *
-                                    </label>
-                                    <input
-                                        type="email"
-                                        value={createForm.email}
-                                        onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
-                                        placeholder={t('createAdmin.emailPlaceholder')}
-                                        required
-                                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                                    />
-                                </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    {t('createAdmin.password')} *
+                                </label>
+                                <input
+                                    type="password"
+                                    value={createForm.password}
+                                    onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })}
+                                    placeholder="••••••••"
+                                    required
+                                    minLength={6}
+                                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                />
+                            </div>
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        {t('createAdmin.password')} *
-                                    </label>
-                                    <input
-                                        type="password"
-                                        value={createForm.password}
-                                        onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })}
-                                        placeholder="••••••••"
-                                        required
-                                        minLength={6}
-                                        className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                                    />
+                            {error && (
+                                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                                    {error}
                                 </div>
+                            )}
 
-                                {error && (
-                                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-                                        {error}
-                                    </div>
-                                )}
-
-                                <div className="flex gap-3 pt-2">
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowCreateModal(false)}
-                                        className="flex-1 py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition"
-                                    >
-                                        {tCommon('cancel')}
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        disabled={isLoading}
-                                        className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg font-medium transition flex items-center justify-center gap-2"
-                                    >
-                                        {isLoading ? (
-                                            <Loader2 className="w-5 h-5 animate-spin" />
-                                        ) : (
-                                            <>
-                                                <Plus className="w-4 h-4" />
-                                                {t('createAdmin.submit')}
-                                            </>
-                                        )}
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
+                            <div className="flex gap-3 pt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowCreateModal(false)}
+                                    className="flex-1 py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition"
+                                >
+                                    {tCommon('cancel')}
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={isLoading}
+                                    className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg font-medium transition flex items-center justify-center gap-2"
+                                >
+                                    {isLoading ? (
+                                        <Loader2 className="w-5 h-5 animate-spin" />
+                                    ) : (
+                                        <>
+                                            <Plus className="w-4 h-4" />
+                                            {t('createAdmin.submit')}
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                )
-            }
+                </div>
+            )}
 
             {/* Edit User Modal */}
             {showEditModal && selectedUser && (
@@ -433,8 +447,6 @@ export default function UsersPage() {
                         </div>
 
                         <div className="space-y-4 mb-6">
-
-                            {/* Status Dropdown */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                     {t('status')}
@@ -450,14 +462,12 @@ export default function UsersPage() {
                                 </select>
                             </div>
 
-                            {/* Error Message inside Modal */}
                             {error && (
                                 <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
                                     {error}
                                 </div>
                             )}
 
-                            {/* Report Count Info */}
                             {selectedUser.numberOfReport > 0 && (
                                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                                     <div className="flex items-center justify-between mb-2">
@@ -517,46 +527,44 @@ export default function UsersPage() {
             )}
 
             {/* Delete Confirmation Modal */}
-            {
-                showDeleteModal && selectedUser && (
-                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                        <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6">
-                            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <Trash2 className="w-6 h-6 text-red-600" />
-                            </div>
-                            <h3 className="text-lg font-bold text-gray-900 text-center mb-2">{t('deleteConfirm.title')}</h3>
-                            <p className="text-gray-500 text-center mb-2">
-                                {t('deleteConfirm.message')}
-                            </p>
-                            <p className="text-center font-medium text-gray-900 mb-6">
-                                {selectedUser.name} ({selectedUser.email})
-                            </p>
-                            <div className="flex gap-3">
-                                <button
-                                    onClick={() => {
-                                        setShowDeleteModal(false)
-                                        setSelectedUser(null)
-                                    }}
-                                    className="flex-1 py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition"
-                                >
-                                    {tCommon('cancel')}
-                                </button>
-                                <button
-                                    onClick={handleDelete}
-                                    disabled={isLoading}
-                                    className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white rounded-lg font-medium transition flex items-center justify-center gap-2"
-                                >
-                                    {isLoading ? (
-                                        <Loader2 className="w-5 h-5 animate-spin" />
-                                    ) : (
-                                        tCommon('delete')
-                                    )}
-                                </button>
-                            </div>
+            {showDeleteModal && selectedUser && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6">
+                        <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Trash2 className="w-6 h-6 text-red-600" />
+                        </div>
+                        <h3 className="text-lg font-bold text-gray-900 text-center mb-2">{t('deleteConfirm.title')}</h3>
+                        <p className="text-gray-500 text-center mb-2">
+                            {t('deleteConfirm.message')}
+                        </p>
+                        <p className="text-center font-medium text-gray-900 mb-6">
+                            {selectedUser.name} ({selectedUser.email})
+                        </p>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => {
+                                    setShowDeleteModal(false)
+                                    setSelectedUser(null)
+                                }}
+                                className="flex-1 py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition"
+                            >
+                                {tCommon('cancel')}
+                            </button>
+                            <button
+                                onClick={handleDelete}
+                                disabled={isLoading}
+                                className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white rounded-lg font-medium transition flex items-center justify-center gap-2"
+                            >
+                                {isLoading ? (
+                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                ) : (
+                                    tCommon('delete')
+                                )}
+                            </button>
                         </div>
                     </div>
-                )
-            }
-        </div >
-    )
+                </div>
+            )}
+        </div>
+    );
 }
