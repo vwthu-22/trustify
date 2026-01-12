@@ -174,7 +174,6 @@ export default function WriteReviewModal({
                     {error && (
                         error.includes('SUSPENDED') ? (
                             <SuspensionBanner
-                                suspendedAt={user?.suspendedAt}
                                 onClear={clearError}
                             />
                         ) : (

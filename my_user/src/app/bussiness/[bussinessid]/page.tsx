@@ -806,7 +806,6 @@ export default function CompanyReviewPage() {
 
                         {(user?.status === 'SUSPENDED' || reportModalError === 'ACCOUNT_SUSPENDED') ? (
                             <SuspensionBanner
-                                suspendedAt={user?.suspendedAt}
                                 message={tSuspension('reportBlocked')}
                             />
                         ) : reportModalError && (
