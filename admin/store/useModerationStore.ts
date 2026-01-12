@@ -219,7 +219,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
     fetchPendingReviews: async () => {
         set({ isPendingLoading: true, error: null });
         try {
-            const response = await fetch(`${API_BASE_URL}/api/review/allReports?page=0&size=100`, {
+            const response = await fetch(`${API_BASE_URL}/admin/review/pending?page=0&size=100`, {
                 credentials: 'include',
                 headers: {
                     'ngrok-skip-browser-warning': 'true'
@@ -228,33 +228,22 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
 
             if (response.ok) {
                 const data = await response.json();
+                console.log('Admin Moderation - Pending Reviews Data:', data);
 
-                // Handle different response formats
-                let reviewList: ReviewReport[] = [];
-                if (Array.isArray(data)) {
-                    reviewList = data;
-                } else if (data.content && Array.isArray(data.content)) {
-                    reviewList = data.content;
-                } else if (data.reviews && Array.isArray(data.reviews)) {
-                    reviewList = data.reviews;
-                } else {
-                    reviewList = Object.values(data).filter(item => typeof item === 'object' && item !== null) as ReviewReport[];
-                }
+                // The backend returns { reviews: [], totalElements: X, ... }
+                const reviewList: any[] = data.reviews || [];
 
-                // Filter only pending reviews (status = 'pending')
-                const pendingReviews: PendingReview[] = reviewList
-                    .filter(r => r.status === 'pending')
-                    .map(r => ({
-                        id: r.id,
-                        title: r.title,
-                        description: r.description,
-                        rating: r.rating,
-                        userName: r.userName || r.email?.split('@')[0] || 'User',
-                        userEmail: r.userEmail || r.email || '',
-                        companyName: r.companyName || '',
-                        createdAt: r.expDate || new Date().toISOString(),
-                        status: 'pending' as const
-                    }));
+                const pendingReviews: PendingReview[] = reviewList.map(r => ({
+                    id: r.id,
+                    title: r.title,
+                    description: r.description,
+                    rating: r.rating,
+                    userName: r.userName || r.user?.name || r.nameUser || 'User',
+                    userEmail: r.userEmail || r.user?.email || '',
+                    companyName: r.companyName || r.company?.name || '',
+                    createdAt: r.createdAt || r.expDate || new Date().toISOString(),
+                    status: 'pending' as const
+                }));
 
                 set({ pendingReviews, isPendingLoading: false });
             } else {
@@ -269,26 +258,12 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
     // Approve review
     approveReview: async (reviewId: number) => {
         try {
-            const review = get().pendingReviews.find(r => r.id === reviewId);
-            if (!review) return;
-
-            const response = await fetch(`${API_BASE_URL}/api/review/${reviewId}`, {
+            const response = await fetch(`${API_BASE_URL}/admin/review/${reviewId}/status?status=APPROVED`, {
                 method: 'PUT',
                 credentials: 'include',
                 headers: {
-                    'Content-Type': 'application/json',
                     'ngrok-skip-browser-warning': 'true'
-                },
-                body: JSON.stringify({
-                    id: reviewId,
-                    title: review.title,
-                    description: review.description,
-                    rating: review.rating,
-                    email: review.userEmail,
-                    companyName: review.companyName,
-                    expDate: review.createdAt,
-                    status: 'approved'
-                })
+                }
             });
 
             if (response.ok) {
@@ -307,26 +282,12 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
     // Reject review
     rejectReview: async (reviewId: number) => {
         try {
-            const review = get().pendingReviews.find(r => r.id === reviewId);
-            if (!review) return;
-
-            const response = await fetch(`${API_BASE_URL}/api/review/${reviewId}`, {
+            const response = await fetch(`${API_BASE_URL}/admin/review/${reviewId}/status?status=REJECTED`, {
                 method: 'PUT',
                 credentials: 'include',
                 headers: {
-                    'Content-Type': 'application/json',
                     'ngrok-skip-browser-warning': 'true'
-                },
-                body: JSON.stringify({
-                    id: reviewId,
-                    title: review.title,
-                    description: review.description,
-                    rating: review.rating,
-                    email: review.userEmail,
-                    companyName: review.companyName,
-                    expDate: review.createdAt,
-                    status: 'rejected'
-                })
+                }
             });
 
             if (response.ok) {
@@ -345,27 +306,14 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
     // Bulk approve reviews
     bulkApproveReviews: async (reviewIds: number[]) => {
         try {
-            const reviews = get().pendingReviews.filter(r => reviewIds.includes(r.id));
-
-            // Process all approvals in parallel
-            const promises = reviews.map(review =>
-                fetch(`${API_BASE_URL}/api/review/${review.id}`, {
+            // Process all approvals in parallel using the new endpoint
+            const promises = reviewIds.map(reviewId =>
+                fetch(`${API_BASE_URL}/admin/review/${reviewId}/status?status=APPROVED`, {
                     method: 'PUT',
                     credentials: 'include',
                     headers: {
-                        'Content-Type': 'application/json',
                         'ngrok-skip-browser-warning': 'true'
-                    },
-                    body: JSON.stringify({
-                        id: review.id,
-                        title: review.title,
-                        description: review.description,
-                        rating: review.rating,
-                        email: review.userEmail,
-                        companyName: review.companyName,
-                        expDate: review.createdAt,
-                        status: 'approved'
-                    })
+                    }
                 })
             );
 
@@ -392,27 +340,14 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
     // Bulk reject reviews
     bulkRejectReviews: async (reviewIds: number[]) => {
         try {
-            const reviews = get().pendingReviews.filter(r => reviewIds.includes(r.id));
-
-            // Process all rejections in parallel
-            const promises = reviews.map(review =>
-                fetch(`${API_BASE_URL}/api/review/${review.id}`, {
+            // Process all rejections in parallel using the new endpoint
+            const promises = reviewIds.map(reviewId =>
+                fetch(`${API_BASE_URL}/admin/review/${reviewId}/status?status=REJECTED`, {
                     method: 'PUT',
                     credentials: 'include',
                     headers: {
-                        'Content-Type': 'application/json',
                         'ngrok-skip-browser-warning': 'true'
-                    },
-                    body: JSON.stringify({
-                        id: review.id,
-                        title: review.title,
-                        description: review.description,
-                        rating: review.rating,
-                        email: review.userEmail,
-                        companyName: review.companyName,
-                        expDate: review.createdAt,
-                        status: 'rejected'
-                    })
+                    }
                 })
             );
 
