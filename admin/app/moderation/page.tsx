@@ -118,38 +118,38 @@ export default function ModerationPage() {
     };
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500">
+        <div className="space-y-6 animate-in fade-in duration-500">
             {/* Header with Tabs */}
-            <div className="bg-white rounded-3xl shadow-xl shadow-gray-100/50 border border-gray-100 overflow-hidden">
-                <div className="border-b border-gray-100 bg-gray-50/30">
-                    <div className="flex flex-col sm:flex-row items-center justify-between px-8 py-6 gap-4">
-                        <div className="flex bg-gray-100/80 p-1.5 rounded-2xl gap-1 w-full sm:w-auto">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="border-b border-gray-100 bg-gray-50/20">
+                    <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-4 gap-4">
+                        <div className="flex bg-gray-100/60 p-1 rounded-xl gap-1 w-full sm:w-auto">
                             <button
                                 onClick={() => setActiveTab('pending')}
-                                className={`flex-1 sm:flex-none px-6 py-2.5 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2.5 ${activeTab === 'pending'
-                                    ? 'bg-white text-blue-600 shadow-md transform scale-[1.02]'
-                                    : 'text-gray-500 hover:text-gray-700 hover:bg-white/50'
+                                className={`flex-1 sm:flex-none px-5 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${activeTab === 'pending'
+                                    ? 'bg-white text-blue-600 shadow-sm'
+                                    : 'text-gray-500 hover:text-gray-700 hover:bg-white/40'
                                     }`}
                             >
-                                <MessageSquare className={`w-4.5 h-4.5 ${activeTab === 'pending' ? 'text-blue-500' : 'text-gray-400'}`} />
+                                <MessageSquare className={`w-4 h-4 ${activeTab === 'pending' ? 'text-blue-500' : 'text-gray-400'}`} />
                                 <span className="text-sm">{t('pendingTab')}</span>
                                 {pendingReviews.length > 0 && (
-                                    <span className="px-2.5 py-0.5 bg-blue-600 text-white text-[11px] font-black rounded-lg shadow-sm">
+                                    <span className="px-1.5 py-0.5 bg-blue-100 text-blue-600 text-[10px] font-bold rounded-md">
                                         {pendingReviews.length}
                                     </span>
                                 )}
                             </button>
                             <button
                                 onClick={() => setActiveTab('reports')}
-                                className={`flex-1 sm:flex-none px-6 py-2.5 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2.5 ${activeTab === 'reports'
-                                    ? 'bg-white text-red-600 shadow-md transform scale-[1.02]'
-                                    : 'text-gray-500 hover:text-gray-700 hover:bg-white/50'
+                                className={`flex-1 sm:flex-none px-5 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${activeTab === 'reports'
+                                    ? 'bg-white text-red-600 shadow-sm'
+                                    : 'text-gray-500 hover:text-gray-700 hover:bg-white/40'
                                     }`}
                             >
-                                <Flag className={`w-4.5 h-4.5 ${activeTab === 'reports' ? 'text-red-500' : 'text-gray-400'}`} />
+                                <Flag className={`w-4 h-4 ${activeTab === 'reports' ? 'text-red-500' : 'text-gray-400'}`} />
                                 <span className="text-sm">{t('reportsTab')}</span>
                                 {pendingReports.length > 0 && (
-                                    <span className="px-2.5 py-0.5 bg-red-600 text-white text-[11px] font-black rounded-lg shadow-sm">
+                                    <span className="px-1.5 py-0.5 bg-red-100 text-red-600 text-[10px] font-bold rounded-md">
                                         {pendingReports.length}
                                     </span>
                                 )}
@@ -158,9 +158,9 @@ export default function ModerationPage() {
                         <button
                             onClick={handleRefresh}
                             disabled={isLoading || isPendingLoading}
-                            className="w-full sm:w-auto px-6 py-2.5 bg-white border border-gray-200 text-gray-700 font-bold rounded-2xl hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 flex items-center justify-center gap-2.5 disabled:opacity-50 shadow-sm active:scale-95"
+                            className="w-full sm:w-auto px-4 py-2 bg-white border border-gray-200 text-gray-600 font-semibold rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all flex items-center justify-center gap-2 disabled:opacity-50 active:scale-95"
                         >
-                            <RefreshCw className={`w-4.5 h-4.5 text-blue-600 ${(isLoading || isPendingLoading) ? 'animate-spin' : ''}`} />
+                            <RefreshCw className={`w-4 h-4 text-blue-500 ${(isLoading || isPendingLoading) ? 'animate-spin' : ''}`} />
                             <span className="text-sm">{t('refresh')}</span>
                         </button>
                     </div>
@@ -168,141 +168,132 @@ export default function ModerationPage() {
 
                 {/* Error Message */}
                 {error && (
-                    <div className="mx-8 mt-6 bg-rose-50 border border-rose-100 text-rose-700 px-6 py-4 rounded-2xl flex items-center gap-3 shadow-sm animate-in slide-in-from-top-2">
-                        <AlertCircle className="w-5 h-5 text-rose-500" />
-                        <span className="text-sm font-medium">{error}</span>
+                    <div className="mx-6 mt-4 bg-rose-50/50 border border-rose-100 text-rose-600 px-4 py-3 rounded-xl flex items-center gap-2 animate-in slide-in-from-top-2">
+                        <AlertCircle className="w-4 h-4" />
+                        <span className="text-xs font-medium">{error}</span>
                     </div>
                 )}
 
                 {/* Tab Content */}
-                <div className="p-8">
+                <div className="p-6">
                     {/* Pending Reviews Tab */}
                     {activeTab === 'pending' && (
-                        <div className="space-y-6">
+                        <div className="space-y-5">
                             {isPendingLoading ? (
-                                <div className="flex flex-col items-center justify-center h-80 gap-4">
-                                    <div className="relative">
-                                        <div className="w-16 h-16 rounded-full border-4 border-blue-100 border-t-blue-600 animate-spin"></div>
-                                        <div className="absolute inset-0 flex items-center justify-center">
-                                            <MessageSquare className="w-6 h-6 text-blue-400" />
-                                        </div>
-                                    </div>
-                                    <p className="text-gray-400 font-medium animate-pulse">{tCommon('loading')}</p>
+                                <div className="flex flex-col items-center justify-center h-64 gap-3">
+                                    <div className="w-10 h-10 rounded-full border-2 border-blue-50 border-t-blue-500 animate-spin"></div>
+                                    <p className="text-gray-400 text-xs font-medium">{tCommon('loading')}</p>
                                 </div>
                             ) : pendingReviews.length === 0 ? (
-                                <div className="bg-gray-50/50 rounded-3xl p-16 text-center border-2 border-dashed border-gray-100">
-                                    <div className="w-20 h-20 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto mb-6">
-                                        <CheckCircle className="w-10 h-10 text-gray-200" />
-                                    </div>
-                                    <p className="text-gray-500 text-xl font-black mb-2">{t('noPendingReviews')}</p>
-                                    <p className="text-gray-400 text-sm">{t('allProcessed')}</p>
+                                <div className="bg-gray-50/50 rounded-2xl p-12 text-center border border-dashed border-gray-100">
+                                    <CheckCircle className="w-12 h-12 text-gray-200 mx-auto mb-4" />
+                                    <p className="text-gray-400 text-base font-semibold">{t('noPendingReviews')}</p>
+                                    <p className="text-gray-400 text-xs mt-1">{t('allProcessed')}</p>
                                 </div>
                             ) : (
                                 <>
-                                    {/* Bulk Action Bar - Sticky/Floating Style */}
-                                    <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-5 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl shadow-blue-200/50 sticky top-4 z-20">
-                                        <div className="flex items-center gap-4">
+                                    {/* Bulk Action Bar - More Compact */}
+                                    <div className="bg-blue-600 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-3 shadow-lg shadow-blue-100 sticky top-2 z-20">
+                                        <div className="flex items-center gap-3">
                                             <button
                                                 onClick={toggleSelectAll}
-                                                className="flex items-center gap-3 px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-2xl transition-all group backdrop-blur-md"
+                                                className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl transition-all"
                                             >
                                                 {selectedReviews.length === pendingReviews.length ? (
-                                                    <CheckSquare className="w-5.5 h-5.5 text-white" />
+                                                    <CheckSquare className="w-5 h-5 text-white" />
                                                 ) : (
-                                                    <Square className="w-5.5 h-5.5 text-white/40 group-hover:text-white/60" />
+                                                    <Square className="w-5 h-5 text-white/40" />
                                                 )}
-                                                <span className="text-sm font-bold text-white">
+                                                <span className="text-sm font-semibold text-white">
                                                     {selectedReviews.length === pendingReviews.length ? t('deselectAll') : t('selectAll')}
                                                 </span>
                                             </button>
-                                            <div className="h-8 w-px bg-white/10 hidden md:block" />
                                             {selectedReviews.length > 0 && (
-                                                <span className="px-5 py-1.5 bg-white text-blue-700 text-xs font-black rounded-xl shadow-inner">
+                                                <span className="px-3 py-1 bg-white text-blue-600 text-[11px] font-bold rounded-lg uppercase tracking-wider">
                                                     {t('selectedCount', { count: selectedReviews.length })}
                                                 </span>
                                             )}
                                         </div>
                                         {selectedReviews.length > 0 && (
-                                            <div className="flex gap-3 w-full md:w-auto">
+                                            <div className="flex gap-2 w-full md:w-auto">
                                                 <button
                                                     onClick={handleBulkApprove}
-                                                    className="flex-1 md:flex-none px-6 py-2.5 text-sm font-black text-blue-700 bg-white hover:bg-blue-50 active:scale-95 rounded-2xl transition-all flex items-center justify-center gap-2.5 shadow-lg"
+                                                    className="flex-1 md:flex-none px-5 py-2 text-sm font-bold text-blue-600 bg-white hover:bg-blue-50 active:scale-95 rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm"
                                                 >
-                                                    <CheckCircle className="w-4.5 h-4.5" />
+                                                    <CheckCircle className="w-4 h-4" />
                                                     {t('bulkApprove', { count: selectedReviews.length })}
                                                 </button>
                                                 <button
                                                     onClick={handleBulkReject}
-                                                    className="flex-1 md:flex-none px-6 py-2.5 text-sm font-black text-white bg-white/10 hover:bg-white/20 active:scale-95 border border-white/30 rounded-2xl transition-all flex items-center justify-center gap-2.5 backdrop-blur-md"
+                                                    className="flex-1 md:flex-none px-5 py-2 text-sm font-bold text-white bg-white/10 hover:bg-white/20 active:scale-95 border border-white/20 rounded-xl transition-all flex items-center justify-center gap-2"
                                                 >
-                                                    <Trash2 className="w-4.5 h-4.5" />
+                                                    <Trash2 className="w-4 h-4" />
                                                     {t('bulkReject', { count: selectedReviews.length })}
                                                 </button>
                                             </div>
                                         )}
                                     </div>
 
-                                    {/* Review Cards Grid */}
-                                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                                    {/* Review Cards Grid - More Compact */}
+                                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                                         {pendingReviews.map((review) => (
-                                            <div key={review.id} className="group bg-white rounded-[2rem] border border-gray-100 hover:border-blue-200 hover:shadow-2xl hover:shadow-blue-100/30 transition-all duration-500 p-6 flex flex-col relative overflow-hidden">
-                                                {/* Watermark/Bg Decoration */}
-                                                <div className="absolute -top-10 -right-10 opacity-[0.03] group-hover:opacity-[0.05] transition-opacity duration-500 rotate-12">
-                                                    <MessageSquare className="w-32 h-32 text-blue-900" />
-                                                </div>
-
-                                                <div className="flex justify-between items-start mb-6 relative z-10">
-                                                    <div className="flex items-center gap-4">
+                                            <div key={review.id} className="group bg-white rounded-2xl border border-gray-100 hover:border-blue-100 hover:shadow-md transition-all duration-300 p-5 flex flex-col relative overflow-hidden">
+                                                <div className="flex justify-between items-start mb-4 relative z-10">
+                                                    <div className="flex items-center gap-3">
                                                         <button
                                                             onClick={() => toggleSelectReview(review.id)}
                                                             className="flex-shrink-0 active:scale-90 transition-transform"
                                                         >
                                                             {selectedReviews.includes(review.id) ? (
-                                                                <CheckSquare className="w-7 h-7 text-blue-600" />
+                                                                <CheckSquare className="w-6 h-6 text-blue-500" />
                                                             ) : (
-                                                                <Square className="w-7 h-7 text-gray-200 group-hover:text-blue-200 hover:text-blue-300 transition-colors" />
+                                                                <Square className="w-6 h-6 text-gray-200 group-hover:text-blue-100 transition-colors" />
                                                             )}
                                                         </button>
-                                                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-lg font-black shadow-lg shadow-blue-200">
-                                                            {review.userName.charAt(0).toUpperCase()}
+                                                        <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 text-base font-bold overflow-hidden border border-blue-100/50">
+                                                            {review.userAvatar ? (
+                                                                <img src={review.userAvatar} alt={review.userName} className="w-full h-full object-cover" />
+                                                            ) : (
+                                                                review.userName.charAt(0).toUpperCase()
+                                                            )}
                                                         </div>
                                                         <div className="min-w-0">
-                                                            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                                                                <span className="font-bold text-gray-900">{review.userName}</span>
-                                                                <span className="text-gray-400 text-xs tracking-wide uppercase font-medium">{t('review')} {t('on')}</span>
-                                                                <span className="font-bold text-blue-600 truncate">{review.companyName}</span>
+                                                            <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                                                                <span className="font-semibold text-gray-900 text-sm">{review.userName}</span>
+                                                                <span className="text-gray-400 text-[10px] font-bold uppercase tracking-tighter">{t('review')} {t('on')}</span>
+                                                                <span className="font-semibold text-blue-500 text-sm truncate">{review.companyName}</span>
                                                             </div>
-                                                            <div className="flex items-center gap-3 mt-1.5">
+                                                            <div className="flex items-center gap-2 mt-1">
                                                                 {renderStars(review.rating)}
-                                                                <div className="w-1 h-1 rounded-full bg-gray-300" />
-                                                                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-tighter">{formatTimeAgo(review.createdAt)}</span>
+                                                                <div className="w-1 h-1 rounded-full bg-gray-200" />
+                                                                <span className="text-[10px] font-medium text-gray-400 uppercase tracking-tighter">{formatTimeAgo(review.createdAt)}</span>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <span className="px-3 py-1.5 bg-amber-50 text-amber-600 text-[10px] font-black uppercase tracking-widest rounded-xl border border-amber-100">
+                                                    <span className="px-2 py-1 bg-amber-50 text-amber-600 text-[9px] font-bold uppercase tracking-wider rounded-lg border border-amber-100/50">
                                                         {t('pendingStatus')}
                                                     </span>
                                                 </div>
 
-                                                <div className="bg-gray-50/80 rounded-2xl p-5 mb-6 flex-grow border border-gray-100/50 relative z-10">
-                                                    <p className="font-bold text-gray-900 mb-2.5 text-base leading-tight">"{review.title}"</p>
-                                                    <p className="text-gray-600 text-sm whitespace-pre-wrap leading-relaxed line-clamp-4 group-hover:line-clamp-none transition-all duration-500">
+                                                <div className="bg-gray-50/50 rounded-xl p-4 mb-4 flex-grow border border-gray-100/50 relative z-10">
+                                                    <p className="font-semibold text-gray-900 mb-1.5 text-sm leading-tight">"{review.title}"</p>
+                                                    <p className="text-gray-600 text-xs whitespace-pre-wrap leading-relaxed line-clamp-3 group-hover:line-clamp-none transition-all duration-300">
                                                         {review.description}
                                                     </p>
                                                 </div>
 
-                                                <div className="flex gap-4 relative z-10">
+                                                <div className="flex gap-3 relative z-10">
                                                     <button
                                                         onClick={() => approveReview(review.id)}
-                                                        className="flex-1 py-3 text-sm font-black text-white bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 active:scale-95 rounded-2xl transition-all duration-300 flex items-center justify-center gap-2.5 shadow-lg shadow-emerald-200/50"
+                                                        className="flex-1 py-2 text-xs font-bold text-white bg-emerald-500 hover:bg-emerald-600 active:scale-95 rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm shadow-emerald-100"
                                                     >
-                                                        <CheckCircle className="w-4.5 h-4.5" /> {t('approve')}
+                                                        <CheckCircle className="w-3.5 h-3.5" /> {t('approve')}
                                                     </button>
                                                     <button
                                                         onClick={() => rejectReview(review.id)}
-                                                        className="flex-1 py-3 text-sm font-black text-white bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-600 hover:to-red-700 active:scale-95 rounded-2xl transition-all duration-300 flex items-center justify-center gap-2.5 shadow-lg shadow-rose-200/50"
+                                                        className="flex-1 py-2 text-xs font-bold text-white bg-rose-500 hover:bg-rose-600 active:scale-95 rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm shadow-rose-100"
                                                     >
-                                                        <Trash2 className="w-4.5 h-4.5" /> {t('reject')}
+                                                        <Trash2 className="w-3.5 h-3.5" /> {t('reject')}
                                                     </button>
                                                 </div>
                                             </div>
@@ -315,92 +306,91 @@ export default function ModerationPage() {
 
                     {/* Reports Tab */}
                     {activeTab === 'reports' && (
-                        <div className="space-y-6">
+                        <div className="space-y-5">
                             {isLoading ? (
-                                <div className="flex flex-col items-center justify-center h-80 gap-4">
-                                    <div className="relative">
-                                        <div className="w-16 h-16 rounded-full border-4 border-red-100 border-t-red-600 animate-spin"></div>
-                                        <div className="absolute inset-0 flex items-center justify-center">
-                                            <Flag className="w-6 h-6 text-red-400" />
-                                        </div>
-                                    </div>
-                                    <p className="text-gray-400 font-medium animate-pulse">{tCommon('loading')}</p>
+                                <div className="flex flex-col items-center justify-center h-64 gap-3">
+                                    <div className="w-10 h-10 rounded-full border-2 border-red-50 border-t-red-500 animate-spin"></div>
+                                    <p className="text-gray-400 text-xs font-medium">{tCommon('loading')}</p>
                                 </div>
                             ) : pendingReports.length === 0 ? (
-                                <div className="bg-gray-50/50 rounded-3xl p-16 text-center border-2 border-dashed border-gray-100">
-                                    <div className="w-20 h-20 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto mb-6">
-                                        <Flag className="w-10 h-10 text-gray-200" />
+                                <div className="bg-gray-50/50 rounded-2xl p-12 text-center border border-dashed border-gray-100">
+                                    <div className="w-12 h-12 bg-white rounded-full shadow-sm flex items-center justify-center mx-auto mb-4 border border-gray-100">
+                                        <Flag className="w-6 h-6 text-gray-200" />
                                     </div>
-                                    <p className="text-gray-500 text-xl font-black mb-2">{t('noReports')}</p>
-                                    <p className="text-gray-400 text-sm">{t('allResolved')}</p>
+                                    <p className="text-gray-400 text-base font-semibold">{t('noReports')}</p>
+                                    <p className="text-gray-400 text-xs mt-1">{t('allResolved')}</p>
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-1 gap-6">
+                                <div className="grid grid-cols-1 gap-4">
                                     {sortedPendingReports.map((report) => (
-                                        <div key={report.id} className="group bg-white rounded-[2.5rem] border border-red-100 hover:border-red-200 hover:shadow-2xl hover:shadow-red-100/20 transition-all duration-500 p-8 flex flex-col md:flex-row gap-8 relative overflow-hidden">
+                                        <div key={report.id} className="group bg-white rounded-2xl border border-red-50 hover:border-red-100 hover:shadow-md transition-all duration-300 p-6 flex flex-col md:flex-row gap-6 relative overflow-hidden">
                                             {/* Report Badge */}
-                                            <div className="absolute -top-3 -right-3 px-6 py-4 bg-red-600 text-white rounded-bl-3xl shadow-xl z-10 flex items-center gap-2">
-                                                <Flag className="w-4 h-4" />
-                                                <span className="text-xs font-black tracking-widest uppercase">
+                                            <div className="absolute top-0 right-0 px-4 py-2 bg-red-50 text-red-600 rounded-bl-2xl border-l border-b border-red-100 flex items-center gap-1.5">
+                                                <Flag className="w-3.5 h-3.5" />
+                                                <span className="text-[10px] font-bold uppercase tracking-wider">
                                                     {t('reportsCount', { count: reports.filter(r => r.reviewId === report.reviewId).length })}
                                                 </span>
                                             </div>
 
                                             {/* Left side: Review Info */}
                                             <div className="flex-grow min-w-0 flex flex-col">
-                                                <div className="flex items-center gap-4 mb-6">
-                                                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center shadow-inner border border-red-200/50">
-                                                        <MessageSquare className="w-7 h-7 text-red-500" />
+                                                <div className="flex items-center gap-3 mb-4">
+                                                    <div className="w-11 h-11 rounded-xl bg-red-50 flex items-center justify-center border border-red-100/50 overflow-hidden text-red-600 font-bold">
+                                                        {report.reviewerAvatar ? (
+                                                            <img src={report.reviewerAvatar} alt={report.reviewerName} className="w-full h-full object-cover" />
+                                                        ) : (
+                                                            report.reviewerName.charAt(0).toUpperCase()
+                                                        )}
                                                     </div>
                                                     <div className="min-w-0">
-                                                        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                                                            <span className="font-black text-gray-900 text-lg">
+                                                        <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                                                            <span className="font-semibold text-gray-900 text-base">
                                                                 {report.reviewerName || t('anonymousUser')}
                                                             </span>
-                                                            <span className="text-gray-400 text-xs font-bold uppercase tracking-wider">{t('on')}</span>
-                                                            <span className="font-black text-blue-600 text-lg">{report.companyName}</span>
+                                                            <span className="text-gray-400 text-[10px] font-bold uppercase tracking-wider">{t('on')}</span>
+                                                            <span className="font-semibold text-blue-500 text-base leading-none">{report.companyName}</span>
                                                         </div>
-                                                        <div className="flex items-center gap-3 mt-1.5">
+                                                        <div className="flex items-center gap-2 mt-1">
                                                             {renderStars(report.reviewRating)}
-                                                            <div className="w-1 h-1 rounded-full bg-gray-300" />
-                                                            <span className="text-xs font-bold text-gray-400 uppercase">{formatTimeAgo(report.createdAt)}</span>
+                                                            <div className="w-1 h-1 rounded-full bg-gray-200" />
+                                                            <span className="text-[10px] font-medium text-gray-400 uppercase tracking-tighter">{formatTimeAgo(report.createdAt)}</span>
                                                         </div>
                                                     </div>
                                                 </div>
 
-                                                <div className="bg-gray-50 rounded-3xl p-6 mb-6 border border-gray-100">
-                                                    <p className="font-black text-gray-900 mb-3 text-lg leading-tight">"{report.reviewTitle}"</p>
-                                                    <p className="text-gray-600 text-sm whitespace-pre-wrap leading-relaxed">
+                                                <div className="bg-gray-50/50 rounded-2xl p-4 mb-4 border border-gray-100/50">
+                                                    <p className="font-semibold text-gray-900 mb-1.5 text-sm">"{report.reviewTitle}"</p>
+                                                    <p className="text-gray-600 text-xs whitespace-pre-wrap leading-relaxed">
                                                         {report.reviewContent}
                                                     </p>
                                                 </div>
 
                                                 {/* Reason section */}
-                                                <div className="bg-red-50/50 border border-red-100 rounded-3xl p-5 mb-2 relative">
-                                                    <div className="flex items-center gap-2.5 mb-2">
-                                                        <AlertCircle className="w-5 h-5 text-red-600" />
-                                                        <span className="text-[10px] font-black text-red-800 uppercase tracking-widest">{t('reasonLabel')}</span>
+                                                <div className="bg-red-50/30 border border-red-100/50 rounded-xl p-3.5 relative">
+                                                    <div className="flex items-center gap-2 mb-1.5">
+                                                        <AlertCircle className="w-4 h-4 text-red-500" />
+                                                        <span className="text-[9px] font-bold text-red-700 uppercase tracking-wider">{t('reasonLabel')}</span>
                                                     </div>
-                                                    <p className="text-sm font-semibold text-red-900/80 leading-relaxed pl-7 italic">
+                                                    <p className="text-xs font-medium text-red-900/70 leading-relaxed pl-6 italic">
                                                         "{report.reason}"
                                                     </p>
                                                 </div>
                                             </div>
 
-                                            {/* Right side/Bottom: Actions */}
-                                            <div className="flex flex-row md:flex-col gap-4 min-w-[200px] justify-center pt-4 md:pt-0 border-t md:border-t-0 md:border-l border-gray-100 md:pl-8">
+                                            {/* Action Sidebar style */}
+                                            <div className="flex flex-row md:flex-col gap-3 min-w-[160px] justify-center pt-4 md:pt-0 border-t md:border-t-0 md:border-l border-gray-100 md:pl-6">
                                                 <button
                                                     onClick={() => dismissReport(report)}
-                                                    className="flex-1 py-4 px-6 text-sm font-black text-gray-700 bg-white border-2 border-gray-100 hover:border-gray-300 hover:bg-gray-50 active:scale-95 rounded-2xl transition-all flex items-center justify-center gap-3 shadow-sm group"
+                                                    className="flex-1 py-3 px-4 text-[11px] font-bold text-gray-600 bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 active:scale-95 rounded-xl transition-all flex items-center justify-center gap-2"
                                                 >
-                                                    <CheckCircle className="w-5 h-5 text-emerald-500 group-hover:scale-110 transition-transform" />
+                                                    <CheckCircle className="w-4 h-4 text-emerald-500" />
                                                     {t('keepReview')}
                                                 </button>
                                                 <button
                                                     onClick={() => deleteReview(report)}
-                                                    className="flex-1 py-4 px-6 text-sm font-black text-white bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 active:scale-95 rounded-2xl transition-all flex items-center justify-center gap-3 shadow-lg shadow-red-200/50"
+                                                    className="flex-1 py-3 px-4 text-[11px] font-bold text-white bg-red-500 hover:bg-red-600 active:scale-95 rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm shadow-red-100"
                                                 >
-                                                    <Trash2 className="w-5 h-5" />
+                                                    <Trash2 className="w-4 h-4" />
                                                     {t('deleteReview')}
                                                 </button>
                                             </div>

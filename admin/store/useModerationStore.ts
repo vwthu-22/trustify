@@ -20,10 +20,13 @@ export interface ReviewReport {
         name?: string;
         fullName?: string;
         email?: string;
+        avatarUrl?: string;
     };
     fullName?: string;
     name?: string;
     nameUser?: string;
+    userAvatar?: string;
+    avatarUrl?: string;
 }
 
 // Transformed format for display
@@ -35,6 +38,7 @@ export interface Report {
     reviewRating: number;
     reviewerName: string;
     reviewerEmail: string;
+    reviewerAvatar?: string;
     companyName: string;
     reason: string;
     status: 'PENDING' | 'RESOLVED' | 'DISMISSED';
@@ -50,6 +54,7 @@ export interface PendingReview {
     rating: number;
     userName: string;
     userEmail: string;
+    userAvatar?: string;
     companyName: string;
     createdAt: string;
     status: 'pending' | 'approved' | 'rejected';
@@ -127,6 +132,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
                         reviewRating: r.rating,
                         reviewerName: r.userName || r.user?.name || r.user?.fullName || r.fullName || r.name || r.nameUser || (r.userEmail || r.email || '').split('@')[0] || 'User',
                         reviewerEmail: r.userEmail || r.email || '',
+                        reviewerAvatar: r.userAvatar || r.user?.avatarUrl || r.avatarUrl || '',
                         companyName: r.companyName || '',
                         reason: r.contendReport,
                         status: r.status === 'RESOLVED' ? 'RESOLVED' : r.status === 'DISMISSED' ? 'DISMISSED' : 'PENDING',
@@ -248,6 +254,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
                     rating: r.rating,
                     userName: r.userName || r.user?.name || r.user?.fullName || r.fullName || r.name || r.nameUser || (r.userEmail || r.email || '').split('@')[0] || 'User',
                     userEmail: r.userEmail || r.user?.email || r.email || '',
+                    userAvatar: r.userAvatar || r.user?.avatarUrl || r.avatarUrl || '',
                     companyName: r.companyName || r.company?.name || '',
                     createdAt: r.createdAt || r.expDate || new Date().toISOString(),
                     status: 'pending' as const
