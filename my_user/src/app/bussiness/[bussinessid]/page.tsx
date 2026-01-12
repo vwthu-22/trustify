@@ -807,10 +807,15 @@ export default function CompanyReviewPage() {
                         {(user?.status === 'SUSPENDED' ||
                             user?.status === 'INACTIVE' ||
                             reportModalError === 'ACCOUNT_SUSPENDED' ||
-                            (reportModalError && (reportModalError.includes('SUSPENDED') || reportModalError.includes('ACTIVE') || reportModalError.includes('status')))) ? (
+                            (reportModalError && (
+                                reportModalError.toLowerCase().includes('suspended') ||
+                                reportModalError.toLowerCase().includes('active') ||
+                                reportModalError.toLowerCase().includes('status') ||
+                                reportModalError.toLowerCase().includes('inactive')
+                            ))) ? (
                             <SuspensionBanner
                                 message={tSuspension('reportBlocked')}
-                                status={user?.status}
+                                status={user?.status || (reportModalError?.toLowerCase().includes('suspended') ? 'SUSPENDED' : 'INACTIVE')}
                             />
                         ) : reportModalError && (
                             <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg text-sm">

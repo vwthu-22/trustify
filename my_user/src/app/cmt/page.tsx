@@ -172,14 +172,15 @@ export default function WriteReviewModal({
                     </div>
 
                     {error && (
-                        (error.includes('SUSPENDED') ||
-                            error.includes('ACTIVE') ||
-                            error.includes('status') ||
+                        (error.toLowerCase().includes('suspended') ||
+                            error.toLowerCase().includes('active') ||
+                            error.toLowerCase().includes('status') ||
+                            error.toLowerCase().includes('inactive') ||
                             user?.status === 'SUSPENDED' ||
                             user?.status === 'INACTIVE') ? (
                             <SuspensionBanner
                                 onClear={clearError}
-                                status={user?.status}
+                                status={user?.status || (error.toLowerCase().includes('suspended') ? 'SUSPENDED' : 'INACTIVE')}
                             />
                         ) : (
                             <div className="mb-3 bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg flex items-center justify-between text-sm shadow-sm">
