@@ -125,13 +125,13 @@ export default function SendInvitationsPage() {
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Review Link <span className="text-red-500">*</span>
+                                    {t('reviewLink')} <span className="text-red-500">*</span>
                                 </label>
                                 <div className="relative">
                                     <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                                     <input
                                         type="url"
-                                        placeholder="https://trustify-company.vercel.app/bussin"
+                                        placeholder="https://trustify-company.vercel.app/bussiness/1"
                                         className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                         value={formData.productLink}
                                         onChange={(e) => setFormData({ ...formData, productLink: e.target.value })}
@@ -143,11 +143,11 @@ export default function SendInvitationsPage() {
                         {/* Subject */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                {t('subject')} <span className="text-gray-400 text-xs">(optional)</span>
+                                {t('subject')} <span className="text-gray-400 text-xs">{t('optional')}</span>
                             </label>
                             <input
                                 type="text"
-                                placeholder="Please review this product"
+                                placeholder={t('placeholderSubject')}
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 value={formData.subject}
                                 onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
@@ -157,11 +157,11 @@ export default function SendInvitationsPage() {
                         {/* Message */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                {t('message')} <span className="text-gray-400 text-xs">(optional)</span>
+                                {t('message')} <span className="text-gray-400 text-xs">{t('optional')}</span>
                             </label>
                             <textarea
                                 rows={5}
-                                placeholder="Add a personalized message..."
+                                placeholder={t('placeholderPersonalized')}
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                                 value={formData.body}
                                 onChange={(e) => setFormData({ ...formData, body: e.target.value })}
@@ -205,22 +205,22 @@ export default function SendInvitationsPage() {
                     <div className="bg-gray-50 rounded-lg p-5 space-y-4">
                         <div className="space-y-3">
                             <div className="flex">
-                                <span className="text-gray-500 font-medium w-20">To:</span>
+                                <span className="text-gray-500 font-medium w-24">{t('labelTo')}</span>
                                 <span className="text-gray-900">{formData.to || 'customer@example.com'}</span>
                             </div>
                             <div className="flex">
-                                <span className="text-gray-500 font-medium w-20">Review Link:</span>
+                                <span className="text-gray-500 font-medium w-24">{t('labelReviewLink')}</span>
                                 <span className="text-gray-900 text-xs break-all">{formData.productLink || 'https://trustify-company.vercel.app/bussiness/1'}</span>
                             </div>
                             <div className="flex">
-                                <span className="text-gray-500 font-medium w-20">Subject:</span>
-                                <span className="text-gray-900">{formData.subject || 'Please review this product'}</span>
+                                <span className="text-gray-500 font-medium w-24 uppercase text-[10px] tracking-wider">{t('subject')}:</span>
+                                <span className="text-gray-900">{formData.subject || t('placeholderSubject')}</span>
                             </div>
                         </div>
 
                         <div className="pt-4 border-t border-gray-200">
                             <p className="text-gray-900 whitespace-pre-line mb-4">
-                                {formData.body || 'Thank you for your purchase!'}
+                                {formData.body || t('placeholderBody')}
                             </p>
                         </div>
                     </div>
