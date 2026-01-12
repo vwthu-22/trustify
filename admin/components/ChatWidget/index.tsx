@@ -23,7 +23,10 @@ export default function ChatWidget() {
         isChatWidgetOpen,
         shouldOpenChatWithTicket,
         openChatWidget,
-        closeChatWidget
+        closeChatWidget,
+        setViewingSupport,
+        clearNotificationsForTicket,
+        markMessagesAsRead
     } = useSupportChatStore();
 
     const [isMinimized, setIsMinimized] = useState(false);
@@ -33,14 +36,29 @@ export default function ChatWidget() {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
+    // Track when admin is viewing a chat to prevent notifications
+    useEffect(() => {
+        const isViewingChat = isChatWidgetOpen && !isMinimized && showChat && selectedTicketId;
+        setViewingSupport(!!isViewingChat);
+
+        // Clear notifications and mark as read when viewing a specific chat
+        if (isViewingChat && selectedTicketId) {
+            clearNotificationsForTicket(selectedTicketId);
+            markMessagesAsRead(selectedTicketId);
+        }
+
+        // Cleanup: set not viewing when unmount or close
+        return () => {
+            setViewingSupport(false);
+        };
+    }, [isChatWidgetOpen, isMinimized, showChat, selectedTicketId, setViewingSupport, clearNotificationsForTicket, markMessagesAsRead]);
+
     // Handle opening specific ticket from notification
     useEffect(() => {
         if (shouldOpenChatWithTicket && isChatWidgetOpen) {
             setShowChat(true);
         }
     }, [shouldOpenChatWithTicket, isChatWidgetOpen]);
-
-
 
     // Auto-scroll to bottom when messages change
     useEffect(() => {

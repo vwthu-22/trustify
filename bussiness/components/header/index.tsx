@@ -174,6 +174,15 @@ export default function Header({ onMenuClick, isMobile = false }: HeaderProps) {
                                     notifications.slice(0, 10).map((notification) => (
                                         <div
                                             key={notification.id}
+                                            onClick={() => {
+                                                if (notification.link) {
+                                                    router.push(notification.link);
+                                                }
+                                                if (!notification.read) {
+                                                    useChatStore.getState().markNotificationAsRead(notification.id);
+                                                }
+                                                setShowHelpDropdown(false);
+                                            }}
                                             className={`flex items-start gap-2 px-3 py-2 hover:bg-gray-50 border-b border-gray-100 cursor-pointer ${notification.read ? 'opacity-60' : ''}`}
                                         >
                                             <div className={`p-1.5 rounded-full flex-shrink-0 ${notification.type === 'admin_message' ? 'bg-purple-100' :

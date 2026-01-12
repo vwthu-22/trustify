@@ -291,7 +291,11 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
                             }));
 
                             // Add notification for new room/conversation
-                            get().addNotification(newTicket.id, newTicket.companyName, newTicket.companyLogo);
+                            // BUT only if admin is NOT currently viewing this specific chat
+                            const isViewingThisTicket = get().isViewingSupport && get().selectedTicketId?.toString() === newTicket.id.toString();
+                            if (!isViewingThisTicket) {
+                                get().addNotification(newTicket.id, newTicket.companyName, newTicket.companyLogo);
+                            }
                         } else if (existingTicket) {
                             // Room exists, add message
                             get().addMessage(data.roomId.toString(), data);
@@ -631,7 +635,9 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
     addMessage: (ticketId: string, message: ChatMessage) => {
         const { selectedTicketId, isViewingSupport, tickets, addNotification } = get();
         // Only consider "viewing" if admin is on support page AND has this ticket selected
-        const isViewingThisTicket = isViewingSupport && selectedTicketId === ticketId;
+        // Using toString() to ensure reliable comparison
+        const isViewingThisTicket = isViewingSupport &&
+            selectedTicketId?.toString() === ticketId?.toString();
 
         // Find ticket to get company info for notification
         const ticket = tickets.find(t => t.id === ticketId);

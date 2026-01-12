@@ -295,15 +295,21 @@ export const useChatStore = create<ChatState>((set, get) => ({
                     try {
                         const notification = JSON.parse(message.body);
                         console.log('🔔 Received notification:', notification);
-                        // Add notification to store
-                        get().addNotification({
-                            id: notification.id?.toString() || Date.now().toString(),
-                            type: notification.type === 'MESSAGE' ? 'admin_message' : 'system',
-                            title: 'Thông báo',
-                            message: notification.message,
-                            timestamp: new Date(notification.timestamp || Date.now()),
-                            read: false
-                        });
+
+                        // Don't create notification if user is already on the support page
+                        const isOnSupportPage = typeof window !== 'undefined' && window.location.pathname === '/support';
+
+                        if (!isOnSupportPage) {
+                            // Add notification to store
+                            get().addNotification({
+                                id: notification.id?.toString() || Date.now().toString(),
+                                type: notification.type === 'MESSAGE' ? 'admin_message' : 'system',
+                                title: 'Thông báo',
+                                message: notification.message,
+                                timestamp: new Date(notification.timestamp || Date.now()),
+                                read: false
+                            });
+                        }
 
                         // If it's a message notification, refresh the chat history
                         // This serves as a backup mechanism if the main room topic subscription fails
@@ -509,6 +515,26 @@ export const useChatStore = create<ChatState>((set, get) => ({
                         ? message.roomId
                         : state.roomId;
 
+                    // Create notification if this is an admin message
+                    // Don't create notification if user is already on the support page
+                    if (message.admin && message.sender !== 'System') {
+                        const isOnSupportPage = typeof window !== 'undefined' && window.location.pathname === '/support';
+                        if (!isOnSupportPage) {
+                            const notification: Notification = {
+                                id: `msg-${message.id}-${Date.now()}`,
+                                type: 'admin_message',
+                                title: 'Tin nhắn từ Admin',
+                                message: message.message.length > 50
+                                    ? message.message.substring(0, 50) + '...'
+                                    : message.message,
+                                timestamp: new Date(message.timestamp),
+                                read: false,
+                                link: '/support'
+                            };
+                            get().addNotification(notification);
+                        }
+                    }
+
                     return {
                         ...state,
                         messages: newMessages,
@@ -554,6 +580,26 @@ export const useChatStore = create<ChatState>((set, get) => ({
                     client.subscribe(`/topic/rooms/${newRoomId}`, handleIncomingMessage);
                     subscribedToRoom = newRoomId;
                     console.log('🔔 Subscribed to room topic:', newRoomId);
+                }
+            }
+
+            // Create notification if this is an admin message (and not System bot)
+            // Don't create notification if user is already on the support page
+            if (message.admin && message.sender !== 'System') {
+                const isOnSupportPage = typeof window !== 'undefined' && window.location.pathname === '/support';
+                if (!isOnSupportPage) {
+                    const notification: Notification = {
+                        id: `msg-${message.id}-${Date.now()}`,
+                        type: 'admin_message',
+                        title: 'Tin nhắn từ Admin',
+                        message: message.message.length > 50
+                            ? message.message.substring(0, 50) + '...'
+                            : message.message,
+                        timestamp: new Date(message.timestamp),
+                        read: false,
+                        link: '/support'
+                    };
+                    get().addNotification(notification);
                 }
             }
 
