@@ -42,7 +42,7 @@ interface UserManagementStore {
     // Actions
     fetchUsers: (page?: number, size?: number) => Promise<void>;
     createAdmin: (data: CreateAdminData) => Promise<boolean>;
-    updateUserStatus: (userId: number, status: UpdateUserStatusData['status']) => Promise<boolean>;
+    updateUserStatus: (email: string, status: UpdateUserStatusData['status']) => Promise<boolean>;
     deleteUser: (userId: number) => Promise<boolean>;
     resetReportCount: (userId: number) => Promise<boolean>;
     setSearchQuery: (query: string) => void;
@@ -224,17 +224,17 @@ const useUserManagementStore = create<UserManagementStore>()(
             },
 
             // Update user status (Active, Inactive, Suspended)
-            updateUserStatus: async (userId: number, status: UpdateUserStatusData['status']) => {
+            // PUT /api/user/status?email=xxx&status=yyy
+            updateUserStatus: async (email: string, status: UpdateUserStatusData['status']) => {
                 set({ isLoading: true, error: null });
                 try {
-                    const response = await fetch(`${API_BASE_URL}/admin/user/${userId}/status`, {
+                    const response = await fetch(`${API_BASE_URL}/api/user/status?email=${encodeURIComponent(email)}&status=${status}`, {
                         method: 'PUT',
                         credentials: 'include',
                         headers: {
-                            'Content-Type': 'application/json',
                             'ngrok-skip-browser-warning': 'true',
-                        },
-                        body: JSON.stringify({ status }),
+                            'accept': '*/*'
+                        }
                     });
 
                     if (!response.ok) {
@@ -248,10 +248,10 @@ const useUserManagementStore = create<UserManagementStore>()(
                         throw new Error('Failed to update user status');
                     }
 
-                    // Update local state
+                    // Update local state by searching for the user with matching email
                     set((state) => ({
                         users: state.users.map((user) =>
-                            user.id === userId ? { ...user, status } : user
+                            user.email === email ? { ...user, status } : user
                         ),
                         isLoading: false,
                     }));

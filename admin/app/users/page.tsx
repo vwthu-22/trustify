@@ -44,10 +44,8 @@ export default function UsersPage() {
     // Edit form
     const [editForm, setEditForm] = useState<{
         status: 'ACTIVE' | 'SUSPENDED'
-        role: string
     }>({
-        status: 'ACTIVE',
-        role: 'USER'
+        status: 'ACTIVE'
     })
 
     // Status filter
@@ -88,13 +86,9 @@ export default function UsersPage() {
 
         // Update status if changed
         if (editForm.status !== selectedUser.status) {
-            await updateUserStatus(selectedUser.id, editForm.status)
+            await updateUserStatus(selectedUser.email, editForm.status)
         }
 
-        // TODO: Add updateUserRole API call when backend is ready
-        // if (editForm.role !== selectedUser.role) {
-        //     await updateUserRole(selectedUser.id, editForm.role)
-        // }
 
         setShowEditModal(false)
         setSelectedUser(null)
@@ -253,8 +247,7 @@ export default function UsersPage() {
                                                         onClick={() => {
                                                             setSelectedUser(user)
                                                             setEditForm({
-                                                                status: user.status === 'INACTIVE' ? 'ACTIVE' : user.status as 'ACTIVE' | 'SUSPENDED',
-                                                                role: user.role
+                                                                status: user.status === 'INACTIVE' ? 'ACTIVE' : user.status as 'ACTIVE' | 'SUSPENDED'
                                                             })
                                                             setShowEditModal(true)
                                                         }}
@@ -421,20 +414,6 @@ export default function UsersPage() {
                         </div>
 
                         <div className="space-y-4 mb-6">
-                            {/* Role Dropdown */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    {t('role')}
-                                </label>
-                                <select
-                                    value={editForm.role}
-                                    onChange={(e) => setEditForm({ ...editForm, role: e.target.value })}
-                                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                                >
-                                    <option value="USER">USER</option>
-                                    <option value="BUSINESS">BUSINESS</option>
-                                </select>
-                            </div>
 
                             {/* Status Dropdown */}
                             <div>
@@ -459,8 +438,8 @@ export default function UsersPage() {
                                             Report Count: {selectedUser.numberOfReport}
                                         </span>
                                         <span className={`text-xs px-2 py-0.5 rounded-full ${selectedUser.numberOfReport >= 5 ? 'bg-red-100 text-red-700' :
-                                                selectedUser.numberOfReport >= 3 ? 'bg-yellow-100 text-yellow-700' :
-                                                    'bg-gray-100 text-gray-700'
+                                            selectedUser.numberOfReport >= 3 ? 'bg-yellow-100 text-yellow-700' :
+                                                'bg-gray-100 text-gray-700'
                                             }`}>
                                             {selectedUser.numberOfReport >= 5 ? 'Critical' :
                                                 selectedUser.numberOfReport >= 3 ? 'Warning' : 'Low'}
