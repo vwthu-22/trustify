@@ -171,9 +171,12 @@ export default function WriteReviewModal({
                         </div>
                     </div>
 
-                    {/* Error/Success Messages */}
                     {error && (
-                        (error.includes('SUSPENDED') || user?.status === 'SUSPENDED' || user?.status === 'INACTIVE') ? (
+                        (error.includes('SUSPENDED') ||
+                            error.includes('ACTIVE') ||
+                            error.includes('status') ||
+                            user?.status === 'SUSPENDED' ||
+                            user?.status === 'INACTIVE') ? (
                             <SuspensionBanner
                                 onClear={clearError}
                                 status={user?.status}

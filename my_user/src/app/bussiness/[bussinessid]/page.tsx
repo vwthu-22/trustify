@@ -804,7 +804,10 @@ export default function CompanyReviewPage() {
                             <h3 className="text-lg font-bold text-gray-900">{tReview('reportReview')}</h3>
                         </div>
 
-                        {(user?.status === 'SUSPENDED' || user?.status === 'INACTIVE' || reportModalError === 'ACCOUNT_SUSPENDED') ? (
+                        {(user?.status === 'SUSPENDED' ||
+                            user?.status === 'INACTIVE' ||
+                            reportModalError === 'ACCOUNT_SUSPENDED' ||
+                            (reportModalError && (reportModalError.includes('SUSPENDED') || reportModalError.includes('ACTIVE') || reportModalError.includes('status')))) ? (
                             <SuspensionBanner
                                 message={tSuspension('reportBlocked')}
                                 status={user?.status}
