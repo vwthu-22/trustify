@@ -26,6 +26,7 @@ export default function SupportChatPage() {
     } = useChatStore();
 
     const [newMessage, setNewMessage] = useState('');
+    const [hasAutoReplied, setHasAutoReplied] = useState(false); // Track if bot has replied
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -45,6 +46,14 @@ export default function SupportChatPage() {
         initChat();
         return () => disconnect();
     }, [company?.id]);
+
+    // Check if admin has replied (excluding System bot messages)
+    useEffect(() => {
+        const hasRealAdminReply = messages.some(msg => msg.admin && msg.sender !== 'System');
+        if (hasRealAdminReply) {
+            setHasAutoReplied(false); // Reset when admin replies
+        }
+    }, [messages]);
 
     // Auto scroll to bottom when new messages arrive
     useEffect(() => {
@@ -66,9 +75,9 @@ export default function SupportChatPage() {
         console.log('📤 Attempting to send message:', messageToSend);
         console.log('   isConnected:', isConnected);
 
-        // Check if this is the first user message (no admin replies yet)
-        const hasAdminReplied = messages.some(msg => msg.admin);
-        const isFirstMessage = messages.length === 0 || !hasAdminReplied;
+        // Check if this is the first user message (no real admin replies yet, excluding System bot)
+        const hasRealAdminReplied = messages.some(msg => msg.admin && msg.sender !== 'System');
+        const isFirstMessage = !hasRealAdminReplied && !hasAutoReplied;
 
         // Try to send via WebSocket first
         if (isConnected) {
@@ -82,6 +91,7 @@ export default function SupportChatPage() {
 
         // Send auto-reply bot message if this is the first message
         if (isFirstMessage) {
+            setHasAutoReplied(true); // Mark as replied
             setTimeout(() => {
                 const botMessage: ChatMessage = {
                     id: Date.now(),
