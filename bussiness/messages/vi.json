@@ -735,6 +735,7 @@
         "yesterday": "Hôm qua",
         "startConversation": "Bắt đầu cuộc trò chuyện",
         "sendMessageToStart": "Gửi tin nhắn để được hỗ trợ",
-        "reconnect": "Kết nối lại"
+        "reconnect": "Kết nối lại",
+        "autoReplyMessage": "Cảm ơn bạn đã liên hệ! Đội ngũ hỗ trợ của chúng tôi sẽ phản hồi trong thời gian sớm nhất."
     }
 }

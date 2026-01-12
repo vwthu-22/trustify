@@ -199,7 +199,7 @@ export default function SendInvitationsPage() {
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                     <div className="flex items-center gap-2 mb-4">
                         <Eye className="h-5 w-5 text-gray-600" />
-                        <h3 className="text-lg font-semibold text-gray-900">{t('emailPreview')}</h3>
+                        <h3 className="text-md text-gray-900">{t('emailPreview')}</h3>
                     </div>
 
                     <div className="bg-gray-50 rounded-lg p-5 space-y-4">

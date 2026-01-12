@@ -735,6 +735,7 @@
         "yesterday": "Yesterday",
         "startConversation": "Start a conversation",
         "sendMessageToStart": "Send a message to get support",
-        "reconnect": "Reconnect"
+        "reconnect": "Reconnect",
+        "autoReplyMessage": "Thank you for contacting us! Our support team will respond as soon as possible."
     }
 }

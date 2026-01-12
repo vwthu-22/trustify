@@ -66,6 +66,10 @@ export default function SupportChatPage() {
         console.log('📤 Attempting to send message:', messageToSend);
         console.log('   isConnected:', isConnected);
 
+        // Check if this is the first user message (no admin replies yet)
+        const hasAdminReplied = messages.some(msg => msg.admin);
+        const isFirstMessage = messages.length === 0 || !hasAdminReplied;
+
         // Try to send via WebSocket first
         if (isConnected) {
             console.log('   → Sending via WebSocket');
@@ -74,6 +78,21 @@ export default function SupportChatPage() {
             // Fallback: send via REST API (credentials sent via HttpOnly cookie)
             console.log('   → Sending via REST API');
             await sendMessageViaRest(messageToSend, '', false);
+        }
+
+        // Send auto-reply bot message if this is the first message
+        if (isFirstMessage) {
+            setTimeout(() => {
+                const botMessage: ChatMessage = {
+                    id: Date.now(),
+                    roomId: typeof roomId === 'number' ? roomId : 0,
+                    sender: 'System',
+                    message: t('autoReplyMessage') || 'Cảm ơn bạn đã liên hệ! Đội ngũ hỗ trợ của chúng tôi sẽ phản hồi trong thời gian sớm nhất.',
+                    timestamp: new Date().toISOString(),
+                    admin: true
+                };
+                addMessage(botMessage);
+            }, 1000); // Delay 1 second for more natural feel
         }
     };
 
