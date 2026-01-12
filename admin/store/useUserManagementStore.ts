@@ -227,8 +227,11 @@ const useUserManagementStore = create<UserManagementStore>()(
             // PUT /api/user/status?email=xxx&status=yyy
             updateUserStatus: async (email: string, status: UpdateUserStatusData['status']) => {
                 set({ isLoading: true, error: null });
+                const url = `${API_BASE_URL}/api/user/status?email=${encodeURIComponent(email)}&status=${status}`;
+                console.log('🌐 Calling Status API:', url);
+
                 try {
-                    const response = await fetch(`${API_BASE_URL}/api/user/status?email=${encodeURIComponent(email)}&status=${status}`, {
+                    const response = await fetch(url, {
                         method: 'PUT',
                         credentials: 'include',
                         headers: {
@@ -237,7 +240,12 @@ const useUserManagementStore = create<UserManagementStore>()(
                         }
                     });
 
+                    console.log('📥 API Response Status:', response.status);
+
                     if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('❌ API Error Text:', errorText);
+
                         if (response.status === 401) {
                             throw new Error('Unauthorized. Please login again.');
                         } else if (response.status === 403) {
@@ -245,8 +253,10 @@ const useUserManagementStore = create<UserManagementStore>()(
                         } else if (response.status === 404) {
                             throw new Error('User not found');
                         }
-                        throw new Error('Failed to update user status');
+                        throw new Error(`Failed to update user status (${response.status})`);
                     }
+
+                    console.log('✅ Status updated successfully in backend');
 
                     // Update local state by searching for the user with matching email
                     set((state) => ({
@@ -258,7 +268,7 @@ const useUserManagementStore = create<UserManagementStore>()(
 
                     return true;
                 } catch (error) {
-                    console.error('Update user status error:', error);
+                    console.error('❌ Store: Update user status error:', error);
                     set({
                         error: error instanceof Error ? error.message : 'Failed to update user status',
                         isLoading: false,
