@@ -7,9 +7,9 @@ import { useTranslations } from 'next-intl';
 
 interface ReviewData {
   rating: number;
-  reviewTitle: string;
-  reviewText: string;
-  experienceDate: string;
+  title: string;
+  description: string;
+  expDate: string;
   companyName: string;
   companyUrl?: string;
   userName?: string;
@@ -35,10 +35,13 @@ export default function ThankYouModal({
   // Get user country and review count from stores
   const userCountry = user?.country || 'VN';
 
+  // Format experience date
+  const formattedDate = reviewData.expDate ? new Date(reviewData.expDate).toLocaleDateString() : '';
+
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
       <div className="bg-gray-50 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative shadow-2xl">
-        {/* Stars */}
+        {/* Stars decoration */}
         <div className="absolute top-0 left-0 w-full h-32 overflow-hidden pointer-events-none">
           <div className="flex gap-2">
             {[...Array(15)].map((_, i) => (
@@ -78,7 +81,7 @@ export default function ThankYouModal({
             <div className="flex items-center gap-3 mb-4 pb-4 border-b border-gray-200">
               <div className="w-12 h-12 bg-blue-600 rounded flex items-center justify-center">
                 <span className="text-white text-lg font-bold">
-                  {reviewData.companyName.charAt(0)}
+                  {reviewData.companyName?.charAt(0)}
                 </span>
               </div>
               <h3 className="text-lg font-semibold text-gray-900">{reviewData.companyName}</h3>
@@ -97,10 +100,14 @@ export default function ThankYouModal({
 
             {/* User Info */}
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-semibold text-lg">
-                  {reviewData.userName ? reviewData.userName.charAt(0).toUpperCase() : user?.name?.charAt(0).toUpperCase() || 'U'}
-                </span>
+              <div className="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center overflow-hidden">
+                {user?.avatar ? (
+                  <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-white font-semibold text-lg">
+                    {reviewData.userName ? reviewData.userName.charAt(0).toUpperCase() : user?.name?.charAt(0).toUpperCase() || 'U'}
+                  </span>
+                )}
               </div>
               <div>
                 <h4 className="font-semibold text-gray-900">{reviewData.userName || user?.name || 'User'}</h4>
@@ -110,10 +117,10 @@ export default function ThankYouModal({
 
             {/* Rating Stars */}
             <div className="flex gap-1 mb-3">
-              {[...Array(5)].map((_, i) => (
+              {[1, 2, 3, 4, 5].map((star) => (
                 <svg
-                  key={i}
-                  className={`w-6 h-6 ${i < reviewData.rating ? 'text-[#5aa5df]' : 'text-gray-300'} fill-current`}
+                  key={star}
+                  className={`w-6 h-6 ${star <= reviewData.rating ? 'text-[#5aa5df]' : 'text-gray-300'} fill-current`}
                   viewBox="0 0 24 24"
                 >
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
@@ -121,26 +128,29 @@ export default function ThankYouModal({
               ))}
             </div>
 
-            {/* Review Title */}
-            <h3 className="font-semibold text-gray-900 mb-2 text-lg">{reviewData.reviewTitle}</h3>
+            {/* Review Content */}
+            <div className="mb-4">
+              <h3 className="font-semibold text-gray-900 mb-1 text-lg">{reviewData.title}</h3>
+              <p className="text-gray-700 whitespace-pre-line">{reviewData.description}</p>
+            </div>
 
             {/* Review Meta */}
-            <div className="flex gap-3 mb-4">
-              <span className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
-                {reviewData.experienceDate}
+            <div className="flex flex-wrap gap-2 mb-4">
+              <span className="text-xs text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+                Experience Date: {formattedDate}
               </span>
-              <span className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+              <span className="text-xs text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
                 {t('unpromptedReview')}
               </span>
             </div>
 
             {/* Action Buttons */}
             <div className="flex gap-4 pt-4 border-t border-gray-200">
-              <button className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition">
+              <button className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition outline-none">
                 <Pencil className="w-4 h-4" />
                 <span className="text-sm font-medium">{t('edit')}</span>
               </button>
-              <button className="flex items-center gap-2 text-gray-700 hover:text-red-600 transition">
+              <button className="flex items-center gap-2 text-gray-700 hover:text-red-600 transition outline-none">
                 <Trash2 className="w-4 h-4" />
                 <span className="text-sm font-medium">{t('delete')}</span>
               </button>

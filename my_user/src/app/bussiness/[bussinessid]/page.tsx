@@ -105,7 +105,8 @@ export default function CompanyReviewPage() {
     // Check if review belongs to current user
     const isOwnReview = (review: any) => {
         if (!user?.email) return false;
-        return review.userEmail?.toLowerCase() === user.email.toLowerCase();
+        const reviewEmail = review.userEmail || review.user?.email || review.email;
+        return reviewEmail?.toLowerCase() === user.email.toLowerCase();
     };
 
     // Handle edit review

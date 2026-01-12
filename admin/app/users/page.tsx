@@ -43,7 +43,7 @@ export default function UsersPage() {
 
     // Edit form
     const [editForm, setEditForm] = useState<{
-        status: 'ACTIVE' | 'SUSPENDED'
+        status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED'
     }>({
         status: 'ACTIVE'
     })
@@ -80,19 +80,30 @@ export default function UsersPage() {
         }
     }
 
-    // Handle save edit (status and role)
+    // Handle save edit (status)
     const handleSaveEdit = async () => {
         if (!selectedUser) return
 
+        console.log('🔄 Starting status update for:', selectedUser.email);
+        console.log('📍 Current status:', selectedUser.status);
+        console.log('📍 New status:', editForm.status);
+
         // Update status if changed
         if (editForm.status !== selectedUser.status) {
-            await updateUserStatus(selectedUser.email, editForm.status)
+            const success = await updateUserStatus(selectedUser.email, editForm.status)
+            console.log('✅ Update status success:', success);
+            if (!success) return // Don't close modal if it failed
+        } else {
+            console.log('ℹ️ Status unchanged, skipping API call');
         }
-
 
         setShowEditModal(false)
         setSelectedUser(null)
-        fetchUsers(currentPage, pageSize)
+
+        // Refresh users list and await it
+        console.log('🔄 Refreshing users list...');
+        await fetchUsers(currentPage, pageSize)
+        console.log('✨ Refresh complete');
     }
 
     // Handle delete
@@ -247,7 +258,7 @@ export default function UsersPage() {
                                                         onClick={() => {
                                                             setSelectedUser(user)
                                                             setEditForm({
-                                                                status: user.status === 'INACTIVE' ? 'ACTIVE' : user.status as 'ACTIVE' | 'SUSPENDED'
+                                                                status: user.status as 'ACTIVE' | 'INACTIVE' | 'SUSPENDED'
                                                             })
                                                             setShowEditModal(true)
                                                         }}
@@ -422,13 +433,21 @@ export default function UsersPage() {
                                 </label>
                                 <select
                                     value={editForm.status}
-                                    onChange={(e) => setEditForm({ ...editForm, status: e.target.value as 'ACTIVE' | 'SUSPENDED' })}
+                                    onChange={(e) => setEditForm({ ...editForm, status: e.target.value as 'ACTIVE' | 'INACTIVE' | 'SUSPENDED' })}
                                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                                 >
                                     <option value="ACTIVE">{tCommon('active')}</option>
+                                    <option value="INACTIVE">{tCommon('inactive')}</option>
                                     <option value="SUSPENDED">{tCommon('suspended')}</option>
                                 </select>
                             </div>
+
+                            {/* Error Message inside Modal */}
+                            {error && (
+                                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                                    {error}
+                                </div>
+                            )}
 
                             {/* Report Count Info */}
                             {selectedUser.numberOfReport > 0 && (
