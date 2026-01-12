@@ -66,9 +66,10 @@ export default function WriteReviewModal({
 
     // Proactively check for suspension when modal opens
     useEffect(() => {
-        if (isOpen && user?.status === 'SUSPENDED') {
+        const isUserSuspended = user?.status === 'SUSPENDED' || user?.status === 'INACTIVE';
+        if (isOpen && isUserSuspended) {
             const { error: currentError } = useReviewStore.getState();
-            if (!currentError || !currentError.includes('SUSPENDED')) {
+            if (!currentError || !currentError.toLowerCase().includes('suspension')) {
                 // Set a manual error to trigger the banner if not already present
                 useReviewStore.setState({ error: 'ACCOUNT_SUSPENDED' });
             }
@@ -172,9 +173,10 @@ export default function WriteReviewModal({
 
                     {/* Error/Success Messages */}
                     {error && (
-                        error.includes('SUSPENDED') ? (
+                        (error.includes('SUSPENDED') || user?.status === 'SUSPENDED' || user?.status === 'INACTIVE') ? (
                             <SuspensionBanner
                                 onClear={clearError}
+                                status={user?.status}
                             />
                         ) : (
                             <div className="mb-3 bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg flex items-center justify-between text-sm shadow-sm">

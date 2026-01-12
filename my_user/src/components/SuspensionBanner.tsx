@@ -7,10 +7,14 @@ import { useTranslations } from 'next-intl';
 interface SuspensionBannerProps {
     onClear?: () => void;
     message?: string;
+    status?: string | null;
 }
 
-const SuspensionBanner = ({ onClear, message }: SuspensionBannerProps) => {
+const SuspensionBanner = ({ onClear, message, status }: SuspensionBannerProps) => {
     const t = useTranslations('suspension');
+
+    // Determine the default message based on status
+    const defaultMessage = status === 'SUSPENDED' ? t('messagePermanent') : t('message');
 
     return (
         <div className="mb-4 bg-red-50 border border-red-200 rounded-xl p-4 relative animate-in fade-in slide-in-from-top-2 duration-300 shadow-sm">
@@ -21,7 +25,7 @@ const SuspensionBanner = ({ onClear, message }: SuspensionBannerProps) => {
                 <div className="flex-1">
                     <h4 className="text-red-900 font-bold text-sm mb-1 uppercase tracking-tight">{t('title')}</h4>
                     <p className="text-red-700 text-[13px] leading-relaxed">
-                        {(message || t('message')).split('**').map((part, i) =>
+                        {(message || defaultMessage).split('**').map((part, i) =>
                             i % 2 === 1 ? <strong key={i}>{part}</strong> : part
                         )}
                     </p>

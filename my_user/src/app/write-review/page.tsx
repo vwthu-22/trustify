@@ -52,8 +52,8 @@ export default function WriteReviewPage() {
 
             {/* Search Section */}
             <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
-                {user?.status === 'SUSPENDED' && (
-                    <SuspensionBanner />
+                {(user?.status === 'SUSPENDED' || user?.status === 'INACTIVE') && (
+                    <SuspensionBanner status={user?.status} />
                 )}
                 <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
                     <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-1">

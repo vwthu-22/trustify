@@ -804,9 +804,10 @@ export default function CompanyReviewPage() {
                             <h3 className="text-lg font-bold text-gray-900">{tReview('reportReview')}</h3>
                         </div>
 
-                        {(user?.status === 'SUSPENDED' || reportModalError === 'ACCOUNT_SUSPENDED') ? (
+                        {(user?.status === 'SUSPENDED' || user?.status === 'INACTIVE' || reportModalError === 'ACCOUNT_SUSPENDED') ? (
                             <SuspensionBanner
                                 message={tSuspension('reportBlocked')}
+                                status={user?.status}
                             />
                         ) : reportModalError && (
                             <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg text-sm">
