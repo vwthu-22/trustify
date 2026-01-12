@@ -209,6 +209,10 @@ export default function SendInvitationsPage() {
                                 <span className="text-gray-900">{formData.to || 'customer@example.com'}</span>
                             </div>
                             <div className="flex">
+                                <span className="text-gray-500 font-medium w-20">Review Link:</span>
+                                <span className="text-gray-900 text-xs break-all">{formData.productLink || 'https://trustify-company.vercel.app/bussiness/1'}</span>
+                            </div>
+                            <div className="flex">
                                 <span className="text-gray-500 font-medium w-20">Subject:</span>
                                 <span className="text-gray-900">{formData.subject || 'Please review this product'}</span>
                             </div>
@@ -217,12 +221,6 @@ export default function SendInvitationsPage() {
                         <div className="pt-4 border-t border-gray-200">
                             <p className="text-gray-900 whitespace-pre-line mb-4">
                                 {formData.body || 'Thank you for your purchase!'}
-                            </p>
-                            <div className="p-4 bg-blue-600 text-white rounded-lg text-center font-medium hover:bg-blue-700 transition-colors cursor-pointer">
-                                {t('leaveReview')} →
-                            </div>
-                            <p className="mt-3 text-xs text-gray-500 break-all">
-                                {formData.productLink || 'https://example.com/review'}
                             </p>
                         </div>
                     </div>
