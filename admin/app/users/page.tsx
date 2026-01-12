@@ -89,12 +89,14 @@ export default function UsersPage() {
         console.log('📍 New status:', editForm.status);
 
         // Update status if changed
-        if (editForm.status !== selectedUser.status) {
+        // Treat null/undefined as 'ACTIVE' for comparison
+        const currentStatus = selectedUser.status || 'ACTIVE';
+        if (editForm.status !== currentStatus) {
             const success = await updateUserStatus(selectedUser.email, editForm.status)
             console.log('✅ Update status success:', success);
             if (!success) return // Don't close modal if it failed
         } else {
-            console.log('ℹ️ Status unchanged, skipping API call');
+            console.log('ℹ️ Status unchanged (Normalizing null to ACTIVE), skipping API call');
         }
 
         setShowEditModal(false)
@@ -257,8 +259,11 @@ export default function UsersPage() {
                                                     <button
                                                         onClick={() => {
                                                             setSelectedUser(user)
+                                                            // Fallback to ACTIVE if status is null or undefined
+                                                            const initialStatus = (user.status || 'ACTIVE') as 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+                                                            console.log('📂 Opening edit modal for:', user.email, 'Initial status set to:', initialStatus);
                                                             setEditForm({
-                                                                status: user.status as 'ACTIVE' | 'INACTIVE' | 'SUSPENDED'
+                                                                status: initialStatus
                                                             })
                                                             setShowEditModal(true)
                                                         }}
