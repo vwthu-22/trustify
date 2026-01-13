@@ -21,6 +21,7 @@ export default function VerificationPage() {
     const [showRejectModal, setShowRejectModal] = useState(false)
     const [rejectingId, setRejectingId] = useState<number | null>(null)
     const [rejectReason, setRejectReason] = useState('')
+    const [selectedDoc, setSelectedDoc] = useState<string | null>(null)
 
     useEffect(() => {
         fetchPendingVerifications()
@@ -150,29 +151,23 @@ export default function VerificationPage() {
                                         </p>
                                         <div className="flex gap-2 flex-wrap">
                                             {request.documentUrl && (
-                                                <a
-                                                    href={request.documentUrl}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded text-xs text-gray-600 hover:bg-gray-200 cursor-pointer transition-colors"
+                                                <button
+                                                    onClick={() => setSelectedDoc(request.documentUrl || null)}
+                                                    className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 rounded-lg text-xs font-medium text-blue-600 hover:bg-blue-100 cursor-pointer transition-all border border-blue-100"
                                                 >
-                                                    <FileText className="w-3 h-3" />
+                                                    <FileText className="w-3.5 h-3.5" />
                                                     {t('viewDocument')}
-                                                    <ExternalLink className="w-3 h-3 ml-1" />
-                                                </a>
+                                                </button>
                                             )}
                                             {request.documents?.map((doc, index) => (
-                                                <a
+                                                <button
                                                     key={index}
-                                                    href={doc}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded text-xs text-gray-600 hover:bg-gray-200 cursor-pointer transition-colors"
+                                                    onClick={() => setSelectedDoc(doc)}
+                                                    className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-50 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-100 cursor-pointer transition-all border border-gray-100"
                                                 >
-                                                    <FileText className="w-3 h-3" />
+                                                    <FileText className="w-3.5 h-3.5" />
                                                     {t('documentNumber', { index: index + 1 })}
-                                                    <ExternalLink className="w-3 h-3 ml-1" />
-                                                </a>
+                                                </button>
                                             ))}
                                         </div>
                                     </div>
@@ -213,7 +208,7 @@ export default function VerificationPage() {
             {/* Reject Modal */}
             {showRejectModal && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md mx-4">
+                    <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md mx-4 animate-in fade-in zoom-in duration-200">
                         <h3 className="text-lg font-bold text-gray-900 mb-4">{t('rejectModal.title')}</h3>
                         <p className="text-gray-600 mb-4">{t('rejectModal.description')}</p>
                         <textarea
@@ -245,6 +240,54 @@ export default function VerificationPage() {
                                 )}
                                 {t('rejectModal.confirm')}
                             </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Document Preview Modal */}
+            {selectedDoc && (
+                <div
+                    className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[60] p-4 sm:p-8 animate-in fade-in transition-all duration-300"
+                    onClick={() => setSelectedDoc(null)}
+                >
+                    <div className="relative max-w-5xl w-full max-h-[90vh] flex flex-col items-center animate-in zoom-in duration-300">
+                        <button
+                            className="absolute -top-12 right-0 p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-all group"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedDoc(null);
+                            }}
+                        >
+                            <X className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" />
+                        </button>
+
+                        <div
+                            className="bg-white p-2 rounded-xl shadow-2xl relative overflow-hidden flex items-center justify-center min-h-[200px] w-full"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <img
+                                src={selectedDoc}
+                                alt="Verification Document"
+                                className="max-w-full max-h-[85vh] object-contain rounded-lg"
+                                onLoad={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.opacity = '1';
+                                }}
+                                style={{ opacity: 0, transition: 'opacity 0.3s ease-in-out' }}
+                            />
+
+                            <div className="absolute top-4 right-4 flex gap-2">
+                                <a
+                                    href={selectedDoc}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="p-2 bg-white/90 hover:bg-white rounded-full text-gray-900 shadow-lg transition-all"
+                                    title={t('viewFullSize') || 'View full size'}
+                                >
+                                    <ExternalLink className="w-5 h-5" />
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
