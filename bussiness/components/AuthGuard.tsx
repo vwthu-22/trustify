@@ -29,14 +29,7 @@ export default function AuthGuard({ children }: AuthGuardProps) {
                 return;
             }
 
-            // Already have company data
-            if (company) {
-                setIsChecking(false);
-                setIsAuthenticated(true);
-                return;
-            }
-
-            // Try to verify auth status
+            // Perform backend verification to ensure session is still valid and matches the store
             const isValid = await checkAuthStatus();
 
             if (isValid) {

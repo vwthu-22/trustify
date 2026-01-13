@@ -1,16 +1,41 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Check, X, Mail, ArrowLeft, ExternalLink } from 'lucide-react';
 import { useCompanyStore } from '@/store/useCompanyStore';
 import { useTranslations } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
 
 export default function LoginPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <LoginContent />
+        </Suspense>
+    );
+}
+
+function LoginContent() {
     const t = useTranslations('login');
-    const { sendMagicLink, isLoading, error: storeError, magicLinkSent, resetMagicLinkState, clearError } = useCompanyStore();
+    const searchParams = useSearchParams();
+    const { sendMagicLink, isLoading, error: storeError, magicLinkSent, resetMagicLinkState, clearError, logout } = useCompanyStore();
 
     const [email, setEmail] = useState('');
     const [localError, setLocalError] = useState('');
+
+    // Pre-fill email and handle session clearing if redirected from registration
+    useEffect(() => {
+        const emailFromUrl = searchParams.get('email');
+        const isNewRegistration = searchParams.get('new_registration') === 'true';
+
+        if (emailFromUrl) {
+            setEmail(emailFromUrl);
+        }
+
+        if (isNewRegistration) {
+            // Force clear old session from LocalStorage and cookies
+            logout();
+        }
+    }, [searchParams, logout]);
 
     // Email validation regex
     const isValidEmail = (email: string) => {

@@ -102,7 +102,9 @@ export default function BusinessRegister() {
   };
 
   const handleGoToCompanyDashboard = () => {
-    window.location.href = 'https://trustify-company.vercel.app/';
+    // Redirect to login page with prefilled email and a flag to clear old session
+    const email = encodeURIComponent(formData.workEmail);
+    window.location.href = `https://trustify-company.vercel.app/login?email=${email}&new_registration=true`;
   };
 
   const handleGoHome = () => {
