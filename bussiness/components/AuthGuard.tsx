@@ -43,7 +43,7 @@ export default function AuthGuard({ children }: AuthGuardProps) {
         };
 
         checkAuth();
-    }, [pathname, company, isPublicRoute, checkAuthStatus, router]);
+    }, [pathname, isPublicRoute, checkAuthStatus, router]);
 
     // Show loading while checking auth
     if (isChecking && !isPublicRoute) {

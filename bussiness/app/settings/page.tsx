@@ -13,6 +13,7 @@ export default function SettingsPage() {
 
     const { company, fetchCompanyProfile, updateCompany, uploadLogo, isLoading } = useCompanyStore();
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const isInitialized = useRef(false);
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
@@ -41,8 +42,8 @@ export default function SettingsPage() {
 
     // Populate form when company data is loaded
     useEffect(() => {
-        if (company) {
-            console.log('Settings - company data loaded:', company);
+        if (company && !isInitialized.current) {
+            console.log('Settings - initializing form data:', company);
             setProfileData({
                 name: company.name || '',
                 email: company.email || '',
@@ -59,6 +60,7 @@ export default function SettingsPage() {
                 size: company.size || ''
             });
             setAvatarPreview(company.logo || null);
+            isInitialized.current = true;
         }
     }, [company]);
 
@@ -204,22 +206,29 @@ export default function SettingsPage() {
                 return;
             }
 
+            // 1. Show preview instantly using URL.createObjectURL
+            const objectUrl = URL.createObjectURL(file);
+            setAvatarPreview(objectUrl);
+
             // Max 1MB for backend limit
             const maxSize = 1 * 1024 * 1024;
-
             let processedFile = file;
 
-            // Compress if file is too large
+            // 2. Process/Compress in the background
             if (file.size > maxSize) {
                 try {
                     processedFile = await compressImage(file, 800, 0.7);
                     console.log(`Compressed from ${file.size} to ${processedFile.size} bytes`);
 
-                    // If still too large after compression
                     if (processedFile.size > maxSize) {
                         alert('Image is too large. Please choose a smaller image (max 1MB).');
+                        setAvatarPreview(company?.logo || null); // Reset to original
                         return;
                     }
+
+                    // Update preview with compressed version (optional, but good for accuracy)
+                    const compressedUrl = URL.createObjectURL(processedFile);
+                    setAvatarPreview(compressedUrl);
                 } catch (error) {
                     console.error('Failed to compress image:', error);
                     alert('Failed to process image. Please try a smaller image.');
@@ -228,11 +237,6 @@ export default function SettingsPage() {
             }
 
             setAvatarFile(processedFile);
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setAvatarPreview(reader.result as string);
-            };
-            reader.readAsDataURL(processedFile);
         }
     };
 

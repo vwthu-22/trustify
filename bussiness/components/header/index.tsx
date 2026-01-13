@@ -81,14 +81,16 @@ export default function Header({ onMenuClick, isMobile = false }: HeaderProps) {
     const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
 
     useEffect(() => {
-        if (!company && !isPublicRoute) {
+        if (isPublicRoute) return;
+
+        if (!company) {
             fetchCompanyProfile();
-        }
-        // Fetch subscription when company is loaded
-        if (company && !isPublicRoute) {
+        } else {
+            // Fetch subscription ONLY if we have a company and haven't fetched it yet
+            // or if the company changed.
             fetchCurrentSubscription();
         }
-    }, [company, fetchCompanyProfile, fetchCurrentSubscription, isPublicRoute]);
+    }, [company?.id, fetchCompanyProfile, fetchCurrentSubscription, isPublicRoute]);
 
     useEffect(() => {
         if (isPublicRoute) return;
