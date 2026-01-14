@@ -22,6 +22,11 @@ function LoginContent() {
     const [email, setEmail] = useState('');
     const [localError, setLocalError] = useState('');
 
+    // Reset magic link state on mount to ensure clean state
+    useEffect(() => {
+        resetMagicLinkState();
+    }, [resetMagicLinkState]);
+
     // Pre-fill email and handle session clearing if redirected from registration
     useEffect(() => {
         const emailFromUrl = searchParams.get('email');

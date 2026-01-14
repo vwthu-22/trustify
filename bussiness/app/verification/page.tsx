@@ -23,6 +23,7 @@ export default function VerificationPage() {
     const [isDragging, setIsDragging] = useState(false);
     const [previewImage, setPreviewImage] = useState<string | null>(null);
     const [showSuccess, setShowSuccess] = useState(false);
+    const [isInitializing, setIsInitializing] = useState(true); // Add loading state
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const {
@@ -38,11 +39,18 @@ export default function VerificationPage() {
 
     // Fetch profile on mount to get latest status
     useEffect(() => {
-        // Force clear verification status from localStorage first
-        setVerificationStatus('not-started');
+        const initializePage = async () => {
+            // Force clear verification status from localStorage first
+            setVerificationStatus('not-started');
 
-        // Then fetch fresh data from backend
-        fetchCompanyProfile();
+            // Then fetch fresh data from backend
+            await fetchCompanyProfile();
+
+            // Done initializing
+            setIsInitializing(false);
+        };
+
+        initializePage();
     }, [fetchCompanyProfile, setVerificationStatus]);
 
     // Sync verification status from company.verifyStatus
@@ -157,8 +165,21 @@ export default function VerificationPage() {
         verificationStatus,
         companyVerifyStatus: company?.verifyStatus,
         companyVerified: company?.verified,
-        companyId: company?.id
+        companyId: company?.id,
+        isInitializing
     });
+
+    // Show loading screen while fetching initial data
+    if (isInitializing) {
+        return (
+            <div className="max-w-xl mx-auto">
+                <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
+                    <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
+                    <p className="text-gray-600">{t('loading') || 'Đang tải...'}</p>
+                </div>
+            </div>
+        );
+    }
 
     // Determine actual status from backend (company.verifyStatus takes priority)
     const actualStatus = company?.verifyStatus || verificationStatus;
