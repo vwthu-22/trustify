@@ -266,6 +266,11 @@ export default function VerificationPage() {
                             className="bg-white p-2 rounded-xl shadow-2xl relative overflow-hidden flex items-center justify-center min-h-[200px] w-full"
                             onClick={(e) => e.stopPropagation()}
                         >
+                            {/* Debug: Show URL */}
+                            <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded max-w-md truncate z-10">
+                                {selectedDoc}
+                            </div>
+
                             <img
                                 src={selectedDoc}
                                 alt="Verification Document"
@@ -273,6 +278,24 @@ export default function VerificationPage() {
                                 onLoad={(e) => {
                                     const target = e.target as HTMLImageElement;
                                     target.style.opacity = '1';
+                                    console.log('✅ Image loaded successfully:', selectedDoc);
+                                }}
+                                onError={(e) => {
+                                    console.error('❌ Image failed to load:', selectedDoc);
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.display = 'none';
+                                    // Show error message
+                                    const parent = target.parentElement;
+                                    if (parent) {
+                                        const errorDiv = document.createElement('div');
+                                        errorDiv.className = 'text-red-600 text-center p-8';
+                                        errorDiv.innerHTML = `
+                                            <p class="text-lg font-semibold mb-2">Failed to load image</p>
+                                            <p class="text-sm text-gray-600 mb-4">The document URL may be invalid or the image is not accessible.</p>
+                                            <a href="${selectedDoc}" target="_blank" class="text-blue-600 hover:underline text-sm">Try opening in new tab</a>
+                                        `;
+                                        parent.appendChild(errorDiv);
+                                    }
                                 }}
                                 style={{ opacity: 0, transition: 'opacity 0.3s ease-in-out' }}
                             />
@@ -284,6 +307,7 @@ export default function VerificationPage() {
                                     rel="noopener noreferrer"
                                     className="p-2 bg-white/90 hover:bg-white rounded-full text-gray-900 shadow-lg transition-all"
                                     title={t('viewFullSize') || 'View full size'}
+                                    onClick={() => console.log('🔗 Opening in new tab:', selectedDoc)}
                                 >
                                     <ExternalLink className="w-5 h-5" />
                                 </a>
