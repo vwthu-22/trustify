@@ -40,7 +40,8 @@ export default function AIReviewAnalysisPage() {
         analysisResult,
         lastAnalyzedAt,
         analyzeReviews,
-        clearError
+        clearError,
+        clearAnalysis
     } = useAIAnalysisStore();
 
     const [expandedImprovement, setExpandedImprovement] = useState<number | null>(null);
@@ -52,6 +53,20 @@ export default function AIReviewAnalysisPage() {
     // Pagination states
     const [strengthsPage, setStrengthsPage] = useState(1);
     const [weaknessesPage, setWeaknessesPage] = useState(1);
+
+    // Clear analysis when company changes (logout/login to different company)
+    useEffect(() => {
+        if (company?.id) {
+            // If we have analysis result but it's for a different company, clear it
+            if (analysisResult && analysisResult.companyId !== Number(company.id)) {
+                console.log('🔄 Company changed, clearing old analysis data');
+                clearAnalysis();
+            }
+        } else {
+            // No company logged in, clear analysis
+            clearAnalysis();
+        }
+    }, [company?.id, analysisResult?.companyId, clearAnalysis]);
 
     // Reset pagination when analysis result changes
     useEffect(() => {

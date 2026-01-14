@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Company Dashboard",
+  title: "Trustify Company",
   description: "Trustify Company Dashboard",
 };
 
