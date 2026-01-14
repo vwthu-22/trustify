@@ -74,7 +74,7 @@ export default function PaymentsChart() {
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={190}>
+      <ResponsiveContainer width="100%" height={195}>
         <AreaChart data={chartData}>
           <defs>
             <linearGradient id="colorSuccess" x1="0" y1="0" x2="0" y2="1">
