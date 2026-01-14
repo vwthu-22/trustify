@@ -114,6 +114,7 @@ export default function CompanyReviewPage() {
 
     // Translation state - track translated text for each review
     const [translatedTexts, setTranslatedTexts] = useState<Record<number, { title: string | null; description: string | null; reply: string | null }>>({});
+    const [companyDescriptionTranslated, setCompanyDescriptionTranslated] = useState<string | null>(null);
 
     // Handle report review
     const handleReportReview = async () => {
@@ -476,8 +477,18 @@ export default function CompanyReviewPage() {
                                 <h4 className="font-bold text-sm sm:text-base mb-1.5">{t('about')} {currentCompany.name}</h4>
                                 <p className="text-xs text-gray-500 mb-2 sm:mb-3">{t('writtenByCompany')}</p>
                                 <p className="text-xs sm:text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-                                    {currentCompany.description || t('noDescription')}
+                                    {companyDescriptionTranslated || currentCompany.description || t('noDescription')}
                                 </p>
+                                {currentCompany.description && (
+                                    <div className="mt-3 pt-3 border-t border-gray-100">
+                                        <TranslateButton
+                                            texts={{ description: currentCompany.description }}
+                                            onTranslatedTextsChange={(translated) => {
+                                                setCompanyDescriptionTranslated(translated?.description || null);
+                                            }}
+                                        />
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -744,9 +755,9 @@ export default function CompanyReviewPage() {
                                                                 setTranslatedTexts(prev => ({
                                                                     ...prev,
                                                                     [review.id]: {
-                                                                        title: translated.title,
-                                                                        description: translated.description,
-                                                                        reply: translated.reply || null
+                                                                        title: translated.title ?? null,
+                                                                        description: translated.description ?? null,
+                                                                        reply: translated.reply ?? null
                                                                     }
                                                                 }));
                                                             } else {

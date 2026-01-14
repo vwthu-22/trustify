@@ -7,13 +7,13 @@ import useLanguageStore from '@/stores/languageStore/language';
 
 interface TranslateButtonProps {
     texts: {
-        title: string;
-        description: string;
+        title?: string;
+        description?: string;
         reply?: string;
     };
     onTranslatedTextsChange: (translatedTexts: {
-        title: string;
-        description: string;
+        title?: string;
+        description?: string;
         reply?: string;
     } | null) => void;
     className?: string;
@@ -39,8 +39,8 @@ export default function TranslateButton({
         setIsTranslating(true);
         try {
             // Translate all texts
-            const translatedTitle = await translateTextSafely(texts.title);
-            const translatedDescription = await translateTextSafely(texts.description);
+            const translatedTitle = texts.title ? await translateTextSafely(texts.title) : undefined;
+            const translatedDescription = texts.description ? await translateTextSafely(texts.description) : undefined;
             const translatedReply = texts.reply ? await translateTextSafely(texts.reply) : undefined;
 
             onTranslatedTextsChange({
