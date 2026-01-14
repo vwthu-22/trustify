@@ -24,7 +24,7 @@ import {
     AlertTriangle,
     Quote
 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { useAIAnalysisStore } from '@/store/useAIAnalysisStore';
 import { useCompanyStore } from '@/store/useCompanyStore';
 import { getStarFillColor } from '@/utils/ratingColors';
@@ -33,6 +33,7 @@ const ITEMS_PER_PAGE = 3;
 
 export default function AIReviewAnalysisPage() {
     const t = useTranslations('analytics');
+    const locale = useLocale();
     const { company } = useCompanyStore();
     const {
         isLoading,
@@ -90,7 +91,7 @@ export default function AIReviewAnalysisPage() {
             dateRange: getDateRangeString(dateRange),
             includeReplies: true,
             forceRefresh: forceRefresh,
-        });
+        }, locale); // Pass the current UI locale
     };
 
     const getDateRangeString = (days: string): string => {

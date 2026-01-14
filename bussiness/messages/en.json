@@ -662,6 +662,7 @@
         "branchName": "Branch name"
     },
     "verification": {
+        "loading": "Loading verification status...",
         "title": "Business Verification",
         "subtitle": "Upload business license or documents to verify your business",
         "verified": "Verified",

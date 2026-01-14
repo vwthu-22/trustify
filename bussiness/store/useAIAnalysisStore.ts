@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { translateText } from '@/services/translationService';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://trustify.io.vn';
 
@@ -10,6 +11,7 @@ interface AnalyzeRequest {
     dateRange: string;
     includeReplies: boolean;
     forceRefresh: boolean;
+    language?: string; // Add language hint for AI
 }
 
 // API Response types
@@ -74,7 +76,7 @@ interface AIAnalysisState {
     lastAnalyzedAt: string | null;
 
     // Actions
-    analyzeReviews: (request: AnalyzeRequest) => Promise<boolean>;
+    analyzeReviews: (request: AnalyzeRequest, targetLang?: string) => Promise<boolean>;
     clearError: () => void;
     clearAnalysis: () => void;
 }
@@ -87,13 +89,19 @@ export const useAIAnalysisStore = create<AIAnalysisState>()(
             analysisResult: null,
             lastAnalyzedAt: null,
 
-            analyzeReviews: async (request: AnalyzeRequest) => {
+            analyzeReviews: async (request: AnalyzeRequest, targetLang: string = 'en') => {
                 console.log('=== AI Analysis Start ===');
-                console.log('Request:', request);
+                console.log('Request:', request, 'Target Language:', targetLang);
 
                 set({ isLoading: true, error: null });
 
                 try {
+                    // Include language in request body for backend hint
+                    const body = {
+                        ...request,
+                        language: targetLang
+                    };
+
                     const url = `${API_BASE_URL}/api/v1/ai/companies/${request.companyId}/analyze`;
                     console.log('Calling API:', url);
 
@@ -105,7 +113,7 @@ export const useAIAnalysisStore = create<AIAnalysisState>()(
                             'Accept': '*/*',
                             'ngrok-skip-browser-warning': 'true',
                         },
-                        body: JSON.stringify(request),
+                        body: JSON.stringify(body),
                     });
 
                     console.log('Response Status:', response.status);
@@ -125,7 +133,64 @@ export const useAIAnalysisStore = create<AIAnalysisState>()(
                     }
 
                     const data: AIAnalysisResult = await response.json();
-                    console.log('Analysis Result:', data);
+
+                    // Automatic Translation Logic
+                    // If target language is not English, translate the results
+                    if (targetLang && targetLang !== 'en') {
+                        console.log(`🌐 Translating AI results to: \${targetLang}...`);
+
+                        try {
+                            // 1. Translate AI Summary
+                            if (data.aiSummary) {
+                                const result = await translateText(data.aiSummary, targetLang);
+                                data.aiSummary = result.translatedText;
+                            }
+
+                            // 2. Translate Strengths
+                            if (data.strengths && data.strengths.length > 0) {
+                                await Promise.all(data.strengths.map(async (s) => {
+                                    if (s.description) {
+                                        const res = await translateText(s.description, targetLang);
+                                        s.description = res.translatedText;
+                                    }
+                                }));
+                            }
+
+                            // 3. Translate Weaknesses
+                            if (data.weaknesses && data.weaknesses.length > 0) {
+                                await Promise.all(data.weaknesses.map(async (w) => {
+                                    if (w.description) {
+                                        const res = await translateText(w.description, targetLang);
+                                        w.description = res.translatedText;
+                                    }
+                                }));
+                            }
+
+                            // 4. Translate Suggestions
+                            if (data.suggestions && data.suggestions.length > 0) {
+                                await Promise.all(data.suggestions.map(async (s) => {
+                                    if (s.title) {
+                                        const resT = await translateText(s.title, targetLang);
+                                        s.title = resT.translatedText;
+                                    }
+                                    if (s.description) {
+                                        const resD = await translateText(s.description, targetLang);
+                                        s.description = resD.translatedText;
+                                    }
+                                    if (s.expectedImpact) {
+                                        const resI = await translateText(s.expectedImpact, targetLang);
+                                        s.expectedImpact = resI.translatedText;
+                                    }
+                                }));
+                            }
+
+                            console.log('✅ Translation complete');
+                        } catch (transError) {
+                            console.warn('⚠️ Auto-translation failed, showing original English results:', transError);
+                        }
+                    }
+
+                    console.log('Analysis Result (final):', data);
                     console.log('=== AI Analysis Success ===');
 
                     set({

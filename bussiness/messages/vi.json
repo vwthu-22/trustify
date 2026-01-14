@@ -662,6 +662,7 @@
         "branchName": "Tên chi nhánh"
     },
     "verification": {
+        "loading": "Đang tải trạng thái xác minh...",
         "title": "Xác minh doanh nghiệp",
         "subtitle": "Tải lên giấy phép kinh doanh hoặc tài liệu chứng minh doanh nghiệp hợp pháp",
         "verified": "Đã xác minh",

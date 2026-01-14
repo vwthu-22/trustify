@@ -19,13 +19,6 @@ interface UploadedFile {
 export default function VerificationPage() {
     const t = useTranslations('verification');
 
-    const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
-    const [isDragging, setIsDragging] = useState(false);
-    const [previewImage, setPreviewImage] = useState<string | null>(null);
-    const [showSuccess, setShowSuccess] = useState(false);
-    const [isInitializing, setIsInitializing] = useState(true); // Add loading state
-    const fileInputRef = useRef<HTMLInputElement>(null);
-
     const {
         company,
         verificationStatus,
@@ -37,12 +30,16 @@ export default function VerificationPage() {
         clearError
     } = useCompanyStore();
 
+    const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+    const [isDragging, setIsDragging] = useState(false);
+    const [previewImage, setPreviewImage] = useState<string | null>(null);
+    const [showSuccess, setShowSuccess] = useState(false);
+    const [isInitializing, setIsInitializing] = useState(!company);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
     // Fetch profile on mount to get latest status
     useEffect(() => {
         const initializePage = async () => {
-            // Force clear verification status from localStorage first
-            setVerificationStatus('not-started');
-
             // Then fetch fresh data from backend
             await fetchCompanyProfile();
 
@@ -51,7 +48,7 @@ export default function VerificationPage() {
         };
 
         initializePage();
-    }, [fetchCompanyProfile, setVerificationStatus]);
+    }, [fetchCompanyProfile]);
 
     // Sync verification status from company.verifyStatus
     useEffect(() => {
