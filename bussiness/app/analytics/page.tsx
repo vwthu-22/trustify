@@ -56,16 +56,20 @@ export default function AIReviewAnalysisPage() {
 
     // Clear analysis when company changes (logout/login to different company)
     useEffect(() => {
-        if (company?.id) {
-            // If we have analysis result but it's for a different company, clear it
-            if (analysisResult && analysisResult.companyId !== Number(company.id)) {
-                console.log('🔄 Company changed, clearing old analysis data');
+        // Only clear if we have analysis data AND it's for a DIFFERENT company
+        if (analysisResult && company?.id) {
+            const currentCompanyId = Number(company.id);
+            const analysisCompanyId = analysisResult.companyId;
+
+            if (currentCompanyId !== analysisCompanyId) {
+                console.log('🔄 Switched to different company, clearing old analysis data');
+                console.log('Previous company:', analysisCompanyId, '→ Current company:', currentCompanyId);
                 clearAnalysis();
+            } else {
+                console.log('✅ Same company, keeping analysis data');
             }
-        } else {
-            // No company logged in, clear analysis
-            clearAnalysis();
         }
+        // Don't clear when company is null (just logged out) - keep data in localStorage
     }, [company?.id, analysisResult?.companyId, clearAnalysis]);
 
     // Reset pagination when analysis result changes
