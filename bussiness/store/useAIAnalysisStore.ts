@@ -170,6 +170,14 @@ export const useAIAnalysisStore = create<AIAnalysisState>()(
                 analysisResult: state.analysisResult,
                 lastAnalyzedAt: state.lastAnalyzedAt,
             }),
+            onRehydrateStorage: () => (state) => {
+                console.log('💾 AI Analysis Store Rehydrated from localStorage');
+                console.log('Loaded data:', {
+                    hasAnalysisResult: !!state?.analysisResult,
+                    companyId: state?.analysisResult?.companyId,
+                    lastAnalyzedAt: state?.lastAnalyzedAt
+                });
+            }
         }
     )
 );
