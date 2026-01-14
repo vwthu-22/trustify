@@ -425,9 +425,24 @@ export const useCompanyStore = create<CompanyStore>()(
                     const result = await response.json();
                     console.log(`✅ Uploaded verification document:`, result);
 
-                    set({ isUploadingVerification: false, verificationStatus: 'pending' });
+                    // Update company state immediately with verifyStatus from response
+                    if (result.success && result.verifyStatus) {
+                        set((state) => ({
+                            company: state.company ? {
+                                ...state.company,
+                                verifyStatus: result.verifyStatus,
+                                fileVerificationUrl: result.fileUrl || state.company.fileVerificationUrl
+                            } : state.company,
+                            isUploadingVerification: false,
+                            verificationStatus: result.verifyStatus === 'PENDING' ? 'pending' :
+                                result.verifyStatus === 'APPROVED' ? 'verified' :
+                                    result.verifyStatus === 'REJECTED' ? 'rejected' : 'not-started'
+                        }));
+                    } else {
+                        set({ isUploadingVerification: false, verificationStatus: 'pending' });
+                    }
 
-                    // Refresh company profile to get updated verifyStatus
+                    // Refresh company profile to get updated data (async, non-blocking)
                     get().fetchCompanyProfile();
 
                     return true;
