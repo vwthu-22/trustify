@@ -91,9 +91,13 @@ export const useAIAnalysisStore = create<AIAnalysisState>()(
 
             analyzeReviews: async (request: AnalyzeRequest, targetLang: string = 'en') => {
                 console.log('=== AI Analysis Start ===');
-                console.log('Request:', request, 'Target Language:', targetLang);
+                console.log('Request Company ID:', request.companyId);
+                console.log('Target Language:', targetLang);
 
-                set({ isLoading: true, error: null });
+                if (!request.companyId || request.companyId <= 0) {
+                    set({ error: 'ID công ty không hợp lệ', isLoading: false });
+                    return false;
+                }
 
                 try {
                     // Include language in request body for backend hint
@@ -143,40 +147,58 @@ export const useAIAnalysisStore = create<AIAnalysisState>()(
 
                             // 2. Translate Strengths
                             if (data.strengths && data.strengths.length > 0) {
-                                await Promise.all(data.strengths.map(async (s) => {
+                                for (const s of data.strengths) {
                                     if (s.description) {
-                                        const res = await translateText(s.description, targetLang);
-                                        s.description = res.translatedText;
+                                        try {
+                                            const res = await translateText(s.description, targetLang);
+                                            s.description = res.translatedText;
+                                            // Small delay to prevent rate limiting
+                                            await new Promise(resolve => setTimeout(resolve, 100));
+                                        } catch (e) {
+                                            console.warn('Failed to translate strength description:', e);
+                                        }
                                     }
-                                }));
+                                }
                             }
 
                             // 3. Translate Weaknesses
                             if (data.weaknesses && data.weaknesses.length > 0) {
-                                await Promise.all(data.weaknesses.map(async (w) => {
+                                for (const w of data.weaknesses) {
                                     if (w.description) {
-                                        const res = await translateText(w.description, targetLang);
-                                        w.description = res.translatedText;
+                                        try {
+                                            const res = await translateText(w.description, targetLang);
+                                            w.description = res.translatedText;
+                                            await new Promise(resolve => setTimeout(resolve, 100));
+                                        } catch (e) {
+                                            console.warn('Failed to translate weakness description:', e);
+                                        }
                                     }
-                                }));
+                                }
                             }
 
                             // 4. Translate Suggestions
                             if (data.suggestions && data.suggestions.length > 0) {
-                                await Promise.all(data.suggestions.map(async (s) => {
-                                    if (s.title) {
-                                        const resT = await translateText(s.title, targetLang);
-                                        s.title = resT.translatedText;
+                                for (const s of data.suggestions) {
+                                    try {
+                                        if (s.title) {
+                                            const resT = await translateText(s.title, targetLang);
+                                            s.title = resT.translatedText;
+                                            await new Promise(resolve => setTimeout(resolve, 50));
+                                        }
+                                        if (s.description) {
+                                            const resD = await translateText(s.description, targetLang);
+                                            s.description = resD.translatedText;
+                                            await new Promise(resolve => setTimeout(resolve, 50));
+                                        }
+                                        if (s.expectedImpact) {
+                                            const resI = await translateText(s.expectedImpact, targetLang);
+                                            s.expectedImpact = resI.translatedText;
+                                            await new Promise(resolve => setTimeout(resolve, 50));
+                                        }
+                                    } catch (e) {
+                                        console.warn('Failed to translate suggestion fields:', e);
                                     }
-                                    if (s.description) {
-                                        const resD = await translateText(s.description, targetLang);
-                                        s.description = resD.translatedText;
-                                    }
-                                    if (s.expectedImpact) {
-                                        const resI = await translateText(s.expectedImpact, targetLang);
-                                        s.expectedImpact = resI.translatedText;
-                                    }
-                                }));
+                                }
                             }
 
                             console.log('✅ Translation complete');

@@ -3,7 +3,7 @@ import translate from 'translate';
 
 // Translation engine configuration
 const TRANSLATION_ENGINE = process.env.TRANSLATION_ENGINE || 'libre'; // 'libre', 'google', 'deepl', 'yandex'
-const LIBRE_TRANSLATE_URL = process.env.LIBRE_TRANSLATE_URL || 'https://libretranslate.com';
+const LIBRE_TRANSLATE_URL = process.env.LIBRE_TRANSLATE_URL || 'https://libretranslate.de';
 const LIBRE_TRANSLATE_KEY = process.env.LIBRE_TRANSLATE_KEY; // Optional for public instance
 
 // Configure translate package
@@ -67,8 +67,8 @@ export async function POST(request: NextRequest) {
                     });
                     usedEngine = 'google (fallback)';
                 } catch (fallbackError: any) {
-                    console.error('Fallback translation also failed:', fallbackError);
-                    throw new Error(`Both ${TRANSLATION_ENGINE} and Google Translate failed`);
+                    console.error('Fallback translation also failed:', fallbackError.message || fallbackError);
+                    throw new Error(`Both ${TRANSLATION_ENGINE} (at ${LIBRE_TRANSLATE_URL}) and Google Translate failed: ${fallbackError.message || 'Unknown error'}`);
                 }
             } else {
                 throw primaryError;

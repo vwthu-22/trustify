@@ -29,7 +29,15 @@ export default function AuthGuard({ children }: AuthGuardProps) {
                 return;
             }
 
-            // Perform backend verification to ensure session is still valid and matches the store
+            // If we already have a company in the store, we can skip the remote check
+            // unless we want to force re-verify on every path change (usually not needed)
+            if (company) {
+                setIsAuthenticated(true);
+                setIsChecking(false);
+                return;
+            }
+
+            // Perform backend verification to ensure session is still valid
             const isValid = await checkAuthStatus();
 
             if (isValid) {
@@ -43,7 +51,7 @@ export default function AuthGuard({ children }: AuthGuardProps) {
         };
 
         checkAuth();
-    }, [pathname, isPublicRoute, checkAuthStatus, router]);
+    }, [pathname, isPublicRoute, checkAuthStatus, router, company]);
 
     // Show loading while checking auth
     if (isChecking && !isPublicRoute) {

@@ -75,6 +75,9 @@ export const useCompanyStore = create<CompanyStore>()(
             resetMagicLinkState: () => set({ magicLinkSent: false, error: null }),
 
             fetchCompanyProfile: async () => {
+                // Prevent redundant calls if already loading
+                if (get().isLoading) return;
+
                 set({ isLoading: true, error: null });
                 try {
                     const response = await fetch(`${API_BASE_URL}/api/companies/my-companies`, {
