@@ -23,6 +23,20 @@ export default function VerificationPage() {
     const [rejectReason, setRejectReason] = useState('')
     const [selectedDoc, setSelectedDoc] = useState<string | null>(null)
 
+    // Helper to convert relative URLs to absolute
+    const getAbsoluteImageUrl = (url: string | null | undefined): string | null => {
+        if (!url) return null;
+
+        // If already absolute URL, return as is
+        if (url.startsWith('http://') || url.startsWith('https://')) {
+            return url;
+        }
+
+        // Convert relative URL to absolute using backend API
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://trustify.io.vn';
+        return `${API_BASE_URL}${url.startsWith('/') ? url : '/' + url}`;
+    }
+
     useEffect(() => {
         fetchPendingVerifications()
     }, [fetchPendingVerifications])
@@ -152,7 +166,7 @@ export default function VerificationPage() {
                                         <div className="flex gap-2 flex-wrap">
                                             {request.documentUrl && (
                                                 <button
-                                                    onClick={() => setSelectedDoc(request.documentUrl || null)}
+                                                    onClick={() => setSelectedDoc(getAbsoluteImageUrl(request.documentUrl))}
                                                     className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 rounded-lg text-xs font-medium text-blue-600 hover:bg-blue-100 cursor-pointer transition-all border border-blue-100"
                                                 >
                                                     <FileText className="w-3.5 h-3.5" />
@@ -162,7 +176,7 @@ export default function VerificationPage() {
                                             {request.documents?.map((doc, index) => (
                                                 <button
                                                     key={index}
-                                                    onClick={() => setSelectedDoc(doc)}
+                                                    onClick={() => setSelectedDoc(getAbsoluteImageUrl(doc))}
                                                     className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-50 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-100 cursor-pointer transition-all border border-gray-100"
                                                 >
                                                     <FileText className="w-3.5 h-3.5" />
