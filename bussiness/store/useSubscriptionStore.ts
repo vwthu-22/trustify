@@ -152,6 +152,17 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
     },
 
     fetchCurrentSubscription: async () => {
+        // Circuit breaker: Don't call if we know endpoint doesn't exist
+        const CIRCUIT_BREAKER_KEY = 'subscription_endpoint_404';
+        if (typeof window !== 'undefined') {
+            const is404 = localStorage.getItem(CIRCUIT_BREAKER_KEY);
+            if (is404 === 'true') {
+                console.log('⚡ Circuit breaker active: skipping subscription fetch (endpoint known to be 404)');
+                set({ isLoading: false });
+                return;
+            }
+        }
+
         set({ isLoading: true, error: null });
         try {
             const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://trustify.io.vn';
@@ -166,9 +177,12 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
                 },
             });
 
-            // If endpoint doesn't exist (404), we'll fallback to company.plan later
+            // If endpoint doesn't exist (404), activate circuit breaker
             if (response.status === 404) {
-                console.warn('⚠️ Transactions endpoint not found (404). Will use company.plan as fallback.');
+                console.warn('⚠️ Transactions endpoint not found (404). Activating circuit breaker.');
+                if (typeof window !== 'undefined') {
+                    localStorage.setItem(CIRCUIT_BREAKER_KEY, 'true');
+                }
                 set({ isLoading: false });
                 return;
             }
