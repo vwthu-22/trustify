@@ -97,11 +97,6 @@ export const useAIAnalysisStore = create<AIAnalysisState>()(
 
                 try {
                     // Include language in request body for backend hint
-                    const body = {
-                        ...request,
-                        language: targetLang
-                    };
-
                     const url = `${API_BASE_URL}/api/v1/ai/companies/${request.companyId}/analyze`;
                     console.log('Calling API:', url);
 
@@ -113,20 +108,20 @@ export const useAIAnalysisStore = create<AIAnalysisState>()(
                             'Accept': '*/*',
                             'ngrok-skip-browser-warning': 'true',
                         },
-                        body: JSON.stringify(body),
+                        body: JSON.stringify(request),
                     });
 
                     console.log('Response Status:', response.status);
 
                     if (!response.ok) {
                         let errorMessage = 'Không thể phân tích đánh giá';
+                        const errorText = await response.text();
+                        console.error('Response Error:', errorText);
+
                         try {
-                            const errorData = await response.json();
-                            console.error('Response Error (JSON):', errorData);
+                            const errorData = JSON.parse(errorText);
                             errorMessage = errorData.message || errorData.error || errorMessage;
                         } catch {
-                            const errorText = await response.text();
-                            console.error('Response Error (Text):', errorText);
                             errorMessage = errorText || errorMessage;
                         }
                         throw new Error(errorMessage);
