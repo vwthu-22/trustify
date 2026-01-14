@@ -5,12 +5,14 @@ import { useReviewStore } from '@/store/useReviewStore';
 import { useCompanyStore } from '@/store/useCompanyStore';
 import { getIndividualStarColor, getStarFillColor, getBarColor, STAR_FILL_COLORS } from '@/utils/ratingColors';
 import { useTranslations } from 'next-intl';
+import TranslateButton from '@/components/TranslateButton';
 
 export default function BusinessReviewDashboard() {
     const t = useTranslations('reviews');
     const [currentPage, setCurrentPage] = useState('all-reviews');
     const [selectedFilter, setSelectedFilter] = useState('all');
     const [replyText, setReplyText] = useState<{ [key: number]: string }>({});
+    const [translatedReviews, setTranslatedReviews] = useState<{ [key: number]: { description: string | null } }>({});
 
     const {
         reviews,
@@ -260,7 +262,31 @@ export default function BusinessReviewDashboard() {
                             </div>
                         </div>
 
-                        <p className="text-gray-700 text-sm mb-2">{review.comment}</p>
+                        <p className="text-gray-700 text-sm mb-2">{translatedReviews[review.id]?.description || review.comment}</p>
+
+                        <div className="flex items-center gap-3 mb-3">
+                            <TranslateButton
+                                texts={{
+                                    description: review.comment
+                                }}
+                                onTranslatedTextsChange={(translated) => {
+                                    if (translated) {
+                                        setTranslatedReviews(prev => ({
+                                            ...prev,
+                                            [review.id]: {
+                                                description: translated.description || null
+                                            }
+                                        }));
+                                    } else {
+                                        setTranslatedReviews(prev => {
+                                            const newState = { ...prev };
+                                            delete newState[review.id];
+                                            return newState;
+                                        });
+                                    }
+                                }}
+                            />
+                        </div>
 
                         {review.reply ? (
                             <div className="bg-gray-50 rounded-lg p-2.5 sm:p-3 mt-2 border-l-3 border-blue-500">
