@@ -101,8 +101,9 @@ export const useAIAnalysisStore = create<AIAnalysisState>()(
 
                 try {
                     // Include language in request body for backend hint
-                    const url = `${API_BASE_URL}/api/v1/ai/companies/${request.companyId}/analyze`;
-                    console.log('Calling API:', url);
+                    // Try removing /v1/ to match other API structures in the project
+                    const url = `${API_BASE_URL}/api/ai/companies/${request.companyId}/analyze`;
+                    console.log('Calling API (Revised URL):', url);
 
                     const response = await fetch(url, {
                         method: 'POST',
