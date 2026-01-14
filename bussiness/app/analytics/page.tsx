@@ -80,6 +80,7 @@ export default function AIReviewAnalysisPage() {
     }, [analysisResult]);
 
     const handleAnalyze = async (forceRefresh: boolean = false) => {
+        console.log('DEBUG: handleAnalyze using company:', company);
         if (!company?.id) {
             console.error('Company ID not found');
             return;
