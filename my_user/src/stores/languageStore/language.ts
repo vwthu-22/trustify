@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 
-export type Locale = 'vi' | 'en';
+export type Locale = 'vi' | 'en' | 'ru' | 'ja' | 'zh' | 'pt';
 
 interface LanguageStore {
     locale: Locale;

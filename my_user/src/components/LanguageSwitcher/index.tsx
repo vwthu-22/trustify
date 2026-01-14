@@ -7,6 +7,10 @@ import useLanguageStore, { Locale } from '@/stores/languageStore/language';
 const languages: { code: Locale; name: string; flag: string }[] = [
     { code: 'vi', name: 'Tiếng Việt', flag: '🇻🇳' },
     { code: 'en', name: 'English', flag: '🇺🇸' },
+    { code: 'ru', name: 'Русский', flag: '🇷🇺' },
+    { code: 'ja', name: '日本語', flag: '🇯🇵' },
+    { code: 'zh', name: '中文', flag: '🇨🇳' },
+    { code: 'pt', name: 'Português', flag: '🇵🇹' },
 ];
 
 export default function LanguageSwitcher() {
