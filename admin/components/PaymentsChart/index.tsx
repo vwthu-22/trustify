@@ -74,7 +74,7 @@ export default function PaymentsChart() {
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={240}>
+      <ResponsiveContainer width="100%" height={180}>
         <AreaChart data={chartData}>
           <defs>
             <linearGradient id="colorSuccess" x1="0" y1="0" x2="0" y2="1">
@@ -114,15 +114,15 @@ export default function PaymentsChart() {
         </AreaChart>
       </ResponsiveContainer>
 
-      <div className="flex items-center justify-around mt-4 pt-4 border-t border-gray-100">
+      <div className="flex items-center justify-around mt-3 pt-3 border-t border-gray-100">
         <div className="text-center">
           <p className="text-xs text-gray-500 mb-0.5">{t('paymentsChart.paid')}</p>
-          <p className="text-lg font-bold text-green-600">{formatCurrency(totalSuccess)}</p>
+          <p className="text-base font-bold text-green-600">{formatCurrency(totalSuccess)}</p>
         </div>
-        <div className="h-10 w-px bg-gray-200"></div>
+        <div className="h-8 w-px bg-gray-200"></div>
         <div className="text-center">
           <p className="text-xs text-gray-500 mb-0.5">{t('paymentsChart.pending')}</p>
-          <p className="text-lg font-bold text-yellow-600">{formatCurrency(totalPending)}</p>
+          <p className="text-base font-bold text-yellow-600">{formatCurrency(totalPending)}</p>
         </div>
       </div>
     </div>
