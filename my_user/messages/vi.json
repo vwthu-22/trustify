@@ -498,5 +498,14 @@
         "messagePermanent": "Tài khoản của bạn đã bị đình chỉ **vĩnh viễn** do vi phạm nghiêm trọng tiêu chuẩn cộng đồng. Bạn không thể tiếp tục đăng đánh giá trên Trustify.",
         "timeLeft": "Thời gian còn lại:",
         "reportBlocked": "Tài khoản của bạn đang bị đình chỉ. Bạn không thể thực hiện báo cáo đánh giá trong thời gian này."
+    },
+    "myReviews": {
+        "reviewOf": "Đánh giá về",
+        "unknownCompany": "Công ty không xác định",
+        "experienceDate": "Ngày trải nghiệm",
+        "rejected": "Bị từ chối bởi Admin",
+        "pendingReview": "Đang chờ duyệt",
+        "page": "Trang",
+        "of": "của"
     }
 }

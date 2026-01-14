@@ -179,7 +179,27 @@ export default function MyReviewPage() {
                 </div>
 
                 {/* Review Card */}
-                <div className="bg-white border border-gray-200 rounded-lg p-3 sm:p-4">
+                <div className={`bg-white border rounded-lg p-3 sm:p-4 ${review.status === 'REJECTED' ? 'border-red-200 bg-red-50/30' :
+                    review.status === 'PENDING' ? 'border-yellow-200 bg-yellow-50/30' :
+                      'border-gray-200'
+                  }`}>
+                  {/* Status Badge */}
+                  {review.status && review.status !== 'APPROVED' && (
+                    <div className="mb-3">
+                      {review.status === 'REJECTED' ? (
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-red-100 border border-red-200 rounded-lg">
+                          <Flag className="w-3 h-3 text-red-600" />
+                          <span className="text-xs font-semibold text-red-700">{t('rejected')}</span>
+                        </div>
+                      ) : review.status === 'PENDING' ? (
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-yellow-100 border border-yellow-200 rounded-lg">
+                          <Eye className="w-3 h-3 text-yellow-600" />
+                          <span className="text-xs font-semibold text-yellow-700">{t('pendingReview')}</span>
+                        </div>
+                      ) : null}
+                    </div>
+                  )}
+
                   {/* User Info in Review */}
                   <div className="flex items-center gap-2 mb-2 sm:mb-3">
                     <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-amber-700 to-amber-900 rounded-full flex items-center justify-center text-white text-xs font-bold overflow-hidden">
@@ -248,13 +268,15 @@ export default function MyReviewPage() {
 
                   {/* Actions */}
                   <div className="flex items-center gap-2 pt-2 sm:pt-3 border-t border-gray-200">
-                    <button
-                      onClick={() => handleEditReview(review)}
-                      className="flex items-center gap-1 text-gray-600 hover:text-blue-700 text-xs font-medium transition"
-                    >
-                      <Pencil className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                      {tReview('editReview')}
-                    </button>
+                    {review.status !== 'REJECTED' && (
+                      <button
+                        onClick={() => handleEditReview(review)}
+                        className="flex items-center gap-1 text-gray-600 hover:text-blue-700 text-xs font-medium transition"
+                      >
+                        <Pencil className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                        {tReview('editReview')}
+                      </button>
+                    )}
                     <button
                       onClick={() => {
                         // TODO: Implement delete functionality

@@ -197,7 +197,9 @@
         "unknownCompany": "Unknown Company",
         "experienceDate": "Experience Date",
         "page": "Page",
-        "of": "of"
+        "of": "of",
+        "rejected": "Rejected",
+        "pendingReview": "Pending"
     },
     "company": {
         "overview": "Overview",
