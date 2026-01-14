@@ -148,7 +148,9 @@ export default function MyReviewPage() {
               <div className="text-center">
                 <div className="flex items-center justify-center gap-1 text-blue-600 mb-0.5">
                   <Star size={16} className="sm:w-5 sm:h-5" />
-                  <span className="text-xl sm:text-2xl font-bold">{totalItems}</span>
+                  <span className="text-xl sm:text-2xl font-bold">
+                    {myReviews.filter(r => r.status === 'APPROVED' || !r.status).length}
+                  </span>
                 </div>
                 <span className="text-xs text-gray-600">{tProfile('reviews')}</span>
               </div>
@@ -180,8 +182,8 @@ export default function MyReviewPage() {
 
                 {/* Review Card */}
                 <div className={`bg-white border rounded-lg p-3 sm:p-4 ${review.status === 'REJECTED' ? 'border-red-200 bg-red-50/30' :
-                    review.status === 'PENDING' ? 'border-yellow-200 bg-yellow-50/30' :
-                      'border-gray-200'
+                  review.status === 'PENDING' ? 'border-yellow-200 bg-yellow-50/30' :
+                    'border-gray-200'
                   }`}>
                   {/* Status Badge */}
                   {review.status && review.status !== 'APPROVED' && (
