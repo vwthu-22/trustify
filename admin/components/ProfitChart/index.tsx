@@ -76,26 +76,26 @@ export default function ProfitChart() {
   }
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-      <div className="flex items-center justify-between mb-4">
+    <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+      <div className="flex items-center justify-between mb-3">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">{t('profitChart.title')}</h2>
-          <p className="text-2xl font-bold text-green-600 mt-1">{formatCurrency(weekSuccess)}</p>
+          <h2 className="text-base font-bold text-gray-900">{t('profitChart.title')}</h2>
+          <p className="text-lg font-bold text-green-600 mt-0.5">{formatCurrency(weekSuccess)}</p>
         </div>
       </div>
 
-      <div className="flex items-center gap-4 mb-6">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-indigo-600"></div>
-          <span className="text-sm text-gray-600">{t('profitChart.success')}</span>
+      <div className="flex items-center gap-3 mb-4">
+        <div className="flex items-center gap-1.5">
+          <div className="w-2.5 h-2.5 rounded-full bg-indigo-600"></div>
+          <span className="text-xs text-gray-600">{t('profitChart.success')}</span>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-red-400"></div>
-          <span className="text-sm text-gray-600">{t('profitChart.failed')}</span>
+        <div className="flex items-center gap-1.5">
+          <div className="w-2.5 h-2.5 rounded-full bg-red-400"></div>
+          <span className="text-xs text-gray-600">{t('profitChart.failed')}</span>
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={250}>
+      <ResponsiveContainer width="100%" height={200}>
         <BarChart data={chartData} barGap={2}>
           <XAxis dataKey="day" stroke="#9CA3AF" style={{ fontSize: '12px' }} />
           <YAxis stroke="#9CA3AF" style={{ fontSize: '12px' }} tickFormatter={(value) => `${value}K`} />

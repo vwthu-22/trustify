@@ -59,22 +59,22 @@ export default function PaymentsChart() {
   }
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-gray-900">{t('paymentsChart.title')}</h2>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-indigo-500"></div>
-            <span className="text-sm text-gray-600">{t('paymentsChart.success')}</span>
+    <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-base font-bold text-gray-900">{t('paymentsChart.title')}</h2>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-full bg-indigo-500"></div>
+            <span className="text-xs text-gray-600">{t('paymentsChart.success')}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-cyan-500"></div>
-            <span className="text-sm text-gray-600">{t('paymentsChart.total')}</span>
+          <div className="flex items-center gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-full bg-cyan-500"></div>
+            <span className="text-xs text-gray-600">{t('paymentsChart.total')}</span>
           </div>
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height={240}>
         <AreaChart data={chartData}>
           <defs>
             <linearGradient id="colorSuccess" x1="0" y1="0" x2="0" y2="1">
@@ -114,15 +114,15 @@ export default function PaymentsChart() {
         </AreaChart>
       </ResponsiveContainer>
 
-      <div className="flex items-center justify-around mt-6 pt-6 border-t border-gray-100">
+      <div className="flex items-center justify-around mt-4 pt-4 border-t border-gray-100">
         <div className="text-center">
-          <p className="text-sm text-gray-500 mb-1">{t('paymentsChart.paid')}</p>
-          <p className="text-2xl font-bold text-green-600">{formatCurrency(totalSuccess)}</p>
+          <p className="text-xs text-gray-500 mb-0.5">{t('paymentsChart.paid')}</p>
+          <p className="text-lg font-bold text-green-600">{formatCurrency(totalSuccess)}</p>
         </div>
-        <div className="h-12 w-px bg-gray-200"></div>
+        <div className="h-10 w-px bg-gray-200"></div>
         <div className="text-center">
-          <p className="text-sm text-gray-500 mb-1">{t('paymentsChart.pending')}</p>
-          <p className="text-2xl font-bold text-yellow-600">{formatCurrency(totalPending)}</p>
+          <p className="text-xs text-gray-500 mb-0.5">{t('paymentsChart.pending')}</p>
+          <p className="text-lg font-bold text-yellow-600">{formatCurrency(totalPending)}</p>
         </div>
       </div>
     </div>

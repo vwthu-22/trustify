@@ -224,10 +224,10 @@ const useUserManagementStore = create<UserManagementStore>()(
             },
 
             // Update user status (Active, Inactive, Suspended)
-            // PUT /api/user/status?email=xxx&status=yyy
+            // PUT /admin/user/status?email=xxx&status=yyy
             updateUserStatus: async (email: string, status: UpdateUserStatusData['status']) => {
                 set({ isLoading: true, error: null });
-                const url = `${API_BASE_URL}/api/user/status?email=${encodeURIComponent(email)}&status=${status}`;
+                const url = `${API_BASE_URL}/admin/user/status?email=${encodeURIComponent(email)}&status=${status}`;
                 console.log('🌐 Calling Status API:', url);
 
                 try {

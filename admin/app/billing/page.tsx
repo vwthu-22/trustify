@@ -248,47 +248,47 @@ export default function BillingPage() {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                            <DollarSign className="w-5 h-5 text-green-600" />
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                    <div className="flex items-center gap-2.5">
+                        <div className="w-9 h-9 bg-green-100 rounded-lg flex items-center justify-center">
+                            <DollarSign className="w-4 h-4 text-green-600" />
                         </div>
                         <div>
-                            <p className="text-sm text-gray-500">Total Revenue</p>
-                            <p className="text-xl font-bold text-gray-900">{formatAmount(totalRevenue)}</p>
+                            <p className="text-xs text-gray-500">{t('totalRevenue')}</p>
+                            <p className="text-lg font-bold text-gray-900">{formatAmount(totalRevenue)}</p>
                         </div>
                     </div>
                 </div>
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                            <LayoutGrid className="w-5 h-5 text-blue-600" />
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                    <div className="flex items-center gap-2.5">
+                        <div className="w-9 h-9 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <LayoutGrid className="w-4 h-4 text-blue-600" />
                         </div>
                         <div>
-                            <p className="text-sm text-gray-500">Active Plans</p>
-                            <p className="text-xl font-bold text-gray-900">{activePlans}</p>
+                            <p className="text-xs text-gray-500">{t('activePlans')}</p>
+                            <p className="text-lg font-bold text-gray-900">{activePlans}</p>
                         </div>
                     </div>
                 </div>
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                            <CreditCard className="w-5 h-5 text-purple-600" />
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                    <div className="flex items-center gap-2.5">
+                        <div className="w-9 h-9 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <CreditCard className="w-4 h-4 text-purple-600" />
                         </div>
                         <div>
-                            <p className="text-sm text-gray-500">Paid Transactions</p>
-                            <p className="text-xl font-bold text-gray-900">{paidTransactions}</p>
+                            <p className="text-xs text-gray-500">{t('paidTransactions')}</p>
+                            <p className="text-lg font-bold text-gray-900">{paidTransactions}</p>
                         </div>
                     </div>
                 </div>
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                            <List className="w-5 h-5 text-orange-600" />
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+                    <div className="flex items-center gap-2.5">
+                        <div className="w-9 h-9 bg-orange-100 rounded-lg flex items-center justify-center">
+                            <List className="w-4 h-4 text-orange-600" />
                         </div>
                         <div>
-                            <p className="text-sm text-gray-500">Total Features</p>
-                            <p className="text-xl font-bold text-gray-900">{features.length}</p>
+                            <p className="text-xs text-gray-500">{t('totalFeatures')}</p>
+                            <p className="text-lg font-bold text-gray-900">{features.length}</p>
                         </div>
                     </div>
                 </div>
