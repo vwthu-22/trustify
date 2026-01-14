@@ -65,6 +65,7 @@ export default function Header({ onMenuClick, isMobile = false }: HeaderProps) {
     const [showCompanyDropdown, setShowCompanyDropdown] = useState(false);
     const [showVerificationCelebration, setShowVerificationCelebration] = useState(false);
     const previousVerifiedRef = useRef<boolean | undefined>(undefined);
+    const subscriptionFetchedRef = useRef<boolean>(false);
 
     // Global chat connection for notifications
     useEffect(() => {
@@ -85,10 +86,11 @@ export default function Header({ onMenuClick, isMobile = false }: HeaderProps) {
 
         if (!company) {
             fetchCompanyProfile();
-        } else {
-            // Fetch subscription ONLY if we have a company and haven't fetched it yet
-            // or if the company changed.
+            subscriptionFetchedRef.current = false; // Reset when no company
+        } else if (!subscriptionFetchedRef.current) {
+            // Fetch subscription ONLY once when we first get a company
             fetchCurrentSubscription();
+            subscriptionFetchedRef.current = true;
         }
     }, [company?.id, fetchCompanyProfile, fetchCurrentSubscription, isPublicRoute]);
 
