@@ -232,9 +232,14 @@ export default function BusinessRegister() {
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none appearance-none bg-white transition"
                     >
                       <option value="">{t('country')}</option>
-                      <option value="US">United States</option>
-                      <option value="VN">Vietnam</option>
-                      <option value="UK">United Kingdom</option>
+                      <option value="US">🇺🇸 United States</option>
+                      <option value="UK">🇬🇧 United Kingdom</option>
+                      <option value="VN">🇻🇳 Vietnam</option>
+                      <option value="RU">🇷🇺 Russia</option>
+                      <option value="JP">🇯🇵 Japan</option>
+                      <option value="CN">🇨🇳 China</option>
+                      <option value="PT">🇵🇹 Portugal</option>
+                      <option value="BR">🇧🇷 Brazil</option>
                     </select>
                     <ChevronDown className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                   </div>

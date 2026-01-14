@@ -5,11 +5,15 @@ import { useRouter } from 'next/navigation';
 import { Globe, Check } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 
-type Locale = 'en' | 'vi';
+type Locale = 'en' | 'vi' | 'ru' | 'ja' | 'zh' | 'pt';
 
 const languages: { code: Locale; name: string; flag: string }[] = [
     { code: 'vi', name: 'Tiếng Việt', flag: '🇻🇳' },
     { code: 'en', name: 'English', flag: '🇺🇸' },
+    { code: 'ru', name: 'Русский', flag: '🇷🇺' },
+    { code: 'ja', name: '日本語', flag: '🇯🇵' },
+    { code: 'zh', name: '中文', flag: '🇨🇳' },
+    { code: 'pt', name: 'Português', flag: '🇵🇹' },
 ];
 
 export default function LanguageSwitcher() {
@@ -29,7 +33,8 @@ export default function LanguageSwitcher() {
         };
 
         const locale = getCookie('locale') as Locale;
-        if (locale && (locale === 'en' || locale === 'vi')) {
+        const validLocales: Locale[] = ['en', 'vi', 'ru', 'ja', 'zh', 'pt'];
+        if (locale && validLocales.includes(locale)) {
             setCurrentLocale(locale);
         }
     }, []);
