@@ -173,16 +173,6 @@ export default function VerificationPage() {
                                                     {t('viewDocument')}
                                                 </button>
                                             )}
-                                            {request.documents?.map((doc, index) => (
-                                                <button
-                                                    key={index}
-                                                    onClick={() => setSelectedDoc(getAbsoluteImageUrl(doc))}
-                                                    className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-50 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-100 cursor-pointer transition-all border border-gray-100"
-                                                >
-                                                    <FileText className="w-3.5 h-3.5" />
-                                                    {t('documentNumber', { index: index + 1 })}
-                                                </button>
-                                            ))}
                                         </div>
                                     </div>
                                 </div>

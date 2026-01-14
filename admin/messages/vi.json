@@ -397,6 +397,7 @@
       "minsAgo": "{count} phút trước",
       "hoursAgo": "{count} giờ trước",
       "daysAgo": "{count} ngày trước"
-    }
+    },
+    "viewFullSize": "Xem kích thước đầy đủ"
   }
 }

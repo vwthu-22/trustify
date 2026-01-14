@@ -65,13 +65,17 @@ export default function VerificationPage() {
             } else if (company.verifyStatus === 'REJECTED') {
                 console.log('❌ Setting status to rejected (from backend REJECTED)');
                 setVerificationStatus('rejected');
+            } else if (company.verified === true && !company.verifyStatus) {
+                // FALLBACK: If isVerified=true but verifyStatus is missing, assume APPROVED
+                console.log('✅ Setting status to verified (fallback from isVerified=true)');
+                setVerificationStatus('verified');
             } else {
                 // If no verifyStatus or null, reset to 'not-started' to clear old localStorage
                 console.log('🔄 Resetting status to not-started (backend has no verifyStatus)');
                 setVerificationStatus('not-started');
             }
         }
-    }, [company?.verifyStatus, company?.id, setVerificationStatus]); // Add company.id to force re-sync on company change
+    }, [company?.verifyStatus, company?.verified, company?.id, setVerificationStatus]); // Add company.verified to deps
 
     // Cleanup previews on unmount
     useEffect(() => {

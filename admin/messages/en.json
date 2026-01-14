@@ -397,6 +397,7 @@
             "minsAgo": "{count} minutes ago",
             "hoursAgo": "{count} hours ago",
             "daysAgo": "{count} days ago"
-        }
+        },
+        "viewFullSize": "View full size"
     }
 }
