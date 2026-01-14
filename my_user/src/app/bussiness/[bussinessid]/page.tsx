@@ -12,6 +12,7 @@ import useAuthStore from '@/stores/userAuthStore/user';
 import { getStarColor, getBarColor, getRatingLabel, STAR_COLORS } from '@/utils/ratingColors';
 import { useTranslations } from 'next-intl';
 import SuspensionBanner from '@/components/SuspensionBanner';
+import TranslateButton from '@/components/TranslateButton';
 
 export default function CompanyReviewPage() {
     const params = useParams();
@@ -110,6 +111,9 @@ export default function CompanyReviewPage() {
     const [isSubmittingReport, setIsSubmittingReport] = useState(false);
     const [reportSuccess, setReportSuccess] = useState(false);
     const [reportModalError, setReportModalError] = useState<string | null>(null);
+
+    // Translation state - track translated text for each review
+    const [translatedTexts, setTranslatedTexts] = useState<Record<number, { title: string | null; description: string | null; reply: string | null }>>({});
 
     // Handle report review
     const handleReportReview = async () => {
@@ -685,8 +689,12 @@ export default function CompanyReviewPage() {
                                                 <div className="flex mb-2 sm:mb-3">{renderStars(review.rating, 'w-3.5 h-3.5 sm:w-4 sm:h-4')}</div>
 
                                                 {/* Review Content */}
-                                                <h5 className="font-semibold text-gray-900 text-sm sm:text-base mb-1.5 sm:mb-2">{review.title}</h5>
-                                                <p className="text-gray-700 text-xs sm:text-sm leading-relaxed whitespace-pre-line">{review.description}</p>
+                                                <h5 className="font-semibold text-gray-900 text-sm sm:text-base mb-1.5 sm:mb-2">
+                                                    {translatedTexts[review.id]?.title || review.title}
+                                                </h5>
+                                                <p className="text-gray-700 text-xs sm:text-sm leading-relaxed whitespace-pre-line">
+                                                    {translatedTexts[review.id]?.description || review.description}
+                                                </p>
 
                                                 {/* Experience Date */}
                                                 {experienceDate && (
@@ -716,7 +724,7 @@ export default function CompanyReviewPage() {
                                                                     )}
                                                                 </div>
                                                                 <p className="text-gray-700 text-xs sm:text-sm leading-relaxed">
-                                                                    {review.reply}
+                                                                    {translatedTexts[review.id]?.reply || review.reply}
                                                                 </p>
                                                             </div>
                                                         </div>
@@ -724,6 +732,46 @@ export default function CompanyReviewPage() {
                                                 )}
                                                 {/* Action Buttons */}
                                                 <div className="flex items-center gap-3 pt-2 sm:pt-3 mt-2 sm:mt-3 border-t border-gray-200">
+                                                    {/* Translate Buttons */}
+                                                    <TranslateButton
+                                                        originalText={review.title}
+                                                        onTranslatedTextChange={(translated) => {
+                                                            setTranslatedTexts(prev => ({
+                                                                ...prev,
+                                                                [review.id]: {
+                                                                    ...prev[review.id],
+                                                                    title: translated
+                                                                }
+                                                            }));
+                                                        }}
+                                                    />
+                                                    <TranslateButton
+                                                        originalText={review.description}
+                                                        onTranslatedTextChange={(translated) => {
+                                                            setTranslatedTexts(prev => ({
+                                                                ...prev,
+                                                                [review.id]: {
+                                                                    ...prev[review.id],
+                                                                    description: translated
+                                                                }
+                                                            }));
+                                                        }}
+                                                    />
+                                                    {review.reply && (
+                                                        <TranslateButton
+                                                            originalText={review.reply}
+                                                            onTranslatedTextChange={(translated) => {
+                                                                setTranslatedTexts(prev => ({
+                                                                    ...prev,
+                                                                    [review.id]: {
+                                                                        ...prev[review.id],
+                                                                        reply: translated
+                                                                    }
+                                                                }));
+                                                            }}
+                                                        />
+                                                    )}
+
                                                     {/* Edit Button - Only show for own reviews */}
                                                     {isOwnReview(review) && (
                                                         <button
