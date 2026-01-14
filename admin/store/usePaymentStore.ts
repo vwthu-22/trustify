@@ -86,9 +86,13 @@ const usePaymentStore = create<PaymentState>()(
                     }
 
                     // Step 2: Fetch transactions for each company in parallel
+                    console.log(`📊 Fetching transactions for ${companies.length} companies...`);
                     const transactionPromises = companies.map(async (company) => {
                         try {
-                            const response = await fetch(`${API_BASE_URL}/api/payment/history/${company.id}`, {
+                            const url = `${API_BASE_URL}/api/payment/history/${company.id}`;
+                            console.log(`🔍 Fetching: ${url}`);
+
+                            const response = await fetch(url, {
                                 credentials: 'include',
                                 headers: {
                                     'Content-Type': 'application/json',
@@ -96,20 +100,26 @@ const usePaymentStore = create<PaymentState>()(
                                 },
                             });
 
+                            console.log(`📥 Response for company ${company.id}:`, response.status);
+
                             if (!response.ok) {
-                                console.log(`No transactions for company ${company.id}`);
+                                console.log(`❌ No transactions for company ${company.id} (${response.status})`);
                                 return [];
                             }
 
                             const data = await response.json();
+                            console.log(`✅ Transactions for company ${company.id}:`, data);
+
                             // Add company name to each transaction
                             const transactions = Array.isArray(data) ? data : [];
+                            console.log(`📝 Found ${transactions.length} transactions for ${company.name}`);
+
                             return transactions.map((t: PaymentTransaction) => ({
                                 ...t,
                                 companyName: company.name,
                             }));
                         } catch (error) {
-                            console.log(`Error fetching transactions for company ${company.id}:`, error);
+                            console.error(`❌ Error fetching transactions for company ${company.id}:`, error);
                             return [];
                         }
                     });
