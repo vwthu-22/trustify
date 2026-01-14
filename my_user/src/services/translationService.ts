@@ -1,15 +1,10 @@
-// LibreTranslate API - Free, open-source translation
-// Public instance: https://libretranslate.com (rate limited)
-// Can self-host for unlimited usage
+// LibreTranslate via Next.js API route (to bypass CORS)
 
 export interface TranslationResult {
     translatedText: string;
     sourceLanguage: string;
     targetLanguage: string;
 }
-
-// Using public LibreTranslate instance
-const LIBRETRANSLATE_API = 'https://libretranslate.com/translate';
 
 export async function translateText(
     text: string,
@@ -31,21 +26,23 @@ export async function translateText(
         const source = langMap[sourceLang] || 'auto';
         const target = langMap[targetLang] || targetLang;
 
-        const response = await fetch(LIBRETRANSLATE_API, {
+        // Call our Next.js API route instead of LibreTranslate directly
+        const response = await fetch('/api/translate', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                q: text,
-                source: source,
-                target: target,
-                format: 'text'
+                text: text,
+                targetLang: target,
+                sourceLang: source
             })
         });
 
         if (!response.ok) {
-            throw new Error('Translation failed');
+            const errorData = await response.json();
+            console.error('Translation API error:', errorData);
+            throw new Error(errorData.error || 'Translation failed');
         }
 
         const data = await response.json();
