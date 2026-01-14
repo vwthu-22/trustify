@@ -10,15 +10,16 @@ import { getStarFillColor, STAR_FILL_COLORS } from '@/utils/ratingColors';
 import { useTranslations } from 'next-intl';
 
 // Constant mapping - defined outside component to avoid recreating on each render
+// The 'name' field must match EXACTLY what's stored in the database 'industry' column
 const CATEGORY_MAP: { [key: string]: { name: string; key: string } } = {
-  'bank': { name: 'Bank', key: 'bank' },
-  'travel': { name: 'Travel', key: 'travel' },
-  'car-dealer': { name: 'Car Dealer', key: 'carDealer' },
-  'furniture-store': { name: 'Furniture', key: 'furniture' },
-  'jewelry-store': { name: 'Jewelry', key: 'jewelry' },
-  'clothing-store': { name: 'Clothing', key: 'clothing' },
-  'electronics': { name: 'Electronics', key: 'electronics' },
-  'fitness': { name: 'Fitness', key: 'fitness' }
+  'bank': { name: 'bank', key: 'bank' },
+  'travel': { name: 'travel', key: 'travel' },
+  'car-dealer': { name: 'car-dealer', key: 'carDealer' },
+  'furniture-store': { name: 'furniture-store', key: 'furniture' },
+  'jewelry-store': { name: 'jewelry-store', key: 'jewelry' },
+  'clothing-store': { name: 'clothing-store', key: 'clothing' },
+  'electronics': { name: 'electronics', key: 'electronics' },
+  'fitness': { name: 'fitness', key: 'fitness' }
 };
 
 export default function CategoryPage() {
