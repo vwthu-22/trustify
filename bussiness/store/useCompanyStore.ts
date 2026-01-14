@@ -94,7 +94,6 @@ export const useCompanyStore = create<CompanyStore>()(
                     }
 
                     const data = await response.json();
-                    console.log('Company profile response:', data);
 
                     // Handle different API response formats
                     let companyData = null;

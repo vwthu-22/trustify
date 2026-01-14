@@ -493,8 +493,11 @@ const useReviewStore = create<ReviewState>()(
 
                     const response = await fetch(url, {
                         method: 'GET',
+                        credentials: 'include',
                         headers: {
                             'Accept': 'application/json',
+                            'ngrok-skip-browser-warning': 'true',
+                            'bypass-tunnel-reminder': 'true',
                         },
                     });
 

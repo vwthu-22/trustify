@@ -47,7 +47,7 @@ export default function BrandMarquee() {
                         <img
                             src={brand.logo}
                             alt={brand.name}
-                            className="h-10 sm:h-12 w-auto max-w-[140px] object-contain"
+                            className="h-10 sm:h-12 rounded-md w-auto max-w-[140px] object-contain"
                             onError={(e) => {
                                 (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(brand.name)}&background=random&color=fff`;
                             }}

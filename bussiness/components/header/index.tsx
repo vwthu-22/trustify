@@ -93,12 +93,15 @@ export default function Header({ onMenuClick, isMobile = false }: HeaderProps) {
             subscriptionFetchedRef.current = true;
         }
     }, [company?.id, fetchCompanyProfile, fetchCurrentSubscription, isPublicRoute]);
-
+//gọi liên tục để lấy thông tin verify
     useEffect(() => {
         if (isPublicRoute) return;
         const interval = setInterval(() => {
-            fetchCompanyProfile();
-        }, 30000);
+            // Only refresh if tab is active to save resources
+            if (document.visibilityState === 'visible') {
+                fetchCompanyProfile();
+            }
+        }, 60000);
         return () => clearInterval(interval);
     }, [fetchCompanyProfile, isPublicRoute]);
 
