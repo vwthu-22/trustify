@@ -1,33 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// MyMemory Translation API - Free, no setup required
+const MYMEMORY_API = 'https://api.mymemory.translated.net/get';
+
 export async function POST(request: NextRequest) {
     try {
         const { text, targetLang, sourceLang } = await request.json();
 
-        const response = await fetch('https://libretranslate.com/translate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                q: text,
-                source: sourceLang || 'auto',
-                target: targetLang,
-                format: 'text'
-            })
-        });
+        // Build API URL
+        const url = new URL(MYMEMORY_API);
+        url.searchParams.append('q', text);
+        url.searchParams.append('langpair', `${sourceLang || 'auto'}|${targetLang}`);
+
+        const response = await fetch(url.toString());
 
         if (!response.ok) {
-            const errorData = await response.text();
-            console.error('LibreTranslate error:', errorData);
             return NextResponse.json(
-                { error: 'Translation failed', details: errorData },
+                { error: 'Translation failed' },
                 { status: response.status }
             );
         }
 
         const data = await response.json();
-        return NextResponse.json(data);
+
+        if (data.responseStatus !== 200) {
+            return NextResponse.json(
+                { error: data.responseDetails || 'Translation error' },
+                { status: 400 }
+            );
+        }
+
+        return NextResponse.json({
+            translatedText: data.responseData.translatedText
+        });
     } catch (error: any) {
         console.error('Translation API error:', error);
         return NextResponse.json(
