@@ -1,5 +1,6 @@
-// MyMemory Translation API - Free, no API key needed
-// Limit: 10,000 words/day
+// LibreTranslate API - Free, open-source translation
+// Public instance: https://libretranslate.com (rate limited)
+// Can self-host for unlimited usage
 
 export interface TranslationResult {
     translatedText: string;
@@ -7,7 +8,8 @@ export interface TranslationResult {
     targetLanguage: string;
 }
 
-const MYMEMORY_API = 'https://api.mymemory.translated.net/get';
+// Using public LibreTranslate instance
+const LIBRETRANSLATE_API = 'https://libretranslate.com/translate';
 
 export async function translateText(
     text: string,
@@ -23,17 +25,24 @@ export async function translateText(
             'ja': 'ja',
             'zh': 'zh',
             'pt': 'pt',
+            'auto': 'auto'
         };
 
-        const source = langMap[sourceLang] || sourceLang;
+        const source = langMap[sourceLang] || 'auto';
         const target = langMap[targetLang] || targetLang;
 
-        // Build API URL
-        const url = new URL(MYMEMORY_API);
-        url.searchParams.append('q', text);
-        url.searchParams.append('langpair', `${source}|${target}`);
-
-        const response = await fetch(url.toString());
+        const response = await fetch(LIBRETRANSLATE_API, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                q: text,
+                source: source,
+                target: target,
+                format: 'text'
+            })
+        });
 
         if (!response.ok) {
             throw new Error('Translation failed');
@@ -41,12 +50,12 @@ export async function translateText(
 
         const data = await response.json();
 
-        if (data.responseStatus !== 200) {
-            throw new Error(data.responseDetails || 'Translation error');
+        if (!data.translatedText) {
+            throw new Error('No translation returned');
         }
 
         return {
-            translatedText: data.responseData.translatedText,
+            translatedText: data.translatedText,
             sourceLanguage: source,
             targetLanguage: target,
         };

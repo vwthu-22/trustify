@@ -732,45 +732,33 @@ export default function CompanyReviewPage() {
                                                 )}
                                                 {/* Action Buttons */}
                                                 <div className="flex items-center gap-3 pt-2 sm:pt-3 mt-2 sm:mt-3 border-t border-gray-200">
-                                                    {/* Translate Buttons */}
+                                                    {/* Translate Button - translates all content */}
                                                     <TranslateButton
-                                                        originalText={review.title}
-                                                        onTranslatedTextChange={(translated) => {
-                                                            setTranslatedTexts(prev => ({
-                                                                ...prev,
-                                                                [review.id]: {
-                                                                    ...prev[review.id],
-                                                                    title: translated
-                                                                }
-                                                            }));
+                                                        texts={{
+                                                            title: review.title,
+                                                            description: review.description,
+                                                            reply: review.reply
                                                         }}
-                                                    />
-                                                    <TranslateButton
-                                                        originalText={review.description}
-                                                        onTranslatedTextChange={(translated) => {
-                                                            setTranslatedTexts(prev => ({
-                                                                ...prev,
-                                                                [review.id]: {
-                                                                    ...prev[review.id],
-                                                                    description: translated
-                                                                }
-                                                            }));
-                                                        }}
-                                                    />
-                                                    {review.reply && (
-                                                        <TranslateButton
-                                                            originalText={review.reply}
-                                                            onTranslatedTextChange={(translated) => {
+                                                        onTranslatedTextsChange={(translated) => {
+                                                            if (translated) {
                                                                 setTranslatedTexts(prev => ({
                                                                     ...prev,
                                                                     [review.id]: {
-                                                                        ...prev[review.id],
-                                                                        reply: translated
+                                                                        title: translated.title,
+                                                                        description: translated.description,
+                                                                        reply: translated.reply || null
                                                                     }
                                                                 }));
-                                                            }}
-                                                        />
-                                                    )}
+                                                            } else {
+                                                                // Clear translations
+                                                                setTranslatedTexts(prev => {
+                                                                    const newState = { ...prev };
+                                                                    delete newState[review.id];
+                                                                    return newState;
+                                                                });
+                                                            }
+                                                        }}
+                                                    />
 
                                                     {/* Edit Button - Only show for own reviews */}
                                                     {isOwnReview(review) && (

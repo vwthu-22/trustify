@@ -6,14 +6,22 @@ import { translateText, detectLanguage } from '@/services/translationService';
 import useLanguageStore from '@/stores/languageStore/language';
 
 interface TranslateButtonProps {
-    originalText: string;
-    onTranslatedTextChange: (translatedText: string | null) => void;
+    texts: {
+        title: string;
+        description: string;
+        reply?: string;
+    };
+    onTranslatedTextsChange: (translatedTexts: {
+        title: string;
+        description: string;
+        reply?: string;
+    } | null) => void;
     className?: string;
 }
 
 export default function TranslateButton({
-    originalText,
-    onTranslatedTextChange,
+    texts,
+    onTranslatedTextsChange,
     className = ''
 }: TranslateButtonProps) {
     const [isTranslating, setIsTranslating] = useState(false);
@@ -23,26 +31,23 @@ export default function TranslateButton({
     const handleTranslate = async () => {
         if (isTranslated) {
             // Show original
-            onTranslatedTextChange(null);
+            onTranslatedTextsChange(null);
             setIsTranslated(false);
             return;
         }
 
         setIsTranslating(true);
         try {
-            // Detect source language
-            const sourceLang = detectLanguage(originalText);
+            // Translate all texts
+            const translatedTitle = await translateTextSafely(texts.title);
+            const translatedDescription = await translateTextSafely(texts.description);
+            const translatedReply = texts.reply ? await translateTextSafely(texts.reply) : undefined;
 
-            // Don't translate if already in target language
-            if (sourceLang === locale) {
-                alert('This text is already in your language');
-                setIsTranslating(false);
-                return;
-            }
-
-            // Translate
-            const result = await translateText(originalText, locale, sourceLang);
-            onTranslatedTextChange(result.translatedText);
+            onTranslatedTextsChange({
+                title: translatedTitle,
+                description: translatedDescription,
+                reply: translatedReply
+            });
             setIsTranslated(true);
         } catch (error) {
             console.error('Translation failed:', error);
@@ -50,6 +55,19 @@ export default function TranslateButton({
         } finally {
             setIsTranslating(false);
         }
+    };
+
+    const translateTextSafely = async (text: string): Promise<string> => {
+        const sourceLang = detectLanguage(text);
+
+        // If already in target language, just return original
+        if (sourceLang === locale) {
+            return text;
+        }
+
+        // Translate
+        const result = await translateText(text, locale, sourceLang);
+        return result.translatedText;
     };
 
     return (
