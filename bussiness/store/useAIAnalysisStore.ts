@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { translateText } from '@/services/translationService';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://trustify.io.vn';
 
@@ -11,7 +10,6 @@ interface AnalyzeRequest {
     dateRange: string;
     includeReplies: boolean;
     forceRefresh: boolean;
-    language?: string; // Add language hint for AI
 }
 
 // API Response types
@@ -76,7 +74,7 @@ interface AIAnalysisState {
     lastAnalyzedAt: string | null;
 
     // Actions
-    analyzeReviews: (request: AnalyzeRequest, targetLang?: string) => Promise<boolean>;
+    analyzeReviews: (request: AnalyzeRequest) => Promise<boolean>;
     clearError: () => void;
     clearAnalysis: () => void;
 }
@@ -89,21 +87,15 @@ export const useAIAnalysisStore = create<AIAnalysisState>()(
             analysisResult: null,
             lastAnalyzedAt: null,
 
-            analyzeReviews: async (request: AnalyzeRequest, targetLang: string = 'en') => {
+            analyzeReviews: async (request: AnalyzeRequest) => {
                 console.log('=== AI Analysis Start ===');
-                console.log('Request Company ID:', request.companyId);
-                console.log('Target Language:', targetLang);
+                console.log('Request:', request);
 
-                if (!request.companyId || request.companyId <= 0) {
-                    set({ error: 'ID công ty không hợp lệ', isLoading: false });
-                    return false;
-                }
+                set({ isLoading: true, error: null });
 
                 try {
-                    // Include language in request body for backend hint
-                    // Try removing /v1/ to match other API structures in the project
-                    const url = `${API_BASE_URL}/api/ai/companies/${request.companyId}/analyze`;
-                    console.log('Calling API (Revised URL):', url);
+                    const url = `${API_BASE_URL}/api/v1/ai/companies/${request.companyId}/analyze`;
+                    console.log('Calling API:', url);
 
                     const response = await fetch(url, {
                         method: 'POST',
@@ -133,82 +125,7 @@ export const useAIAnalysisStore = create<AIAnalysisState>()(
                     }
 
                     const data: AIAnalysisResult = await response.json();
-
-                    // Automatic Translation Logic
-                    // If target language is not English, translate the results
-                    if (targetLang && targetLang !== 'en') {
-                        console.log(`🌐 Translating AI results to: \${targetLang}...`);
-
-                        try {
-                            // 1. Translate AI Summary
-                            if (data.aiSummary) {
-                                const result = await translateText(data.aiSummary, targetLang);
-                                data.aiSummary = result.translatedText;
-                            }
-
-                            // 2. Translate Strengths
-                            if (data.strengths && data.strengths.length > 0) {
-                                for (const s of data.strengths) {
-                                    if (s.description) {
-                                        try {
-                                            const res = await translateText(s.description, targetLang);
-                                            s.description = res.translatedText;
-                                            // Small delay to prevent rate limiting
-                                            await new Promise(resolve => setTimeout(resolve, 100));
-                                        } catch (e) {
-                                            console.warn('Failed to translate strength description:', e);
-                                        }
-                                    }
-                                }
-                            }
-
-                            // 3. Translate Weaknesses
-                            if (data.weaknesses && data.weaknesses.length > 0) {
-                                for (const w of data.weaknesses) {
-                                    if (w.description) {
-                                        try {
-                                            const res = await translateText(w.description, targetLang);
-                                            w.description = res.translatedText;
-                                            await new Promise(resolve => setTimeout(resolve, 100));
-                                        } catch (e) {
-                                            console.warn('Failed to translate weakness description:', e);
-                                        }
-                                    }
-                                }
-                            }
-
-                            // 4. Translate Suggestions
-                            if (data.suggestions && data.suggestions.length > 0) {
-                                for (const s of data.suggestions) {
-                                    try {
-                                        if (s.title) {
-                                            const resT = await translateText(s.title, targetLang);
-                                            s.title = resT.translatedText;
-                                            await new Promise(resolve => setTimeout(resolve, 50));
-                                        }
-                                        if (s.description) {
-                                            const resD = await translateText(s.description, targetLang);
-                                            s.description = resD.translatedText;
-                                            await new Promise(resolve => setTimeout(resolve, 50));
-                                        }
-                                        if (s.expectedImpact) {
-                                            const resI = await translateText(s.expectedImpact, targetLang);
-                                            s.expectedImpact = resI.translatedText;
-                                            await new Promise(resolve => setTimeout(resolve, 50));
-                                        }
-                                    } catch (e) {
-                                        console.warn('Failed to translate suggestion fields:', e);
-                                    }
-                                }
-                            }
-
-                            console.log('✅ Translation complete');
-                        } catch (transError) {
-                            console.warn('⚠️ Auto-translation failed, showing original English results:', transError);
-                        }
-                    }
-
-                    console.log('Analysis Result (final):', data);
+                    console.log('Analysis Result:', data);
                     console.log('=== AI Analysis Success ===');
 
                     set({
