@@ -37,17 +37,50 @@ export default function CompanyReviewPage() {
 
     // Helper function to convert industry name to category slug
     const getIndustrySlug = (industry: string) => {
+        if (!industry) return 'bank'; // fallback if no industry
+
+        const normalizedIndustry = industry.toLowerCase().trim();
+
+        // Direct mapping for exact matches
         const industryMap: { [key: string]: string } = {
-            'Bank': 'bank',
-            'Travel': 'travel',
-            'Car Dealer': 'car-dealer',
-            'Furniture Store': 'furniture-store',
-            'Jewelry Store': 'jewelry-store',
-            'Clothing Store': 'clothing-store',
-            'Electronics & Technology': 'electronics',
-            'Fitness and Nutrition Service': 'fitness'
+            'bank': 'bank',
+            'banking': 'bank',
+            'travel': 'travel',
+            'tourism': 'travel',
+            'car dealer': 'car-dealer',
+            'automotive': 'car-dealer',
+            'furniture store': 'furniture-store',
+            'furniture': 'furniture-store',
+            'jewelry store': 'jewelry-store',
+            'jewelry': 'jewelry-store',
+            'clothing store': 'clothing-store',
+            'clothing': 'clothing-store',
+            'fashion': 'clothing-store',
+            'apparel': 'clothing-store',
+            'electronics & technology': 'electronics',
+            'electronics': 'electronics',
+            'technology': 'electronics',
+            'tech': 'electronics',
+            'fitness and nutrition service': 'fitness',
+            'fitness': 'fitness',
+            'nutrition': 'fitness',
+            'gym': 'fitness'
         };
-        return industryMap[industry] || 'bank'; // default to 'bank' if not found
+
+        // Try exact match first
+        if (industryMap[normalizedIndustry]) {
+            return industryMap[normalizedIndustry];
+        }
+
+        // Try partial match (if industry contains keyword)
+        for (const [key, value] of Object.entries(industryMap)) {
+            if (normalizedIndustry.includes(key) || key.includes(normalizedIndustry)) {
+                return value;
+            }
+        }
+
+        // Default fallback
+        return 'bank';
     };
 
     const [selectedFilters, setSelectedFilters] = useState<number[]>([]);

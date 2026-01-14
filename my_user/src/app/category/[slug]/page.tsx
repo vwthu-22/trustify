@@ -14,11 +14,11 @@ const CATEGORY_MAP: { [key: string]: { name: string; key: string } } = {
   'bank': { name: 'Bank', key: 'bank' },
   'travel': { name: 'Travel', key: 'travel' },
   'car-dealer': { name: 'Car Dealer', key: 'carDealer' },
-  'furniture-store': { name: 'Furniture Store', key: 'furniture' },
-  'jewelry-store': { name: 'Jewelry Store', key: 'jewelry' },
-  'clothing-store': { name: 'Clothing Store', key: 'clothing' },
-  'electronics': { name: 'Electronics & Technology', key: 'electronics' },
-  'fitness': { name: 'Fitness and Nutrition Service', key: 'fitness' }
+  'furniture-store': { name: 'Furniture', key: 'furniture' },
+  'jewelry-store': { name: 'Jewelry', key: 'jewelry' },
+  'clothing-store': { name: 'Clothing', key: 'clothing' },
+  'electronics': { name: 'Electronics', key: 'electronics' },
+  'fitness': { name: 'Fitness', key: 'fitness' }
 };
 
 export default function CategoryPage() {
