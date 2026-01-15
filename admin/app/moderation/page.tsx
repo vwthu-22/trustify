@@ -25,11 +25,13 @@ export default function ModerationPage() {
         approveReview,
         rejectReview,
         bulkApproveReviews,
-        bulkRejectReviews
+        bulkRejectReviews,
+        bulkDismissReports
     } = useModerationStore();
 
     const [activeTab, setActiveTab] = useState<TabType>('pending')
     const [selectedReviews, setSelectedReviews] = useState<number[]>([])
+    const [selectedReports, setSelectedReports] = useState<number[]>([])
 
 
     useEffect(() => {
@@ -115,6 +117,29 @@ export default function ModerationPage() {
         if (selectedReviews.length === 0) return;
         await bulkRejectReviews(selectedReviews);
         setSelectedReviews([]);
+    };
+
+    const toggleSelectReport = (reportId: number) => {
+        setSelectedReports(prev =>
+            prev.includes(reportId)
+                ? prev.filter(id => id !== reportId)
+                : [...prev, reportId]
+        );
+    };
+
+    const toggleSelectAllReports = () => {
+        if (selectedReports.length === pendingReports.length) {
+            setSelectedReports([]);
+        } else {
+            setSelectedReports(pendingReports.map(r => r.id));
+        }
+    };
+
+    const handleBulkKeep = async () => {
+        if (selectedReports.length === 0) return;
+        const reportsToDismiss = pendingReports.filter(r => selectedReports.includes(r.id));
+        await bulkDismissReports(reportsToDismiss);
+        setSelectedReports([]);
     };
 
     return (
@@ -321,81 +346,135 @@ export default function ModerationPage() {
                                     <p className="text-gray-400 text-xs mt-1">{t('allResolved')}</p>
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-1 gap-4">
-                                    {sortedPendingReports.map((report) => (
-                                        <div key={report.id} className="group bg-white rounded-2xl border border-red-50 hover:border-red-100 hover:shadow-md transition-all duration-300 p-6 flex flex-col md:flex-row gap-6 relative overflow-hidden">
-                                            {/* Report Badge */}
-                                            <div className="absolute top-0 right-0 px-4 py-2 bg-red-50 text-red-600 rounded-bl-2xl border-l border-b border-red-100 flex items-center gap-1.5">
-                                                <Flag className="w-3.5 h-3.5" />
-                                                <span className="text-[10px] font-bold uppercase tracking-wider">
-                                                    {t('reportsCount', { count: reports.filter(r => r.reviewId === report.reviewId).length })}
+                                <div className="space-y-4">
+                                    {/* Bulk Action Bar for Reports */}
+                                    <div className="bg-emerald-600 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-3 shadow-lg shadow-emerald-100 sticky top-2 z-20">
+                                        <div className="flex items-center gap-3">
+                                            <button
+                                                onClick={toggleSelectAllReports}
+                                                className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl transition-all"
+                                            >
+                                                {selectedReports.length === pendingReports.length && pendingReports.length > 0 ? (
+                                                    <CheckSquare className="w-5 h-5 text-white" />
+                                                ) : (
+                                                    <Square className="w-5 h-5 text-white/40" />
+                                                )}
+                                                <span className="text-sm font-semibold text-white">
+                                                    {selectedReports.length === pendingReports.length && pendingReports.length > 0 ? t('deselectAll') : t('selectAll')}
                                                 </span>
-                                            </div>
-
-                                            {/* Left side: Review Info */}
-                                            <div className="flex-grow min-w-0 flex flex-col">
-                                                <div className="flex items-center gap-3 mb-4">
-                                                    <div className="w-11 h-11 rounded-xl bg-red-50 flex items-center justify-center border border-red-100/50 overflow-hidden text-red-600 font-bold">
-                                                        {report.reviewerAvatar ? (
-                                                            <img src={report.reviewerAvatar} alt={report.reviewerName} className="w-full h-full object-cover" />
-                                                        ) : (
-                                                            report.reviewerName.charAt(0).toUpperCase()
-                                                        )}
-                                                    </div>
-                                                    <div className="min-w-0">
-                                                        <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
-                                                            <span className="font-semibold text-gray-900 text-base">
-                                                                {report.reviewerName || t('anonymousUser')}
-                                                            </span>
-                                                            <span className="text-gray-400 text-[10px] font-bold uppercase tracking-wider">{t('on')}</span>
-                                                            <span className="font-semibold text-blue-500 text-base leading-none">{report.companyName}</span>
-                                                        </div>
-                                                        <div className="flex items-center gap-2 mt-1">
-                                                            {renderStars(report.reviewRating)}
-                                                            <div className="w-1 h-1 rounded-full bg-gray-200" />
-                                                            <span className="text-[10px] font-medium text-gray-400 uppercase tracking-tighter">{formatTimeAgo(report.createdAt)}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div className="bg-gray-50/50 rounded-2xl p-4 mb-4 border border-gray-100/50">
-                                                    <p className="font-semibold text-gray-900 mb-1.5 text-sm">"{report.reviewTitle}"</p>
-                                                    <p className="text-gray-600 text-xs whitespace-pre-wrap leading-relaxed">
-                                                        {report.reviewContent}
-                                                    </p>
-                                                </div>
-
-                                                {/* Reason section */}
-                                                <div className="bg-red-50/30 border border-red-100/50 rounded-xl p-3.5 relative">
-                                                    <div className="flex items-center gap-2 mb-1.5">
-                                                        <AlertCircle className="w-4 h-4 text-red-500" />
-                                                        <span className="text-[9px] font-bold text-red-700 uppercase tracking-wider">{t('reasonLabel')}</span>
-                                                    </div>
-                                                    <p className="text-xs font-medium text-red-900/70 leading-relaxed pl-6 italic">
-                                                        "{report.reason}"
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                            {/* Action Sidebar style */}
-                                            <div className="flex flex-row md:flex-col gap-3 min-w-[160px] justify-center pt-4 md:pt-0 border-t md:border-t-0 md:border-l border-gray-100 md:pl-6">
-                                                <button
-                                                    onClick={() => dismissReport(report)}
-                                                    className="flex-1 py-3 px-4 text-[11px] font-bold text-gray-600 bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 active:scale-95 rounded-xl transition-all flex items-center justify-center gap-2"
-                                                >
-                                                    <CheckCircle className="w-4 h-4 text-emerald-500" />
-                                                    {t('keepReview')}
-                                                </button>
-                                                <button
-                                                    onClick={() => deleteReview(report)}
-                                                    className="flex-1 py-3 px-4 text-[11px] font-bold text-white bg-red-500 hover:bg-red-600 active:scale-95 rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm shadow-red-100"
-                                                >
-                                                    <Trash2 className="w-4 h-4" />
-                                                    {t('deleteReview')}
-                                                </button>
-                                            </div>
+                                            </button>
+                                            {selectedReports.length > 0 && (
+                                                <span className="px-3 py-1 bg-white text-emerald-600 text-[11px] font-bold rounded-lg uppercase tracking-wider">
+                                                    {t('selectedCount', { count: selectedReports.length })}
+                                                </span>
+                                            )}
                                         </div>
-                                    ))}
+                                        {selectedReports.length > 0 && (
+                                            <div className="flex gap-2 w-full md:w-auto">
+                                                <button
+                                                    onClick={handleBulkKeep}
+                                                    className="flex-1 md:flex-none px-5 py-2 text-sm font-bold text-emerald-600 bg-white hover:bg-emerald-50 active:scale-95 rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm"
+                                                >
+                                                    <CheckCircle className="w-4 h-4" />
+                                                    {t('bulkKeep', { count: selectedReports.length })}
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-4">
+                                        {sortedPendingReports.map((report) => (
+                                            <div key={report.id} className="group bg-white rounded-2xl border border-red-50 hover:border-red-100 hover:shadow-md transition-all duration-300 p-6 flex flex-col md:flex-row gap-6 relative overflow-hidden">
+                                                {/* Selection Checkbox */}
+                                                <div className="absolute top-4 left-4 z-10">
+                                                    <button
+                                                        onClick={() => toggleSelectReport(report.id)}
+                                                        className="flex-shrink-0 active:scale-90 transition-transform"
+                                                    >
+                                                        {selectedReports.includes(report.id) ? (
+                                                            <CheckSquare className="w-6 h-6 text-emerald-500" />
+                                                        ) : (
+                                                            <Square className="w-6 h-6 text-gray-200 group-hover:text-emerald-100 transition-colors" />
+                                                        )}
+                                                    </button>
+                                                </div>
+
+                                                {/* Card Content with Padding for Checkbox */}
+                                                <div className="pl-6 w-full flex flex-col md:flex-row gap-6">
+                                                    {/* Report Badge */}
+                                                    <div className="absolute top-0 right-0 px-4 py-2 bg-red-50 text-red-600 rounded-bl-2xl border-l border-b border-red-100 flex items-center gap-1.5">
+                                                        <Flag className="w-3.5 h-3.5" />
+                                                        <span className="text-[10px] font-bold uppercase tracking-wider">
+                                                            {t('reportsCount', { count: reports.filter(r => r.reviewId === report.reviewId).length })}
+                                                        </span>
+                                                    </div>
+
+                                                    {/* Left side: Review Info */}
+                                                    <div className="flex-grow min-w-0 flex flex-col">
+                                                        <div className="flex items-center gap-3 mb-4">
+                                                            <div className="w-11 h-11 rounded-xl bg-red-50 flex items-center justify-center border border-red-100/50 overflow-hidden text-red-600 font-bold">
+                                                                {report.reviewerAvatar ? (
+                                                                    <img src={report.reviewerAvatar} alt={report.reviewerName} className="w-full h-full object-cover" />
+                                                                ) : (
+                                                                    report.reviewerName.charAt(0).toUpperCase()
+                                                                )}
+                                                            </div>
+                                                            <div className="min-w-0">
+                                                                <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                                                                    <span className="font-semibold text-gray-900 text-base">
+                                                                        {report.reviewerName || t('anonymousUser')}
+                                                                    </span>
+                                                                    <span className="text-gray-400 text-[10px] font-bold uppercase tracking-wider">{t('on')}</span>
+                                                                    <span className="font-semibold text-blue-500 text-base leading-none">{report.companyName}</span>
+                                                                </div>
+                                                                <div className="flex items-center gap-2 mt-1">
+                                                                    {renderStars(report.reviewRating)}
+                                                                    <div className="w-1 h-1 rounded-full bg-gray-200" />
+                                                                    <span className="text-[10px] font-medium text-gray-400 uppercase tracking-tighter">{formatTimeAgo(report.createdAt)}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="bg-gray-50/50 rounded-2xl p-4 mb-4 border border-gray-100/50">
+                                                            <p className="font-semibold text-gray-900 mb-1.5 text-sm">"{report.reviewTitle}"</p>
+                                                            <p className="text-gray-600 text-xs whitespace-pre-wrap leading-relaxed">
+                                                                {report.reviewContent}
+                                                            </p>
+                                                        </div>
+
+                                                        {/* Reason section */}
+                                                        <div className="bg-red-50/30 border border-red-100/50 rounded-xl p-3.5 relative">
+                                                            <div className="flex items-center gap-2 mb-1.5">
+                                                                <AlertCircle className="w-4 h-4 text-red-500" />
+                                                                <span className="text-[9px] font-bold text-red-700 uppercase tracking-wider">{t('reasonLabel')}</span>
+                                                            </div>
+                                                            <p className="text-xs font-medium text-red-900/70 leading-relaxed pl-6 italic">
+                                                                "{report.reason}"
+                                                            </p>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Action Sidebar style */}
+                                                    <div className="flex flex-row md:flex-col gap-3 min-w-[160px] justify-center pt-4 md:pt-0 border-t md:border-t-0 md:border-l border-gray-100 md:pl-6">
+                                                        <button
+                                                            onClick={() => dismissReport(report)}
+                                                            className="flex-1 py-3 px-4 text-[11px] font-bold text-gray-600 bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 active:scale-95 rounded-xl transition-all flex items-center justify-center gap-2"
+                                                        >
+                                                            <CheckCircle className="w-4 h-4 text-emerald-500" />
+                                                            {t('keepReview')}
+                                                        </button>
+                                                        <button
+                                                            onClick={() => deleteReview(report)}
+                                                            className="flex-1 py-3 px-4 text-[11px] font-bold text-white bg-red-500 hover:bg-red-600 active:scale-95 rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm shadow-red-100"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                            {t('deleteReview')}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             )}
                         </div>

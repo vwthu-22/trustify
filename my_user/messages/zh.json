@@ -15,7 +15,14 @@
         "viewAll": "查看全部",
         "learnMore": "了解更多",
         "getStarted": "开始使用",
-        "retry": "重试"
+        "retry": "重试",
+        "metadata": {
+            "title": "Trustify",
+            "description": "Trustify 帮助您发现和分享真实的商家评价。我们通过透明度建立信任。",
+            "ogTitle": "Trustify",
+            "ogDescription": "通过 Trustify 发现和分享真实的商家评价。",
+            "keywords": "评价, 商家评价, 信任, 透明, Trustify"
+        }
     },
     "header": {
         "writeReview": "写评论",
@@ -169,7 +176,8 @@
         "reportSentSuccess": "举报已成功提交！",
         "reportSentDesc": "我们将审核并处理您的举报。",
         "submitReport": "提交举报",
-        "submittingReport": "提交中..."
+        "submittingReport": "提交中...",
+        "reported": "已举报"
     },
     "categoryPage": {
         "bestIn": "最佳",
@@ -449,7 +457,11 @@
     "aboutSection": {
         "title": "我们是Trustify",
         "description": "我们是一个对所有人开放的评论平台。我们的愿景是成为信任的普遍象征——通过让人们自信地购物，帮助公司改进。",
-        "whatWeDo": "我们做什么"
+        "whatWeDo": "我们做什么",
+        "trustReport": {
+            "title": "我们最新的信任报告已发布！",
+            "description": "了解我们为保护您并提高平台信任度所采取的措施。"
+        }
     },
     "about": {
         "tagline": "值得信赖的评论平台",

@@ -4,6 +4,52 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
+  --input-bg: #ffffff;
+  --input-border: #d1d5db;
+  --header-bg: #191919;
+  --sidebar-bg: #1f2937;
+  --hover-bg: #f3f4f6;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --gradient-from: #bfdbfe;
+  --gradient-to: #dbeafe;
+  --welcome-bg: #f0fdf4;
+  --welcome-border: #dcfce7;
+  --welcome-text: #166534;
+  --welcome-text-secondary: #16a34a;
+  --info-bg: #eff6ff;
+  --info-border: #bfdbfe;
+  --info-icon: #2563eb;
+  --info-text: #374151;
+}
+
+/* Dark mode variables */
+:root.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --card-bg: #1a1a1a;
+  --card-border: #2d2d2d;
+  --input-bg: #1f1f1f;
+  --input-border: #3d3d3d;
+  --header-bg: #000000;
+  --sidebar-bg: #111111;
+  --hover-bg: #2a2a2a;
+  --text-primary: #f9fafb;
+  --text-secondary: #d1d5db;
+  --text-muted: #9ca3af;
+  --gradient-from: #172554;
+  --gradient-to: #1e3a8a;
+  --welcome-bg: #1f2937;
+  --welcome-border: #374151;
+  --welcome-text: #f3f4f6;
+  --welcome-text-secondary: #9ca3af;
+  --info-bg: #1f2937;
+  --info-border: #374151;
+  --info-icon: #60a5fa;
+  --info-text: #d1d5db;
 }
 
 @theme inline {
@@ -13,17 +59,134 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark mode specific styles */
+.dark {
+  color-scheme: dark;
+}
+
+/* Cards and containers */
+.dark .bg-white {
+  background-color: var(--card-bg) !important;
+}
+
+.dark .bg-gray-50 {
+  background-color: #1a1a1a !important;
+}
+
+.dark .bg-gray-100 {
+  background-color: #2a2a2a !important;
+}
+
+.dark .bg-gray-200 {
+  background-color: #3a3a3a !important;
+}
+
+/* Text colors */
+.dark .text-gray-900 {
+  color: var(--text-primary) !important;
+}
+
+.dark .text-gray-800 {
+  color: #e5e7eb !important;
+}
+
+.dark .text-gray-700 {
+  color: #d1d5db !important;
+}
+
+.dark .text-gray-600 {
+  color: #9ca3af !important;
+}
+
+.dark .text-gray-500 {
+  color: var(--text-muted) !important;
+}
+
+.dark .text-gray-400 {
+  color: #6b7280 !important;
+}
+
+.dark .text-black {
+  color: #f9fafb !important;
+}
+
+/* Borders */
+.dark .border-gray-200 {
+  border-color: var(--card-border) !important;
+}
+
+.dark .border-gray-300 {
+  border-color: #3d3d3d !important;
+}
+
+.dark .border-gray-100 {
+  border-color: #2d2d2d !important;
+}
+
+/* Inputs */
+.dark input,
+.dark textarea,
+.dark select {
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--foreground);
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* Hover states */
+.dark .hover\:bg-gray-50:hover {
+  background-color: var(--hover-bg) !important;
+}
+
+.dark .hover\:bg-gray-100:hover {
+  background-color: #3a3a3a !important;
+}
+
+/* Shadows - reduce in dark mode */
+.dark {
+  --tw-shadow-color: rgba(0, 0, 0, 0.5);
+}
+
+.dark .shadow-xl {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+}
+
+.dark .shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+}
+
+.dark .shadow-md {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+}
+
+/* Scrollbar dark mode */
+.dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #3a3a3a;
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #4a4a4a;
 }
 
 @keyframes orbit {
@@ -128,7 +291,7 @@ body {
 
 @keyframes marquee {
   0% {
-    transform: translateX(-100%);
+    transform: translateX(350%);
   }
 
   100% {
@@ -139,7 +302,7 @@ body {
 .animate-marquee {
   display: flex;
   width: max-content;
-  animation: marquee 5s linear infinite;
+  animation: marquee 10s linear infinite;
 }
 
 .animate-marquee:hover,

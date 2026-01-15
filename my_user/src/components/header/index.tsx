@@ -1,19 +1,18 @@
 "use client"
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Bell, ChevronDown, Menu, X, MessageSquare, Building2, ArrowRight } from 'lucide-react';
+import { Search, ChevronDown, Menu, X, Building2, ArrowRight, Moon, Sun } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import useAuthStore from '@/stores/userAuthStore/user';
-import useNotificationStore from '@/stores/notificationStore/notification';
 import useCompanyStore from '@/stores/companyStore/company';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useTranslations } from 'next-intl';
+import { useTheme } from '@/hooks/useTheme';
 
 export default function Header() {
     const [showSearchBar, setShowSearchBar] = useState(false);
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [showMobileMenu, setShowMobileMenu] = useState(false);
-    const [showNotifications, setShowNotifications] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [showSearchDropdown, setShowSearchDropdown] = useState(false);
     const searchDropdownRef = useRef<HTMLDivElement>(null);
@@ -23,8 +22,8 @@ export default function Header() {
     const tSearch = useTranslations('search');
 
     const { user, isAuthenticated, logout, fetchUserInfo } = useAuthStore();
-    const { notifications, unreadCount, fetchNotifications, markAsRead, markAllAsRead } = useNotificationStore();
     const { searchResults, isSearching, searchCompanies, clearSearchResults } = useCompanyStore();
+    const { theme, toggleTheme, mounted } = useTheme();
 
     // Verify session with backend on mount
     useEffect(() => {
@@ -60,15 +59,11 @@ export default function Header() {
 
     useEffect(() => {
         setShowMobileMenu(false);
-        setShowNotifications(false);
     }, [pathname]);
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             const target = e.target as HTMLElement;
-            if (!target.closest('.notification-dropdown')) {
-                setShowNotifications(false);
-            }
             if (searchDropdownRef.current && !searchDropdownRef.current.contains(target)) {
                 setShowSearchDropdown(false);
             }
@@ -108,31 +103,6 @@ export default function Header() {
         setShowUserMenu(false);
         setShowMobileMenu(false);
         router.push('/');
-    };
-
-    const handleNotificationClick = (notification: any) => {
-        markAsRead(notification.id);
-        setShowNotifications(false);
-        if (notification.companyId && notification.reviewId) {
-            router.push(`/bussiness/${notification.companyId}#review-${notification.reviewId}`);
-        } else if (notification.companyId) {
-            router.push(`/bussiness/${notification.companyId}`);
-        }
-    };
-
-    const formatTimeAgo = (dateString: string) => {
-        const date = new Date(dateString);
-        const now = new Date();
-        const diffMs = now.getTime() - date.getTime();
-        const diffMins = Math.floor(diffMs / 60000);
-        const diffHours = Math.floor(diffMs / 3600000);
-        const diffDays = Math.floor(diffMs / 86400000);
-
-        if (diffMins < 1) return 'Just now';
-        if (diffMins < 60) return `${diffMins}m ago`;
-        if (diffHours < 24) return `${diffHours}h ago`;
-        if (diffDays < 7) return `${diffDays}d ago`;
-        return date.toLocaleDateString();
     };
 
     const handleCompanyClick = (companyId: string) => {
@@ -223,75 +193,27 @@ export default function Header() {
                             <Link href="/write-review" className="flex items-center gap-1 hover:text-gray-300 transition text-sm">
                                 {t('writeReview')}
                             </Link>
-                            <Link href="/categories" className="hover:text-gray-300 transition text-sm">
-                                {t('categories')}
-                            </Link>
-
                             {isAuthenticated && user && (
-                                <div className="relative notification-dropdown">
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setShowNotifications(!showNotifications);
-                                            setShowUserMenu(false);
-                                        }}
-                                        className="relative p-2 hover:bg-gray-700 rounded-full transition"
-                                    >
-                                        <Bell className="w-5 h-5" />
-                                        {unreadCount > 0 && (
-                                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                                                {unreadCount > 9 ? '9+' : unreadCount}
-                                            </span>
-                                        )}
-                                    </button>
-
-                                    {showNotifications && (
-                                        <div className="absolute right-0 top-12 w-80 bg-white text-gray-900 rounded-lg shadow-xl border border-gray-200 overflow-hidden">
-                                            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-gray-50">
-                                                <h3 className="font-semibold">{t('notifications')}</h3>
-                                                {unreadCount > 0 && (
-                                                    <button onClick={() => markAllAsRead()} className="text-sm text-blue-600 hover:text-blue-800">
-                                                        {t('markAllAsRead')}
-                                                    </button>
-                                                )}
-                                            </div>
-                                            <div className="max-h-80 overflow-y-auto">
-                                                {notifications.length === 0 ? (
-                                                    <div className="px-4 py-8 text-center text-gray-500">
-                                                        <Bell className="w-8 h-8 mx-auto mb-2 text-gray-300" />
-                                                        <p>{t('noNotifications')}</p>
-                                                    </div>
-                                                ) : (
-                                                    notifications.map((notification) => (
-                                                        <button
-                                                            key={notification.id}
-                                                            onClick={() => handleNotificationClick(notification)}
-                                                            className={`w-full text-left px-4 py-3 hover:bg-gray-50 transition border-b border-gray-100 last:border-0 ${!notification.isRead ? 'bg-blue-50' : ''}`}
-                                                        >
-                                                            <div className="flex gap-3">
-                                                                <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                                                    <MessageSquare className="w-4 h-4 text-blue-600" />
-                                                                </div>
-                                                                <div className="flex-1 min-w-0">
-                                                                    <p className="text-sm text-gray-900 line-clamp-2">{notification.message}</p>
-                                                                    <p className="text-xs text-gray-500 mt-1">{formatTimeAgo(notification.createdAt)}</p>
-                                                                </div>
-                                                                {!notification.isRead && <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2"></div>}
-                                                            </div>
-                                                        </button>
-                                                    ))
-                                                )}
-                                            </div>
-                                        </div>
+                                <button
+                                    onClick={toggleTheme}
+                                    className="relative p-2 hover:bg-gray-700 rounded-full transition-all duration-300"
+                                    title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+                                >
+                                    {mounted && (
+                                        theme === 'light' ? (
+                                            <Moon className="w-5 h-5 text-gray-300 hover:text-yellow-400 transition-colors" />
+                                        ) : (
+                                            <Sun className="w-5 h-5 text-yellow-400 hover:text-yellow-300 transition-colors" />
+                                        )
                                     )}
-                                </div>
+                                </button>
                             )}
                             {/* Language Switcher */}
                             <LanguageSwitcher />
                             {isAuthenticated && user ? (
                                 <div className="relative">
                                     <button
-                                        onClick={() => { setShowUserMenu(!showUserMenu); setShowNotifications(false); }}
+                                        onClick={() => { setShowUserMenu(!showUserMenu); }}
                                         className="flex items-center gap-2 hover:text-gray-300 transition"
                                     >
                                         <div className="w-8 h-8 bg-[#6b5b4f] rounded-full flex items-center justify-center text-sm font-semibold overflow-hidden">
@@ -327,9 +249,18 @@ export default function Header() {
                         {/* Mobile Menu Button */}
                         <div className="flex items-center gap-2 lg:hidden">
                             {isAuthenticated && user && (
-                                <button onClick={(e) => { e.stopPropagation(); setShowNotifications(!showNotifications); }} className="relative p-2 hover:bg-gray-700 rounded-full transition">
-                                    <Bell className="w-5 h-5" />
-                                    {unreadCount > 0 && <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center">{unreadCount > 9 ? '9+' : unreadCount}</span>}
+                                <button
+                                    onClick={toggleTheme}
+                                    className="relative p-2 hover:bg-gray-700 rounded-full transition-all duration-300"
+                                    title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+                                >
+                                    {mounted && (
+                                        theme === 'light' ? (
+                                            <Moon className="w-5 h-5 text-gray-300 hover:text-yellow-400 transition-colors" />
+                                        ) : (
+                                            <Sun className="w-5 h-5 text-yellow-400 hover:text-yellow-300 transition-colors" />
+                                        )
+                                    )}
                                 </button>
                             )}
                             {isAuthenticated && user && (

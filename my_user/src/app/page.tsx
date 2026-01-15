@@ -36,11 +36,11 @@ export default function Home() {
 
       {/* Hiển thị welcome message nếu user đã login */}
       {isAuthenticated && user && !isLoading && (
-        <div className="bg-green-50 border-b border-green-100 py-2 sm:py-3">
+        <div className="border-b py-2 sm:py-3" style={{ background: 'var(--welcome-bg)', borderColor: 'var(--welcome-border)' }}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <p className="text-center text-green-800 text-sm sm:text-base">
+            <p className="text-center text-sm sm:text-base" style={{ color: 'var(--welcome-text)' }}>
               <span className="font-semibold">{t('welcome')} {user.name}!</span>
-              <span className="ml-1 sm:ml-2 text-green-600 hidden sm:inline">{t('shareExperience')}</span>
+              <span className="ml-1 sm:ml-2 hidden sm:inline" style={{ color: 'var(--welcome-text-secondary)' }}>{t('shareExperience')}</span>
             </p>
           </div>
         </div>

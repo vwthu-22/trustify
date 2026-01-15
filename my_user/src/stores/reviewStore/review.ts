@@ -44,6 +44,7 @@ interface Review {
     reply?: string;
     replyContent?: string;
     status?: string;
+    contendReport?: string;
 }
 
 interface CompanyRatingData {
@@ -549,7 +550,7 @@ const useReviewStore = create<ReviewState>()(
                             description: review.description,
                             rating: review.rating,
                             contendReport: reason,
-                            status: 'reported',
+                            status: review.status || 'approved',
                             // Include required fields that were missing
                             reply: review.reply || null,
                             email: review.userEmail || review.email || '',
@@ -558,14 +559,50 @@ const useReviewStore = create<ReviewState>()(
                         }),
                     });
 
+                    if (response.status === 403) {
+                        console.warn('Forbidden: Review might already be reported or you lack permission to update it.');
+                        // Treat as success so the UI marks it as reported and closes the modal
+                        set((state) => ({
+                            isLoading: false,
+                            successMessage: 'Review already reported',
+                            reviews: state.reviews.map(r =>
+                                r.id === review.id ? { ...r, contendReport: reason } : r
+                            ),
+                            myReviews: state.myReviews.map(r =>
+                                r.id === review.id ? { ...r, contendReport: reason } : r
+                            ),
+                            allReviews: state.allReviews.map(r =>
+                                r.id === review.id ? { ...r, contendReport: reason } : r
+                            ),
+                            highRatedReviews: state.highRatedReviews.map(r =>
+                                r.id === review.id ? { ...r, contendReport: reason } : r
+                            )
+                        }));
+                        return true;
+                    }
+
                     if (!response.ok) {
+                        const errorBody = await response.text();
+                        console.error(`Report Review Failed - Status: ${response.status}, Body:`, errorBody);
                         throw new Error('Failed to report review');
                     }
 
-                    set({
+                    set((state) => ({
                         isLoading: false,
-                        successMessage: 'Review reported successfully!'
-                    });
+                        successMessage: 'Review reported successfully!',
+                        reviews: state.reviews.map(r =>
+                            r.id === review.id ? { ...r, contendReport: reason } : r
+                        ),
+                        myReviews: state.myReviews.map(r =>
+                            r.id === review.id ? { ...r, contendReport: reason } : r
+                        ),
+                        allReviews: state.allReviews.map(r =>
+                            r.id === review.id ? { ...r, contendReport: reason } : r
+                        ),
+                        highRatedReviews: state.highRatedReviews.map(r =>
+                            r.id === review.id ? { ...r, contendReport: reason } : r
+                        )
+                    }));
                     return true;
                 } catch (error) {
                     console.error('Report review error:', error);

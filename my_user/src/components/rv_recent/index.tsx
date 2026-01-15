@@ -72,7 +72,7 @@ export default function AboutReviews() {
         <div className="py-5 sm:py-8 md:py-10">
             <div className="max-w-7xl mx-auto px-0 sm:px-3 lg:px-6">
                 {/* About Section */}
-                <div className="bg-gradient-to-br from-blue-200 to-blue-100 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 mb-6 sm:mb-10">
+                <div className="rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 mb-6 sm:mb-10" style={{ background: 'linear-gradient(to bottom right, var(--gradient-from), var(--gradient-to))' }}>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 items-center">
                         <div>
                             <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">{t('title')}</h2>
@@ -87,14 +87,11 @@ export default function AboutReviews() {
                             </Link>
                         </div>
                         <div className="bg-blue-900 text-white rounded-lg sm:rounded-xl p-4 sm:p-6 relative overflow-hidden">
-                            <h3 className="text-sm sm:text-base md:text-lg font-bold mb-1.5 sm:mb-2 relative z-10">Our new Trust Report has landed!</h3>
+                            <h3 className="text-sm sm:text-base md:text-lg font-bold mb-1.5 sm:mb-2 relative z-10">{t('trustReport.title')}</h3>
                             <p className="mb-3 sm:mb-4 text-blue-50 text-xs sm:text-sm relative z-10">
-                                Find out which actions we've<br />taken to protect you and promote trust on our platform.
+                                {t('trustReport.description')}
                             </p>
                             <div className="absolute -right-3 -top-3 w-16 h-16 sm:w-24 sm:h-24 bg-blue-400 rounded-full"></div>
-                            <div className="absolute right-5 sm:right-6 top-6 sm:top-8 w-12 h-12 sm:w-18 sm:h-18 bg-white rounded-full overflow-hidden border-3 border-blue-200">
-                                <div className="w-full h-full bg-gray-100"></div>
-                            </div>
                         </div>
                     </div>
                 </div>

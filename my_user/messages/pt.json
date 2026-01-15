@@ -15,7 +15,14 @@
         "viewAll": "Ver Tudo",
         "learnMore": "Saiba Mais",
         "getStarted": "Começar",
-        "retry": "Tentar Novamente"
+        "retry": "Tentar Novamente",
+        "metadata": {
+            "title": "Trustify",
+            "description": "A Trustify ajuda você a encontrar e compartilhar avaliações autênticas de empresas. Construímos confiança por meio da transparência.",
+            "ogTitle": "Trustify",
+            "ogDescription": "Encontre e compartilhe avaliações autênticas de empresas com a Trustify.",
+            "keywords": "avaliações, avaliações de empresas, confiança, transparente, Trustify"
+        }
     },
     "header": {
         "writeReview": "Escrever avaliação",
@@ -169,7 +176,8 @@
         "reportSentSuccess": "Denúncia enviada com sucesso!",
         "reportSentDesc": "Analisaremos e processaremos sua denúncia.",
         "submitReport": "Enviar Denúncia",
-        "submittingReport": "Enviando..."
+        "submittingReport": "Enviando...",
+        "reported": "Denunciado"
     },
     "categoryPage": {
         "bestIn": "Melhores em",
@@ -449,7 +457,11 @@
     "aboutSection": {
         "title": "Nós somos Trustify",
         "description": "Somos uma plataforma de avaliações aberta a todos. Nossa visão é nos tornarmos o símbolo universal de confiança — capacitando as pessoas a comprar com confiança e ajudando as empresas a melhorar.",
-        "whatWeDo": "O que fazemos"
+        "whatWeDo": "O que fazemos",
+        "trustReport": {
+            "title": "Nosso novo Relatório de Confiança foi lançado!",
+            "description": "Descubra as ações que tomamos để proteger você e promover a confiança em nossa plataforma."
+        }
     },
     "about": {
         "tagline": "Plataforma de Avaliações Confiável",

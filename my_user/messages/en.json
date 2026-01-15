@@ -15,7 +15,14 @@
         "viewAll": "View All",
         "learnMore": "Learn More",
         "getStarted": "Get Started",
-        "retry": "Retry"
+        "retry": "Retry",
+        "metadata": {
+            "title": "Trustify",
+            "description": "Trustify helps you find and share authentic reviews of businesses. We build trust through transparency.",
+            "ogTitle": "Trustify",
+            "ogDescription": "Find and share authentic reviews of businesses with Trustify.",
+            "keywords": "reviews, business reviews, trust, transparent, Trustify"
+        }
     },
     "header": {
         "writeReview": "Write a review",
@@ -169,7 +176,8 @@
         "reportSentSuccess": "Report sent successfully!",
         "reportSentDesc": "We will review and process your report.",
         "submitReport": "Submit Report",
-        "submittingReport": "Submitting..."
+        "submittingReport": "Submitting...",
+        "reported": "Reported"
     },
     "categoryPage": {
         "bestIn": "Best in",
@@ -449,7 +457,11 @@
     "aboutSection": {
         "title": "We're Trustify",
         "description": "We're a review platform that's open to everyone. Our vision is to become the universal symbol of trust — by empowering people to shop with confidence, and helping companies improve.",
-        "whatWeDo": "What we do"
+        "whatWeDo": "What we do",
+        "trustReport": {
+            "title": "Our new Trust Report has landed!",
+            "description": "Find out which actions we've taken to protect you and promote trust on our platform."
+        }
     },
     "about": {
         "tagline": "Trusted Review Platform",

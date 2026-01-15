@@ -459,9 +459,9 @@ export default function CompanyReviewPage() {
                         </div>
 
                         {/* Info Banner */}
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 flex justify-center text-center items-start gap-2 sm:gap-3">
-                            <Star className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                            <p className="text-xs sm:text-sm text-gray-700">{t('noIncentives')}</p>
+                        <div className="rounded-lg p-3 sm:p-4 mb-4 sm:mb-6 flex justify-center text-center items-start gap-2 sm:gap-3" style={{ background: 'var(--info-bg)', borderWidth: '1px', borderColor: 'var(--info-border)' }}>
+                            <Star className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 mt-0.5" style={{ color: 'var(--info-icon)' }} />
+                            <p className="text-xs sm:text-sm" style={{ color: 'var(--info-text)' }}>{t('noIncentives')}</p>
                         </div>
 
                         {/* Company Details */}
@@ -785,11 +785,18 @@ export default function CompanyReviewPage() {
                                                     {/* Report Button - Show for other users' reviews */}
                                                     {!isOwnReview(review) && user && (
                                                         <button
-                                                            onClick={() => openReportModal(review)}
-                                                            className="flex items-center gap-1 text-gray-500 hover:text-red-600 text-xs font-medium transition"
+                                                            onClick={() => {
+                                                                const isReported = review.status?.toLowerCase().trim() === 'reported' || !!review.contendReport;
+                                                                if (!isReported) openReportModal(review);
+                                                            }}
+                                                            disabled={review.status?.toLowerCase().trim() === 'reported' || !!review.contendReport}
+                                                            className={`flex items-center gap-1 text-xs font-medium transition ${(review.status?.toLowerCase().trim() === 'reported' || !!review.contendReport)
+                                                                    ? "text-red-400 cursor-not-allowed"
+                                                                    : "text-gray-500 hover:text-red-600"
+                                                                }`}
                                                         >
-                                                            <Flag className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                                                            Báo cáo
+                                                            <Flag className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${(review.status?.toLowerCase().trim() === 'reported' || !!review.contendReport) ? "fill-red-400" : ""}`} />
+                                                            {(review.status?.toLowerCase().trim() === 'reported' || !!review.contendReport) ? tReview('reported') : tReview('report')}
                                                         </button>
                                                     )}
                                                 </div>

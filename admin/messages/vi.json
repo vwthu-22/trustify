@@ -352,6 +352,7 @@
     "selectedCount": "{count} đã chọn",
     "bulkApprove": "Duyệt hàng loạt ({count})",
     "bulkReject": "Từ chối hàng loạt ({count})",
+    "bulkKeep": "Giữ lại hàng loạt ({count})",
     "review": "đánh giá",
     "on": "về",
     "pendingStatus": "Chờ duyệt",

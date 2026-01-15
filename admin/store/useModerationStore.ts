@@ -70,6 +70,7 @@ interface ModerationState {
     // Actions for reports
     fetchReports: () => Promise<void>;
     dismissReport: (report: Report) => Promise<void>;
+    bulkDismissReports: (reports: Report[]) => Promise<void>;
     deleteReview: (report: Report) => Promise<void>;
 
     // Actions for pending reviews
@@ -185,6 +186,51 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
             }
         } catch (err) {
             console.error('Error dismissing report:', err);
+        }
+    },
+
+    // Bulk dismiss reports
+    bulkDismissReports: async (reports: Report[]) => {
+        try {
+            const promises = reports.map(report =>
+                fetch(`${API_BASE_URL}/api/review/${report.reviewId}`, {
+                    method: 'PUT',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': 'true'
+                    },
+                    body: JSON.stringify({
+                        id: (report.originalReview as any).id,
+                        title: (report.originalReview as any).title,
+                        description: (report.originalReview as any).description,
+                        rating: (report.originalReview as any).rating,
+                        reply: (report.originalReview as any).reply || null,
+                        email: (report.originalReview as any).email || (report.originalReview as any).user?.email || '',
+                        companyName: (report.originalReview as any).companyName || (report.originalReview as any).company?.name || '',
+                        expDate: Array.isArray((report.originalReview as any).expDate)
+                            ? new Date().toISOString()
+                            : (report.originalReview as any).expDate || new Date().toISOString(),
+                        contendReport: '',
+                        status: 'approved'
+                    })
+                })
+            );
+
+            const results = await Promise.allSettled(promises);
+            const successfulIds = reports.filter((_, index) =>
+                results[index].status === 'fulfilled' && (results[index] as PromiseFulfilledResult<Response>).value.ok
+            ).map(r => r.id);
+
+            if (successfulIds.length > 0) {
+                set(state => ({
+                    reports: state.reports.map(r =>
+                        successfulIds.includes(r.id) ? { ...r, status: 'DISMISSED' as const } : r
+                    )
+                }));
+            }
+        } catch (err) {
+            console.error('Error bulk dismissing reports:', err);
         }
     },
 

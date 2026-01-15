@@ -294,6 +294,7 @@ export default function WriteReviewModal({
                                 type="date"
                                 value={experienceDate}
                                 onChange={(e) => setExperienceDate(e.target.value)}
+                                max={new Date().toISOString().split('T')[0]}
                                 required
                                 disabled={isLoading}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm disabled:bg-gray-100"

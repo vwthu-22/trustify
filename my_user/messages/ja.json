@@ -15,7 +15,14 @@
         "viewAll": "すべて表示",
         "learnMore": "詳しく見る",
         "getStarted": "始める",
-        "retry": "再試行"
+        "retry": "再試行",
+        "metadata": {
+            "title": "Trustify",
+            "description": "Trustifyは、ビジネスの本物のレビューを見つけて共有するのに役立ちます。透明性を通じて信頼を築きます。",
+            "ogTitle": "Trustify",
+            "ogDescription": "Trustifyでビジネスの本物のレビューを見つけて共有しましょう。",
+            "keywords": "レビュー, ビジネスレビュー, 信頼, 透明性, Trustify"
+        }
     },
     "header": {
         "writeReview": "レビューを書く",
@@ -169,7 +176,8 @@
         "reportSentSuccess": "報告が正常に送信されました！",
         "reportSentDesc": "報告を確認して処理します。",
         "submitReport": "報告を送信",
-        "submittingReport": "送信中..."
+        "submittingReport": "送信中...",
+        "reported": "報告済み"
     },
     "categoryPage": {
         "bestIn": "ベスト",
@@ -449,7 +457,11 @@
     "aboutSection": {
         "title": "私たちはTrustifyです",
         "description": "私たちは誰にでも開かれたレビュープラットフォームです。私たちのビジョンは、人々が自信を持って買い物をし、企業が改善するのを助けることで、信頼の普遍的なシンボルになることです。",
-        "whatWeDo": "私たちがすること"
+        "whatWeDo": "私たちがすること",
+        "trustReport": {
+            "title": "最新の信頼レポートが公開されました！",
+            "description": "プラットフォーム上での信頼を高め、ユーザーを保護するために、当社がどのような取り組みを行っているかをご確認ください。"
+        }
     },
     "about": {
         "tagline": "信頼できるレビュープラットフォーム",

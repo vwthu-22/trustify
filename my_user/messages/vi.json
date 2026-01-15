@@ -15,7 +15,14 @@
         "viewAll": "Xem tất cả",
         "learnMore": "Tìm hiểu thêm",
         "getStarted": "Bắt đầu ngay",
-        "retry": "Thử lại"
+        "retry": "Thử lại",
+        "metadata": {
+            "title": "Trustify",
+            "description": "Trustify giúp bạn tìm kiếm và chia sẻ những đánh giá chân thực về các doanh nghiệp. Chúng tôi xây dựng niềm tin thông qua sự minh bạch.",
+            "ogTitle": "Trustify",
+            "ogDescription": "Tìm kiếm và chia sẻ đánh giá chân thực về doanh nghiệp cùng Trustify.",
+            "keywords": "đánh giá, review, doanh nghiệp, uy tín, tin cậy, Trustify"
+        }
     },
     "header": {
         "writeReview": "Viết đánh giá",
@@ -169,7 +176,8 @@
         "reportSentSuccess": "Báo cáo đã được gửi thành công!",
         "reportSentDesc": "Chúng tôi sẽ xem xét và xử lý báo cáo của bạn.",
         "submitReport": "Gửi báo cáo",
-        "submittingReport": "Đang gửi..."
+        "submittingReport": "Đang gửi...",
+        "reported": "Đã báo cáo"
     },
     "categoryPage": {
         "bestIn": "Tốt nhất trong",
@@ -449,7 +457,11 @@
     "aboutSection": {
         "title": "Chúng tôi là Trustify",
         "description": "Chúng tôi là nền tảng đánh giá mở cho tất cả mọi người. Tầm nhìn của chúng tôi là trở thành biểu tượng phổ quát của niềm tin — bằng cách giúp người tiêu dùng mua sắm tự tin và giúp doanh nghiệp cải thiện.",
-        "whatWeDo": "Chúng tôi làm gì"
+        "whatWeDo": "Chúng tôi làm gì",
+        "trustReport": {
+            "title": "Báo cáo Tin cậy mới của chúng tôi đã ra mắt!",
+            "description": "Tìm hiểu những hành động chúng tôi đã thực hiện để bảo vệ bạn và thúc đẩy niềm tin trên nền tảng của chúng tôi."
+        }
     },
     "about": {
         "tagline": "Nền tảng đánh giá đáng tin cậy",

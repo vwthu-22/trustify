@@ -352,6 +352,7 @@
         "selectedCount": "{count} selected",
         "bulkApprove": "Bulk Approve ({count})",
         "bulkReject": "Bulk Reject ({count})",
+        "bulkKeep": "Bulk Keep ({count})",
         "review": "review",
         "on": "on",
         "pendingStatus": "Pending",

@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import {
-    Info, User, Star, Settings, ShieldCheck, Crown, PartyPopper, X, Menu
+    Info, User, Star, Settings, ShieldCheck, Crown, PartyPopper, X, Menu, Moon, Sun
 } from 'lucide-react';
 
 import { usePathname, useRouter } from 'next/navigation';
@@ -10,6 +10,7 @@ import { useChatStore } from '@/store/useChatStore';
 import { useSubscriptionStore } from '@/store/useSubscriptionStore';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useTranslations } from 'next-intl';
+import { useTheme } from '@/hooks/useTheme';
 
 interface HeaderProps {
     onMenuClick?: () => void;
@@ -60,6 +61,7 @@ export default function Header({ onMenuClick, isMobile = false }: HeaderProps) {
         connectionStatus
     } = useChatStore();
     const { currentSubscription, fetchCurrentSubscription, clearSubscription } = useSubscriptionStore();
+    const { theme, toggleTheme, mounted } = useTheme();
 
     const [showHelpDropdown, setShowHelpDropdown] = useState(false);
     const [showCompanyDropdown, setShowCompanyDropdown] = useState(false);
@@ -93,7 +95,7 @@ export default function Header({ onMenuClick, isMobile = false }: HeaderProps) {
             subscriptionFetchedRef.current = true;
         }
     }, [company?.id, fetchCompanyProfile, fetchCurrentSubscription, isPublicRoute]);
-//gọi liên tục để lấy thông tin verify
+    //gọi liên tục để lấy thông tin verify
     useEffect(() => {
         if (isPublicRoute) return;
         const interval = setInterval(() => {
@@ -154,6 +156,21 @@ export default function Header({ onMenuClick, isMobile = false }: HeaderProps) {
             </div>
 
             <div className="flex items-center gap-2">
+                {/* Dark/Light Mode Toggle */}
+                <button
+                    onClick={toggleTheme}
+                    className="relative p-1.5 bg-gray-50 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-full transition-all duration-300"
+                    title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+                >
+                    {mounted && (
+                        theme === 'light' ? (
+                            <Moon className="w-4 h-4 text-gray-600 hover:text-gray-800 transition-colors" />
+                        ) : (
+                            <Sun className="w-4 h-4 text-yellow-400 hover:text-yellow-300 transition-colors" />
+                        )
+                    )}
+                </button>
+
                 {/* Language Switcher */}
                 <LanguageSwitcher />
 

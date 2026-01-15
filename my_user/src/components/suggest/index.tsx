@@ -124,7 +124,7 @@ export default function Suggest() {
             </div>
 
             {/* What are you looking for? */}
-            <div className="bg-white py-5 sm:py-8 -mx-4 sm:mx-0 px-4 sm:px-0 sm:rounded-lg">
+            <div className=" py-5 sm:py-8 -mx-4 sm:mx-0 px-4 sm:px-0 sm:rounded-lg">
                 <div className="max-w-7xl mx-auto px-0 sm:px-3 lg:px-6">
                     <h2 className="text-base sm:text-lg text-gray-900 mb-3 sm:mb-4">{t('whatLookingFor')}</h2>
 
@@ -150,7 +150,7 @@ export default function Suggest() {
             </div>
 
             {/* CTA Banner */}
-            <div className="bg-gradient-to-r from-pink-200 via-pink-100 to-purple-100 rounded-xl sm:rounded-2xl py-3 sm:py-4 px-3 sm:px-5 md:px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mt-4 sm:mt-0">
+            <div className="rounded-xl sm:rounded-2xl py-3 sm:py-4 px-3 sm:px-5 md:px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mt-4 sm:mt-0" style={{ background: 'linear-gradient(to right, var(--gradient-from), var(--gradient-to))' }}>
                 <div>
                     <h3 className="text-sm sm:text-base md:text-lg font-bold text-gray-900 mb-0.5">
                         {t('lookingToGrow')}
@@ -161,7 +161,7 @@ export default function Suggest() {
                 </div>
                 <Link
                     href={"/intro_bus"}
-                    className="bg-gray-900 hover:bg-gray-800 text-white px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm transition whitespace-nowrap w-full sm:w-auto text-center"
+                    className="bg-gray-900 hover:bg-gray-800 text-white px-3 sm:px-4 py-1.5 rounded-full text-xs sm:text-sm transition whitespace-nowrap w-full sm:w-auto text-center font-semibold"
                 >
                     {t('getStarted')}
                 </Link>
