@@ -269,8 +269,6 @@ const useCompanyManagementStore = create<CompanyManagementStore>()(
                     }
 
                     const data = await response.json();
-                    console.log('📦 Raw pending verifications data:', JSON.stringify(data, null, 2));
-
                     // Handle different response formats
                     // Backend returns Page<Company> or List<Company> - each item IS a Company
                     let verifications: VerificationRequest[] = [];

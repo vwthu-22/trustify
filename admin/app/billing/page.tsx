@@ -59,11 +59,12 @@ export default function BillingPage() {
         fetchAllTransactions,
     } = usePaymentStore()
 
-    // Pagination state for transactions
+    // Pagination state for transactions - Only show PAID transactions
     const [transactionPage, setTransactionPage] = useState(0)
     const transactionsPerPage = 5
-    const totalTransactionPages = Math.ceil(transactions.length / transactionsPerPage)
-    const paginatedTransactions = transactions.slice(
+    const paidTransactionsOnly = transactions.filter(t => t.status === 'SUCCESS')
+    const totalTransactionPages = Math.ceil(paidTransactionsOnly.length / transactionsPerPage)
+    const paginatedTransactions = paidTransactionsOnly.slice(
         transactionPage * transactionsPerPage,
         (transactionPage + 1) * transactionsPerPage
     )
@@ -371,14 +372,14 @@ export default function BillingPage() {
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-100">
-                                            {isLoadingTransactions && transactions.length === 0 ? (
+                                            {isLoadingTransactions && paidTransactionsOnly.length === 0 ? (
                                                 <tr>
                                                     <td colSpan={6} className="px-4 py-8 text-center">
                                                         <Loader2 className="w-6 h-6 animate-spin mx-auto text-gray-400" />
                                                         <p className="text-sm text-gray-500 mt-2">{t('transactions.loading')}</p>
                                                     </td>
                                                 </tr>
-                                            ) : transactions.length === 0 ? (
+                                            ) : paidTransactionsOnly.length === 0 ? (
                                                 <tr>
                                                     <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
                                                         {t('transactions.noTransactions')}
@@ -417,12 +418,12 @@ export default function BillingPage() {
                                     </table>
 
                                     {/* Pagination */}
-                                    {transactions.length > 0 && (
+                                    {paidTransactionsOnly.length > 0 && (
                                         <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
                                             <div className="text-sm text-gray-500">
                                                 {t('transactions.showing')} {transactionPage * transactionsPerPage + 1} {t('transactions.to')}{' '}
-                                                {Math.min((transactionPage + 1) * transactionsPerPage, transactions.length)} {t('transactions.of')}{' '}
-                                                {transactions.length}
+                                                {Math.min((transactionPage + 1) * transactionsPerPage, paidTransactionsOnly.length)} {t('transactions.of')}{' '}
+                                                {paidTransactionsOnly.length}
                                             </div>
                                             <div className="flex items-center gap-2">
                                                 <button
