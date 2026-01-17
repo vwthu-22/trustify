@@ -59,6 +59,7 @@ interface InvitationStore {
     sendSingleInvite: (data: {
         to: string;
         productLink: string;
+        productCode?: string;
         subject?: string;
         body?: string;
     }) => Promise<{ status: string; to: string; productLink: string }>;
@@ -150,6 +151,7 @@ export const useInvitationStore = create<InvitationStore>((set, get) => ({
     sendSingleInvite: async (data: {
         to: string;
         productLink: string;
+        productCode?: string;
         subject?: string;
         body?: string;
     }) => {

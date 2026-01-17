@@ -1,13 +1,16 @@
 'use client';
 
-import { useState } from 'react';
-import { Mail, Send, CheckCircle, AlertCircle, Link as LinkIcon, Eye } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Mail, Send, CheckCircle, AlertCircle, Link as LinkIcon, Eye, Package } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useCompanyStore } from '@/store/useCompanyStore';
 import { useInvitationStore } from '@/store/useInvitationStore';
+import { useProductStore } from '@/store/useProductStore';
 
 interface InviteFormData {
     to: string;
+    productCode: string;
+    productName: string;
     productLink: string;
     subject: string;
     body: string;
@@ -17,8 +20,12 @@ export default function SendInvitationsPage() {
     const t = useTranslations('invitations');
     const { company } = useCompanyStore();
     const { sendSingleInvite } = useInvitationStore();
+    const { products, fetchProducts, isLoading: isLoadingProducts } = useProductStore();
+
     const [formData, setFormData] = useState<InviteFormData>({
         to: '',
+        productCode: '',
+        productName: '',
         productLink: '',
         subject: '',
         body: ''
@@ -27,6 +34,13 @@ export default function SendInvitationsPage() {
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [showPreview, setShowPreview] = useState(false);
+
+    // Fetch products when component mounts
+    useEffect(() => {
+        if (company?.id) {
+            fetchProducts(company.id);
+        }
+    }, [company?.id, fetchProducts]);
 
     const getDefaultProductLink = () => {
         if (company?.id) {
@@ -39,6 +53,19 @@ export default function SendInvitationsPage() {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     };
 
+    const handleProductChange = (productCode: string) => {
+        const selectedProduct = products.find(p => p.productCode.toString() === productCode);
+        if (selectedProduct && company?.id) {
+            const reviewLink = `${window.location.origin}/review/company/${company.id}/product/${selectedProduct.productCode}`;
+            setFormData({
+                ...formData,
+                productCode: selectedProduct.productCode.toString(),
+                productName: selectedProduct.name,
+                productLink: reviewLink
+            });
+        }
+    };
+
     const handleSendSingle = async () => {
         if (!formData.to || !validateEmail(formData.to)) {
             setErrorMessage(t('errorInvalidEmail') || 'Please enter a valid email address');
@@ -46,8 +73,8 @@ export default function SendInvitationsPage() {
             return;
         }
 
-        if (!formData.productLink) {
-            setErrorMessage(t('errorProductLinkRequired') || 'Product link is required');
+        if (!formData.productCode) {
+            setErrorMessage(t('errorSelectProduct'));
             setSendStatus('error');
             return;
         }
@@ -59,6 +86,7 @@ export default function SendInvitationsPage() {
             const result = await sendSingleInvite({
                 to: formData.to,
                 productLink: formData.productLink,
+                productCode: formData.productCode,
                 subject: formData.subject || undefined,
                 body: formData.body || undefined
             });
@@ -68,7 +96,14 @@ export default function SendInvitationsPage() {
 
             setTimeout(() => {
                 setSendStatus('idle');
-                setFormData({ to: '', productLink: getDefaultProductLink(), subject: '', body: '' });
+                setFormData({
+                    to: '',
+                    productCode: '',
+                    productName: '',
+                    productLink: getDefaultProductLink(),
+                    subject: '',
+                    body: ''
+                });
             }, 3000);
 
         } catch (error) {
@@ -125,18 +160,29 @@ export default function SendInvitationsPage() {
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    {t('reviewLink')} <span className="text-red-500">*</span>
+                                    {t('selectProduct')} <span className="text-red-500">*</span>
                                 </label>
                                 <div className="relative">
-                                    <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                                    <input
-                                        type="url"
-                                        placeholder="https://trustify-company.vercel.app/bussiness/1"
-                                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        value={formData.productLink}
-                                        onChange={(e) => setFormData({ ...formData, productLink: e.target.value })}
-                                    />
+                                    <Package className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
+                                    <select
+                                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+                                        value={formData.productCode}
+                                        onChange={(e) => handleProductChange(e.target.value)}
+                                        disabled={isLoadingProducts}
+                                    >
+                                        <option value="">{t('selectProductPlaceholder')}</option>
+                                        {products.map((product) => (
+                                            <option key={product.id} value={product.productCode}>
+                                                {product.name}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
+                                {formData.productLink && (
+                                    <p className="mt-2 text-xs text-gray-500 break-all">
+                                        {t('reviewLinkGenerated')}: {formData.productLink}
+                                    </p>
+                                )}
                             </div>
                         </div>
 
@@ -186,7 +232,7 @@ export default function SendInvitationsPage() {
                         {/* Send Button */}
                         <button
                             onClick={handleSendSingle}
-                            disabled={!formData.to || !formData.productLink || sendStatus === 'sending'}
+                            disabled={!formData.to || !formData.productCode || sendStatus === 'sending'}
                             className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                         >
                             <Send className="h-5 w-5" />
@@ -209,8 +255,12 @@ export default function SendInvitationsPage() {
                                 <span className="text-gray-900">{formData.to || 'customer@example.com'}</span>
                             </div>
                             <div className="flex">
+                                <span className="text-gray-500 font-medium w-24">{t('product')}:</span>
+                                <span className="text-gray-900">{formData.productName || t('noProductSelected')}</span>
+                            </div>
+                            <div className="flex">
                                 <span className="text-gray-500 font-medium w-24">{t('labelReviewLink')}</span>
-                                <span className="text-gray-900 text-xs break-all">{formData.productLink || 'https://trustify-company.vercel.app/bussiness/1'}</span>
+                                <span className="text-gray-900 text-xs break-all">{formData.productLink || t('selectProductPlaceholder')}</span>
                             </div>
                             <div className="flex">
                                 <span className="text-gray-500 font-medium w-24 uppercase text-[10px] tracking-wider">{t('subject')}:</span>

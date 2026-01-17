@@ -609,7 +609,13 @@
         "sendReminder": "Gửi nhắc nhở",
         "sendReminderDesc": "Gửi nhắc nhở nếu chưa có đánh giá sau 7 ngày",
         "reminderDesc": "Gửi nhắc nhở nếu chưa có đánh giá sau 7 ngày",
-        "saveSettings": "Lưu cài đặt"
+        "saveSettings": "Lưu cài đặt",
+        "selectProduct": "Chọn sản phẩm",
+        "selectProductPlaceholder": "Chọn một sản phẩm...",
+        "noProductSelected": "Chưa chọn sản phẩm",
+        "product": "Sản phẩm",
+        "errorSelectProduct": "Vui lòng chọn sản phẩm",
+        "reviewLinkGenerated": "Link đánh giá"
     },
     "campaigns": {
         "title": "Chiến dịch đánh giá",

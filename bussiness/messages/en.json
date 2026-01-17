@@ -609,7 +609,13 @@
         "sendReminder": "Send Reminder",
         "sendReminderDesc": "Send a follow-up reminder if no review after 7 days",
         "reminderDesc": "Send a follow-up reminder if no review after 7 days",
-        "saveSettings": "Save Settings"
+        "saveSettings": "Save Settings",
+        "selectProduct": "Select Product",
+        "selectProductPlaceholder": "Select a product...",
+        "noProductSelected": "No product selected",
+        "product": "Product",
+        "errorSelectProduct": "Please select a product",
+        "reviewLinkGenerated": "Review link"
     },
     "campaigns": {
         "title": "Review Campaigns",
