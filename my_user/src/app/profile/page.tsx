@@ -82,23 +82,48 @@ export default function ProfilePage() {
     const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            // Validate file type
-            if (!file.type.startsWith('image/')) {
-                alert('Please select an image file');
-                return;
-            }
-            // Validate file size (max 5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                alert('Image size should be less than 5MB');
+            // Clear previous errors
+            clearError();
+
+            // Validate file type more strictly
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                alert(`Invalid file type: ${file.type}\nPlease select a JPEG, PNG, GIF, or WebP image.`);
+                e.target.value = ''; // Reset input
                 return;
             }
 
-            setAvatarFile(file);
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setAvatarPreview(reader.result as string);
+            // Validate file size (max 5MB)
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            if (file.size > maxSize) {
+                const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                alert(`File size (${sizeMB}MB) exceeds the maximum allowed size of 5MB.\nPlease choose a smaller image.`);
+                e.target.value = ''; // Reset input
+                return;
+            }
+
+            // Check if file is actually an image by trying to load it
+            const img = new Image();
+            const objectUrl = URL.createObjectURL(file);
+
+            img.onload = () => {
+                URL.revokeObjectURL(objectUrl);
+                // File is valid, proceed with preview
+                setAvatarFile(file);
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    setAvatarPreview(reader.result as string);
+                };
+                reader.readAsDataURL(file);
             };
-            reader.readAsDataURL(file);
+
+            img.onerror = () => {
+                URL.revokeObjectURL(objectUrl);
+                alert('The selected file appears to be corrupted or is not a valid image.\nPlease try a different file.');
+                e.target.value = ''; // Reset input
+            };
+
+            img.src = objectUrl;
         }
     };
 

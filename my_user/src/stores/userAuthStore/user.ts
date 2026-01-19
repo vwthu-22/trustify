@@ -195,6 +195,25 @@ const useAuthStore = create<AuthState>()(
       // API: POST /api/images/upload
       uploadAvatar: async (file: File) => {
         try {
+          // Validate file size (max 5MB)
+          const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+          if (file.size > MAX_FILE_SIZE) {
+            const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+            throw new Error(`File size (${sizeMB}MB) exceeds maximum allowed size of 5MB`);
+          }
+
+          // Validate file type
+          const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+          if (!allowedTypes.includes(file.type)) {
+            throw new Error(`Invalid file type: ${file.type}. Only JPEG, PNG, GIF, and WebP images are allowed.`);
+          }
+
+          console.log('Uploading file:', {
+            name: file.name,
+            type: file.type,
+            size: `${(file.size / 1024).toFixed(2)}KB`
+          });
+
           const formData = new FormData();
           formData.append('file', file);
 
@@ -210,7 +229,17 @@ const useAuthStore = create<AuthState>()(
           if (!response.ok) {
             const errorText = await response.text();
             console.error('Upload failed:', response.status, errorText);
-            throw new Error(`Failed to upload image: ${response.status} - ${errorText}`);
+
+            // Provide user-friendly error messages
+            if (response.status === 413) {
+              throw new Error('File is too large. Please choose a smaller image (max 5MB).');
+            } else if (response.status === 415) {
+              throw new Error('Unsupported file format. Please use JPEG, PNG, GIF, or WebP.');
+            } else if (response.status === 400) {
+              throw new Error('Invalid file. Please try a different image.');
+            }
+
+            throw new Error(`Upload failed: ${errorText || 'Unknown error'}`);
           }
 
           const responseData = await response.json();
@@ -226,6 +255,8 @@ const useAuthStore = create<AuthState>()(
               ? fileName
               : `${API_BASE_URL}/api/images/${fileName}`;
 
+            console.log('Upload successful! Image URL:', imageUrl);
+
             // Update user avatar in store
             const currentUser = get().user;
             if (currentUser) {
@@ -236,11 +267,12 @@ const useAuthStore = create<AuthState>()(
             return imageUrl;
           }
 
-          return null;
+          throw new Error('Upload succeeded but no image URL was returned');
         } catch (error) {
           console.error('Upload avatar error:', error);
+          const errorMessage = error instanceof Error ? error.message : 'Failed to upload image';
           set({
-            error: error instanceof Error ? error.message : 'Failed to upload image',
+            error: errorMessage,
           });
           return null;
         }
