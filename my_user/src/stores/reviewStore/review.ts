@@ -321,14 +321,21 @@ const useReviewStore = create<ReviewState>()(
                     console.log('Reviews Response:', data);
 
                     // Map backend field names to frontend field names
-                    const mappedReviews = (data.reviews || []).map((review: any) => ({
-                        ...review,
-                        userName: review.userName || review.nameUser || review.user?.name,
-                        userEmail: review.userEmail || review.user?.email,
-                        userAvatar: review.userAvatar || review.avatarUrl || review.user?.avatarUrl || review.user?.avatar,
-                        companyName: review.companyName || review.nameCompany || review.company?.name,
-                        companyId: review.companyId || review.company?.id,
-                    }));
+                    const mappedReviews = (data.reviews || [])
+                        .filter((review: any) => {
+                            // Only show APPROVED reviews or reviews without status (legacy data)
+                            // Hide PENDING and REJECTED reviews from public view
+                            const status = review.status?.toUpperCase();
+                            return !status || status === 'APPROVED';
+                        })
+                        .map((review: any) => ({
+                            ...review,
+                            userName: review.userName || review.nameUser || review.user?.name,
+                            userEmail: review.userEmail || review.user?.email,
+                            userAvatar: review.userAvatar || review.avatarUrl || review.user?.avatarUrl || review.user?.avatar,
+                            companyName: review.companyName || review.nameCompany || review.company?.name,
+                            companyId: review.companyId || review.company?.id,
+                        }));
 
                     set({
                         reviews: mappedReviews,
@@ -365,7 +372,12 @@ const useReviewStore = create<ReviewState>()(
 
                     if (response.ok) {
                         const data = await response.json();
-                        set({ allReviews: data.reviews || [] });
+                        // Filter out PENDING and REJECTED reviews from statistics
+                        const approvedReviews = (data.reviews || []).filter((review: any) => {
+                            const status = review.status?.toUpperCase();
+                            return !status || status === 'APPROVED';
+                        });
+                        set({ allReviews: approvedReviews });
                     } else {
                         set({ allReviews: [] });
                     }
@@ -512,14 +524,20 @@ const useReviewStore = create<ReviewState>()(
                     console.log('Recent Reviews Response:', data);
 
                     // Map backend field names to frontend field names
-                    const reviews = (data.reviews || []).map((review: any) => ({
-                        ...review,
-                        userName: review.userName || review.nameUser || review.user?.name,
-                        userEmail: review.userEmail || review.user?.email,
-                        userAvatar: review.userAvatar || review.avatarUrl || review.user?.avatarUrl || review.user?.avatar,
-                        companyId: review.companyId || review.company?.id || '',
-                        companyName: review.companyName || review.nameCompany || review.company?.name || '',
-                    }));
+                    const reviews = (data.reviews || [])
+                        .filter((review: any) => {
+                            // Only show APPROVED reviews on homepage
+                            const status = review.status?.toUpperCase();
+                            return !status || status === 'APPROVED';
+                        })
+                        .map((review: any) => ({
+                            ...review,
+                            userName: review.userName || review.nameUser || review.user?.name,
+                            userEmail: review.userEmail || review.user?.email,
+                            userAvatar: review.userAvatar || review.avatarUrl || review.user?.avatarUrl || review.user?.avatar,
+                            companyId: review.companyId || review.company?.id || '',
+                            companyName: review.companyName || review.nameCompany || review.company?.name || '',
+                        }));
 
                     set({ highRatedReviews: reviews });
                 } catch (error) {
@@ -637,10 +655,14 @@ const useReviewStore = create<ReviewState>()(
 
                         if (response.ok) {
                             const data = await response.json();
-                            const reviews = data.reviews || [];
-                            const reviewCount = reviews.length;
+                            // Filter out PENDING reviews from rating calculations
+                            const approvedReviews = (data.reviews || []).filter((r: any) => {
+                                const status = r.status?.toUpperCase();
+                                return !status || status === 'APPROVED';
+                            });
+                            const reviewCount = approvedReviews.length;
                             const avgRating = reviewCount > 0
-                                ? reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / reviewCount
+                                ? approvedReviews.reduce((sum: number, r: any) => sum + r.rating, 0) / reviewCount
                                 : 0;
 
                             return {
