@@ -3,13 +3,15 @@ import React, { useState } from 'react';
 import {
     Home, MessageSquare, Puzzle, BarChart3, Settings,
     ChevronDown, ChevronRight, Mail, ShieldCheck,
-    Crown, Headphones, X
+    Crown, Headphones, X, Lock
 } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 import { useChatStore } from '@/store/useChatStore';
+import { useCompanyStore } from '@/store/useCompanyStore';
+import { hasFeatureAccess, getRequiredPlan } from '@/lib/featureAccess';
 
 interface MenuItem {
     href: string;
@@ -18,6 +20,7 @@ interface MenuItem {
     title: string;
     badge?: string | number;
     children?: MenuItem[];
+    requiresFeature?: 'verification' | 'aiAnalytics' | 'integrations';
 }
 
 interface SidebarProps {
@@ -28,9 +31,13 @@ interface SidebarProps {
 
 export default function Sidebar({ isOpen = false, onClose, isMobile = false }: SidebarProps) {
     const pathname = usePathname();
+    const router = useRouter();
     const [expandedItems, setExpandedItems] = useState<string[]>(['/reviews', '/analytics']);
     const t = useTranslations('sidebar');
     const { unreadCount } = useChatStore();
+    const { company } = useCompanyStore();
+
+    const userPlan = company?.plan || 'Free';
 
     const menuItems: MenuItem[] = [
         {
@@ -49,7 +56,8 @@ export default function Sidebar({ isOpen = false, onClose, isMobile = false }: S
             href: '/analytics',
             label: t('analytics'),
             icon: BarChart3,
-            title: t('titleAnalytics')
+            title: t('titleAnalytics'),
+            requiresFeature: 'aiAnalytics'
         },
         {
             href: '/send',
@@ -61,13 +69,15 @@ export default function Sidebar({ isOpen = false, onClose, isMobile = false }: S
             href: '/integrations',
             label: t('labelIntegrations'),
             icon: Puzzle,
-            title: t('titleIntegrations')
+            title: t('titleIntegrations'),
+            requiresFeature: 'integrations'
         },
         {
             href: '/verification',
             label: t('verification'),
             icon: ShieldCheck,
-            title: t('titleVerification')
+            title: t('titleVerification'),
+            requiresFeature: 'verification'
         },
         {
             href: '/subscription',
@@ -101,10 +111,26 @@ export default function Sidebar({ isOpen = false, onClose, isMobile = false }: S
         return pathname.startsWith(href);
     };
 
-    const handleLinkClick = () => {
+    const handleLinkClick = (item: MenuItem, e?: React.MouseEvent) => {
+        // Check if feature is locked
+        if (item.requiresFeature && !hasFeatureAccess(userPlan, item.requiresFeature)) {
+            e?.preventDefault();
+            // Redirect to subscription page
+            router.push('/subscription');
+            if (isMobile && onClose) {
+                onClose();
+            }
+            return;
+        }
+
         if (isMobile && onClose) {
             onClose();
         }
+    };
+
+    const isFeatureLocked = (item: MenuItem): boolean => {
+        if (!item.requiresFeature) return false;
+        return !hasFeatureAccess(userPlan, item.requiresFeature);
     };
 
     const renderMenuItem = (item: MenuItem, depth = 0) => {
@@ -112,6 +138,7 @@ export default function Sidebar({ isOpen = false, onClose, isMobile = false }: S
         const isExpanded = expandedItems.includes(item.href);
         const active = isActive(item.href);
         const Icon = item.icon;
+        const locked = isFeatureLocked(item);
 
         return (
             <div key={item.href}>
@@ -141,17 +168,22 @@ export default function Sidebar({ isOpen = false, onClose, isMobile = false }: S
                 ) : (
                     <div className="relative">
                         <Link
-                            href={item.href}
+                            href={locked ? '/subscription' : item.href}
                             prefetch={true}
-                            onClick={handleLinkClick}
+                            onClick={(e) => handleLinkClick(item, e)}
                             className={`flex items-center gap-2.5 px-3 py-2 rounded-lg transition text-sm ${active
                                 ? 'bg-[#2f6176] text-white'
-                                : 'hover:bg-white/5 text-white/90 hover:text-white'
+                                : locked
+                                    ? 'hover:bg-white/5 text-white/50 hover:text-white/70'
+                                    : 'hover:bg-white/5 text-white/90 hover:text-white'
                                 } ${depth > 0 ? 'pl-10' : ''}`}
                         >
                             <Icon className="w-4 h-4" />
                             <span className="font-normal">{item.label}</span>
-                            {item.badge && (
+                            {locked && (
+                                <Lock className="w-3 h-3 ml-auto text-yellow-400" />
+                            )}
+                            {!locked && item.badge && (
                                 <span className="ml-auto px-1.5 py-0.5 text-xs font-semibold bg-red-500 text-white rounded-full">
                                     {item.badge}
                                 </span>

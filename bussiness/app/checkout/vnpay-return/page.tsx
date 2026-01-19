@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense, useCallback, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircle, XCircle, Loader2, ArrowRight, RefreshCw, Clock } from 'lucide-react';
 import usePaymentStore from '@/store/usePaymentStore';
+import { useCompanyStore } from '@/store/useCompanyStore';
 import { useTranslations } from 'next-intl';
 
 function VNPayReturnContent() {
@@ -16,6 +17,9 @@ function VNPayReturnContent() {
     const clearCurrentPayment = usePaymentStore(state => state.clearCurrentPayment);
     const currentPayment = usePaymentStore(state => state.currentPayment);
     const isLoading = usePaymentStore(state => state.isLoading);
+
+    // ✅ Get company store to refresh profile
+    const fetchCompanyProfile = useCompanyStore(state => state.fetchCompanyProfile);
 
     // Local state
     const [status, setStatus] = useState<'loading' | 'success' | 'failed' | 'pending'>('loading');
@@ -53,6 +57,10 @@ function VNPayReturnContent() {
                     case 'SUCCESS':
                         setStatus('success');
                         clearCurrentPayment();
+                        // ✅ Refresh company profile to get updated plan
+                        console.log('Payment successful! Refreshing company profile...');
+                        await fetchCompanyProfile();
+                        console.log('Company profile refreshed. Features should now be unlocked.');
                         break;
                     case 'FAILED':
                         setStatus('failed');
@@ -69,7 +77,7 @@ function VNPayReturnContent() {
         } finally {
             isPolling.current = false;
         }
-    }, [txnRef, getPaymentDetail, clearCurrentPayment]);
+    }, [txnRef, getPaymentDetail, clearCurrentPayment, fetchCompanyProfile]);
 
     // ✅ Initial fetch - CHỈ 1 LẦN
     useEffect(() => {
