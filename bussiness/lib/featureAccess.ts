@@ -13,21 +13,24 @@ export interface FeatureAccess {
  * Pro: Verification + AI Analytics
  * Premium: Verification + AI Analytics + Integrations
  */
-export function getFeatureAccess(plan: PlanType): FeatureAccess {
-    switch (plan) {
-        case 'Premium':
+export function getFeatureAccess(plan: PlanType | string): FeatureAccess {
+    // Normalize plan name to handle case variations from backend
+    const normalizedPlan = plan?.toString().toLowerCase();
+
+    switch (normalizedPlan) {
+        case 'premium':
             return {
                 verification: true,
                 aiAnalytics: true,
                 integrations: true,
             };
-        case 'Pro':
+        case 'pro':
             return {
                 verification: true,
                 aiAnalytics: true,
                 integrations: false,
             };
-        case 'Free':
+        case 'free':
         default:
             return {
                 verification: false,
@@ -40,7 +43,7 @@ export function getFeatureAccess(plan: PlanType): FeatureAccess {
 /**
  * Check if a specific feature is accessible
  */
-export function hasFeatureAccess(plan: PlanType, feature: keyof FeatureAccess): boolean {
+export function hasFeatureAccess(plan: PlanType | string, feature: keyof FeatureAccess): boolean {
     const access = getFeatureAccess(plan);
     return access[feature];
 }

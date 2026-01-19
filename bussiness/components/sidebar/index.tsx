@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Home, MessageSquare, Puzzle, BarChart3, Settings,
     ChevronDown, ChevronRight, Mail, ShieldCheck,
@@ -38,6 +38,17 @@ export default function Sidebar({ isOpen = false, onClose, isMobile = false }: S
     const { company } = useCompanyStore();
 
     const userPlan = company?.plan || 'Free';
+
+    // 🔍 Debug logging
+    useEffect(() => {
+        console.log('=== SIDEBAR DEBUG ===');
+        console.log('Company:', company);
+        console.log('User Plan:', userPlan);
+        console.log('Has AI Analytics Access:', hasFeatureAccess(userPlan, 'aiAnalytics'));
+        console.log('Has Verification Access:', hasFeatureAccess(userPlan, 'verification'));
+        console.log('Has Integrations Access:', hasFeatureAccess(userPlan, 'integrations'));
+        console.log('====================');
+    }, [company, userPlan]);
 
     const menuItems: MenuItem[] = [
         {
