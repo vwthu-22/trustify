@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { CheckCircle, ExternalLink, Star, MessageCircle, Info, MapPin, Phone, Mail, Globe, ChevronLeft, ChevronRight, Filter, ChevronDown, Search, Pencil, Trash2, Flag, X } from 'lucide-react';
+import { CheckCircle, ExternalLink, Star, MessageCircle, Info, MapPin, Phone, Mail, Globe, ChevronLeft, ChevronRight, Filter, ChevronDown, Search, Pencil, Trash2, Flag, X, ThumbsUp } from 'lucide-react';
 import Link from 'next/link';
 import WriteReviewModal from '../../cmt/page';
 import ThankYouModal from '../../thankyou/page';
@@ -32,7 +32,8 @@ export default function CompanyReviewPage() {
         fetchAllReviewsByCompany,
         currentPage,
         totalPages,
-        reportReview
+        reportReview,
+        likeReview
     } = useReviewStore();
     const { user } = useAuthStore();
 
@@ -115,6 +116,74 @@ export default function CompanyReviewPage() {
     // Translation state - track translated text for each review
     const [translatedTexts, setTranslatedTexts] = useState<Record<number, { title: string | null; description: string | null; reply: string | null }>>({});
     const [companyDescriptionTranslated, setCompanyDescriptionTranslated] = useState<string | null>(null);
+
+    // Like state - track liked reviews and like counts
+    const [likedReviews, setLikedReviews] = useState<Set<number>>(new Set());
+    const [likeCounts, setLikeCounts] = useState<Record<number, number>>({});
+
+    // Handle like/unlike review
+    const handleLikeReview = async (reviewId: number) => {
+        if (!user) {
+            alert(tReview('loginToLike') || 'Please login to like reviews');
+            return;
+        }
+
+        const review = reviews.find(r => r.id === reviewId) || allReviews.find(r => r.id === reviewId);
+        if (!review) return;
+
+        const isLiked = likedReviews.has(reviewId);
+
+        // Optimistic UI update
+        setLikedReviews(prev => {
+            const newSet = new Set(prev);
+            if (isLiked) {
+                newSet.delete(reviewId);
+            } else {
+                newSet.add(reviewId);
+            }
+            return newSet;
+        });
+
+        setLikeCounts(prev => ({
+            ...prev,
+            [reviewId]: (prev[reviewId] || (review as any).likes || 0) + (isLiked ? -1 : 1)
+        }));
+
+        // Call store action instead of direct fetch
+        const updatedReview = await likeReview(reviewId, {
+            id: reviewId,
+            email: user.email,
+            title: review.title,
+            description: review.description,
+            rating: review.rating,
+            expDate: review.expDate,
+            companyName: review.companyName || (review as any).nameCompany,
+            likes: !isLiked, // true to increment
+        });
+
+        if (updatedReview && updatedReview.likes !== undefined) {
+            // Update like count from server
+            setLikeCounts(prev => ({
+                ...prev,
+                [reviewId]: updatedReview.likes!
+            }));
+        } else {
+            // Revert on error
+            setLikedReviews(prev => {
+                const newSet = new Set(prev);
+                if (isLiked) {
+                    newSet.add(reviewId);
+                } else {
+                    newSet.delete(reviewId);
+                }
+                return newSet;
+            });
+            setLikeCounts(prev => ({
+                ...prev,
+                [reviewId]: (prev[reviewId] || (review as any).likes || 0) + (isLiked ? 1 : -1)
+            }));
+        }
+    };
 
     // Handle report review
     const handleReportReview = async () => {
@@ -771,6 +840,28 @@ export default function CompanyReviewPage() {
                                                         }}
                                                     />
 
+                                                    {/* Like Button - Show for other users' reviews */}
+                                                    {!isOwnReview(review) && (
+                                                        <button
+                                                            onClick={() => handleLikeReview(review.id)}
+                                                            className={`flex items-center gap-1 text-xs font-medium transition ${likedReviews.has(review.id)
+                                                                ? "text-blue-600"
+                                                                : "text-gray-600 hover:text-blue-600"
+                                                                }`}
+                                                        >
+                                                            <ThumbsUp
+                                                                className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${likedReviews.has(review.id) ? "fill-blue-600" : ""
+                                                                    }`}
+                                                            />
+                                                            <span>
+                                                                {likeCounts[review.id] !== undefined
+                                                                    ? likeCounts[review.id]
+                                                                    : ((review as any).likes || 0)
+                                                                }
+                                                            </span>
+                                                        </button>
+                                                    )}
+
                                                     {/* Edit Button - Only show for own reviews */}
                                                     {isOwnReview(review) && (
                                                         <button
@@ -791,8 +882,8 @@ export default function CompanyReviewPage() {
                                                             }}
                                                             disabled={review.status?.toLowerCase().trim() === 'reported' || !!review.contendReport}
                                                             className={`flex items-center gap-1 text-xs font-medium transition ${(review.status?.toLowerCase().trim() === 'reported' || !!review.contendReport)
-                                                                    ? "text-red-400 cursor-not-allowed"
-                                                                    : "text-gray-500 hover:text-red-600"
+                                                                ? "text-red-400 cursor-not-allowed"
+                                                                : "text-gray-500 hover:text-red-600"
                                                                 }`}
                                                         >
                                                             <Flag className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${(review.status?.toLowerCase().trim() === 'reported' || !!review.contendReport) ? "fill-red-400" : ""}`} />

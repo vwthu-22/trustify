@@ -45,6 +45,7 @@ interface Review {
     replyContent?: string;
     status?: string;
     contendReport?: string;
+    likes?: number; // Like count
 }
 
 interface CompanyRatingData {
@@ -85,6 +86,7 @@ interface ReviewState {
     fetchReviewsByEmail: (email: string, page?: number, size?: number) => Promise<void>; // for my_review page
     fetchCompanyRatings: (companyIds: string[]) => Promise<void>; // for category page
     reportReview: (review: Review, reason: string) => Promise<boolean>;
+    likeReview: (reviewId: number, reviewData: any) => Promise<Review | null>;
     clearError: () => void;
     clearSuccess: () => void;
 }
@@ -692,6 +694,42 @@ const useReviewStore = create<ReviewState>()(
                 set((state) => ({
                     companyRatings: { ...state.companyRatings, ...ratingsMap }
                 }));
+            },
+
+            // Like a review
+            likeReview: async (reviewId: number, reviewData: any) => {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/review/${reviewId}`, {
+                        method: 'PUT',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'ngrok-skip-browser-warning': 'true',
+                        },
+                        body: JSON.stringify(reviewData),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to like review');
+                    }
+
+                    const updatedReview = await response.json();
+
+                    // Update the review in the reviews array
+                    set((state) => ({
+                        reviews: state.reviews.map(r =>
+                            r.id === reviewId ? { ...r, likes: updatedReview.likes } : r
+                        ),
+                        allReviews: state.allReviews.map(r =>
+                            r.id === reviewId ? { ...r, likes: updatedReview.likes } : r
+                        ),
+                    }));
+
+                    return updatedReview;
+                } catch (error) {
+                    console.error('Like review error:', error);
+                    return null;
+                }
             },
         }),
         { name: 'review-store' }
