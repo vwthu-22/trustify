@@ -247,7 +247,7 @@ export const companyApi = {
         description?: string;
     }) => {
         const response = await fetch(`${API_BASE_URL}/api/companies/update-info/${companyId}`, {
-            method: 'PATCH',
+            method: 'PUT',
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',

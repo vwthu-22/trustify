@@ -17,6 +17,11 @@ export function getFeatureAccess(plan: PlanType | string): FeatureAccess {
     // Normalize plan name to handle case variations from backend
     const normalizedPlan = plan?.toString().toLowerCase();
 
+    // ⚠️ Debug: Log if plan is NONE (backend issue)
+    if (normalizedPlan === 'none') {
+        console.warn('⚠️ Company plan is NONE! Backend may not have updated plan after payment.');
+    }
+
     switch (normalizedPlan) {
         case 'premium':
             return {
@@ -31,6 +36,7 @@ export function getFeatureAccess(plan: PlanType | string): FeatureAccess {
                 integrations: false,
             };
         case 'free':
+        case 'none': // Backend returns NONE when no plan assigned
         default:
             return {
                 verification: false,
