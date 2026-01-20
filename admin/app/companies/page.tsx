@@ -190,7 +190,6 @@ export default function CompaniesPage() {
                                 <th className="px-6 py-3">{t('country')}</th>
                                 <th className="px-6 py-3">{t('plan')}</th>
                                 <th className="px-6 py-3">{t('verification') || 'Verification'}</th>
-                                <th className="px-6 py-3 text-right">{t('actions')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
@@ -286,86 +285,7 @@ export default function CompaniesPage() {
                 </div>
             </div>
 
-            {/* Edit Company Plan Modal */}
-            {showEditModal && selectedCompany && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-bold text-gray-900">{t('editPlan.title') || 'Edit Company Plan'}</h2>
-                            <button
-                                onClick={() => {
-                                    setShowEditModal(false)
-                                    setSelectedCompany(null)
-                                }}
-                                className="text-gray-400 hover:text-gray-600 transition"
-                            >
-                                <X className="w-6 h-6" />
-                            </button>
-                        </div>
-
-                        <div className="mb-6">
-                            <div className="flex items-center gap-3 mb-2">
-                                <img
-                                    src={selectedCompany.logoUrl || '/default-company.png'}
-                                    alt={selectedCompany.name}
-                                    className="w-10 h-10 rounded object-cover"
-                                />
-                                <div>
-                                    <p className="font-medium text-gray-900">{selectedCompany.name}</p>
-                                    <p className="text-sm text-gray-500">{selectedCompany.contactEmail}</p>
-                                </div>
-                            </div>
-                            <div className="mt-3">
-                                {getVerifyStatusBadge(selectedCompany.verifyStatus)}
-                            </div>
-                        </div>
-
-                        <div className="space-y-4 mb-6">
-                            {/* Plan Dropdown */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    {t('plan')}
-                                </label>
-                                <select
-                                    value={editPlan}
-                                    onChange={(e) => setEditPlan(e.target.value)}
-                                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                                >
-                                    {availablePlans.map(plan => (
-                                        <option key={plan} value={plan}>{plan}</option>
-                                    ))}
-                                </select>
-                                <p className="mt-1 text-xs text-gray-500">
-                                    {t('editPlan.hint') || 'Select the subscription plan for this company'}
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="flex gap-3">
-                            <button
-                                onClick={() => {
-                                    setShowEditModal(false)
-                                    setSelectedCompany(null)
-                                }}
-                                className="flex-1 py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition"
-                            >
-                                {tCommon('cancel')}
-                            </button>
-                            <button
-                                onClick={handleSaveEdit}
-                                disabled={isLoading}
-                                className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg font-medium transition flex items-center justify-center gap-2"
-                            >
-                                {isLoading ? (
-                                    <Loader2 className="w-5 h-5 animate-spin" />
-                                ) : (
-                                    tCommon('save')
-                                )}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+          
         </div>
     )
 }
