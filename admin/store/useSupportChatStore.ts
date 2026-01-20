@@ -722,13 +722,20 @@ export const useSupportChatStore = create<SupportChatState>((set, get) => ({
             ticketExists: !!ticket,
             ticketId,
             isViewingThisTicket,
-            shouldNotify: !message.admin && ticket && !isViewingThisTicket
+            shouldNotify: !message.admin && ticket && !isViewingThisTicket,
+            ticketCompanyName: ticket?.companyName,
+            ticketCompanyLogo: ticket?.companyLogo
         });
 
         // Add notification if message is from business user (not admin)
         // BUT only if admin is NOT currently viewing this specific chat
         if (!message.admin && ticket && !isViewingThisTicket) {
+            console.log('🔔 ADDING NOTIFICATION for ticket:', ticketId);
             addNotification(ticketId, ticket.companyName, ticket.companyLogo);
+        } else {
+            console.log('🔕 SKIPPING NOTIFICATION:', {
+                reason: message.admin ? 'Admin message' : !ticket ? 'Ticket not found' : 'Admin viewing this ticket'
+            });
         }
     },
 

@@ -55,6 +55,22 @@ export default function SupportChatPage() {
         markMessagesAsRead();
     }, [messages.length]);
 
+    // Mark all chat notifications as read when entering this page
+    useEffect(() => {
+        const markChatNotificationsAsRead = () => {
+            const { notifications, markNotificationAsRead } = useChatStore.getState();
+
+            // Mark all admin_message notifications as read
+            notifications
+                .filter(n => n.type === 'admin_message' && !n.read)
+                .forEach(n => {
+                    markNotificationAsRead(n.id);
+                });
+        };
+
+        markChatNotificationsAsRead();
+    }, []); // Run once on mount
+
     const handleSendMessage = async () => {
         if (!newMessage.trim()) return;
 
