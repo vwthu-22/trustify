@@ -78,8 +78,8 @@ const useAdminAuthStore = create<AdminAuthStore>()(
                         loginTime: new Date().toISOString(),
                     };
 
-                    // Set local auth cookie for middleware (7 days)
-                    document.cookie = 'admin-auth=true; path=/; max-age=604800';
+                    // Set local auth cookie for middleware (30 days to match backend JWT)
+                    document.cookie = 'admin-auth=true; path=/; max-age=2592000'; // 30 days
 
                     // Store in localStorage for persistence
                     localStorage.setItem('admin-authenticated', 'true');
