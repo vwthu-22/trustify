@@ -167,7 +167,7 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
         set({ isLoading: true, error: null });
         try {
             const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://trustify.io.vn';
-            const response = await fetch(`${API_BASE_URL}/api/subscription/timeSubscription/${companyId}`, {
+            const response = await fetch(`${API_BASE_URL}/api/companies/timeSubscription/${companyId}`, {
                 method: 'GET',
                 credentials: 'include',
                 headers: {
