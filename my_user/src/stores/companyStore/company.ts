@@ -125,7 +125,7 @@ const useCompanyStore = create<CompanyState>()(
                 set({ isLoading: true, error: null });
 
                 try {
-                    const url = `${API_BASE_URL}/api/companies/industry/${encodeURIComponent(industry)}?page=${page}&size=${size}`;
+                    const url = `${API_BASE_URL}/api/review/industry/${encodeURIComponent(industry)}?page=${page}&size=${size}`;
                     console.log('Fetching from:', url);
 
                     const response = await fetch(url, {
@@ -171,7 +171,7 @@ const useCompanyStore = create<CompanyState>()(
                 set({ isLoading: true, error: null });
 
                 try {
-                    const url = `${API_BASE_URL}/api/companies/industry/Bank?page=${page}&size=${size}`;
+                    const url = `${API_BASE_URL}/api/review/industry/Bank?page=${page}&size=${size}`;
                     console.log('Fetching from:', url);
 
                     const response = await fetch(url, {
@@ -218,7 +218,7 @@ const useCompanyStore = create<CompanyState>()(
                 set({ isLoading: true, error: null });
 
                 try {
-                    const url = `${API_BASE_URL}/api/companies/industry/Travel?page=${page}&size=${size}`;
+                    const url = `${API_BASE_URL}/api/review/industry/Travel?page=${page}&size=${size}`;
                     console.log('Fetching from:', url);
 
                     const response = await fetch(url, {

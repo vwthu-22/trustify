@@ -284,7 +284,7 @@ export const companyApi = {
 
     // Get companies by industry
     getByIndustry: async (industry: string, page = 0, size = 4) => {
-        const response = await fetch(`${API_BASE_URL}/api/companies/industry/${encodeURIComponent(industry)}?page=${page}&size=${size}`, {
+        const response = await fetch(`${API_BASE_URL}/api/review/industry/${encodeURIComponent(industry)}?page=${page}&size=${size}`, {
             method: 'GET',
             credentials: 'include',
             headers: {
