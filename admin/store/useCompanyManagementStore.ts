@@ -130,12 +130,21 @@ const useCompanyManagementStore = create<CompanyManagementStore>()(
                         companiesData = data.data;
                     }
 
+                    // Map backend fields to frontend Company interface
+                    const mappedCompanies = companiesData.map((company: any) => ({
+                        ...company,
+                        // Map plan field - backend might return plan.name, planName, or plan
+                        plan: company.plan?.name || company.planName || company.plan || 'Free',
+                    }));
+
+                    console.log('Mapped companies with plan:', mappedCompanies);
+
                     // Handle response (API doesn't seem to have pagination yet)
                     set({
-                        companies: companiesData,
-                        totalCompanies: data.totalElements || data.total || companiesData.length || 0,
+                        companies: mappedCompanies,
+                        totalCompanies: data.totalElements || data.total || mappedCompanies.length || 0,
                         currentPage: data.number || data.page || page,
-                        totalPages: data.totalPages || Math.ceil((data.totalElements || data.total || companiesData.length) / size),
+                        totalPages: data.totalPages || Math.ceil((data.totalElements || data.total || mappedCompanies.length) / size),
                         isLoading: false,
                     });
                 } catch (error) {

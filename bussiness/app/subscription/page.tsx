@@ -86,31 +86,6 @@ export default function SubscriptionPage() {
                 <p className="text-gray-500 text-xs sm:text-sm">{t('selectPlan')}</p>
             </div>
 
-            {/* Billing Toggle */}
-            <div className="flex items-center justify-center gap-2 sm:gap-3">
-                <span className={`text-xs sm:text-sm font-medium ${billingPeriod === 'month' ? 'text-gray-900' : 'text-gray-500'}`}>
-                    {t('monthly')}
-                </span>
-                <button
-                    onClick={() => setBillingPeriod(billingPeriod === 'month' ? 'year' : 'month')}
-                    className={`relative w-12 h-6 rounded-full transition-colors ${billingPeriod === 'year' ? 'bg-blue-600' : 'bg-gray-300'
-                        }`}
-                >
-                    <div
-                        className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${billingPeriod === 'year' ? 'translate-x-6' : 'translate-x-0'
-                            }`}
-                    />
-                </button>
-                <span className={`text-xs sm:text-sm font-medium ${billingPeriod === 'year' ? 'text-gray-900' : 'text-gray-500'}`}>
-                    {t('yearly')}
-                </span>
-                {billingPeriod === 'year' && (
-                    <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">
-                        {t('savePercent')}
-                    </span>
-                )}
-            </div>
-
             {/* Loading State */}
             {isLoading && (
                 <div className="flex justify-center items-center py-12">
