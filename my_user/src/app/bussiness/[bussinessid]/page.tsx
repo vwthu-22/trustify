@@ -177,7 +177,7 @@ export default function CompanyReviewPage() {
             expDate: review.expDate,
             companyName: review.companyName || (review as any).nameCompany,
             likes: !isLiked,  // true = add like, false = remove like
-            isLove: true,     // always true for both like and unlike
+            love: true,     // always true for both like and unlike
         });
 
         if (updatedReview && updatedReview.likes !== undefined) {
