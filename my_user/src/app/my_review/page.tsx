@@ -299,7 +299,13 @@ export default function MyReviewPage() {
                   )}
 
                   {/* Actions */}
-                  <div className="flex items-center gap-2 pt-2 sm:pt-3 border-t border-gray-200">
+                  <div className="flex items-center gap-3 pt-2 sm:pt-3 border-t border-gray-200">
+                    {/* Likes Count - Show for all reviews */}
+                    <div className="flex items-center gap-1 text-gray-600 text-xs font-medium">
+                      <ThumbsUp className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-600" />
+                      <span>{(review as any).likes || 0}</span>
+                    </div>
+
                     {review.status !== 'REJECTED' && (
                       <button
                         onClick={() => handleEditReview(review)}

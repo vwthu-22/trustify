@@ -121,6 +121,22 @@ export default function CompanyReviewPage() {
     const [likedReviews, setLikedReviews] = useState<Set<number>>(new Set());
     const [likeCounts, setLikeCounts] = useState<Record<number, number>>({});
 
+    // Load liked reviews from localStorage on mount
+    useEffect(() => {
+        if (user?.email) {
+            const storageKey = `liked_reviews_${user.email}`;
+            const stored = localStorage.getItem(storageKey);
+            if (stored) {
+                try {
+                    const likedIds = JSON.parse(stored);
+                    setLikedReviews(new Set(likedIds));
+                } catch (e) {
+                    console.error('Failed to parse liked reviews:', e);
+                }
+            }
+        }
+    }, [user?.email]);
+
     // Handle like/unlike review
     const handleLikeReview = async (reviewId: number) => {
         if (!user) {
@@ -134,15 +150,17 @@ export default function CompanyReviewPage() {
         const isLiked = likedReviews.has(reviewId);
 
         // Optimistic UI update
-        setLikedReviews(prev => {
-            const newSet = new Set(prev);
-            if (isLiked) {
-                newSet.delete(reviewId);
-            } else {
-                newSet.add(reviewId);
-            }
-            return newSet;
-        });
+        const newLikedSet = new Set(likedReviews);
+        if (isLiked) {
+            newLikedSet.delete(reviewId);
+        } else {
+            newLikedSet.add(reviewId);
+        }
+        setLikedReviews(newLikedSet);
+
+        // Save to localStorage
+        const storageKey = `liked_reviews_${user.email}`;
+        localStorage.setItem(storageKey, JSON.stringify(Array.from(newLikedSet)));
 
         setLikeCounts(prev => ({
             ...prev,
@@ -169,15 +187,15 @@ export default function CompanyReviewPage() {
             }));
         } else {
             // Revert on error
-            setLikedReviews(prev => {
-                const newSet = new Set(prev);
-                if (isLiked) {
-                    newSet.add(reviewId);
-                } else {
-                    newSet.delete(reviewId);
-                }
-                return newSet;
-            });
+            const revertedSet = new Set(likedReviews);
+            if (isLiked) {
+                revertedSet.add(reviewId);
+            } else {
+                revertedSet.delete(reviewId);
+            }
+            setLikedReviews(revertedSet);
+            localStorage.setItem(storageKey, JSON.stringify(Array.from(revertedSet)));
+
             setLikeCounts(prev => ({
                 ...prev,
                 [reviewId]: (prev[reviewId] || (review as any).likes || 0) + (isLiked ? 1 : -1)
