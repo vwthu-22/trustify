@@ -236,19 +236,6 @@ export default function CompaniesPage() {
                                         <td className="px-6 py-4">
                                             {getVerifyStatusBadge(company.verifyStatus)}
                                         </td>
-                                        <td className="px-6 py-4 text-right">
-                                            <button
-                                                onClick={() => {
-                                                    setSelectedCompany(company)
-                                                    setEditPlan(company.plan || 'Free')
-                                                    setShowEditModal(true)
-                                                }}
-                                                className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                title={tCommon('edit')}
-                                            >
-                                                <Edit className="w-4 h-4" />
-                                            </button>
-                                        </td>
                                     </tr>
                                 ))
                             )}
