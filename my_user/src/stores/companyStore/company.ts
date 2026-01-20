@@ -32,16 +32,11 @@ interface CompanyState {
     isSearching: boolean;
     error: string | null;
 
-    // Cache timestamps (5 minutes cache)
-    lastFetchTime: number | null;
-    lastBankFetchTime: number | null;
-    lastTravelFetchTime: number | null;
-
     // Actions
-    fetchCompanies: (params?: { category?: string; sort?: string; page?: number; limit?: number; forceRefresh?: boolean }) => Promise<void>;
+    fetchCompanies: (params?: { category?: string; sort?: string; page?: number; limit?: number }) => Promise<void>;
     fetchCompaniesByIndustry: (industry: string, page?: number, size?: number) => Promise<void>;
-    fetchBankCompanies: (page?: number, size?: number, forceRefresh?: boolean) => Promise<void>;
-    fetchTravelCompanies: (page?: number, size?: number, forceRefresh?: boolean) => Promise<void>;
+    fetchBankCompanies: (page?: number, size?: number) => Promise<void>;
+    fetchTravelCompanies: (page?: number, size?: number) => Promise<void>;
     fetchCompanyById: (id: string) => Promise<void>;
     searchCompanies: (query: string) => Promise<void>;
     clearSearchResults: () => void;
@@ -49,11 +44,9 @@ interface CompanyState {
     clearError: () => void;
 }
 
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-
 const useCompanyStore = create<CompanyState>()(
     devtools(
-        (set, get) => ({
+        (set) => ({
             companies: [],
             searchResults: [],
             bankCompanies: [],
@@ -62,24 +55,9 @@ const useCompanyStore = create<CompanyState>()(
             isLoading: false,
             isSearching: false,
             error: null,
-            lastFetchTime: null,
-            lastBankFetchTime: null,
-            lastTravelFetchTime: null,
 
             // Fetch companies with filters
             fetchCompanies: async (params = {}) => {
-                // Check cache unless forceRefresh is true
-                const { lastFetchTime, companies } = get();
-                const now = Date.now();
-
-                if (!params.forceRefresh && lastFetchTime && companies.length > 0) {
-                    const timeSinceLastFetch = now - lastFetchTime;
-                    if (timeSinceLastFetch < CACHE_DURATION) {
-                        console.log('⚡ Using cached companies data (age:', Math.round(timeSinceLastFetch / 1000), 'seconds)');
-                        return;
-                    }
-                }
-
                 console.log('=== Fetch Companies Start ===');
                 console.log('Params:', params);
 
@@ -126,8 +104,7 @@ const useCompanyStore = create<CompanyState>()(
 
                     set({
                         companies: companiesList,
-                        isLoading: false,
-                        lastFetchTime: Date.now()
+                        isLoading: false
                     });
                 } catch (error) {
                     console.error('=== Fetch Companies Error ===');
@@ -188,19 +165,7 @@ const useCompanyStore = create<CompanyState>()(
             },
 
             // Fetch bank companies (max 3)
-            fetchBankCompanies: async (page = 0, size = 3, forceRefresh = false) => {
-                // Check cache unless forceRefresh is true
-                const { lastBankFetchTime, bankCompanies } = get();
-                const now = Date.now();
-
-                if (!forceRefresh && lastBankFetchTime && bankCompanies.length > 0) {
-                    const timeSinceLastFetch = now - lastBankFetchTime;
-                    if (timeSinceLastFetch < CACHE_DURATION) {
-                        console.log('⚡ Using cached bank companies (age:', Math.round(timeSinceLastFetch / 1000), 'seconds)');
-                        return;
-                    }
-                }
-
+            fetchBankCompanies: async (page = 0, size = 3) => {
                 console.log('=== Fetch Bank Companies Start ===');
 
                 set({ isLoading: true, error: null });
@@ -235,8 +200,7 @@ const useCompanyStore = create<CompanyState>()(
 
                     set({
                         bankCompanies: companies,
-                        isLoading: false,
-                        lastBankFetchTime: Date.now()
+                        isLoading: false
                     });
                 } catch (error) {
                     console.error('Fetch Bank Companies Error:', error);
@@ -248,19 +212,7 @@ const useCompanyStore = create<CompanyState>()(
             },
 
             // Fetch travel companies (max 3)
-            fetchTravelCompanies: async (page = 0, size = 3, forceRefresh = false) => {
-                // Check cache unless forceRefresh is true
-                const { lastTravelFetchTime, travelCompanies } = get();
-                const now = Date.now();
-
-                if (!forceRefresh && lastTravelFetchTime && travelCompanies.length > 0) {
-                    const timeSinceLastFetch = now - lastTravelFetchTime;
-                    if (timeSinceLastFetch < CACHE_DURATION) {
-                        console.log('⚡ Using cached travel companies (age:', Math.round(timeSinceLastFetch / 1000), 'seconds)');
-                        return;
-                    }
-                }
-
+            fetchTravelCompanies: async (page = 0, size = 3) => {
                 console.log('=== Fetch Travel Companies Start ===');
 
                 set({ isLoading: true, error: null });
@@ -295,8 +247,7 @@ const useCompanyStore = create<CompanyState>()(
 
                     set({
                         travelCompanies: companies,
-                        isLoading: false,
-                        lastTravelFetchTime: Date.now()
+                        isLoading: false
                     });
                 } catch (error) {
                     console.error('Fetch Travel Companies Error:', error);
