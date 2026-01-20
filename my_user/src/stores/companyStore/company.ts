@@ -70,7 +70,7 @@ const useCompanyStore = create<CompanyState>()(
                     if (params.page) queryParams.append('page', params.page.toString());
                     if (params.limit) queryParams.append('limit', params.limit.toString());
 
-                    const url = `${API_BASE_URL}/api/review?${queryParams.toString()}`;
+                    const url = `${API_BASE_URL}/api/companies?${queryParams.toString()}`;
                     console.log('Fetching from:', url);
 
                     const response = await fetch(url, {
