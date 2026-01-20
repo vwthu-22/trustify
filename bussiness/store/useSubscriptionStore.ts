@@ -26,6 +26,14 @@ export interface CompanySubscription {
     cancelAtPeriodEnd: boolean;
 }
 
+export interface ResSubscription {
+    subscriptionId: number;
+    planId: string;
+    planName: string;
+    startDate: string;
+    endDate: string;
+}
+
 export interface Invoice {
     id: string;
     amount: number;
@@ -39,6 +47,7 @@ interface SubscriptionStore {
     // State
     plans: SubscriptionPlan[];
     currentSubscription: CompanySubscription | null;
+    companySubscriptions: ResSubscription[]; // ← NEW
     invoices: Invoice[];
     isLoading: boolean;
     error: string | null;
@@ -46,6 +55,7 @@ interface SubscriptionStore {
     // Actions
     fetchPlans: () => Promise<void>;
     fetchCurrentSubscription: () => Promise<void>;
+    fetchCompanySubscriptions: (companyId: string) => Promise<void>; // ← NEW
     fetchInvoices: () => Promise<void>;
     upgradePlan: (planId: string, billingCycle: 'monthly' | 'yearly') => Promise<boolean>;
     cancelSubscription: () => Promise<boolean>;
@@ -136,6 +146,7 @@ const mockInvoices: Invoice[] = [
 export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
     plans: [],
     currentSubscription: null,
+    companySubscriptions: [], // ← NEW
     invoices: [],
     isLoading: false,
     error: null,
@@ -148,6 +159,32 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
             set({ plans: mockPlans, isLoading: false });
         } catch (error) {
             set({ error: error instanceof Error ? error.message : 'Failed to fetch plans', isLoading: false });
+        }
+    },
+
+    // ← NEW METHOD
+    fetchCompanySubscriptions: async (companyId: string) => {
+        set({ isLoading: true, error: null });
+        try {
+            const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://trustify.io.vn';
+            const response = await fetch(`${API_BASE_URL}/api/subscription/timeSubscription/${companyId}`, {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true',
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                set({ companySubscriptions: data, isLoading: false });
+            } else {
+                set({ companySubscriptions: [], isLoading: false });
+            }
+        } catch (error) {
+            console.error('Failed to fetch company subscriptions:', error);
+            set({ companySubscriptions: [], isLoading: false });
         }
     },
 

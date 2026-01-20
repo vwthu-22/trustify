@@ -2,13 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Crown, Check, Zap, Shield, Loader2, Star } from 'lucide-react';
+import { Crown, Check, Zap, Shield, Loader2, Star, Calendar, Clock } from 'lucide-react';
 import usePlanStore from '@/store/usePlanStore';
+import useCompanyStore from '@/store/useCompanyStore';
+import { useSubscriptionStore, type ResSubscription } from '@/store/useSubscriptionStore';
 import { useTranslations } from 'next-intl';
 
 export default function SubscriptionPage() {
     const router = useRouter();
     const { plans, isLoading, error, fetchPlans } = usePlanStore();
+    const { company } = useCompanyStore();
+    const { companySubscriptions, isLoading: loadingSubscriptions, fetchCompanySubscriptions } = useSubscriptionStore();
     const [billingPeriod, setBillingPeriod] = useState<'month' | 'year'>('month');
     const t = useTranslations('subscription');
 
@@ -17,8 +21,45 @@ export default function SubscriptionPage() {
         fetchPlans();
     }, [fetchPlans]);
 
-    // TODO: Get current plan from user's subscription
-    const currentPlanId = null; // Replace with actual user's current plan ID
+    // Fetch company subscriptions from store
+    useEffect(() => {
+        if (company?.id) {
+            fetchCompanySubscriptions(company.id);
+        }
+    }, [company?.id, fetchCompanySubscriptions]);
+
+    // Get active subscription for a plan
+    const getActiveSubscription = (planName: string): ResSubscription | null => {
+        const now = new Date();
+        const active = companySubscriptions.find(sub => {
+            const endDate = new Date(sub.endDate);
+            return sub.planName === planName && endDate > now;
+        });
+        return active || null;
+    };
+
+    // Check if subscription is expired
+    const isSubscriptionExpired = (endDate: string): boolean => {
+        return new Date(endDate) <= new Date();
+    };
+
+    // Format date for display
+    const formatDate = (dateString: string): string => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('vi-VN', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    };
+
+    // Calculate days remaining
+    const getDaysRemaining = (endDate: string): number => {
+        const now = new Date();
+        const end = new Date(endDate);
+        const diff = end.getTime() - now.getTime();
+        return Math.ceil(diff / (1000 * 60 * 60 * 24));
+    };
 
     const handleUpgrade = (planId: number) => {
         router.push(`/checkout?plan=${planId}&period=${billingPeriod}`);
@@ -87,7 +128,7 @@ export default function SubscriptionPage() {
             </div>
 
             {/* Loading State */}
-            {isLoading && (
+            {(isLoading || loadingSubscriptions) && (
                 <div className="flex justify-center items-center py-12">
                     <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
                     <span className="ml-3 text-gray-600">Loading plans...</span>
@@ -111,20 +152,23 @@ export default function SubscriptionPage() {
             {!isLoading && !error && plans.length > 0 && (
                 <div className={`grid gap-3 sm:gap-4 ${getGridClass()}`}>
                     {plans.map((plan, index) => {
-                        const isCurrentPlan = plan.id === currentPlanId;
+                        const activeSub = getActiveSubscription(plan.name);
+                        const isActive = activeSub !== null;
+                        const isExpired = activeSub ? isSubscriptionExpired(activeSub.endDate) : false;
                         const isRecommended = plan.id === recommendedPlanId;
+                        const daysRemaining = activeSub ? getDaysRemaining(activeSub.endDate) : 0;
 
                         return (
                             <div
                                 key={plan.id}
                                 className={`relative bg-white rounded-lg shadow-sm border-2 p-4 sm:p-5 transition-all flex flex-col ${isRecommended
                                     ? 'border-blue-500 shadow-lg md:scale-[1.02]'
-                                    : isCurrentPlan
-                                        ? 'border-blue-500'
+                                    : isActive && !isExpired
+                                        ? 'border-green-500'
                                         : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
                                     }`}
                             >
-                                {isRecommended && (
+                                {isRecommended && !isActive && (
                                     <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                                         <span className="px-3 py-0.5 bg-blue-600 text-white text-xs font-bold rounded-full shadow whitespace-nowrap">
                                             {t('recommended')}
@@ -132,10 +176,10 @@ export default function SubscriptionPage() {
                                     </div>
                                 )}
 
-                                {isCurrentPlan && (
+                                {isActive && !isExpired && (
                                     <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                                        <span className="px-3 py-0.5 bg-blue-600 text-white text-xs font-bold rounded-full shadow whitespace-nowrap">
-                                            {t('currentPlan')}
+                                        <span className="px-3 py-0.5 bg-green-600 text-white text-xs font-bold rounded-full shadow whitespace-nowrap">
+                                            Active
                                         </span>
                                     </div>
                                 )}
@@ -157,20 +201,38 @@ export default function SubscriptionPage() {
                                     )}
                                 </div>
 
-                                <button
-                                    onClick={() => !isCurrentPlan && handleUpgrade(plan.id)}
-                                    disabled={isCurrentPlan}
-                                    className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors mb-6 ${isCurrentPlan
-                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                        : isRecommended
+                                {/* Subscription Status or Upgrade Button */}
+                                {isActive && !isExpired ? (
+                                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <Calendar className="w-4 h-4 text-green-600" />
+                                            <span className="text-sm font-semibold text-green-900">Active Subscription</span>
+                                        </div>
+                                        <div className="space-y-1 text-xs text-green-700">
+                                            <div className="flex items-center gap-2">
+                                                <Clock className="w-3 h-3" />
+                                                <span>Expires: {formatDate(activeSub.endDate)}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-semibold">
+                                                    {daysRemaining} days remaining
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <button
+                                        onClick={() => handleUpgrade(plan.id)}
+                                        className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors mb-6 ${isRecommended
                                             ? 'bg-blue-600 text-white hover:bg-blue-700'
                                             : plan.price === 0
                                                 ? 'bg-gray-200 text-gray-800 hover:bg-gray-300'
                                                 : 'bg-gray-900 text-white hover:bg-gray-800'
-                                        }`}
-                                >
-                                    {isCurrentPlan ? t('currentPlan') : plan.price === 0 ? t('getStartedFree') : t('upgradeNow')}
-                                </button>
+                                            }`}
+                                    >
+                                        {plan.price === 0 ? t('getStartedFree') : isExpired ? 'Renew Now' : t('upgradeNow')}
+                                    </button>
+                                )}
 
                                 {/* Features list - grows to fill space */}
                                 <div className="space-y-3 flex-1">

@@ -487,3 +487,4 @@ export const useCompanyStore = create<CompanyStore>()(
     )
 );
 
+export default useCompanyStore;
