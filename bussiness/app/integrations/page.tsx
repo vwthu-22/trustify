@@ -41,12 +41,13 @@ export default function IntegrationsPage() {
         setAccessToken('');
 
         try {
-            const response = await fetch(`${baseUrl}/integration/companies/getCode/${encodeURIComponent(tokenEmail)}`, {
+            const response = await fetch(`${baseUrl}/integration/companies/getCode`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                     'ngrok-skip-browser-warning': 'true',
                 },
+                body: JSON.stringify(tokenEmail), // Send email as JSON string in body
             });
 
             if (!response.ok) {
