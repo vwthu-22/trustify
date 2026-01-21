@@ -12,7 +12,6 @@ export default function IntegrationsPage() {
     const [activeTab, setActiveTab] = useState<'overview' | 'rating' | 'reviews' | 'invite'>('overview');
 
     // API Token Generator states
-    const [tokenEmail, setTokenEmail] = useState('');
     const [isGeneratingCode, setIsGeneratingCode] = useState(false);
     const [isExchangingToken, setIsExchangingToken] = useState(false);
     const [generatedCode, setGeneratedCode] = useState('');
@@ -28,10 +27,10 @@ export default function IntegrationsPage() {
         setTimeout(() => setCopiedEndpoint(null), 2000);
     };
 
-    // Generate state code from email
+    // Generate state code from company ID
     const handleGenerateCode = async () => {
-        if (!tokenEmail || !tokenEmail.includes('@')) {
-            setTokenError('Please enter a valid email address');
+        if (!company?.id) {
+            setTokenError('Please login to generate access token');
             return;
         }
 
@@ -41,18 +40,17 @@ export default function IntegrationsPage() {
         setAccessToken('');
 
         try {
-            const response = await fetch(`${baseUrl}/integration/companies/getCode`, {
+            const response = await fetch(`${baseUrl}/integration/companies/getCode/${company.id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'ngrok-skip-browser-warning': 'true',
                 },
-                body: JSON.stringify(tokenEmail), // Send email as JSON string in body
             });
 
             if (!response.ok) {
                 // Try to get error message from response
-                let errorMessage = 'Failed to generate code. Please check your email.';
+                let errorMessage = 'Failed to generate code. Please try again.';
                 try {
                     const errorText = await response.text();
                     console.error('Backend error response:', errorText);
@@ -69,7 +67,7 @@ export default function IntegrationsPage() {
             console.log('Generated code:', code);
 
             if (!code || code === 'null') {
-                throw new Error('Email not found in system');
+                throw new Error('Failed to generate code');
             }
 
             setGeneratedCode(code);
@@ -424,41 +422,49 @@ export default function IntegrationsPage() {
                     </div>
                 )}
 
-                {/* Step 1: Enter Email */}
+                {/* Step 1: Generate Code */}
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Step 1: Enter Company Email
+                            Step 1: Generate Access Code
                         </label>
-                        <div className="flex gap-2">
-                            <input
-                                type="email"
-                                value={tokenEmail}
-                                onChange={(e) => setTokenEmail(e.target.value)}
-                                placeholder="company@example.com"
-                                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                disabled={isGeneratingCode}
-                            />
-                            <button
-                                onClick={handleGenerateCode}
-                                disabled={isGeneratingCode || !tokenEmail}
-                                className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
-                            >
-                                {isGeneratingCode ? (
-                                    <>
-                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                        Generating...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Key className="h-4 w-4" />
-                                        Generate Code
-                                    </>
-                                )}
-                            </button>
-                        </div>
+
+                        {company ? (
+                            <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                <p className="text-sm text-blue-900">
+                                    <span className="font-semibold">Company:</span> {company.name}
+                                </p>
+                                <p className="text-xs text-blue-700 mt-1">
+                                    <span className="font-semibold">ID:</span> {company.id}
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="mb-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                <p className="text-sm text-yellow-800">
+                                    Please login to generate access token
+                                </p>
+                            </div>
+                        )}
+
+                        <button
+                            onClick={handleGenerateCode}
+                            disabled={isGeneratingCode || !company}
+                            className="w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors"
+                        >
+                            {isGeneratingCode ? (
+                                <>
+                                    <Loader2 className="h-5 w-5 animate-spin" />
+                                    Generating Code...
+                                </>
+                            ) : (
+                                <>
+                                    <Key className="h-5 w-5" />
+                                    Generate State Code
+                                </>
+                            )}
+                        </button>
                         <p className="mt-2 text-xs text-gray-500">
-                            Enter the email address associated with your company account
+                            Click to generate a one-time state code for token exchange
                         </p>
                     </div>
 
