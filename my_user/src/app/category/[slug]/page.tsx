@@ -168,6 +168,11 @@ export default function CategoryPage() {
             {sortedCompanies.map((company) => {
               const ratingData = company.ratingData;
 
+              // Debug: log company logo
+              if (!company.logo) {
+                console.log(`Company ${company.name} has no logo:`, company);
+              }
+
               return (
                 <Link
                   key={company.id}
@@ -179,12 +184,24 @@ export default function CategoryPage() {
                     {/* Logo - Compact */}
                     <div className="flex-shrink-0">
                       {company.logo ? (
-                        <img src={company.logo} alt={company.name} className="w-14 h-14 object-cover rounded-lg" />
-                      ) : (
-                        <div className="w-14 h-14 rounded-lg flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600">
-                          <span className="text-xl font-bold text-white">{company.name.charAt(0).toUpperCase()}</span>
-                        </div>
-                      )}
+                        <img
+                          src={company.logo}
+                          alt={company.name}
+                          className="w-14 h-14 object-cover rounded-lg"
+                          onError={(e) => {
+                            // Hide broken image and show fallback
+                            e.currentTarget.style.display = 'none';
+                            const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                            if (fallback) fallback.style.display = 'flex';
+                          }}
+                        />
+                      ) : null}
+                      <div
+                        className="w-14 h-14 rounded-lg flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600"
+                        style={{ display: company.logo ? 'none' : 'flex' }}
+                      >
+                        <span className="text-xl font-bold text-white">{company.name.charAt(0).toUpperCase()}</span>
+                      </div>
                     </div>
 
                     {/* Content - Refined */}

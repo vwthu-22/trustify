@@ -51,10 +51,22 @@ export default function IntegrationsPage() {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to generate code. Please check your email.');
+                // Try to get error message from response
+                let errorMessage = 'Failed to generate code. Please check your email.';
+                try {
+                    const errorText = await response.text();
+                    console.error('Backend error response:', errorText);
+                    if (errorText && errorText.length < 200) {
+                        errorMessage = errorText;
+                    }
+                } catch (e) {
+                    console.error('Could not parse error response');
+                }
+                throw new Error(errorMessage);
             }
 
             const code = await response.text();
+            console.log('Generated code:', code);
 
             if (!code || code === 'null') {
                 throw new Error('Email not found in system');
