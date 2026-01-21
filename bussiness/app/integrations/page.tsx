@@ -20,7 +20,7 @@ export default function IntegrationsPage() {
     const [tokenError, setTokenError] = useState('');
 
     const companyId = company?.id || '{YOUR_COMPANY_ID}';
-    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://api.trustify.com';
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://trustify.io.vn';
 
     const handleCopy = (text: string, endpoint: string) => {
         navigator.clipboard.writeText(text);
