@@ -41,7 +41,7 @@ export default function IntegrationsPage() {
         setAccessToken('');
 
         try {
-            const response = await fetch(`${baseUrl}/api/auth/getCode/${encodeURIComponent(tokenEmail)}`, {
+            const response = await fetch(`${baseUrl}/integration/companies/getCode/${encodeURIComponent(tokenEmail)}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
