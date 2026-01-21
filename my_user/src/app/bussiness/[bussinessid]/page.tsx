@@ -556,7 +556,8 @@ export default function CompanyReviewPage() {
                         <div className="mb-4 sm:mb-6 pb-4 sm:pb-6 border-b border-gray-200">
                             <div className="flex flex-wrap items-center gap-2 mb-2 sm:mb-3">
                                 <h3 className="text-base sm:text-lg font-bold text-gray-900">{t('companyDetails')}</h3>
-                                {currentCompany.verified ? (
+                                {/* Verification Status - Check document verification (verifyStatus) */}
+                                {currentCompany.verifyStatus === 'APPROVED' ? (
                                     <span className="flex items-center gap-1 text-xs text-green-600">
                                         <CheckCircle className="w-3 h-3 text-green-600" />
                                         {t('verified')}

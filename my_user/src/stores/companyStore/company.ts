@@ -18,7 +18,8 @@ export interface Company {
     industry?: string;
     phone?: string;
     email?: string;
-    verified: boolean;
+    verified: boolean; // Email verification
+    verifyStatus?: 'PENDING' | 'APPROVED' | 'REJECTED'; // Document verification status
     claimed: boolean;
 }
 
@@ -324,6 +325,7 @@ const useCompanyStore = create<CompanyState>()(
                         phone: companyData.contactPhone || companyData.phone || '',
                         email: companyData.contactEmail || companyData.email || '',
                         verified: companyData.isVerified ?? companyData.verified ?? false,
+                        verifyStatus: companyData.verifyStatus || undefined, // Document verification status
                         claimed: companyData.isClaimed ?? companyData.claimed ?? false,
                     };
 

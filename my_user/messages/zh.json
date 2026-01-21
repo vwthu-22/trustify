@@ -227,6 +227,8 @@
         "noIncentives": "Trustify上的公司不允许提供奖励或付费隐藏评论。",
         "companyDetails": "公司详情",
         "activeSubscription": "活跃订阅",
+        "verified": "已认证",
+        "notVerified": "未认证",
         "writtenByCompany": "由公司撰写",
         "noDescription": "暂无描述。",
         "contactInfo": "联系信息",
