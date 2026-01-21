@@ -151,8 +151,15 @@ const useCompanyStore = create<CompanyState>()(
                     console.log('Response Data:', data);
                     console.log('=== Fetch Companies By Industry Success ===');
 
+                    // Map logoUrl to logo for display (same as other fetch functions)
+                    const companies = (data.content || data.companies || data).map((c: any) => ({
+                        ...c,
+                        id: String(c.id),
+                        logo: c.logoUrl || c.logo || '',
+                    }));
+
                     set({
-                        companies: data.content || data.companies || data,
+                        companies: companies,
                         isLoading: false
                     });
                 } catch (error) {
