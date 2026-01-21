@@ -46,21 +46,16 @@ export default function BusinessRegister() {
     };
   }, [clearError, clearSuccess]);
 
-  // Show success/error messages
+  // Show error messages
   useEffect(() => {
-    if (successMessage) {
-      console.log('Success:', successMessage);
-    }
     if (error) {
-      console.error('Error:', error);
       alert(error);
       clearError();
     }
-  }, [successMessage, error, clearError]);
+  }, [error, clearError]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
 
     const success = await registerBusiness(formData);
 
@@ -91,7 +86,6 @@ export default function BusinessRegister() {
 
   const handleVerifyOtp = async () => {
     const code = otpCode.join('');
-    console.log('Verifying OTP:', code);
 
     const success = await verifyOtp(formData.workEmail, code);
 
@@ -112,7 +106,6 @@ export default function BusinessRegister() {
   };
 
   const handleResendOtp = async () => {
-    console.log('Resending OTP to:', formData.workEmail);
     await resendOtp(formData.workEmail);
     setOtpCode(['', '', '', '', '', '']);
   };
