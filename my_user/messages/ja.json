@@ -227,6 +227,8 @@
         "noIncentives": "Trustifyの会社は、インセンティブを提供したり、レビューを隠すために支払うことは許可されていません。",
         "companyDetails": "会社の詳細",
         "activeSubscription": "アクティブなサブスクリプション",
+        "verified": "認証済み",
+        "notVerified": "未認証",
         "writtenByCompany": "会社によって書かれた",
         "noDescription": "説明はありません。",
         "contactInfo": "連絡先情報",

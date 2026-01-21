@@ -227,6 +227,8 @@
         "noIncentives": "Компаниям на Trustify не разрешается предлагать стимулы или платить за скрытие отзывов.",
         "companyDetails": "Детали компании",
         "activeSubscription": "Активная подписка",
+        "verified": "Подтверждено",
+        "notVerified": "Не подтверждено",
         "writtenByCompany": "Написано компанией",
         "noDescription": "Описание недоступно.",
         "contactInfo": "Контактная информация",

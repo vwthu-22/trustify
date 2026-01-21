@@ -227,6 +227,8 @@
         "noIncentives": "Companies on Trustify aren't allowed to offer incentives or pay to hide reviews.",
         "companyDetails": "Company details",
         "activeSubscription": "Active subscription",
+        "verified": "Verified",
+        "notVerified": "Not Verified",
         "writtenByCompany": "Written by the company",
         "noDescription": "No description available.",
         "contactInfo": "Contact info",

@@ -227,6 +227,8 @@
         "noIncentives": "Các công ty trên Trustify không được phép đưa ra ưu đãi hoặc trả tiền để ẩn đánh giá.",
         "companyDetails": "Thông tin công ty",
         "activeSubscription": "Đang hoạt động",
+        "verified": "Đã xác minh",
+        "notVerified": "Chưa xác minh",
         "writtenByCompany": "Được viết bởi công ty",
         "noDescription": "Chưa có mô tả.",
         "contactInfo": "Thông tin liên hệ",

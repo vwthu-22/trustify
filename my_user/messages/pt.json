@@ -227,6 +227,8 @@
         "noIncentives": "Empresas no Trustify não podem oferecer incentivos ou pagar para ocultar avaliações.",
         "companyDetails": "Detalhes da empresa",
         "activeSubscription": "Assinatura ativa",
+        "verified": "Verificado",
+        "notVerified": "Não Verificado",
         "writtenByCompany": "Escrito pela empresa",
         "noDescription": "Nenhuma descrição disponível.",
         "contactInfo": "Informações de contato",

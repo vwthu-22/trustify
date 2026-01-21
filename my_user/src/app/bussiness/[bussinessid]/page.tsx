@@ -556,10 +556,17 @@ export default function CompanyReviewPage() {
                         <div className="mb-4 sm:mb-6 pb-4 sm:pb-6 border-b border-gray-200">
                             <div className="flex flex-wrap items-center gap-2 mb-2 sm:mb-3">
                                 <h3 className="text-base sm:text-lg font-bold text-gray-900">{t('companyDetails')}</h3>
-                                <span className="flex items-center gap-1 text-xs text-gray-600">
-                                    <CheckCircle className="w-3 h-3 text-green-600" />
-                                    {t('activeSubscription')}
-                                </span>
+                                {currentCompany.verified ? (
+                                    <span className="flex items-center gap-1 text-xs text-green-600">
+                                        <CheckCircle className="w-3 h-3 text-green-600" />
+                                        {t('verified')}
+                                    </span>
+                                ) : (
+                                    <span className="flex items-center gap-1 text-xs text-gray-500">
+                                        <CheckCircle className="w-3 h-3 text-gray-400" />
+                                        {t('notVerified')}
+                                    </span>
+                                )}
                             </div>
                             <div className="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 mb-3 sm:mb-4">
                                 <h4 className="font-bold text-sm sm:text-base mb-1.5">{t('about')} {currentCompany.name}</h4>
