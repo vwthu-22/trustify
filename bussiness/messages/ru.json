@@ -288,7 +288,20 @@
         "getStarted": "Начать",
         "getStartedFree": "Начать бесплатно",
         "features": "Функции",
-        "noPlans": "Планы подписки в данный момент недоступны."
+        "noPlans": "Планы подписки в данный момент недоступны.",
+        "free": "Бесплатно",
+        "month": "месяц",
+        "year": "год",
+        "saveAmount": "Экономия {amount}₫/год",
+        "loadingPlans": "Загрузка планов...",
+        "tryAgain": "Попробовать снова",
+        "active": "Активный",
+        "perfectForYou": "Идеально для вас",
+        "activeSubscription": "Активная подписка",
+        "expires": "Истекает: {date}",
+        "daysRemaining": "Осталось {days} дней",
+        "renewNow": "Продлить сейчас",
+        "basicFeatures": "Базовые функции включены"
     },
     "checkout": {
         "title": "Оформление заказа",

@@ -288,7 +288,20 @@
         "getStarted": "Começar",
         "getStartedFree": "Começar Grátis",
         "features": "Funcionalidades",
-        "noPlans": "Atualmente não há planos de assinatura disponíveis."
+        "noPlans": "Atualmente não há planos de assinatura disponíveis.",
+        "free": "Grátis",
+        "month": "mês",
+        "year": "ano",
+        "saveAmount": "Economize {amount}₫/ano",
+        "loadingPlans": "Carregando planos...",
+        "tryAgain": "Tentar novamente",
+        "active": "Ativo",
+        "perfectForYou": "Perfeito para suas necessidades",
+        "activeSubscription": "Assinatura Ativa",
+        "expires": "Expira: {date}",
+        "daysRemaining": "{days} dias restantes",
+        "renewNow": "Renovar Agora",
+        "basicFeatures": "Recursos básicos incluídos"
     },
     "checkout": {
         "title": "Finalização",

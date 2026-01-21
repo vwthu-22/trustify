@@ -289,7 +289,20 @@
         "getStarted": "Get Started",
         "getStartedFree": "Get Started Free",
         "features": "Features",
-        "noPlans": "No subscription plans available at the moment."
+        "noPlans": "No subscription plans available at the moment.",
+        "free": "Free",
+        "month": "month",
+        "year": "year",
+        "saveAmount": "Save {amount}₫/year",
+        "loadingPlans": "Loading plans...",
+        "tryAgain": "Try again",
+        "active": "Active",
+        "perfectForYou": "Perfect for your needs",
+        "activeSubscription": "Active Subscription",
+        "expires": "Expires: {date}",
+        "daysRemaining": "{days} days remaining",
+        "renewNow": "Renew Now",
+        "basicFeatures": "Basic features included"
     },
     "checkout": {
         "title": "Checkout",

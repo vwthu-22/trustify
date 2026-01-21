@@ -288,7 +288,20 @@
         "getStarted": "开始使用",
         "getStartedFree": "免费开始",
         "features": "功能",
-        "noPlans": "目前暂无可用订阅计划。"
+        "noPlans": "目前暂无可用订阅计划。",
+        "free": "免费",
+        "month": "月",
+        "year": "年",
+        "saveAmount": "节省 {amount}₫/年",
+        "loadingPlans": "正在加载计划...",
+        "tryAgain": "重试",
+        "active": "活跃",
+        "perfectForYou": "完美适合您",
+        "activeSubscription": "活跃订阅",
+        "expires": "到期时间: {date}",
+        "daysRemaining": "剩余 {days} 天",
+        "renewNow": "立即续费",
+        "basicFeatures": "包含基本功能"
     },
     "checkout": {
         "title": "结账",

@@ -289,7 +289,20 @@
         "getStarted": "Bắt đầu",
         "getStartedFree": "Bắt đầu miễn phí",
         "features": "Tính năng",
-        "noPlans": "Hiện không có gói đăng ký nào."
+        "noPlans": "Hiện không có gói đăng ký nào.",
+        "free": "Miễn phí",
+        "month": "tháng",
+        "year": "năm",
+        "saveAmount": "Tiết kiệm {amount}₫/năm",
+        "loadingPlans": "Đang tải gói...",
+        "tryAgain": "Thử lại",
+        "active": "Đang hoạt động",
+        "perfectForYou": "Hoàn hảo cho nhu cầu của bạn",
+        "activeSubscription": "Gói đang hoạt động",
+        "expires": "Hết hạn: {date}",
+        "daysRemaining": "Còn {days} ngày",
+        "renewNow": "Gia hạn ngay",
+        "basicFeatures": "Bao gồm các tính năng cơ bản"
     },
     "checkout": {
         "title": "Thanh toán",

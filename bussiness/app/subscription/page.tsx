@@ -66,7 +66,7 @@ export default function SubscriptionPage() {
     };
 
     const formatPrice = (price: number) => {
-        if (price === 0) return 'Free';
+        if (price === 0) return t('free');
         const finalPrice = billingPeriod === 'year' ? price * 10 : price;
         return `${finalPrice.toLocaleString('vi-VN')}₫`;
     };
@@ -74,7 +74,7 @@ export default function SubscriptionPage() {
     const getSavings = (price: number) => {
         if (price === 0 || billingPeriod === 'month') return null;
         const savings = price * 2;
-        return `Save ${savings.toLocaleString('vi-VN')}₫/year`;
+        return t('saveAmount', { amount: savings.toLocaleString('vi-VN') });
     };
 
     // Dynamic icons based on plan price (free < paid plans)
@@ -131,7 +131,7 @@ export default function SubscriptionPage() {
             {(isLoading || loadingSubscriptions) && (
                 <div className="flex justify-center items-center py-12">
                     <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-                    <span className="ml-3 text-gray-600">Loading plans...</span>
+                    <span className="ml-3 text-gray-600">{t('loadingPlans')}</span>
                 </div>
             )}
 
@@ -143,7 +143,7 @@ export default function SubscriptionPage() {
                         onClick={fetchPlans}
                         className="mt-2 text-sm text-red-600 hover:underline"
                     >
-                        Try again
+                        {t('tryAgain')}
                     </button>
                 </div>
             )}
@@ -179,7 +179,7 @@ export default function SubscriptionPage() {
                                 {isActive && !isExpired && (
                                     <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                                         <span className="px-3 py-0.5 bg-green-600 text-white text-xs font-bold rounded-full shadow whitespace-nowrap">
-                                            Active
+                                            {t('active')}
                                         </span>
                                     </div>
                                 )}
@@ -189,11 +189,11 @@ export default function SubscriptionPage() {
                                         {getPlanIcon(plan, index)}
                                     </div>
                                     <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-1">{plan.name}</h3>
-                                    <p className="text-xs text-gray-600 mb-3 min-h-[32px]">{plan.description || 'Perfect for your needs'}</p>
+                                    <p className="text-xs text-gray-600 mb-3 min-h-[32px]">{plan.description || t('perfectForYou')}</p>
                                     <div className="mb-1">
                                         <span className="text-2xl sm:text-3xl font-bold text-gray-900">{formatPrice(plan.price)}</span>
                                         {plan.price > 0 && (
-                                            <span className="text-gray-600 text-sm">/{billingPeriod === 'month' ? 'month' : 'year'}</span>
+                                            <span className="text-gray-600 text-sm">/{t(billingPeriod === 'month' ? 'month' : 'year')}</span>
                                         )}
                                     </div>
                                     {getSavings(plan.price) && (
@@ -206,16 +206,16 @@ export default function SubscriptionPage() {
                                     <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
                                         <div className="flex items-center gap-2 mb-2">
                                             <Calendar className="w-4 h-4 text-green-600" />
-                                            <span className="text-sm font-semibold text-green-900">Active Subscription</span>
+                                            <span className="text-sm font-semibold text-green-900">{t('activeSubscription')}</span>
                                         </div>
                                         <div className="space-y-1 text-xs text-green-700">
                                             <div className="flex items-center gap-2">
                                                 <Clock className="w-3 h-3" />
-                                                <span>Expires: {formatDate(activeSub.endDate)}</span>
+                                                <span>{t('expires', { date: formatDate(activeSub.endDate) })}</span>
                                             </div>
                                             <div className="flex items-center gap-2">
                                                 <span className="font-semibold">
-                                                    {daysRemaining} days remaining
+                                                    {t('daysRemaining', { days: daysRemaining })}
                                                 </span>
                                             </div>
                                         </div>
@@ -230,7 +230,7 @@ export default function SubscriptionPage() {
                                                 : 'bg-gray-900 text-white hover:bg-gray-800'
                                             }`}
                                     >
-                                        {plan.price === 0 ? t('getStartedFree') : isExpired ? 'Renew Now' : t('upgradeNow')}
+                                        {plan.price === 0 ? t('getStartedFree') : isExpired ? t('renewNow') : t('upgradeNow')}
                                     </button>
                                 )}
 
@@ -244,7 +244,7 @@ export default function SubscriptionPage() {
                                             </div>
                                         ))
                                     ) : (
-                                        <p className="text-sm text-gray-500 text-center">Basic features included</p>
+                                        <p className="text-sm text-gray-500 text-center">{t('basicFeatures')}</p>
                                     )}
                                 </div>
                             </div>
