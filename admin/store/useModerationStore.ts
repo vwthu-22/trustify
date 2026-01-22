@@ -21,12 +21,14 @@ export interface ReviewReport {
         fullName?: string;
         email?: string;
         avatarUrl?: string;
+        avatar?: string; // Added for fallback
     };
     fullName?: string;
     name?: string;
     nameUser?: string;
     userAvatar?: string;
     avatarUrl?: string;
+    avatar?: string; // Added for fallback
 }
 
 // Transformed format for display
@@ -133,7 +135,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
                         reviewRating: r.rating,
                         reviewerName: r.userName || r.user?.name || r.user?.fullName || r.fullName || r.name || r.nameUser || (r.userEmail || r.email || '').split('@')[0] || 'User',
                         reviewerEmail: r.userEmail || r.email || '',
-                        reviewerAvatar: r.userAvatar || r.user?.avatarUrl || r.avatarUrl || '',
+                        reviewerAvatar: r.userAvatar || r.avatarUrl || r.user?.avatarUrl || r.user?.avatar || r.avatar || '',
                         companyName: r.companyName || '',
                         reason: r.contendReport,
                         status: r.status === 'RESOLVED' ? 'RESOLVED' : r.status === 'DISMISSED' ? 'DISMISSED' : 'PENDING',
@@ -293,6 +295,18 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
                 // The backend returns { reviews: [], totalElements: X, ... }
                 const reviewList: any[] = data.reviews || [];
 
+                // Debug: Log first review to see available fields
+                if (reviewList.length > 0) {
+                    console.log('Admin Moderation - Sample pending review:', reviewList[0]);
+                    console.log('Admin Moderation - Avatar fields:', {
+                        userAvatar: reviewList[0].userAvatar,
+                        avatarUrl: reviewList[0].avatarUrl,
+                        'user?.avatarUrl': reviewList[0].user?.avatarUrl,
+                        'user?.avatar': reviewList[0].user?.avatar,
+                        avatar: reviewList[0].avatar
+                    });
+                }
+
                 const pendingReviews: PendingReview[] = reviewList.map(r => ({
                     id: r.id,
                     title: r.title,
@@ -300,7 +314,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
                     rating: r.rating,
                     userName: r.userName || r.user?.name || r.user?.fullName || r.fullName || r.name || r.nameUser || (r.userEmail || r.email || '').split('@')[0] || 'User',
                     userEmail: r.userEmail || r.user?.email || r.email || '',
-                    userAvatar: r.userAvatar || r.user?.avatarUrl || r.avatarUrl || '',
+                    userAvatar: r.userAvatar || r.avatarUrl || r.user?.avatarUrl || r.user?.avatar || r.avatar || '',
                     companyName: r.companyName || r.company?.name || '',
                     createdAt: r.createdAt || r.expDate || new Date().toISOString(),
                     status: 'pending' as const
