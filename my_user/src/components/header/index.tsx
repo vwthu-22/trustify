@@ -106,10 +106,15 @@ export default function Header() {
     };
 
     const handleCompanyClick = (companyId: string) => {
-        setShowSearchDropdown(false);
-        setSearchQuery('');
-        clearSearchResults();
+        // Navigate first, then clear search state to avoid race condition
         router.push(`/bussiness/${companyId}`);
+
+        // Clear search state after a small delay to ensure navigation starts
+        setTimeout(() => {
+            setShowSearchDropdown(false);
+            setSearchQuery('');
+            clearSearchResults();
+        }, 100);
     };
 
     return (
