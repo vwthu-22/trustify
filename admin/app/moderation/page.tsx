@@ -32,6 +32,7 @@ export default function ModerationPage() {
     const [activeTab, setActiveTab] = useState<TabType>('pending')
     const [selectedReviews, setSelectedReviews] = useState<number[]>([])
     const [selectedReports, setSelectedReports] = useState<number[]>([])
+    const [expandedReasons, setExpandedReasons] = useState<number[]>([])
 
 
     useEffect(() => {
@@ -77,9 +78,7 @@ export default function ModerationPage() {
 
     // Sort pending reports by number of reports (descending)
     const sortedPendingReports = [...pendingReports].sort((a, b) => {
-        const countA = reports.filter(r => r.reviewId === a.reviewId).length;
-        const countB = reports.filter(r => r.reviewId === b.reviewId).length;
-        return countB - countA; // More reports first
+        return (b.numberOfReport || 0) - (a.numberOfReport || 0);
     });
 
     const handleRefresh = () => {
@@ -140,6 +139,14 @@ export default function ModerationPage() {
         const reportsToDismiss = pendingReports.filter(r => selectedReports.includes(r.id));
         await bulkDismissReports(reportsToDismiss);
         setSelectedReports([]);
+    };
+
+    const toggleExpandReason = (id: number) => {
+        setExpandedReasons(prev =>
+            prev.includes(id)
+                ? prev.filter(expandedId => expandedId !== id)
+                : [...prev, id]
+        );
     };
 
     return (
@@ -448,9 +455,33 @@ export default function ModerationPage() {
                                                                 <AlertCircle className="w-4 h-4 text-red-500" />
                                                                 <span className="text-[9px] font-bold text-red-700 uppercase tracking-wider">{t('reasonLabel')}</span>
                                                             </div>
-                                                            <p className="text-xs font-medium text-red-900/70 leading-relaxed pl-6 italic whitespace-pre-wrap">
-                                                                {report.reason}
-                                                            </p>
+                                                            <div className="space-y-2 pl-6">
+                                                                {(() => {
+                                                                    const allReasons = report.reason.split('\n---\n');
+                                                                    const isExpanded = expandedReasons.includes(report.id);
+                                                                    const displayedReasons = isExpanded ? allReasons : allReasons.slice(0, 3);
+
+                                                                    return (
+                                                                        <>
+                                                                            {displayedReasons.map((singleReason, index) => (
+                                                                                <p key={index} className="text-xs font-medium text-red-900/70 leading-relaxed italic whitespace-pre-wrap flex gap-2">
+                                                                                    <span className="text-red-400 font-bold">{index + 1}.</span>
+                                                                                    <span>"{singleReason.trim()}"</span>
+                                                                                </p>
+                                                                            ))}
+
+                                                                            {allReasons.length > 3 && (
+                                                                                <button
+                                                                                    onClick={() => toggleExpandReason(report.id)}
+                                                                                    className="text-[10px] font-bold text-red-500 hover:text-red-600 underline mt-1 ml-6 uppercase tracking-wider"
+                                                                                >
+                                                                                    {isExpanded ? t('showLess') : t('showMoreCount', { count: allReasons.length - 3 })}
+                                                                                </button>
+                                                                            )}
+                                                                        </>
+                                                                    );
+                                                                })()}
+                                                            </div>
                                                         </div>
                                                     </div>
 
