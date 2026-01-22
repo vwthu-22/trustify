@@ -307,14 +307,44 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
                     });
                 }
 
-                const pendingReviews: PendingReview[] = reviewList.map(r => ({
+                // WORKAROUND: Backend doesn't return avatar in pending reviews
+                // Fetch user avatars separately by email
+                const enrichedReviews = await Promise.all(
+                    reviewList.map(async (r) => {
+                        let userAvatar = r.userAvatar || r.avatarUrl || r.user?.avatarUrl || r.user?.avatar || r.avatar || '';
+
+                        // If no avatar found, try to fetch user info by email
+                        if (!userAvatar && (r.userEmail || r.email)) {
+                            try {
+                                const userEmail = r.userEmail || r.email;
+                                const userResponse = await fetch(
+                                    `${API_BASE_URL}/api/user/by-email?email=${encodeURIComponent(userEmail)}`,
+                                    {
+                                        credentials: 'include',
+                                        headers: { 'ngrok-skip-browser-warning': 'true' }
+                                    }
+                                );
+                                if (userResponse.ok) {
+                                    const userData = await userResponse.json();
+                                    userAvatar = userData.avatarUrl || userData.avatar || '';
+                                }
+                            } catch (error) {
+                                console.warn('Failed to fetch user avatar for:', r.userEmail || r.email);
+                            }
+                        }
+
+                        return { ...r, userAvatar };
+                    })
+                );
+
+                const pendingReviews: PendingReview[] = enrichedReviews.map(r => ({
                     id: r.id,
                     title: r.title,
                     description: r.description,
                     rating: r.rating,
                     userName: r.userName || r.user?.name || r.user?.fullName || r.fullName || r.name || r.nameUser || (r.userEmail || r.email || '').split('@')[0] || 'User',
                     userEmail: r.userEmail || r.user?.email || r.email || '',
-                    userAvatar: r.userAvatar || r.avatarUrl || r.user?.avatarUrl || r.user?.avatar || r.avatar || '',
+                    userAvatar: r.userAvatar || '',
                     companyName: r.companyName || r.company?.name || '',
                     createdAt: r.createdAt || r.expDate || new Date().toISOString(),
                     status: 'pending' as const
