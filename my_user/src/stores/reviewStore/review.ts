@@ -325,10 +325,10 @@ const useReviewStore = create<ReviewState>()(
                     // Map backend field names to frontend field names
                     const mappedReviews = (data.reviews || [])
                         .filter((review: any) => {
-                            // Only show APPROVED reviews or reviews without status (legacy data)
+                            // Only show APPROVED or REPORTED reviews
                             // Hide PENDING and REJECTED reviews from public view
                             const status = review.status?.toUpperCase();
-                            return !status || status === 'APPROVED';
+                            return !status || status === 'APPROVED' || status === 'REPORTED';
                         })
                         .map((review: any) => ({
                             ...review,
@@ -377,7 +377,7 @@ const useReviewStore = create<ReviewState>()(
                         // Filter out PENDING and REJECTED reviews from statistics
                         const approvedReviews = (data.reviews || []).filter((review: any) => {
                             const status = review.status?.toUpperCase();
-                            return !status || status === 'APPROVED';
+                            return !status || status === 'APPROVED' || status === 'REPORTED';
                         });
                         set({ allReviews: approvedReviews });
                     } else {
