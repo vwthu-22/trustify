@@ -948,18 +948,18 @@ export default function CompanyReviewPage() {
                                                     {!isOwnReview(review) && user && (
                                                         <button
                                                             onClick={() => {
-                                                                // Check if current user has already reported this review OR if it's already in REPORTED status
-                                                                const hasReported = reportedReviews.has(review.id) || review.status?.toUpperCase() === 'REPORTED';
+                                                                // Check if current user has already reported this review
+                                                                const hasReported = reportedReviews.has(review.id);
                                                                 if (!hasReported) openReportModal(review);
                                                             }}
-                                                            disabled={reportedReviews.has(review.id) || review.status?.toUpperCase() === 'REPORTED'}
-                                                            className={`flex items-center gap-1 text-xs font-medium transition ${(reportedReviews.has(review.id) || review.status?.toUpperCase() === 'REPORTED')
+                                                            disabled={reportedReviews.has(review.id)}
+                                                            className={`flex items-center gap-1 text-xs font-medium transition ${reportedReviews.has(review.id)
                                                                 ? "text-red-400 cursor-not-allowed"
                                                                 : "text-gray-500 hover:text-red-600"
                                                                 }`}
                                                         >
-                                                            <Flag className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${(reportedReviews.has(review.id) || review.status?.toUpperCase() === 'REPORTED') ? "fill-red-400" : ""}`} />
-                                                            {(reportedReviews.has(review.id) || review.status?.toUpperCase() === 'REPORTED') ? tReview('reported') : tReview('report')}
+                                                            <Flag className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${reportedReviews.has(review.id) ? "fill-red-400" : ""}`} />
+                                                            {reportedReviews.has(review.id) ? tReview('reported') : tReview('report')}
                                                         </button>
                                                     )}
                                                 </div>
