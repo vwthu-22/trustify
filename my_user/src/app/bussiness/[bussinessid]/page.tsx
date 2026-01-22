@@ -121,6 +121,9 @@ export default function CompanyReviewPage() {
     const [likedReviews, setLikedReviews] = useState<Set<number>>(new Set());
     const [likeCounts, setLikeCounts] = useState<Record<number, number>>({});
 
+    // Report state - track reported reviews by current user
+    const [reportedReviews, setReportedReviews] = useState<Set<number>>(new Set());
+
     // Load liked reviews from localStorage on mount
     useEffect(() => {
         if (user?.email) {
@@ -134,6 +137,25 @@ export default function CompanyReviewPage() {
                     console.error('Failed to parse liked reviews:', e);
                 }
             }
+        }
+    }, [user?.email]);
+
+    // Load reported reviews from localStorage on mount
+    useEffect(() => {
+        if (user?.email) {
+            const storageKey = `reported_reviews_${user.email}`;
+            const stored = localStorage.getItem(storageKey);
+            if (stored) {
+                try {
+                    const reportedIds = JSON.parse(stored);
+                    setReportedReviews(new Set(reportedIds));
+                } catch (e) {
+                    console.error('Failed to parse reported reviews:', e);
+                }
+            }
+        } else {
+            // Clear reported reviews when user logs out
+            setReportedReviews(new Set());
         }
     }, [user?.email]);
 
@@ -219,6 +241,16 @@ export default function CompanyReviewPage() {
             const success = await reportReview(reportingReview, reportReason.trim());
 
             if (success) {
+                // Add to reported reviews set and save to localStorage
+                const newReportedSet = new Set(reportedReviews);
+                newReportedSet.add(reportingReview.id);
+                setReportedReviews(newReportedSet);
+
+                if (user?.email) {
+                    const storageKey = `reported_reviews_${user.email}`;
+                    localStorage.setItem(storageKey, JSON.stringify(Array.from(newReportedSet)));
+                }
+
                 setReportSuccess(true);
                 setTimeout(() => {
                     setIsReportModalOpen(false);
@@ -867,8 +899,20 @@ export default function CompanyReviewPage() {
                                                         }}
                                                     />
 
-                                                    {/* Like Button - Show for other users' reviews */}
-                                                    {!isOwnReview(review) && (
+                                                    {/* Like Count/Button */}
+                                                    {isOwnReview(review) ? (
+                                                        // Show like count only (non-clickable) for own reviews
+                                                        <div className="flex items-center gap-1 text-xs font-medium text-gray-600">
+                                                            <ThumbsUp className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                                                            <span>
+                                                                {likeCounts[review.id] !== undefined
+                                                                    ? likeCounts[review.id]
+                                                                    : ((review as any).likes || 0)
+                                                                }
+                                                            </span>
+                                                        </div>
+                                                    ) : (
+                                                        // Show interactive like button for other users' reviews
                                                         <button
                                                             onClick={() => handleLikeReview(review.id)}
                                                             className={`flex items-center gap-1 text-xs font-medium transition ${likedReviews.has(review.id)
@@ -904,17 +948,18 @@ export default function CompanyReviewPage() {
                                                     {!isOwnReview(review) && user && (
                                                         <button
                                                             onClick={() => {
-                                                                const isReported = review.status?.toLowerCase().trim() === 'reported' || !!review.contendReport;
-                                                                if (!isReported) openReportModal(review);
+                                                                // Check if current user has already reported this review
+                                                                const hasReported = reportedReviews.has(review.id);
+                                                                if (!hasReported) openReportModal(review);
                                                             }}
-                                                            disabled={review.status?.toLowerCase().trim() === 'reported' || !!review.contendReport}
-                                                            className={`flex items-center gap-1 text-xs font-medium transition ${(review.status?.toLowerCase().trim() === 'reported' || !!review.contendReport)
+                                                            disabled={reportedReviews.has(review.id)}
+                                                            className={`flex items-center gap-1 text-xs font-medium transition ${reportedReviews.has(review.id)
                                                                 ? "text-red-400 cursor-not-allowed"
                                                                 : "text-gray-500 hover:text-red-600"
                                                                 }`}
                                                         >
-                                                            <Flag className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${(review.status?.toLowerCase().trim() === 'reported' || !!review.contendReport) ? "fill-red-400" : ""}`} />
-                                                            {(review.status?.toLowerCase().trim() === 'reported' || !!review.contendReport) ? tReview('reported') : tReview('report')}
+                                                            <Flag className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${reportedReviews.has(review.id) ? "fill-red-400" : ""}`} />
+                                                            {reportedReviews.has(review.id) ? tReview('reported') : tReview('report')}
                                                         </button>
                                                     )}
                                                 </div>
