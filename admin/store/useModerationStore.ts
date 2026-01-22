@@ -23,6 +23,11 @@ export interface ReviewReport {
         avatarUrl?: string;
         avatar?: string; // Added for fallback
     };
+    company?: {
+        name?: string;
+        id?: number;
+        logoUrl?: string;
+    };
     fullName?: string;
     name?: string;
     nameUser?: string;
@@ -136,7 +141,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
                         reviewerName: r.userName || r.user?.name || r.user?.fullName || r.fullName || r.name || r.nameUser || (r.userEmail || r.email || '').split('@')[0] || 'User',
                         reviewerEmail: r.userEmail || r.email || '',
                         reviewerAvatar: r.userAvatar || r.avatarUrl || r.user?.avatarUrl || r.user?.avatar || r.avatar || '',
-                        companyName: r.companyName || '',
+                        companyName: r.companyName || r.company?.name || '',
                         reason: r.contendReport,
                         status: r.status === 'RESOLVED' ? 'RESOLVED' : r.status === 'DISMISSED' ? 'DISMISSED' : 'PENDING',
                         createdAt: r.expDate || new Date().toISOString(),
