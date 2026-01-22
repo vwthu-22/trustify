@@ -34,6 +34,7 @@ export interface ReviewReport {
     userAvatar?: string;
     avatarUrl?: string;
     avatar?: string; // Added for fallback
+    numberOfReport?: number; // Added to track cumulative reports
 }
 
 // Transformed format for display
@@ -51,6 +52,7 @@ export interface Report {
     status: 'PENDING' | 'RESOLVED' | 'DISMISSED';
     createdAt: string;
     originalReview: ReviewReport;
+    numberOfReport: number; // Added to use in UI
 }
 
 // Pending review for approval
@@ -145,7 +147,8 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
                         reason: r.contendReport,
                         status: r.status === 'RESOLVED' ? 'RESOLVED' : r.status === 'DISMISSED' ? 'DISMISSED' : 'PENDING',
                         createdAt: r.expDate || new Date().toISOString(),
-                        originalReview: r
+                        originalReview: r,
+                        numberOfReport: r.numberOfReport || 0
                     }));
 
                 set({ reports, isLoading: false });

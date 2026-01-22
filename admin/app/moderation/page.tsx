@@ -405,7 +405,7 @@ export default function ModerationPage() {
                                                     <div className="absolute top-0 right-0 px-4 py-2 bg-red-50 text-red-600 rounded-bl-2xl border-l border-b border-red-100 flex items-center gap-1.5">
                                                         <Flag className="w-3.5 h-3.5" />
                                                         <span className="text-[10px] font-bold uppercase tracking-wider">
-                                                            {t('reportsCount', { count: reports.filter(r => r.reviewId === report.reviewId).length })}
+                                                            {t('reportsCount', { count: report.numberOfReport || 1 })}
                                                         </span>
                                                     </div>
 
@@ -448,8 +448,8 @@ export default function ModerationPage() {
                                                                 <AlertCircle className="w-4 h-4 text-red-500" />
                                                                 <span className="text-[9px] font-bold text-red-700 uppercase tracking-wider">{t('reasonLabel')}</span>
                                                             </div>
-                                                            <p className="text-xs font-medium text-red-900/70 leading-relaxed pl-6 italic">
-                                                                "{report.reason}"
+                                                            <p className="text-xs font-medium text-red-900/70 leading-relaxed pl-6 italic whitespace-pre-wrap">
+                                                                {report.reason}
                                                             </p>
                                                         </div>
                                                     </div>

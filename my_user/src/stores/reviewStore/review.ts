@@ -45,6 +45,7 @@ interface Review {
     replyContent?: string;
     status?: string;
     contendReport?: string;
+    numberOfReport?: number; // Added to track cumulative reports
     likes?: number; // Like count
 }
 
@@ -556,6 +557,15 @@ const useReviewStore = create<ReviewState>()(
                     const url = `${API_BASE_URL}/api/review/${review.id}`;
                     console.log('Reporting review at:', url);
 
+                    // Combine old reasons with the new one
+                    const oldReasons = review.contendReport ? review.contendReport : '';
+                    const updatedReason = oldReasons
+                        ? `${oldReasons}\n---\n${reason}`
+                        : reason;
+
+                    // Increment the report count
+                    const updatedCount = (review.numberOfReport || 0) + 1;
+
                     const response = await fetch(url, {
                         method: 'PUT',
                         credentials: 'include',
@@ -569,9 +579,10 @@ const useReviewStore = create<ReviewState>()(
                             title: review.title,
                             description: review.description,
                             rating: review.rating,
-                            contendReport: reason,
-                            status: 'REPORTED', // Changed from review.status to mark as reported
-                            // Include required fields that were missing
+                            contendReport: updatedReason,
+                            numberOfReport: updatedCount,
+                            status: 'REPORTED',
+                            // Include required fields
                             reply: review.reply || null,
                             email: review.userEmail || review.email || '',
                             companyName: review.companyName || '',
@@ -611,16 +622,16 @@ const useReviewStore = create<ReviewState>()(
                         isLoading: false,
                         successMessage: 'Review reported successfully!',
                         reviews: state.reviews.map(r =>
-                            r.id === review.id ? { ...r, contendReport: reason } : r
+                            r.id === review.id ? { ...r, contendReport: updatedReason, numberOfReport: updatedCount } : r
                         ),
                         myReviews: state.myReviews.map(r =>
-                            r.id === review.id ? { ...r, contendReport: reason } : r
+                            r.id === review.id ? { ...r, contendReport: updatedReason, numberOfReport: updatedCount } : r
                         ),
                         allReviews: state.allReviews.map(r =>
-                            r.id === review.id ? { ...r, contendReport: reason } : r
+                            r.id === review.id ? { ...r, contendReport: updatedReason, numberOfReport: updatedCount } : r
                         ),
                         highRatedReviews: state.highRatedReviews.map(r =>
-                            r.id === review.id ? { ...r, contendReport: reason } : r
+                            r.id === review.id ? { ...r, contendReport: updatedReason, numberOfReport: updatedCount } : r
                         )
                     }));
                     return true;
