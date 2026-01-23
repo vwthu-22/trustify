@@ -160,7 +160,7 @@ export const useInvitationStore = create<InvitationStore>((set, get) => ({
         set({ isLoading: true, error: null });
         try {
             const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://trustify.io.vn';
-            const response = await fetch(`${API_BASE_URL}/invite/product/${companyId}`, {
+            const response = await fetch(`${API_BASE_URL}/api/companies/invite/product/${companyId}`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {

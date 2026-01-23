@@ -397,7 +397,7 @@ export const integrationApi = {
         subject?: string;
         body?: string;
     }) => {
-        const response = await fetch(`${API_BASE_URL}/invite/product/${companyId}`, {
+        const response = await fetch(`${API_BASE_URL}/api/companies/invite/product/${companyId}`, {
             method: 'POST',
             credentials: 'include',
             headers: {

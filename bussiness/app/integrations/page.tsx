@@ -40,7 +40,7 @@ export default function IntegrationsPage() {
         setAccessToken('');
 
         try {
-            const response = await fetch(`${baseUrl}/integration/companies/${company.id}/getCode`, {
+            const response = await fetch(`${baseUrl}/api/companies/getCode/${company.id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -154,7 +154,7 @@ export default function IntegrationsPage() {
             id: 'invite',
             method: 'POST',
             name: t('endpoints.invite.name'),
-            path: `/invite/product/${companyId}`,
+            path: `/api/companies/invite/product/${companyId}`,
             description: t('endpoints.invite.description'),
             icon: Mail,
             color: 'orange'
@@ -193,7 +193,7 @@ export default function IntegrationsPage() {
                             <p className="text-xs text-gray-400 mb-2">{t('response')}</p>
                             <pre className="text-sm text-green-400">
                                 {`{
-  "sendInviteApi": "/invite/product/${companyId}",
+  "sendInviteApi": "/api/companies/invite/product/${companyId}",
   "ratingApi": "/integration/companies/${companyId}/rating",
   "reviewsApi": "/integration/companies/${companyId}/reviews",
   "companyRating": {
@@ -318,9 +318,9 @@ export default function IntegrationsPage() {
                     <div className="space-y-4">
                         <div className="flex items-center gap-2 mb-4">
                             <span className="px-2 py-1 bg-orange-100 text-orange-700 text-xs font-bold rounded">POST</span>
-                            <code className="text-sm text-gray-700 flex-1">/invite/product/{companyId}</code>
+                            <code className="text-sm text-gray-700 flex-1">/api/companies/invite/product/{companyId}</code>
                             <button
-                                onClick={() => handleCopy(`${baseUrl}/invite/product/${companyId}`, 'invite')}
+                                onClick={() => handleCopy(`${baseUrl}/api/companies/invite/product/${companyId}`, 'invite')}
                                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                             >
                                 {copiedEndpoint === 'invite' ? <CheckCircle className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4 text-gray-400" />}
@@ -370,7 +370,7 @@ export default function IntegrationsPage() {
                         <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
                             <p className="text-xs text-gray-400 mb-2">{t('exampleRequest')}</p>
                             <pre className="text-sm text-yellow-400 mb-4">
-                                {`POST /invite/product/${companyId}
+                                {`POST /api/companies/invite/product/${companyId}
 Content-Type: application/json
 
 {
