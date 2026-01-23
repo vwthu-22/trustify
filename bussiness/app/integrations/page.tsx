@@ -40,7 +40,7 @@ export default function IntegrationsPage() {
         setAccessToken('');
 
         try {
-            const response = await fetch(`${baseUrl}/api/companies/getCode/${company.id}`, {
+            const response = await fetch(`${baseUrl}/integration/getCode/${company.id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -10,6 +10,7 @@ interface InviteFormData {
     to: string;
     name: string;
     productLink: string;
+    productCode: string;
     subject: string;
     body: string;
 }
@@ -24,6 +25,7 @@ export default function SendInvitationsPage() {
         to: '',
         name: '',
         productLink: '',
+        productCode: '',
         subject: '',
         body: ''
     });
@@ -76,6 +78,7 @@ export default function SendInvitationsPage() {
                 to: formData.to,
                 name: formData.name,
                 productLink: formData.productLink,
+                productCode: formData.productCode || undefined,
                 subject: formData.subject || undefined,
                 body: formData.body || undefined
             });
@@ -89,6 +92,7 @@ export default function SendInvitationsPage() {
                     to: '',
                     name: '',
                     productLink: getDefaultProductLink(),
+                    productCode: '',
                     subject: '',
                     body: ''
                 });
@@ -174,6 +178,19 @@ export default function SendInvitationsPage() {
                                     />
                                 </div>
                             </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Product Code <span className="text-gray-400 text-xs">{t('optional')}</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="SKU-123"
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    value={formData.productCode}
+                                    onChange={(e) => setFormData({ ...formData, productCode: e.target.value })}
+                                />
+                            </div>
                         </div>
 
                         {/* Subject */}
@@ -252,6 +269,12 @@ export default function SendInvitationsPage() {
                                 <span className="text-gray-500 font-medium w-24">{t('labelReviewLink')}</span>
                                 <span className="text-gray-900 text-xs break-all">{formData.productLink || 'https://yourwebsite.com/review/product/123'}</span>
                             </div>
+                            {formData.productCode && (
+                                <div className="flex">
+                                    <span className="text-gray-500 font-medium w-24">Product Code:</span>
+                                    <span className="text-gray-900">{formData.productCode}</span>
+                                </div>
+                            )}
                             <div className="flex">
                                 <span className="text-gray-500 font-medium w-24 uppercase text-[10px] tracking-wider">{t('subject')}:</span>
                                 <span className="text-gray-900">{formData.subject || t('placeholderSubject')}</span>
