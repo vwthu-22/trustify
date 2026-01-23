@@ -388,14 +388,16 @@ export const reviewApi = {
 // ==================== Integration API ====================
 
 export const integrationApi = {
-    // Send invite email to customer
-    sendInvite: async (data: {
+    // Send invite email to customer with product
+    sendInvite: async (companyId: number, data: {
         to: string;
+        name: string;
         productLink: string;
+        productCode?: string;
         subject?: string;
         body?: string;
     }) => {
-        const response = await fetch(`${API_BASE_URL}/integration/companies/invite`, {
+        const response = await fetch(`${API_BASE_URL}/invite/product/${companyId}`, {
             method: 'POST',
             credentials: 'include',
             headers: {

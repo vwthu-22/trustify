@@ -8,6 +8,7 @@ import { useInvitationStore } from '@/store/useInvitationStore';
 
 interface InviteFormData {
     to: string;
+    name: string;
     productLink: string;
     subject: string;
     body: string;
@@ -21,6 +22,7 @@ export default function SendInvitationsPage() {
 
     const [formData, setFormData] = useState<InviteFormData>({
         to: '',
+        name: '',
         productLink: '',
         subject: '',
         body: ''
@@ -48,8 +50,20 @@ export default function SendInvitationsPage() {
             return;
         }
 
+        if (!formData.name) {
+            setErrorMessage('Customer name is required');
+            setSendStatus('error');
+            return;
+        }
+
         if (!formData.productLink) {
             setErrorMessage(t('errorProductLinkRequired') || 'Product link is required');
+            setSendStatus('error');
+            return;
+        }
+
+        if (!company?.id) {
+            setErrorMessage('Company ID is required');
             setSendStatus('error');
             return;
         }
@@ -58,8 +72,9 @@ export default function SendInvitationsPage() {
         setErrorMessage('');
 
         try {
-            const result = await sendSingleInvite({
+            const result = await sendSingleInvite(Number(company.id), {
                 to: formData.to,
+                name: formData.name,
                 productLink: formData.productLink,
                 subject: formData.subject || undefined,
                 body: formData.body || undefined
@@ -72,6 +87,7 @@ export default function SendInvitationsPage() {
                 setSendStatus('idle');
                 setFormData({
                     to: '',
+                    name: '',
                     productLink: getDefaultProductLink(),
                     subject: '',
                     body: ''
@@ -128,6 +144,19 @@ export default function SendInvitationsPage() {
                                         onChange={(e) => setFormData({ ...formData, to: e.target.value })}
                                     />
                                 </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Customer Name <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="John Doe"
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                />
                             </div>
 
                             <div>
@@ -193,7 +222,7 @@ export default function SendInvitationsPage() {
                         {/* Send Button */}
                         <button
                             onClick={handleSendSingle}
-                            disabled={!formData.to || !formData.productLink || sendStatus === 'sending'}
+                            disabled={!formData.to || !formData.name || !formData.productLink || sendStatus === 'sending'}
                             className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                         >
                             <Send className="h-5 w-5" />
@@ -214,6 +243,10 @@ export default function SendInvitationsPage() {
                             <div className="flex">
                                 <span className="text-gray-500 font-medium w-24">{t('labelTo')}</span>
                                 <span className="text-gray-900">{formData.to || 'customer@example.com'}</span>
+                            </div>
+                            <div className="flex">
+                                <span className="text-gray-500 font-medium w-24">Name:</span>
+                                <span className="text-gray-900">{formData.name || 'John Doe'}</span>
                             </div>
                             <div className="flex">
                                 <span className="text-gray-500 font-medium w-24">{t('labelReviewLink')}</span>

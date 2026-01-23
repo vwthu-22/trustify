@@ -154,7 +154,7 @@ export default function IntegrationsPage() {
             id: 'invite',
             method: 'POST',
             name: t('endpoints.invite.name'),
-            path: `/integration/companies/${companyId}/send-invite`,
+            path: `/invite/product/${companyId}`,
             description: t('endpoints.invite.description'),
             icon: Mail,
             color: 'orange'
@@ -193,7 +193,7 @@ export default function IntegrationsPage() {
                             <p className="text-xs text-gray-400 mb-2">{t('response')}</p>
                             <pre className="text-sm text-green-400">
                                 {`{
-  "sendInviteApi": "/integration/companies/${companyId}/send-invite",
+  "sendInviteApi": "/invite/product/${companyId}",
   "ratingApi": "/integration/companies/${companyId}/rating",
   "reviewsApi": "/integration/companies/${companyId}/reviews",
   "companyRating": {
@@ -318,9 +318,9 @@ export default function IntegrationsPage() {
                     <div className="space-y-4">
                         <div className="flex items-center gap-2 mb-4">
                             <span className="px-2 py-1 bg-orange-100 text-orange-700 text-xs font-bold rounded">POST</span>
-                            <code className="text-sm text-gray-700 flex-1">/integration/companies/{companyId}/send-invite</code>
+                            <code className="text-sm text-gray-700 flex-1">/invite/product/{companyId}</code>
                             <button
-                                onClick={() => handleCopy(`${baseUrl}/integration/companies/${companyId}/send-invite?to=customer@email.com`, 'invite')}
+                                onClick={() => handleCopy(`${baseUrl}/invite/product/${companyId}`, 'invite')}
                                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                             >
                                 {copiedEndpoint === 'invite' ? <CheckCircle className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4 text-gray-400" />}
@@ -330,7 +330,7 @@ export default function IntegrationsPage() {
                             {t('apiDescriptions.inviteDesc')}
                         </p>
                         <div className="bg-gray-50 rounded-lg p-4 border">
-                            <p className="text-sm font-medium text-gray-700 mb-2">{t('queryParameters')}</p>
+                            <p className="text-sm font-medium text-gray-700 mb-2">{t('requestBody')}</p>
                             <div className="space-y-2">
                                 <div className="flex items-start gap-2">
                                     <code className="px-2 py-1 bg-gray-200 rounded text-xs">to</code>
@@ -338,6 +338,24 @@ export default function IntegrationsPage() {
                                         <span className="text-sm text-gray-600">{t('params.to')}</span>
                                         <span className="ml-2 px-1.5 py-0.5 bg-red-100 text-red-600 text-xs rounded">{t('required')}</span>
                                     </div>
+                                </div>
+                                <div className="flex items-start gap-2">
+                                    <code className="px-2 py-1 bg-gray-200 rounded text-xs">name</code>
+                                    <div>
+                                        <span className="text-sm text-gray-600">Customer name</span>
+                                        <span className="ml-2 px-1.5 py-0.5 bg-red-100 text-red-600 text-xs rounded">{t('required')}</span>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-2">
+                                    <code className="px-2 py-1 bg-gray-200 rounded text-xs">productLink</code>
+                                    <div>
+                                        <span className="text-sm text-gray-600">Product review link</span>
+                                        <span className="ml-2 px-1.5 py-0.5 bg-red-100 text-red-600 text-xs rounded">{t('required')}</span>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <code className="px-2 py-1 bg-gray-200 rounded text-xs">productCode</code>
+                                    <span className="text-sm text-gray-600">Product code/SKU</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <code className="px-2 py-1 bg-gray-200 rounded text-xs">subject</code>
@@ -352,16 +370,24 @@ export default function IntegrationsPage() {
                         <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
                             <p className="text-xs text-gray-400 mb-2">{t('exampleRequest')}</p>
                             <pre className="text-sm text-yellow-400 mb-4">
-                                {`POST /integration/companies/${companyId}/send-invite
-     ?to=customer@email.com
-     &subject=Please review our service`}
+                                {`POST /invite/product/${companyId}
+Content-Type: application/json
+
+{
+  "to": "customer@email.com",
+  "name": "John Doe",
+  "productLink": "https://example.com/product/123",
+  "productCode": "SKU-123",
+  "subject": "Please review our product",
+  "body": "We'd love to hear your feedback!"
+}`}
                             </pre>
                             <p className="text-xs text-gray-400 mb-2">{t('response')}</p>
                             <pre className="text-sm text-green-400">
                                 {`{
   "status": "sent",
   "to": "customer@email.com",
-  "reviewLink": "https://trustify.com/review?companyId=${companyId}"
+  "productLink": "https://example.com/product/123"
 }`}
                             </pre>
                         </div>

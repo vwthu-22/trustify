@@ -56,8 +56,9 @@ interface InvitationStore {
     // Actions
     fetchInvitations: () => Promise<void>;
     sendInvitation: (emails: string[], templateId: string) => Promise<boolean>;
-    sendSingleInvite: (data: {
+    sendSingleInvite: (companyId: number, data: {
         to: string;
+        name: string;
         productLink: string;
         productCode?: string;
         subject?: string;
@@ -148,8 +149,9 @@ export const useInvitationStore = create<InvitationStore>((set, get) => ({
     },
 
     // New: Send single invite using real API
-    sendSingleInvite: async (data: {
+    sendSingleInvite: async (companyId: number, data: {
         to: string;
+        name: string;
         productLink: string;
         productCode?: string;
         subject?: string;
@@ -158,7 +160,7 @@ export const useInvitationStore = create<InvitationStore>((set, get) => ({
         set({ isLoading: true, error: null });
         try {
             const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://trustify.io.vn';
-            const response = await fetch(`${API_BASE_URL}/integration/companies/invite`, {
+            const response = await fetch(`${API_BASE_URL}/invite/product/${companyId}`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -179,7 +181,7 @@ export const useInvitationStore = create<InvitationStore>((set, get) => ({
             const newInvitation: Invitation = {
                 id: `invite-${Date.now()}`,
                 customerEmail: data.to,
-                customerName: data.to.split('@')[0],
+                customerName: data.name || data.to.split('@')[0],
                 status: 'sent',
                 sentAt: new Date().toISOString(),
             };
